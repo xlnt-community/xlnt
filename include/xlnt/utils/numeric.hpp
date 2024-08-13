@@ -175,7 +175,7 @@ public:
             return d;
         }
         char buf[30];
-        assert(s.size() < sizeof(buf));
+        assert(s.size() + 1 < sizeof(buf));
         const char *cstr = s.c_str();
         auto copy_end = std::copy(cstr, cstr + s.size() + 1, buf);
         convert_pt_to_comma(buf, static_cast<size_t>(copy_end - buf));
