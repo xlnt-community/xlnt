@@ -2280,10 +2280,12 @@ void xlsx_consumer::read_shared_string_table()
 
     expect_end_element(qn("spreadsheetml", "sst"));
 
+#ifdef THROW_ON_INVALID_XML
     if (has_unique_count && unique_count != target_.shared_strings().size())
     {
         throw invalid_file("sizes don't match");
     }
+#endif
 }
 
 void xlsx_consumer::read_shared_workbook_revision_headers()
@@ -2321,7 +2323,10 @@ void xlsx_consumer::read_stylesheet()
             if (parser().attribute_present("count"))
             {
                 count = parser().attribute<std::size_t>("count");
-                borders.reserve(count.get());
+                if (count.get() <= xlnt::constants::max_elements_for_reserve())
+                {
+                    borders.reserve(count.get());
+                }
             }
 
             while (in_element(qn("spreadsheetml", "borders")))
@@ -2389,7 +2394,10 @@ void xlsx_consumer::read_stylesheet()
             if (parser().attribute_present("count"))
             {
                 count = parser().attribute<std::size_t>("count");
-                fills.reserve(count.get());
+                if (count.get() <= xlnt::constants::max_elements_for_reserve())
+                {
+                    fills.reserve(count.get());
+                }
             }
 
             while (in_element(qn("spreadsheetml", "fills")))
@@ -2481,7 +2489,10 @@ void xlsx_consumer::read_stylesheet()
             if (parser().attribute_present("count"))
             {
                 count = parser().attribute<std::size_t>("count");
-                fonts.reserve(count.get());
+                if (count.get() <= xlnt::constants::max_elements_for_reserve())
+                {
+                    fonts.reserve(count.get());
+                }
             }
 
             if (parser().attribute_present(qn("x14ac", "knownFonts")))
@@ -2631,7 +2642,10 @@ void xlsx_consumer::read_stylesheet()
             if (parser().attribute_present("count"))
             {
                 count = parser().attribute<std::size_t>("count");
-                number_formats.reserve(count.get());
+                if (count.get() <= xlnt::constants::max_elements_for_reserve())
+                {
+                    number_formats.reserve(count.get());
+                }
             }
 
             while (in_element(qn("spreadsheetml", "numFmts")))
@@ -2668,7 +2682,10 @@ void xlsx_consumer::read_stylesheet()
             if (parser().attribute_present("count"))
             {
                 count = parser().attribute<std::size_t>("count");
-                styles.reserve(count.get());
+                if (count.get() <= xlnt::constants::max_elements_for_reserve())
+                {
+                    styles.reserve(count.get());
+                }
             }
 
             while (in_element(qn("spreadsheetml", "cellStyles")))
@@ -2713,13 +2730,16 @@ void xlsx_consumer::read_stylesheet()
             if (parser().attribute_present("count"))
             {
                 count = parser().attribute<std::size_t>("count");
-                if (in_style_records)
+                if (count.get() <= xlnt::constants::max_elements_for_reserve())
                 {
-                    style_records.reserve(count.get());
-                }
-                else
-                {
-                    format_records.reserve(count.get());
+                    if (in_style_records)
+                    {
+                        style_records.reserve(count.get());
+                    }
+                    else
+                    {
+                        format_records.reserve(count.get());
+                    }
                 }
             }
 
