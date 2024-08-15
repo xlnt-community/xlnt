@@ -51,7 +51,7 @@ const column_t constants::max_column()
 
 const size_t constants::max_elements_for_reserve()
 {
-    return 10'000;
+    return 10000;
 }
 
 // constants
