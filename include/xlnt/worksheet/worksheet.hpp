@@ -229,6 +229,7 @@ public:
     /// <summary>
     /// Returns a range encompassing all cells in this sheet which will
     /// be iterated upon in row-major order. If skip_null is true (default),
+    /// the range does not contain empty rows/columns at its boundaries and
     /// empty rows and cells will be skipped during iteration of the range.
     /// </summary>
     class range rows(bool skip_null = true);
@@ -236,6 +237,7 @@ public:
     /// <summary>
     /// Returns a range encompassing all cells in this sheet which will
     /// be iterated upon in row-major order. If skip_null is true (default),
+    /// the range does not contain empty rows/columns at its boundaries and
     /// empty rows and cells will be skipped during iteration of the range.
     /// </summary>
     const class range rows(bool skip_null = true) const;
@@ -243,6 +245,7 @@ public:
     /// <summary>
     /// Returns a range ecompassing all cells in this sheet which will
     /// be iterated upon in column-major order. If skip_null is true (default),
+    /// the range does not contain empty rows/columns at its boundaries and
     /// empty columns and cells will be skipped during iteration of the range.
     /// </summary>
     class range columns(bool skip_null = true);
@@ -250,6 +253,7 @@ public:
     /// <summary>
     /// Returns a range ecompassing all cells in this sheet which will
     /// be iterated upon in column-major order. If skip_null is true (default),
+    /// the range does not contain empty rows/columns at its boundaries and
     /// empty columns and cells will be skipped during iteration of the range.
     /// </summary>
     const class range columns(bool skip_null = true) const;
@@ -436,8 +440,9 @@ public:
     /// Returns a range_reference pointing to the full range of cells in the worksheet.
     /// If skip_null is true (default), empty cells (For example if the first row or column is empty)
     /// will not be included in upper left bound of range.
+    /// If skip_row_props is false (default), rows with only properties being defined will be returned too.
     /// </summary>
-    range_reference calculate_dimension(bool skip_null=true) const;
+    range_reference calculate_dimension(bool skip_null=true, bool skip_row_props=false) const;
 
     // cell merge
 

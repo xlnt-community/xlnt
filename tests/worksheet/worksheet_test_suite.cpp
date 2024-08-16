@@ -111,6 +111,7 @@ public:
         register_test(test_hidden_sheet);
         register_test(test_xlsm_read_write);
         register_test(test_issue_484);
+        register_test(test_issue_5_empty_bottom_rows);
     }
 
     void test_new_worksheet()
@@ -1673,6 +1674,21 @@ public:
         
         xlnt_assert_equals("B12:B12", ws.columns(true).reference());
         xlnt_assert_equals("A1:B12", ws.columns(false).reference());
+    }
+
+    void test_issue_5_empty_bottom_rows()
+    {
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+
+        ws.cell("B12").value("AAA");
+        ws.row_properties(15).height = 1.0;
+
+        xlnt_assert_equals("B12:B12", ws.rows(true).reference());
+        xlnt_assert_equals("A1:B15", ws.rows(false).reference());
+
+        xlnt_assert_equals("B12:B12", ws.columns(true).reference());
+        xlnt_assert_equals("A1:B15", ws.columns(false).reference());
     }
 };
 
