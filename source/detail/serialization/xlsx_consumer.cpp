@@ -46,6 +46,7 @@
 #include <detail/serialization/vector_streambuf.hpp>
 #include <detail/serialization/xlsx_consumer.hpp>
 #include <detail/serialization/zstream.hpp>
+#include <detail/limits.hpp>
 
 namespace {
 /// string_equal
@@ -2323,10 +2324,7 @@ void xlsx_consumer::read_stylesheet()
             if (parser().attribute_present("count"))
             {
                 count = parser().attribute<std::size_t>("count");
-                if (count.get() <= xlnt::constants::max_elements_for_reserve())
-                {
-                    borders.reserve(count.get());
-                }
+                borders.reserve(xlnt::detail::clip_reserve_elements(count.get()));
             }
 
             while (in_element(qn("spreadsheetml", "borders")))
@@ -2394,10 +2392,7 @@ void xlsx_consumer::read_stylesheet()
             if (parser().attribute_present("count"))
             {
                 count = parser().attribute<std::size_t>("count");
-                if (count.get() <= xlnt::constants::max_elements_for_reserve())
-                {
-                    fills.reserve(count.get());
-                }
+                fills.reserve(xlnt::detail::clip_reserve_elements(count.get()));
             }
 
             while (in_element(qn("spreadsheetml", "fills")))
@@ -2489,10 +2484,7 @@ void xlsx_consumer::read_stylesheet()
             if (parser().attribute_present("count"))
             {
                 count = parser().attribute<std::size_t>("count");
-                if (count.get() <= xlnt::constants::max_elements_for_reserve())
-                {
-                    fonts.reserve(count.get());
-                }
+                fonts.reserve(xlnt::detail::clip_reserve_elements(count.get()));
             }
 
             if (parser().attribute_present(qn("x14ac", "knownFonts")))
@@ -2642,10 +2634,7 @@ void xlsx_consumer::read_stylesheet()
             if (parser().attribute_present("count"))
             {
                 count = parser().attribute<std::size_t>("count");
-                if (count.get() <= xlnt::constants::max_elements_for_reserve())
-                {
-                    number_formats.reserve(count.get());
-                }
+                number_formats.reserve(xlnt::detail::clip_reserve_elements(count.get()));
             }
 
             while (in_element(qn("spreadsheetml", "numFmts")))
@@ -2682,10 +2671,7 @@ void xlsx_consumer::read_stylesheet()
             if (parser().attribute_present("count"))
             {
                 count = parser().attribute<std::size_t>("count");
-                if (count.get() <= xlnt::constants::max_elements_for_reserve())
-                {
-                    styles.reserve(count.get());
-                }
+                styles.reserve(xlnt::detail::clip_reserve_elements(count.get()));
             }
 
             while (in_element(qn("spreadsheetml", "cellStyles")))
@@ -2730,16 +2716,13 @@ void xlsx_consumer::read_stylesheet()
             if (parser().attribute_present("count"))
             {
                 count = parser().attribute<std::size_t>("count");
-                if (count.get() <= xlnt::constants::max_elements_for_reserve())
+                if (in_style_records)
                 {
-                    if (in_style_records)
-                    {
-                        style_records.reserve(count.get());
-                    }
-                    else
-                    {
-                        format_records.reserve(count.get());
-                    }
+                    style_records.reserve(xlnt::detail::clip_reserve_elements(count.get()));
+                }
+                else
+                {
+                    format_records.reserve(xlnt::detail::clip_reserve_elements(count.get()));
                 }
             }
 
