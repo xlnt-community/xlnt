@@ -2880,11 +2880,6 @@ void xlsx_consumer::read_stylesheet()
         }
         else if (current_style_element == qn("spreadsheetml", "dxfs"))
         {
-            optional<std::size_t> count;
-            if (parser().attribute_present("count"))
-            {
-                count = parser().attribute<std::size_t>("count");
-            }
             std::size_t processed = 0;
 
             while (in_element(current_style_element))
@@ -2896,9 +2891,13 @@ void xlsx_consumer::read_stylesheet()
             }
 
 #ifdef THROW_ON_INVALID_XML
-            if (count.is_set() && count != processed)
+            if (parser().attribute_present("count"))
             {
-                throw xlnt::exception("counts don't match");
+                std::size_t count = parser().attribute<std::size_t>("count");
+                if (count != processed)
+                {
+                    throw xlnt::exception("counts don't match");
+                }
             }
 #endif
         }
@@ -2907,11 +2906,6 @@ void xlsx_consumer::read_stylesheet()
             skip_attribute("defaultTableStyle");
             skip_attribute("defaultPivotStyle");
 
-            optional<std::size_t> count;
-            if (parser().attribute_present("count"))
-            {
-                count = parser().attribute<std::size_t>("count");
-            }
             std::size_t processed = 0;
 
             while (in_element(qn("spreadsheetml", "tableStyles")))
@@ -2923,9 +2917,13 @@ void xlsx_consumer::read_stylesheet()
             }
 
 #ifdef THROW_ON_INVALID_XML
-            if (count.is_set() && count != processed)
+            if (parser().attribute_present("count"))
             {
-                throw xlnt::exception("counts don't match");
+                std::size_t count = parser().attribute<std::size_t>("count");
+                if (count != processed)
+                {
+                    throw xlnt::exception("counts don't match");
+                }
             }
 #endif
         }
