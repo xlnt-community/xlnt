@@ -74,6 +74,7 @@ public:
         register_test(test_formatting);
         register_test(test_active_sheet);
         register_test(test_locale_comma);
+        register_test(test_Issue6_google_missing_workbookView);
     }
 
     bool workbook_matches_file(xlnt::workbook &wb, const xlnt::path &file)
@@ -823,6 +824,13 @@ public:
         auto ws = wb.active_sheet();
         xlnt_assert_equals(ws.cell("A1").value<double>(), 1.9999999999);
         xlnt_assert_equals(ws.cell("A2").value<double>(), 1.1);
+    }
+
+    void test_Issue6_google_missing_workbookView()
+    {
+        xlnt::workbook wb;
+        wb.load(path_helper::test_file("Issue6_google_missing_workbookView.xlsx"));
+        xlnt_assert_throws_nothing(wb.save("temp.xlsx"));
     }
 };
 

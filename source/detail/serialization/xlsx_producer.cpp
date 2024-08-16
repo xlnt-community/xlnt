@@ -2365,7 +2365,6 @@ void xlsx_producer::write_worksheet(const relationship &rel)
         write_start_element(xmlns, "sheetViews");
         write_start_element(xmlns, "sheetView");
 
-        const auto wb_view = source_.view();
         const auto view = ws.view();
 
         if (!view.show_grid_lines())
@@ -2373,8 +2372,17 @@ void xlsx_producer::write_worksheet(const relationship &rel)
             write_attribute("showGridLines", write_bool(view.show_grid_lines()));
         }
 
-        if ((wb_view.active_tab.is_set() && (ws.id() - 1) == wb_view.active_tab.get())
-            || (!wb_view.active_tab.is_set() && ws.id() == 1))
+        if (source_.has_view())
+        {
+            const auto wb_view = source_.view();
+
+            if ((wb_view.active_tab.is_set() && (ws.id() - 1) == wb_view.active_tab.get())
+                || (!wb_view.active_tab.is_set() && ws.id() == 1))
+            {
+                write_attribute("tabSelected", write_bool(true));
+            }
+        }
+        else if (ws.id() == 1)
         {
             write_attribute("tabSelected", write_bool(true));
         }
