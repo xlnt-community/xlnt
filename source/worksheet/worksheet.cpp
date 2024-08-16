@@ -577,7 +577,7 @@ column_t worksheet::highest_column_or_props() const
     return highest;
 }
 
-range_reference worksheet::calculate_dimension(bool skip_null) const
+range_reference worksheet::calculate_dimension(bool skip_null, bool skip_row_props) const
 {
     // partially optimised version of:
     // return range_reference(lowest_column(), lowest_row_or_props(),
@@ -593,12 +593,15 @@ range_reference worksheet::calculate_dimension(bool skip_null) const
     // in order to include first empty rows and columns
     row_t min_row_prop = skip_null? constants::max_row() : constants::min_row();
     row_t max_row_prop = constants::min_row();
-    for (const auto &row_prop : d_->row_properties_)
+    if (!skip_row_props)
     {
-        if(skip_null){
-            min_row_prop = std::min(min_row_prop, row_prop.first);
+        for (const auto &row_prop : d_->row_properties_)
+        {
+            if(skip_null){
+                min_row_prop = std::min(min_row_prop, row_prop.first);
+            }
+            max_row_prop = std::max(max_row_prop, row_prop.first);
         }
-        max_row_prop = std::max(max_row_prop, row_prop.first);
     }
     if (d_->cell_map_.empty())
     {
@@ -724,22 +727,22 @@ row_t worksheet::next_row() const
 
 xlnt::range worksheet::rows(bool skip_null)
 {
-    return xlnt::range(*this, calculate_dimension(skip_null), major_order::row, skip_null);
+    return xlnt::range(*this, calculate_dimension(skip_null, skip_null), major_order::row, skip_null);
 }
 
 const xlnt::range worksheet::rows(bool skip_null) const
 {
-    return xlnt::range(*this, calculate_dimension(skip_null), major_order::row, skip_null);
+    return xlnt::range(*this, calculate_dimension(skip_null, skip_null), major_order::row, skip_null);
 }
 
 xlnt::range worksheet::columns(bool skip_null)
 {
-    return xlnt::range(*this, calculate_dimension(skip_null), major_order::column, skip_null);
+    return xlnt::range(*this, calculate_dimension(skip_null, skip_null), major_order::column, skip_null);
 }
 
 const xlnt::range worksheet::columns(bool skip_null) const
 {
-    return xlnt::range(*this, calculate_dimension(skip_null), major_order::column, skip_null);
+    return xlnt::range(*this, calculate_dimension(skip_null, skip_null), major_order::column, skip_null);
 }
 
 /*
