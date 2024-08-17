@@ -19,6 +19,10 @@ set(XLNT_SAMPLE_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data)
 
 file(GLOB SAMPLE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
+if(COVERAGE AND STATIC)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
+endif()
+
 foreach(SAMPLE_SOURCE IN ITEMS ${SAMPLE_SOURCES})
   # Convert <name>.cpp to sample-<name>
   get_filename_component(SAMPLE_NAME ${SAMPLE_SOURCE} NAME_WE)
