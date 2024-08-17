@@ -36,6 +36,8 @@ int main()
 
 Documentation for the current release of xlnt is available [here](https://tfussell.gitbooks.io/xlnt/content/).
 
+The latest API reference can be found [here](https://xlnt-community.github.io/xlnt/annotated.html).
+
 ## Building xlnt - Using vcpkg
 
 You can download and install xlnt using the [vcpkg](https://github.com/microsoft/vcpkg) dependency manager:
