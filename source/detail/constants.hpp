@@ -60,7 +60,7 @@ struct XLNT_API constants
     /// to allocate the memory right away and thus improve performance. However, malicious or broken files
     /// might then cause XLNT to allocate extreme amounts of memory. This function sets a limit to protect against such issues.
     /// </summary>
-    static const size_t max_elements_for_reserve();
+    static size_t max_elements_for_reserve();
 
     /// <summary>
     /// Returns the URI of the directory containing package properties.
