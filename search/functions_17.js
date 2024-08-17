@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['_7ecell_5fiterator',['~cell_iterator',['../classxlnt_1_1cell__iterator.html#a295ceec95ff8ff8279cc735d65a58f1e',1,'xlnt::cell_iterator']]],
+  ['_7econst_5fcell_5fiterator',['~const_cell_iterator',['../classxlnt_1_1const__cell__iterator.html#a6c356a7cd5939a4f899a10a4b83cee41',1,'xlnt::const_cell_iterator']]],
+  ['_7econst_5frange_5fiterator',['~const_range_iterator',['../classxlnt_1_1const__range__iterator.html#ac5b8adf5b8b2faf56090df91cd50381d',1,'xlnt::const_range_iterator']]],
+  ['_7econst_5fworksheet_5fiterator',['~const_worksheet_iterator',['../classxlnt_1_1const__worksheet__iterator.html#a2622c4fd858033e9179b7dde4deef15d',1,'xlnt::const_worksheet_iterator']]],
+  ['_7eexception',['~exception',['../classxlnt_1_1exception.html#afe9fe25b30cb20cd3c1d7e31fdfd11d1',1,'xlnt::exception']]],
+  ['_7eillegal_5fcharacter',['~illegal_character',['../classxlnt_1_1illegal__character.html#a28f17e917bbe11afc1bf7e8c1b321cfe',1,'xlnt::illegal_character']]],
+  ['_7einvalid_5fattribute',['~invalid_attribute',['../classxlnt_1_1invalid__attribute.html#a43c87e245ad7c8859af680f955e7c327',1,'xlnt::invalid_attribute']]],
+  ['_7einvalid_5fcell_5freference',['~invalid_cell_reference',['../classxlnt_1_1invalid__cell__reference.html#a4c71788620704bb7ecd315abafb8ef88',1,'xlnt::invalid_cell_reference']]],
+  ['_7einvalid_5fcolumn_5findex',['~invalid_column_index',['../classxlnt_1_1invalid__column__index.html#a78e2c32ca74ddd0cca17cd2eed08ad71',1,'xlnt::invalid_column_index']]],
+  ['_7einvalid_5fdata_5ftype',['~invalid_data_type',['../classxlnt_1_1invalid__data__type.html#a02014a5b40ca4835bfc5130702664425',1,'xlnt::invalid_data_type']]],
+  ['_7einvalid_5ffile',['~invalid_file',['../classxlnt_1_1invalid__file.html#acddea546c2d0471cdf8e056663f5f3e2',1,'xlnt::invalid_file']]],
+  ['_7einvalid_5fparameter',['~invalid_parameter',['../classxlnt_1_1invalid__parameter.html#ae570063265937c2eb67da5b17cb09bb8',1,'xlnt::invalid_parameter']]],
+  ['_7einvalid_5fsheet_5ftitle',['~invalid_sheet_title',['../classxlnt_1_1invalid__sheet__title.html#aefea32a4ff886e0624dab33e87d04c71',1,'xlnt::invalid_sheet_title']]],
+  ['_7ekey_5fnot_5ffound',['~key_not_found',['../classxlnt_1_1key__not__found.html#a5cf92114a84436b4ed37d03769152f91',1,'xlnt::key_not_found']]],
+  ['_7eno_5fvisible_5fworksheets',['~no_visible_worksheets',['../classxlnt_1_1no__visible__worksheets.html#abdebd3a16a620685506925ec39174328',1,'xlnt::no_visible_worksheets']]],
+  ['_7eoptional',['~optional',['../classxlnt_1_1optional.html#a6ac5ec8058d63db4ce1847961fd867ac',1,'xlnt::optional']]],
+  ['_7erange',['~range',['../classxlnt_1_1range.html#a861657c685d68cf9330ba7ea2fd13d7b',1,'xlnt::range']]],
+  ['_7erange_5fiterator',['~range_iterator',['../classxlnt_1_1range__iterator.html#a34d5944ff07e2e0828eba123f591b752',1,'xlnt::range_iterator']]],
+  ['_7eunhandled_5fswitch_5fcase',['~unhandled_switch_case',['../classxlnt_1_1unhandled__switch__case.html#a8831a4ff49e817e14798ad13192444f3',1,'xlnt::unhandled_switch_case']]],
+  ['_7eunsupported',['~unsupported',['../classxlnt_1_1unsupported.html#a852820acc296d3276475dcc38e6c4560',1,'xlnt::unsupported']]],
+  ['_7eworkbook',['~workbook',['../classxlnt_1_1workbook.html#a12ddbfa450b8bc3dc3d7b049f39d57e9',1,'xlnt::workbook']]],
+  ['_7eworksheet_5fiterator',['~worksheet_iterator',['../classxlnt_1_1worksheet__iterator.html#a6c9371bdf947cfd81ffae21083f669f7',1,'xlnt::worksheet_iterator']]]
+];
