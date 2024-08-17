@@ -19,6 +19,10 @@ set(XLNT_BENCHMARK_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data)
 
 file(GLOB BENCHMARK_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
+if(COVERAGE AND STATIC)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
+endif()
+
 foreach(BENCHMARK_SOURCE IN ITEMS ${BENCHMARK_SOURCES})
   # Convert <name>.cpp to benchmark-<name>
   get_filename_component(BENCHMARK_NAME ${BENCHMARK_SOURCE} NAME_WE)

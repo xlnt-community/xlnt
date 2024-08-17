@@ -4,6 +4,7 @@ jobs:
   build:
     docker:
       - image: lycantropos/cmake:3.9.5
+    resource_class: medium
     parameters:
       benchmarks:
         default: "OFF"
@@ -50,12 +51,9 @@ jobs:
           condition:
             equal: ["ON", << parameters.coverage >>]
           steps:
-            - run: lcov --directory source/CMakeFiles/xlnt.dir --capture --output-file coverage.info --base-directory ../source --no-external --gcov-tool /usr/bin/gcov-6
-            - run: lcov --output-file coverage.info --remove coverage.info source/detail/serialization/miniz.cpp
-            - run: i=$(dirname $(pwd))
-            - run: sed -i "s|$i/||" coverage.info
-            - run: cd ..
-            - run: coveralls-lcov build/coverage.info
+            - run: apt-get install -y --no-install-recommends lcov
+            - run: lcov --directory source/CMakeFiles/xlnt.dir --capture --output-file coverage.info --base-directory source --no-external
+            - run: curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz && ./coveralls report coverage.info
 
 workflows:
   build:
@@ -80,4 +78,4 @@ workflows:
           static: "ON"
           samples: "ON"
           benchmarks: "ON"
-          coverage: "OFF"
+          coverage: "ON"
