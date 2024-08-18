@@ -2262,15 +2262,6 @@ void xlsx_consumer::read_shared_string_table()
     expect_start_element(qn("spreadsheetml", "sst"), xml::content::complex);
     skip_attributes({"count"});
 
-    bool has_unique_count = false;
-    std::size_t unique_count = 0;
-
-    if (parser().attribute_present("uniqueCount"))
-    {
-        has_unique_count = true;
-        unique_count = parser().attribute<std::size_t>("uniqueCount");
-    }
-
     while (in_element(qn("spreadsheetml", "sst")))
     {
         expect_start_element(qn("spreadsheetml", "si"), xml::content::complex);
@@ -2282,9 +2273,13 @@ void xlsx_consumer::read_shared_string_table()
     expect_end_element(qn("spreadsheetml", "sst"));
 
 #ifdef THROW_ON_INVALID_XML
-    if (has_unique_count && unique_count != target_.shared_strings().size())
+    if (parser().attribute_present("uniqueCount"))
     {
-        throw invalid_file("sizes don't match");
+        std::size_t unique_count = parser().attribute<std::size_t>("uniqueCount");
+        if (unique_count != target_.shared_strings().size())
+        {
+            throw invalid_file("sizes don't match");
+        }
     }
 #endif
 }
