@@ -55,6 +55,36 @@ jobs:
             - run: lcov --directory source/CMakeFiles/xlnt.dir --capture --output-file coverage.info --base-directory source --no-external
             - run: curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz && ./coveralls report coverage.info
 
+  docs-build:
+    docker:
+      - image: lycantropos/cmake:3.9.5
+    resource_class: small
+    steps:
+      - checkout
+      - run: apt-get update -y
+      - run: apt-get install -y --no-install-recommends doxygen
+      - run: cmake -D LIBRARY=OFF -D DOCUMENTATION=ON .
+      - run: cmake --build . -- -j1
+      - persist_to_workspace:
+          root: .
+          paths: api-reference/html
+
+  docs-deploy:
+    docker:
+      - image: node:8.10.0
+    resource_class: small
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run: npm install -g --silent gh-pages@2.0.1
+      - run: git config user.email "<>"
+      - run: git config user.name "circleci"
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:sMHnTqFtvDqOdCufcN2xbU5QjM9vAtAk5JDJl2E3Enk"
+      - run: gh-pages --message "Update documentation" --dist api-reference/html
+
 workflows:
   build:
     jobs:
@@ -71,6 +101,9 @@ workflows:
               static:
                 - "ON"
                 - "OFF"
+          filters:
+            branches:
+              ignore: gh-pages
       - build:
           name: samples-benchmarks-coverage
           cxx-ver: "11"
@@ -79,3 +112,16 @@ workflows:
           samples: "ON"
           benchmarks: "ON"
           coverage: "ON"
+          filters:
+            branches:
+              ignore: gh-pages
+      - docs-build:
+          filters:
+            branches:
+              ignore: gh-pages
+      - docs-deploy:
+          requires:
+            - docs-build
+          filters:
+            branches:
+              only: master

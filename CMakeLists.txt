@@ -27,10 +27,12 @@ endif()
 
 
 # Optional components
+option(LIBRARY "Set to ON to build the main XLNT library" ON)
 option(TESTS "Set to ON to build test executable (in ./tests)" OFF)
 option(SAMPLES "Set to ON to build executable code samples (in ./samples)" OFF)
 option(BENCHMARKS "Set to ON to build performance benchmarks (in ./benchmarks)" OFF)
 option(PYTHON "Set to ON to build Arrow conversion functions (in ./python)" OFF)
+option(DOCUMENTATION "Set to ON to build API reference documentation (in ./api-reference)" OFF)
 
 # Platform specific options
 if(MSVC)
@@ -56,4 +58,22 @@ if(PYTHON)
   add_subdirectory(python)
 endif()
 
-add_subdirectory(source)
+if(DOCUMENTATION)
+  find_package(Doxygen REQUIRED)
+  # set input and output files
+  set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/tools/Doxyfile)
+  set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
+  # request to configure the file
+  configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+
+  # note the option ALL which allows to build the docs together with the application
+  add_custom_target( doc_doxygen ALL
+      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+      COMMENT "Generating API documentation with Doxygen")
+endif()
+
+if (LIBRARY)
+  add_subdirectory(source)
+endif()
