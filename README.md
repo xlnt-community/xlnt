@@ -1,8 +1,7 @@
 <img height="100" src="https://user-images.githubusercontent.com/1735211/29433390-f37fa28e-836c-11e7-8a60-f8df4c30b424.png" alt="xlnt logo"><br/>
 ====
 
-[![Travis Build Status](https://travis-ci.org/tfussell/xlnt.svg?branch=master)](https://travis-ci.org/tfussell/xlnt)
-[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/2hs79a1xoxy16sol?svg=true)](https://ci.appveyor.com/project/tfussell/xlnt)
+[![CircleCI Build status](https://dl.circleci.com/status-badge/img/gh/xlnt-community/xlnt/tree/master.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/xlnt-community/xlnt/tree/master)
 [![Coverage Status](https://coveralls.io/repos/github/xlnt-community/xlnt/badge.svg?branch=master)](https://coveralls.io/github/xlnt-community/xlnt?branch=master)
 [![Documentation Status](https://legacy.gitbook.com/button/status/book/tfussell/xlnt)](https://tfussell.gitbooks.io/xlnt/content/)
 [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://opensource.org/licenses/MIT)
