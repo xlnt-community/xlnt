@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  build:
+  build-gcc:
     docker:
       - image: lycantropos/cmake:3.9.5
     resource_class: medium
@@ -85,10 +85,49 @@ jobs:
             - "SHA256:sMHnTqFtvDqOdCufcN2xbU5QjM9vAtAk5JDJl2E3Enk"
       - run: gh-pages --message "Update documentation" --dist api-reference/html
 
+  build-msvc:
+    machine:
+      image: 'windows-server-2019-vs2019:current'
+    resource_class: 'windows.medium'
+    parameters:
+      benchmarks:
+        default: "OFF"
+        type: string
+      build-type:
+        default: Release
+        type: string
+      samples:
+        default: "OFF"
+        type: string
+      static:
+        default: "ON"
+        type: string
+    steps:
+      - checkout
+      - run: git submodule update --init --recursive
+      - run: choco install cmake -y
+      - run: echo 'export PATH="$PATH:/c/Program Files/CMake/bin"' >> "$BASH_ENV"
+      - run: cmake -G "Visual Studio 16 2019" -D CMAKE_GENERATOR_PLATFORM=x64 -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=ON -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
+      - run: cmake --build . -j4 --config << parameters.build-type >>
+      - run: ./tests/<< parameters.build-type >>/xlnt.test.exe
+      - when:
+          condition:
+            equal: ["ON", << parameters.samples >>]
+          steps:
+            - run: ./samples/<< parameters.build-type >>/sample-decrypt
+            - run: ./samples/<< parameters.build-type >>/sample-img2xlsx ./samples/data/penguin.jpg img.xlsx
+            - run: ./samples/<< parameters.build-type >>/sample-documentation
+      - when:
+          condition:
+            equal: ["ON", << parameters.benchmarks >>]
+          steps:
+            - run: ./benchmarks/<< parameters.build-type >>/benchmark-styles
+            - run: ./benchmarks/<< parameters.build-type >>/benchmark-writer
+
 workflows:
   build:
     jobs:
-      - build:
+      - build-gcc:
           name: tests
           matrix:
             parameters:
@@ -104,7 +143,7 @@ workflows:
           filters:
             branches:
               ignore: gh-pages
-      - build:
+      - build-gcc:
           name: samples-benchmarks-coverage
           cxx-ver: "11"
           build-type: Debug
@@ -115,6 +154,24 @@ workflows:
           filters:
             branches:
               ignore: gh-pages
+
+      - build-msvc:
+          name: tests msvc
+          matrix:
+            parameters:
+              build-type:
+                - Release
+                - Debug
+              static:
+                - "ON"
+                - "OFF"
+          samples: "ON"
+          requires:
+            - build-gcc # prevent building windows in case of gcc failures, as windows builds are more expensive
+          filters:
+            branches:
+              ignore: gh-pages
+
       - docs-build:
           filters:
             branches:
