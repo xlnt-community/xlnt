@@ -38,7 +38,7 @@ int main()
 
 ## Documentation
 
-Documentation for the current release of xlnt is available [here](https://tfussell.gitbooks.io/xlnt/content/).
+Documentation for the current release of xlnt is available [here](https://xlnt-community.gitbook.io/xlnt/).
 
 The latest API reference can be found [here](https://xlnt-community.github.io/xlnt/annotated.html).
 
