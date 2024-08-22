@@ -9,6 +9,11 @@
 ## Introduction
 xlnt is a modern C++ library for manipulating spreadsheets in memory and reading/writing them from/to XLSX files as described in [ECMA 376 4th edition](http://www.ecma-international.org/publications/standards/Ecma-376.htm). The first public release of xlnt version 1.0 was on May 10th, 2017. Current work is focused on increasing compatibility, improving performance, and brainstorming future development goals. For a high-level summary of what you can do with this library, see [the feature list](https://tfussell.gitbooks.io/xlnt/content/docs/introduction/Features.html). Contributions are welcome in the form of pull requests or discussions on [the repository's Issues page](https://github.com/tfussell/xlnt/issues).
 
+## About this fork
+This repo is a community effort to continue the development of xlnt, after the [original repo of tfussel](https://github.com/tfussell/xlnt) has been unmaintained for many years (see [Issue #748](https://github.com/tfussell/xlnt/issues/748)).
+Feel free to participate in this community effort by submitting issues and PRs to this new community-driven repo.
+Issues and PRs on the original repo will not be transferred in bulk to this repo, but you may consider creating a similar issue or PR against this repo for items of interest to you.
+
 ## Example
 
 Including xlnt in your project, creating a new spreadsheet, and saving it as "example.xlsx"
@@ -50,4 +55,4 @@ You can download and install xlnt using the [vcpkg](https://github.com/microsoft
 The xlnt port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/microsoft/vcpkg) on the vcpkg repository.
 
 ## License
-xlnt is released to the public for free under the terms of the MIT License. See [LICENSE.md](https://github.com/tfussell/xlnt/blob/master/LICENSE.md) for the full text of the license and the licenses of xlnt's third-party dependencies. [LICENSE.md](https://github.com/tfussell/xlnt/blob/master/LICENSE.md) should be distributed alongside any assemblies that use xlnt in source or compiled form.
+xlnt is released to the public for free under the terms of the MIT License. See [LICENSE.md](https://github.com/xlnt-community/xlnt/blob/master/LICENSE.md) for the full text of the license and the licenses of xlnt's third-party dependencies. [LICENSE.md](https://github.com/xlnt-community/xlnt/blob/master/LICENSE.md) should be distributed alongside any assemblies that use xlnt in source or compiled form.

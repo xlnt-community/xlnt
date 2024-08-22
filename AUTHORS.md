@@ -9,5 +9,6 @@ Thanks to everyone who has contributed to this project (in alphabetical order):
 * sukoi26
 * tpmccallum
 * xpol
+* xlnt community (check [contributors on github](https://github.com/xlnt-community/xlnt/graphs/contributors) or committers in the git log)
 
 Project logo designed by Thomas Fussell.
