@@ -36,7 +36,11 @@ option(DOCUMENTATION "Set to ON to build API reference documentation (in ./api-r
 
 # Platform specific options
 if(MSVC)
-  option(STATIC_CRT "Link with the static version of MSVCRT (/MD[d])" OFF)
+  option(STATIC_CRT "Link with the static version of MSVCRT (/MT[d])" OFF)
+
+  if (STATIC_CRT AND NOT STATIC)
+    message( FATAL_ERROR "STATIC_CRT is only supported for STATIC builds." )
+  endif()
 else()
   option(COVERAGE "Generate coverage data using gcov" OFF)
 endif()
