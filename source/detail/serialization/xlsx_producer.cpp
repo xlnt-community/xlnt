@@ -660,7 +660,7 @@ void xlsx_producer::write_workbook(const relationship &rel)
     if (!defined_names.empty())
     {
         write_start_element(xmlns, "definedNames");
-        for (auto name : defined_names)
+        for (const auto & name : defined_names)
         {
             write_start_element(xmlns, "definedName");
             write_attribute("name", name.name);
@@ -668,7 +668,11 @@ void xlsx_producer::write_workbook(const relationship &rel)
             {
                 write_attribute("hidden", write_bool(true));
             }
-            write_attribute("localSheetId", std::to_string(name.sheet_id - 1)); // 0-indexed for some reason
+
+            if (name.sheet_id.is_set())
+            {
+                write_attribute("localSheetId", std::to_string(name.sheet_id.get() - 1)); // 0-indexed for some reason
+            }
             write_characters(name.value);
             write_end_element(xmlns, "definedName");
         }
