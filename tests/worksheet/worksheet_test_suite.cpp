@@ -112,6 +112,7 @@ public:
         register_test(test_xlsm_read_write);
         register_test(test_issue_484);
         register_test(test_issue_5_empty_bottom_rows);
+        register_test(test_issue_18_defined_name_with_workbook_scope);
     }
 
     void test_new_worksheet()
@@ -1689,6 +1690,12 @@ public:
 
         xlnt_assert_equals("B12:B12", ws.columns(true).reference());
         xlnt_assert_equals("A1:B15", ws.columns(false).reference());
+    }
+
+    void test_issue_18_defined_name_with_workbook_scope()
+    {
+        xlnt::workbook wb;
+        xlnt_assert_throws_nothing(wb.load(path_helper::test_file("Issue18_defined_name_with_workbook_scope.xlsx")));
     }
 };
 

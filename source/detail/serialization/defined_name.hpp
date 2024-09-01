@@ -31,8 +31,8 @@ namespace detail {
 struct defined_name
 {
     std::string name;
-    std::size_t sheet_id;
-    bool hidden;
+    optional<std::size_t> sheet_id;
+    bool hidden = false;
     std::string value;
 };
 
