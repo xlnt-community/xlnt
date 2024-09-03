@@ -64,6 +64,8 @@ namespace detail {
 
 class xlsx_consumer;
 class xlsx_producer;
+class xls_consumer;
+class xls_producer;
 
 struct worksheet_impl;
 
@@ -805,6 +807,8 @@ private:
     friend class workbook;
     friend class detail::xlsx_consumer;
     friend class detail::xlsx_producer;
+    friend class detail::xls_consumer;
+    friend class detail::xls_producer;
 
     /// <summary>
     /// Constructs a worksheet impl wrapper from d.

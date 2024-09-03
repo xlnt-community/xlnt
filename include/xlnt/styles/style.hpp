@@ -45,6 +45,7 @@ namespace detail {
 struct style_impl;
 struct stylesheet;
 class xlsx_consumer;
+class xls_consumer;
 
 } // namespace detail
 
@@ -246,6 +247,7 @@ public:
 private:
     friend struct detail::stylesheet;
     friend class detail::xlsx_consumer;
+    friend class detail::xls_consumer;
 
     /// <summary>
     /// Constructs a style from an impl pointer.

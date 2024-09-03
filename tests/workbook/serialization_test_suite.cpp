@@ -65,6 +65,7 @@ public:
         register_test(test_round_trip_rw_encrypted_standard);
         register_test(test_round_trip_rw_encrypted_numbers);
         register_test(test_streaming_read);
+        register_test(test_streaming_read_oldfile);
         register_test(test_streaming_write);
         register_test(test_load_save_german_locale);
         register_test(test_Issue445_inline_str_load);
@@ -681,6 +682,26 @@ public:
     void test_streaming_read()
     {
         const auto path = path_helper::test_file("4_every_style.xlsx");
+        xlnt::streaming_workbook_reader reader;
+
+        reader.open(xlnt::path(path));
+
+        for (auto sheet_name : reader.sheet_titles())
+        {
+            reader.begin_worksheet(sheet_name);
+
+            while (reader.has_cell())
+            {
+                reader.read_cell();
+            }
+
+            reader.end_worksheet();
+        }
+    }
+
+    void test_streaming_read_oldfile()
+    {
+        const auto path = path_helper::test_file("book1.xls");
         xlnt::streaming_workbook_reader reader;
 
         reader.open(xlnt::path(path));

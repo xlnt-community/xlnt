@@ -82,6 +82,8 @@ struct stylesheet;
 struct workbook_impl;
 class xlsx_consumer;
 class xlsx_producer;
+class xls_consumer;
+class xls_producer;
 
 } // namespace detail
 
@@ -861,6 +863,8 @@ private:
     friend class worksheet;
     friend class detail::xlsx_consumer;
     friend class detail::xlsx_producer;
+    friend class detail::xls_consumer;
+    friend class detail::xls_producer;
 
     /// <summary>
     /// Private constructor. Constructs a workbook from an implementation pointer.

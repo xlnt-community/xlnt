@@ -33,6 +33,7 @@
 #include <detail/serialization/open_stream.hpp>
 #include <detail/serialization/vector_streambuf.hpp>
 #include <detail/serialization/xlsx_consumer.hpp>
+#include <detail/serialization/xls_consumer.hpp>
 
 namespace xlnt {
 
@@ -150,11 +151,16 @@ void streaming_workbook_reader::open(std::istream &stream)
 {
     workbook_.reset(new workbook());
     consumer_.reset(new detail::xlsx_consumer(*workbook_));
-    consumer_->open(stream);
-
-    const auto workbook_rel = workbook_->manifest()
-                                  .relationship(path("/"), relationship_type::office_document);
-    const auto workbook_path = workbook_rel.target().path();
+    consume_.reset(new detail::xls_consumer(*workbook_));
+    std::vector<char> magic(4);
+    stream.read(&magic[0], 4);                  // read magic file
+    if (0xd0 == (magic[0] & 0x000000ff) &&      // read magic number for xls
+        0xcf == (magic[1] & 0x000000ff) && 
+        0x11 == (magic[2] & 0x000000ff) && 
+        0xe0 == (magic[3] & 0x000000ff))
+        consume_->open(stream);
+    else
+        consumer_->open(stream);
 }
 
 void streaming_workbook_reader::open(std::unique_ptr<std::streambuf> &&buffer)
