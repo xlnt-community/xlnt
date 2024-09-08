@@ -11,6 +11,7 @@
   * [Worksheet](basics/Worksheet.md)
   * [Cell](basics/Cell.md)
   * [Iteration](basics/Iteration.md)
+  * [Memory model](basics/MemoryModel.md)
 * [Advanced](advanced/README.md)
   * [Formatting](advanced/Formatting.md)
   * [Properties](advanced/Properties.md)

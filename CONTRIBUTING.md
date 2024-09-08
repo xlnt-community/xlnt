@@ -28,4 +28,4 @@ Just try to be nice--we're all volunteers here.
 
 ## Communication
 
-Add a comment to an existing issue on GitHub, open a new issue for defects or feature requests, or contact @tfussell if you want.
+Add a comment to an existing issue on GitHub, open a new issue for defects or feature requests, or contact @m7913d or @doomlaur if you want.

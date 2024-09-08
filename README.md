@@ -3,7 +3,8 @@
 
 [![CircleCI Build status](https://dl.circleci.com/status-badge/img/gh/xlnt-community/xlnt/tree/master.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/xlnt-community/xlnt/tree/master)
 [![Coverage Status](https://coveralls.io/repos/github/xlnt-community/xlnt/badge.svg?branch=master)](https://coveralls.io/github/xlnt-community/xlnt?branch=master)
-[![Documentation Status](https://legacy.gitbook.com/button/status/book/tfussell/xlnt)](https://tfussell.gitbooks.io/xlnt/content/)
+[![Documentation](https://img.shields.io/badge/view-Documentation-blue)](https://xlnt-community.gitbook.io/xlnt)
+[![API reference](https://img.shields.io/badge/view-API_reference-blue)](https://xlnt-community.github.io/xlnt/annotated.html)
 [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://opensource.org/licenses/MIT)
 
 ## Introduction
@@ -36,11 +37,27 @@ int main()
 // compile with -std=c++14 -Ixlnt/include -lxlnt
 ```
 
+More examples can be found [here](https://xlnt-community.gitbook.io/xlnt/introduction/examples).
+
 ## Documentation
 
 Documentation for the current release of xlnt is available [here](https://xlnt-community.gitbook.io/xlnt/).
 
 The latest API reference can be found [here](https://xlnt-community.github.io/xlnt/annotated.html).
+
+## Building xlnt - From source
+
+You can download and install the latest xlnt version as follows:
+
+    git clone https://github.com/xlnt-community/xlnt.git xlnt --recurse-submodules
+    cd xlnt
+    mkdir build
+    cd build
+    cmake ..
+    cmake --build . -j 4
+    cmake --install .
+
+Full installation instructions can be found [here](https://xlnt-community.gitbook.io/xlnt/introduction/installation#compiling-from-source).
 
 ## Building xlnt - Using vcpkg
 

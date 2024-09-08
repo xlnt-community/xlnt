@@ -1,4 +1,3 @@
-
 # Memory Model
 
 ```c++
