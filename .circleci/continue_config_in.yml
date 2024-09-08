@@ -1,0 +1,204 @@
+version: 2.1
+
+# setup.sh replaces the following patterns:
+# - PLACEHOLDER_IMAGE(*): replaced by the Docker image tagged name built for the .circleci/*.Dockerfile
+
+jobs:
+  build-gcc:
+    docker:
+      - image: << parameters.image >>
+    resource_class: medium
+    parameters:
+      benchmarks:
+        default: "OFF"
+        type: string
+      build-type:
+        default: Release
+        type: string
+      coverage:
+        default: "OFF"
+        type: string
+      cxx-ver:
+        default: "11"
+        type: string
+      samples:
+        default: "OFF"
+        type: string
+      static:
+        default: "ON"
+        type: string
+      image:
+        default: PLACEHOLDER_IMAGE(gcc7_cmake3.9.5)
+        type: string
+    steps:
+      - checkout
+      - run: git submodule update --init --recursive
+      - run: cmake -D XLNT_ALL_WARNINGS_AS_ERRORS=ON -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=ON -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
+      - run: cmake --build . -- -j2
+      - run: ./tests/xlnt.test
+      - when:
+          condition:
+            equal: ["ON", << parameters.samples >>]
+          steps:
+            - run: ./samples/sample-decrypt
+            - run: ./samples/sample-img2xlsx ./samples/data/penguin.jpg img.xlsx
+            - run: ./samples/sample-documentation
+      - when:
+          condition:
+            equal: ["ON", << parameters.benchmarks >>]
+          steps:
+            - run: ./benchmarks/benchmark-styles
+            - run: ./benchmarks/benchmark-writer
+      - when:
+          condition:
+            equal: ["ON", << parameters.coverage >>]
+          steps:
+            - run: apt-get install -y --no-install-recommends lcov
+            - run: lcov --directory source/CMakeFiles/xlnt.dir --capture --output-file coverage.info --base-directory source --no-external
+            - run: curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz && ./coveralls report coverage.info
+
+  docs-build:
+    docker:
+      - image: PLACEHOLDER_IMAGE(gcc7_cmake3.9.5_doxygen)
+    resource_class: small
+    steps:
+      - checkout
+      - run: cmake -D LIBRARY=OFF -D DOCUMENTATION=ON .
+      - run: cmake --build . -- -j1
+      - persist_to_workspace:
+          root: .
+          paths: api-reference/html
+
+  docs-deploy:
+    docker:
+      - image: node:8.10.0
+    resource_class: small
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run: npm install -g --silent gh-pages@2.0.1
+      - run: git config user.email "<>"
+      - run: git config user.name "circleci"
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:sMHnTqFtvDqOdCufcN2xbU5QjM9vAtAk5JDJl2E3Enk"
+      - run: gh-pages --message "Update documentation" --dist api-reference/html
+
+  build-msvc:
+    machine:
+      image: 'windows-server-2019-vs2019:current'
+    resource_class: 'windows.medium'
+    parameters:
+      benchmarks:
+        default: "OFF"
+        type: string
+      build-type:
+        default: Release
+        type: string
+      samples:
+        default: "OFF"
+        type: string
+      static:
+        default: "ON"
+        type: string
+    steps:
+      - checkout
+      - run: git submodule update --init --recursive
+      - run: choco install cmake -y
+      - run: echo 'export PATH="$PATH:/c/Program Files/CMake/bin"' >> "$BASH_ENV"
+      - run: cmake -G "Visual Studio 16 2019" -D CMAKE_GENERATOR_PLATFORM=x64 -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=ON -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
+      - run: cmake --build . -j4 --config << parameters.build-type >>
+      - run: ./tests/<< parameters.build-type >>/xlnt.test.exe
+      - when:
+          condition:
+            equal: ["ON", << parameters.samples >>]
+          steps:
+            - run: ./samples/<< parameters.build-type >>/sample-decrypt
+            - run: ./samples/<< parameters.build-type >>/sample-img2xlsx ./samples/data/penguin.jpg img.xlsx
+            - run: ./samples/<< parameters.build-type >>/sample-documentation
+      - when:
+          condition:
+            equal: ["ON", << parameters.benchmarks >>]
+          steps:
+            - run: ./benchmarks/<< parameters.build-type >>/benchmark-styles
+            - run: ./benchmarks/<< parameters.build-type >>/benchmark-writer
+
+workflows:
+  build:
+    jobs:
+      - build-gcc:
+          name: tests-gcc7-cmake3.2
+          cxx-ver: "11"
+          image: PLACEHOLDER_IMAGE(gcc7_cmake3.2)
+          matrix:
+            alias: tests-gcc7-cmake3.2-all
+            parameters:
+              build-type:
+                - Release
+                - Debug
+              static:
+                - "ON"
+                - "OFF"
+          filters:
+            branches:
+              ignore: gh-pages
+
+      - build-gcc:
+          name: tests-gcc14-cmake3.30.3
+          image: PLACEHOLDER_IMAGE(gcc14_cmake3.30.3)
+          matrix:
+            alias: tests-gcc14-cmake3.30.3-all
+            parameters:
+              cxx-ver:
+                - "11"
+                - "17"
+              build-type:
+                - Release
+                - Debug
+              static:
+                - "ON"
+                - "OFF"
+          filters:
+            branches:
+              ignore: gh-pages
+
+      - build-gcc:
+          name: samples-benchmarks-coverage-gcc
+          cxx-ver: "11"
+          build-type: Debug
+          static: "ON"
+          samples: "ON"
+          benchmarks: "ON"
+          coverage: "ON"
+          filters:
+            branches:
+              ignore: gh-pages
+
+      - build-msvc:
+          name: tests-samples-msvc
+          matrix:
+            parameters:
+              build-type:
+                - Release
+                - Debug
+              static:
+                - "ON"
+                - "OFF"
+          samples: "ON"
+          requires:
+            - tests-gcc7-cmake3.2-all # prevent building windows in case of gcc failures, as windows builds are more expensive
+          filters:
+            branches:
+              ignore: gh-pages
+
+      - docs-build:
+          filters:
+            branches:
+              ignore: gh-pages
+      - docs-deploy:
+          requires:
+            - docs-build
+          filters:
+            branches:
+              only: master

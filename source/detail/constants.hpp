@@ -137,10 +137,20 @@ struct XLNT_API constants
     /// </summary>
     static const std::unordered_map<std::string, std::string> &namespaces();
 
+#if defined(__GNUC__) && __GNUC__ >= 13
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdangling-reference"
+#endif
+
     /// <summary>
     /// Returns the namespace URI from a namespace name.
     /// </summary>
     static const std::string &ns(const std::string &id);
+
+#if defined(__GNUC__) && __GNUC__ >= 13
+# pragma GCC diagnostic pop
+#endif
+
 };
 
 } // namespace xlnt

@@ -21,6 +21,7 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 #include <cmath>
+#include <cstdint>
 #include <ctime>
 
 #include <xlnt/utils/timedelta.hpp>

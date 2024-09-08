@@ -274,8 +274,8 @@ private:
 private:
     const compound_document_entry &entry_;
     compound_document &document_;
-    binary_writer<byte> sector_writer_;
     std::vector<byte> current_sector_;
+    binary_writer<byte> sector_writer_;
     std::size_t position_;
 };
 
@@ -294,8 +294,8 @@ public:
     compound_document_ostreambuf(compound_document_entry &entry, compound_document &document)
         : entry_(entry),
           document_(document),
-          sector_reader_(current_sector_),
           current_sector_(document.header_.threshold),
+          sector_reader_(current_sector_),
           position_(0)
     {
         setp(reinterpret_cast<char *>(current_sector_.data()),
@@ -484,8 +484,8 @@ private:
 private:
     compound_document_entry &entry_;
     compound_document &document_;
-    binary_reader<byte> sector_reader_;
     std::vector<byte> current_sector_;
+    binary_reader<byte> sector_reader_;
     std::size_t position_;
     sector_chain chain_;
 };
