@@ -32,7 +32,9 @@ if(MSVC)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall") # all warnings
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra") # extra warnings
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") # avoid code being pushed with warnings
+  if (XLNT_ALL_WARNINGS_AS_ERRORS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") # avoid code being pushed with warnings
+  endif()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas") # ignore MSVC and Clang pragmas
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-maybe-uninitialized") # GCC diagnostic with lots of false positives
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -188,7 +190,7 @@ target_include_directories(xlnt
 	${XLNT_SOURCE_DIR}
 	${XLNT_SOURCE_DIR}/../third-party/libstudxml
     ${XLNT_SOURCE_DIR}/../third-party/miniz
-	${XLNT_SOURCE_DIR}/../third-party/utfcpp)
+    ${XLNT_SOURCE_DIR}/../third-party/utfcpp/source)
 
 # Platform- and file-specific settings, MSVC
 if(MSVC)

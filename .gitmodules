@@ -1,3 +1,6 @@
 [submodule "third-party/libstudxml"]
 	path = third-party/libstudxml
 	url = https://git.codesynthesis.com/libstudxml/libstudxml.git
+[submodule "third-party/utfcpp"]
+	path = third-party/utfcpp
+	url = https://github.com/nemtrif/utfcpp.git

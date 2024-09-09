@@ -1,184 +1,25 @@
 version: 2.1
 
+setup: true
+
+orbs:
+  continuation: circleci/continuation@1
+
 jobs:
-  build-gcc:
+  setup:
     docker:
-      - image: lycantropos/cmake:3.9.5
-    resource_class: medium
-    parameters:
-      benchmarks:
-        default: "OFF"
-        type: string
-      build-type:
-        default: Release
-        type: string
-      coverage:
-        default: "OFF"
-        type: string
-      cxx-ver:
-        default: "11"
-        type: string
-      samples:
-        default: "OFF"
-        type: string
-      static:
-        default: "ON"
-        type: string
+      - image: cimg/base:current
+    resource_class: large
     steps:
       - checkout
-      - run: apt-get update -y
-      - run: apt-get install -y --no-install-recommends locales
-      - run: sed -i '/^# de_DE /s/^# //' /etc/locale.gen
-      - run: locale-gen
-      - run: git submodule update --init --recursive
-      - run: cmake -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=ON -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
-      - run: cmake --build . -- -j2
-      - run: ./tests/xlnt.test
-      - when:
-          condition:
-            equal: ["ON", << parameters.samples >>]
-          steps:
-            - run: ./samples/sample-decrypt
-            - run: ./samples/sample-img2xlsx ./samples/data/penguin.jpg img.xlsx
-            - run: ./samples/sample-documentation
-      - when:
-          condition:
-            equal: ["ON", << parameters.benchmarks >>]
-          steps:
-            - run: ./benchmarks/benchmark-styles
-            - run: ./benchmarks/benchmark-writer
-      - when:
-          condition:
-            equal: ["ON", << parameters.coverage >>]
-          steps:
-            - run: apt-get install -y --no-install-recommends lcov
-            - run: lcov --directory source/CMakeFiles/xlnt.dir --capture --output-file coverage.info --base-directory source --no-external
-            - run: curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz && ./coveralls report coverage.info
-
-  docs-build:
-    docker:
-      - image: lycantropos/cmake:3.9.5
-    resource_class: small
-    steps:
-      - checkout
-      - run: apt-get update -y
-      - run: apt-get install -y --no-install-recommends doxygen
-      - run: cmake -D LIBRARY=OFF -D DOCUMENTATION=ON .
-      - run: cmake --build . -- -j1
-      - persist_to_workspace:
-          root: .
-          paths: api-reference/html
-
-  docs-deploy:
-    docker:
-      - image: node:8.10.0
-    resource_class: small
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - run: npm install -g --silent gh-pages@2.0.1
-      - run: git config user.email "<>"
-      - run: git config user.name "circleci"
-      - add_ssh_keys:
-          fingerprints:
-            - "SHA256:sMHnTqFtvDqOdCufcN2xbU5QjM9vAtAk5JDJl2E3Enk"
-      - run: gh-pages --message "Update documentation" --dist api-reference/html
-
-  build-msvc:
-    machine:
-      image: 'windows-server-2019-vs2019:current'
-    resource_class: 'windows.medium'
-    parameters:
-      benchmarks:
-        default: "OFF"
-        type: string
-      build-type:
-        default: Release
-        type: string
-      samples:
-        default: "OFF"
-        type: string
-      static:
-        default: "ON"
-        type: string
-    steps:
-      - checkout
-      - run: git submodule update --init --recursive
-      - run: choco install cmake -y
-      - run: echo 'export PATH="$PATH:/c/Program Files/CMake/bin"' >> "$BASH_ENV"
-      - run: cmake -G "Visual Studio 16 2019" -D CMAKE_GENERATOR_PLATFORM=x64 -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=ON -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
-      - run: cmake --build . -j4 --config << parameters.build-type >>
-      - run: ./tests/<< parameters.build-type >>/xlnt.test.exe
-      - when:
-          condition:
-            equal: ["ON", << parameters.samples >>]
-          steps:
-            - run: ./samples/<< parameters.build-type >>/sample-decrypt
-            - run: ./samples/<< parameters.build-type >>/sample-img2xlsx ./samples/data/penguin.jpg img.xlsx
-            - run: ./samples/<< parameters.build-type >>/sample-documentation
-      - when:
-          condition:
-            equal: ["ON", << parameters.benchmarks >>]
-          steps:
-            - run: ./benchmarks/<< parameters.build-type >>/benchmark-styles
-            - run: ./benchmarks/<< parameters.build-type >>/benchmark-writer
+      - setup_remote_docker
+      - run:
+          name: Generate CircleCI config & build Dockerfile(s) if changed
+          command: cd .circleci && ./setup.sh
+      - continuation/continue:
+          configuration_path: .circleci/continue_config.yml
 
 workflows:
-  build:
+  setup:
     jobs:
-      - build-gcc:
-          name: tests
-          matrix:
-            parameters:
-              cxx-ver:
-                - "11"
-                - "17"
-              build-type:
-                - Release
-                - Debug
-              static:
-                - "ON"
-                - "OFF"
-          filters:
-            branches:
-              ignore: gh-pages
-      - build-gcc:
-          name: samples-benchmarks-coverage
-          cxx-ver: "11"
-          build-type: Debug
-          static: "ON"
-          samples: "ON"
-          benchmarks: "ON"
-          coverage: "ON"
-          filters:
-            branches:
-              ignore: gh-pages
-
-      - build-msvc:
-          name: tests msvc
-          matrix:
-            parameters:
-              build-type:
-                - Release
-                - Debug
-              static:
-                - "ON"
-                - "OFF"
-          samples: "ON"
-          requires:
-            - build-gcc # prevent building windows in case of gcc failures, as windows builds are more expensive
-          filters:
-            branches:
-              ignore: gh-pages
-
-      - docs-build:
-          filters:
-            branches:
-              ignore: gh-pages
-      - docs-deploy:
-          requires:
-            - docs-build
-          filters:
-            branches:
-              only: master
+      - setup
