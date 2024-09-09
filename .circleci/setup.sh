@@ -4,6 +4,12 @@ set -eo pipefail
 
 REPLACE_REGEX=""
 
+isBuilt ()
+{
+    docker manifest inspect $1 > /dev/null
+    return $?
+}
+
 setupDocker ()
 {
     printf "\n * Setting up $1\n"
@@ -19,14 +25,14 @@ setupDocker ()
     TAG=${LATEST_CHANGE_COMMIT}
     IMAGE=${REPOSITORY}:${TAG}
 
-    if [ "${LATEST_CHANGE_COMMIT}" = "${CURRENT_COMMIT}" ]; then
+    if isBuilt "${IMAGE}"; then
+        echo "${DOCKERFILE} unchanged: using already built image with tag ${TAG}"
+    else
         echo "${DOCKERFILE} changed: building new docker image with tag ${TAG}"
 
         docker build -t ${IMAGE} --file "${DOCKERFILE}" .
         echo ${DOCKERHUB_PASSWORD} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin
         docker push ${IMAGE}
-    else
-        echo "${DOCKERFILE} unchanged: using already built image with tag ${TAG}"
     fi
 
     REPLACE_REGEX+="${REPLACE_REGEX} -e s#PLACEHOLDER_IMAGE($1)#${IMAGE}#"
