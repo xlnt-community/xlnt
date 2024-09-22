@@ -6,6 +6,11 @@ xlnt welcomes contributions from everyone regardless of skill level (provided yo
 
 Look through the list of issues to find something interesting to work on. Help is appreciated with any issues, but important timely issues are labeled as "help wanted". Issues labeled "docs" might be good for those who want to contribute without having to know too much C++. You might also find something that the code is missing without an associated issue. That's fine to work on to, but it might be best to make an issue first in case someone else is working on it.
 
+The XLSX format is described in [ECMA 376 5th edition](https://ecma-international.org/publications-and-standards/standards/ecma-376/). Part 1 contains the most relevant information:
+
+ - A PDF with all information, especially section "18. SpreadsheetML Reference Material" may be useful. Using the outline of this section allows you to navigate to all the relevant parts of the XLSX format.
+ - OfficeOpenXml-XMLSCHEMA-Strict.zip > sml.xsd: contains the xsd specification of the XLSX format. This information is also available in the PDF in annex A.2 SpreadsheetML.
+
 ## Contributions
 
 Contributions to xlnt should be made in the form of pull requests on GitHub. Each pull request will be reviewed and either merged into the current development branch or given feedback for changes that would be required to do so. 
