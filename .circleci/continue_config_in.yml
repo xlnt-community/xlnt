@@ -124,6 +124,44 @@ jobs:
             - run: ./benchmarks/<< parameters.build-type >>/benchmark-styles
             - run: ./benchmarks/<< parameters.build-type >>/benchmark-writer
 
+  build-macos:
+    macos:
+      xcode: 15.4.0
+    resource_class: 'macos.m1.medium.gen1'
+    parameters:
+      benchmarks:
+        default: "OFF"
+        type: string
+      build-type:
+        default: Release
+        type: string
+      samples:
+        default: "OFF"
+        type: string
+      static:
+        default: "ON"
+        type: string
+    steps:
+      - checkout
+      - run: git submodule update --init --recursive
+      - run: brew install cmake
+      - run: cmake -G "Xcode" -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=ON -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
+      - run: cmake --build . -j4 --config << parameters.build-type >>
+      - run: ./tests/<< parameters.build-type >>/xlnt.test
+      - when:
+          condition:
+            equal: ["ON", << parameters.samples >>]
+          steps:
+            - run: ./samples/<< parameters.build-type >>/sample-decrypt
+            - run: ./samples/<< parameters.build-type >>/sample-img2xlsx ./samples/data/penguin.jpg img.xlsx
+            - run: ./samples/<< parameters.build-type >>/sample-documentation
+      - when:
+          condition:
+            equal: ["ON", << parameters.benchmarks >>]
+          steps:
+            - run: ./benchmarks/<< parameters.build-type >>/benchmark-styles
+            - run: ./benchmarks/<< parameters.build-type >>/benchmark-writer
+
 workflows:
   build:
     jobs:
@@ -188,6 +226,23 @@ workflows:
           samples: "ON"
           requires:
             - tests-gcc7-cmake3.2-all # prevent building windows in case of gcc failures, as windows builds are more expensive
+          filters:
+            branches:
+              ignore: gh-pages
+
+      - build-macos:
+          name: tests-samples-macos
+          matrix:
+            parameters:
+              build-type:
+                - Release
+                - Debug
+              static:
+                - "ON"
+                - "OFF"
+          samples: "ON"
+          requires:
+            - tests-gcc7-cmake3.2-all # prevent building macos in case of gcc failures, as macos builds are more expensive
           filters:
             branches:
               ignore: gh-pages
