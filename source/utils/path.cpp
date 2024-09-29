@@ -33,8 +33,6 @@
 #include <linux/limits.h>
 #include <sys/types.h>
 #include <unistd.h>
-#elif defined(_MSC_VER)
-#include <codecvt>
 #endif
 
 #include <xlnt/utils/path.hpp>
@@ -231,8 +229,20 @@ const std::string &path::string() const
 #ifdef _MSC_VER
 std::wstring path::wstring() const
 {
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> convert;
-    return convert.from_bytes(string());
+    const std::string &path_str = string();
+    int size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path_str.c_str(), static_cast<int>(path_str.length()), nullptr, 0);
+
+    if (size > 0)
+    {
+        std::wstring path_converted(size, L'\0');
+        // Note: const_cast is NOT necessary in C++17 and newer!
+        size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path_str.c_str(), static_cast<int>(path_str.length()), const_cast<wchar_t *>(path_converted.data()), size);
+        return path_converted;
+    }
+    else
+    {
+        return {};
+    }
 }
 #endif
 
