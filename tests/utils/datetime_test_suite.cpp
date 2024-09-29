@@ -120,7 +120,9 @@ public:
         xlnt_assert_equals(xlnt::date(2000, 1, 1).weekday(), 6); // January 1st 2000 was a Saturday
         xlnt_assert_equals(xlnt::date(2016, 7, 15).weekday(), 5); // July 15th 2016 was a Friday
         xlnt_assert_equals(xlnt::date(2018, 10, 29).weekday(), 1); // October 29th 2018 was Monday
-        xlnt_assert_equals(xlnt::date(1970, 1, 1).weekday(), 4); // January 1st 1970 was a Thursday
+        // Note: dates before 1970-1-1 don't work in MSVC when using std::localtime, and dates right after midnight 1970-1-1 cause issues
+        // for time zones with positive UTC offsets. To be on the safe side, we'll test 1970-1-2 which should always work.
+        xlnt_assert_equals(xlnt::date(1970, 1, 2).weekday(), 5); // January 2nd 1970 was a Friday
     }
 };
 

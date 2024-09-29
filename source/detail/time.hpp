@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2021 Thomas Fussell
+// Copyright (c) 2024 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,44 @@
 
 #pragma once
 
-#include <string>
+#include <ctime>
 
 namespace xlnt {
 namespace detail {
 
-std::u16string utf8_to_utf16(const std::string &utf8_string);
-std::string utf16_to_utf8(const std::u16string &utf16_string);
-std::string latin1_to_utf8(const std::string &latin1);
-size_t string_length(const std::string &utf8_string);
+inline std::tm localtime_safe(std::time_t raw_time)
+{
+#ifdef _MSC_VER
+    std::tm result{};
+    localtime_s(&result, &raw_time);
+
+    return result;
+#elif _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _BSD_SOURCE || _SVID_SOURCE || _POSIX_SOURCE
+    std::tm result{};
+    localtime_r(&raw_time, &result);
+
+    return result;
+#else
+    return *std::localtime(&raw_time);
+#endif
+}
+
+inline std::tm gmtime_safe(std::time_t raw_time)
+{
+#ifdef _MSC_VER
+    std::tm result{};
+    gmtime_s(&result, &raw_time);
+
+    return result;
+#elif _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _BSD_SOURCE || _SVID_SOURCE || _POSIX_SOURCE
+    std::tm result{};
+    gmtime_r(&raw_time, &result);
+
+    return result;
+#else
+    return *std::gmtime(&raw_time);
+#endif
+}
 
 } // namespace detail
 } // namespace xlnt

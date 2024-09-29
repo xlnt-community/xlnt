@@ -25,22 +25,7 @@
 #include <ctime>
 
 #include <xlnt/utils/time.hpp>
-
-namespace {
-
-std::tm safe_localtime(std::time_t raw_time)
-{
-#ifdef _MSC_VER
-    std::tm result;
-    localtime_s(&result, &raw_time);
-
-    return result;
-#else
-    return *localtime(&raw_time);
-#endif
-}
-
-} // namespace
+#include <detail/time.hpp>
 
 namespace xlnt {
 
@@ -126,7 +111,7 @@ double time::to_number() const
 
 time time::now()
 {
-    std::tm now = safe_localtime(std::time(nullptr));
+    std::tm now = detail::localtime_safe(std::time(nullptr));
     return time(now.tm_hour, now.tm_min, now.tm_sec);
 }
 

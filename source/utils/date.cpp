@@ -20,26 +20,11 @@
 //
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
-#include <cmath>
+
 #include <ctime>
 
 #include <xlnt/utils/date.hpp>
-
-namespace {
-
-std::tm safe_localtime(std::time_t raw_time)
-{
-#ifdef _MSC_VER
-    std::tm result;
-    localtime_s(&result, &raw_time);
-
-    return result;
-#else
-    return *localtime(&raw_time);
-#endif
-}
-
-} // namespace
+#include <detail/time.hpp>
 
 namespace xlnt {
 
@@ -120,7 +105,7 @@ int date::to_number(calendar base_date) const
 
 date date::today()
 {
-    std::tm now = safe_localtime(std::time(nullptr));
+    std::tm now = detail::localtime_safe(std::time(nullptr));
     return date(1900 + now.tm_year, now.tm_mon + 1, now.tm_mday);
 }
 
@@ -132,7 +117,7 @@ int date::weekday() const
     tm.tm_year = year - 1900;
     std::time_t time = std::mktime(&tm);
 
-    return safe_localtime(time).tm_wday;
+    return detail::localtime_safe(time).tm_wday;
 }
 
 } // namespace xlnt
