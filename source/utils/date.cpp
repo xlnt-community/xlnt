@@ -126,7 +126,7 @@ int date::weekday() const
 
     // Important: if the conversion made by std::mktime is successful, the time object is modified. All fields of time are updated
     // to fit their proper ranges. time->tm_wday and time->tm_yday are recalculated using information available in other fields.
-    std::time_t time = std::mktime(&tm);
+    /*std::time_t time =*/ std::mktime(&tm);
 
     return tm.tm_wday;
 }
