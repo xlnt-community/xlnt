@@ -111,8 +111,16 @@ double time::to_number() const
 
 time time::now()
 {
-    std::tm now = detail::localtime_safe(std::time(nullptr));
-    return time(now.tm_hour, now.tm_min, now.tm_sec);
+    optional<std::tm> now = detail::localtime_safe(std::time(nullptr));
+
+    if (now.is_set())
+    {
+        return time(now.get().tm_hour, now.get().tm_min, now.get().tm_sec);
+    }
+    else
+    {
+        return time();
+    }
 }
 
 } // namespace xlnt

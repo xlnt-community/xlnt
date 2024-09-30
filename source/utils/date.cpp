@@ -105,8 +105,16 @@ int date::to_number(calendar base_date) const
 
 date date::today()
 {
-    std::tm now = detail::localtime_safe(std::time(nullptr));
-    return date(1900 + now.tm_year, now.tm_mon + 1, now.tm_mday);
+    optional<std::tm> now = detail::localtime_safe(std::time(nullptr));
+
+    if (now.is_set())
+    {
+        return date(1900 + now.get().tm_year, now.get().tm_mon + 1, now.get().tm_mday);
+    }
+    else
+    {
+        return date(1970, 1, 1);
+    }
 }
 
 int date::weekday() const
@@ -115,9 +123,12 @@ int date::weekday() const
     tm.tm_mday = day;
     tm.tm_mon = month - 1;
     tm.tm_year = year - 1900;
+
+    // Important: if the conversion made by std::mktime is successful, the time object is modified. All fields of time are updated
+    // to fit their proper ranges. time->tm_wday and time->tm_yday are recalculated using information available in other fields.
     std::time_t time = std::mktime(&tm);
 
-    return detail::localtime_safe(time).tm_wday;
+    return tm.tm_wday;
 }
 
 } // namespace xlnt

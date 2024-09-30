@@ -24,48 +24,71 @@
 #pragma once
 
 #include <ctime>
+#include <xlnt/utils/optional.hpp>
 
 namespace xlnt {
 namespace detail {
 
-inline std::tm localtime_safe(std::time_t raw_time)
+/// Converts given time since epoch (a time_t value) into calendar time, expressed in local time, in the struct tm format.
+/// If the conversion failed, an empty optional will be returned.
+inline optional<std::tm> localtime_safe(std::time_t raw_time)
 {
-    std::tm result{};
+    optional<std::tm> returned_value;
 
 #ifdef _MSC_VER
-    localtime_s(&result, &raw_time);
+    std::tm result{};
+    errno_t err = localtime_s(&result, &raw_time);
+    if (err != 0)
+    {
+        returned_value = result;
+    }
 #elif _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _BSD_SOURCE || _SVID_SOURCE || _POSIX_SOURCE
-    localtime_r(&raw_time, &result);
+    std::tm result{};
+    if (localtime_r(&raw_time, &result))
+    {
+        returned_value = result;
+    }
 #else
     std::tm *tm = std::localtime(&raw_time);
 
     if (tm != nullptr)
     {
-        result = *tm;
+        returned_value = *tm;
     }
 #endif
 
-    return result;
+    return returned_value;
 }
 
-inline std::tm gmtime_safe(std::time_t raw_time)
+/// Converts given time since epoch (a time_t value) into calendar time, expressed in Coordinated Universal Time (UTC) in the struct tm format.
+/// If the conversion failed, an empty optional will be returned.
+inline optional<std::tm> gmtime_safe(std::time_t raw_time)
 {
-    std::tm result{};
+    optional<std::tm> returned_value;
 
 #ifdef _MSC_VER
-    gmtime_s(&result, &raw_time);
+    std::tm result{};
+    errno_t err = gmtime_s(&result, &raw_time);
+    if (err != 0)
+    {
+        returned_value = result;
+    }
 #elif _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _BSD_SOURCE || _SVID_SOURCE || _POSIX_SOURCE
-    gmtime_r(&raw_time, &result);
+    std::tm result{};
+    if (gmtime_r(&raw_time, &result))
+    {
+        returned_value = result;
+    }
 #else
     std::tm *tm = std::gmtime(&raw_time);
 
     if (tm != nullptr)
     {
-        result = *tm;
+        returned_value = *tm;
     }
 #endif
 
-    return result;
+    return returned_value;
 }
 
 } // namespace detail
