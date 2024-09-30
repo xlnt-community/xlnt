@@ -30,36 +30,42 @@ namespace detail {
 
 inline std::tm localtime_safe(std::time_t raw_time)
 {
+    std::tm result{};
+
 #ifdef _MSC_VER
-    std::tm result{};
     localtime_s(&result, &raw_time);
-
-    return result;
 #elif _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _BSD_SOURCE || _SVID_SOURCE || _POSIX_SOURCE
-    std::tm result{};
     localtime_r(&raw_time, &result);
+#else
+    std::tm *tm = std::localtime(&raw_time);
+
+    if (tm != nullptr)
+    {
+        result = *tm;
+    }
+#endif
 
     return result;
-#else
-    return *std::localtime(&raw_time);
-#endif
 }
 
 inline std::tm gmtime_safe(std::time_t raw_time)
 {
+    std::tm result{};
+
 #ifdef _MSC_VER
-    std::tm result{};
     gmtime_s(&result, &raw_time);
-
-    return result;
 #elif _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _BSD_SOURCE || _SVID_SOURCE || _POSIX_SOURCE
-    std::tm result{};
     gmtime_r(&raw_time, &result);
+#else
+    std::tm *tm = std::gmtime(&raw_time);
+
+    if (tm != nullptr)
+    {
+        result = *tm;
+    }
+#endif
 
     return result;
-#else
-    return *std::gmtime(&raw_time);
-#endif
 }
 
 } // namespace detail
