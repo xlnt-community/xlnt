@@ -25,7 +25,7 @@
 #include <ctime>
 
 #include <xlnt/utils/time.hpp>
-#include <detail/time.hpp>
+#include <detail/time_helpers.hpp>
 
 namespace xlnt {
 
