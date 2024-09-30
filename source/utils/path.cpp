@@ -22,6 +22,7 @@
 // @author: see AUTHORS file
 
 #include <algorithm>
+#include <cassert>
 #include <fstream>
 #include <iterator>
 #include <sstream>
@@ -230,13 +231,14 @@ const std::string &path::string() const
 std::wstring path::wstring() const
 {
     const std::string &path_str = string();
-    int size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path_str.c_str(), static_cast<int>(path_str.length()), nullptr, 0);
+    const int allocated_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path_str.c_str(), static_cast<int>(path_str.length()), nullptr, 0);
 
-    if (size > 0)
+    if (allocated_size > 0)
     {
-        std::wstring path_converted(size, L'\0');
+        std::wstring path_converted(allocated_size, L'\0');
         // Note: const_cast is NOT necessary in C++17 and newer!
-        size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path_str.c_str(), static_cast<int>(path_str.length()), const_cast<wchar_t *>(path_converted.data()), size);
+        const int actual_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path_str.c_str(), static_cast<int>(path_str.length()), &path_converted.at(0), allocated_size);
+        assert(allocated_size == actual_size); // unless a serious error happened, this MUST always be true!
         return path_converted;
     }
     else
