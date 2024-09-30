@@ -60,7 +60,8 @@ bool datetime::operator==(const datetime &comparand) const
         && hour == comparand.hour
         && minute == comparand.minute
         && second == comparand.second
-        && microsecond == comparand.microsecond;
+        && microsecond == comparand.microsecond
+        && is_null == comparand.is_null;
 }
 
 double datetime::to_number(calendar base_date) const
@@ -97,11 +98,12 @@ datetime::datetime(const date &d, const time &t)
       hour(t.hour),
       minute(t.minute),
       second(t.second),
-      microsecond(t.microsecond)
+      microsecond(t.microsecond),
+      is_null(d.is_null)
 {
 }
 
-int datetime::weekday() const
+optional<int> datetime::weekday() const
 {
     return date(year, month, day).weekday();
 }

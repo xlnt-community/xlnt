@@ -27,6 +27,7 @@
 
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/utils/calendar.hpp>
+#include <xlnt/utils/optional.hpp>
 
 namespace xlnt {
 
@@ -39,6 +40,7 @@ struct XLNT_API date
 {
     /// <summary>
     /// Return the current date according to the system time.
+    /// If the current date could not be determined, the date will be in an empty state (is_null will return true).
     /// </summary>
     static date today();
 
@@ -49,9 +51,14 @@ struct XLNT_API date
     static date from_number(int days_since_base_year, calendar base_date);
 
     /// <summary>
-    /// Constructs a data from a given year, month, and day.
+    /// Constructs a date from a given year, month, and day.
     /// </summary>
     date(int year_, int month_, int day_);
+
+    /// <summary>
+    /// Constructs an empty date (a call to is_null will return true).
+    /// </summary>
+    date() = default;
 
     /// <summary>
     /// Return the number of days between this date and base_date.
@@ -61,8 +68,9 @@ struct XLNT_API date
     /// <summary>
     /// Calculates and returns the day of the week that this date represents in the range
     /// 0 to 6 where 0 represents Sunday.
+    /// Returns an empty optional if the weekday could not be determined.
     /// </summary>
-    int weekday() const;
+    optional<int> weekday() const;
 
     /// <summary>
     /// Return true if this date is equal to comparand.
@@ -88,6 +96,11 @@ struct XLNT_API date
     /// The day
     /// </summary>
     int day;
+
+    /// <summary>
+    /// Whether the date is in an empty state.
+    /// </summary>
+    bool is_null = true;
 };
 
 } // namespace xlnt

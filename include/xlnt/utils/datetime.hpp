@@ -27,6 +27,7 @@
 
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/utils/calendar.hpp>
+#include <xlnt/utils/optional.hpp>
 
 namespace xlnt {
 
@@ -40,12 +41,14 @@ struct XLNT_API datetime
 {
     /// <summary>
     /// Returns the current date and time according to the system time.
+    /// If the current date could not be determined, the date will be in an empty state (is_null will return true).
     /// </summary>
     static datetime now();
 
     /// <summary>
     /// Returns the current date and time according to the system time.
     /// This is equivalent to datetime::now().
+    /// If the current date could not be determined, the date will be in an empty state (is_null will return true).
     /// </summary>
     static datetime today();
 
@@ -94,8 +97,9 @@ struct XLNT_API datetime
     /// <summary>
     /// Calculates and returns the day of the week that this date represents in the range
     /// 0 to 6 where 0 represents Sunday.
+    /// Returns an empty optional if the weekday could not be determined.
     /// </summary>
-    int weekday() const;
+    optional<int> weekday() const;
 
     /// <summary>
     /// The year
@@ -131,6 +135,11 @@ struct XLNT_API datetime
     /// The microsecond
     /// </summary>
     int microsecond;
+
+    /// <summary>
+    /// Whether the date is in an empty state.
+    /// </summary>
+    bool is_null = true;
 };
 
 } // namespace xlnt
