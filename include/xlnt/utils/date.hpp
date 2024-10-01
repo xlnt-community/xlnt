@@ -68,9 +68,9 @@ struct XLNT_API date
     /// <summary>
     /// Calculates and returns the day of the week that this date represents in the range
     /// 0 to 6 where 0 represents Sunday.
-    /// Returns an empty optional if the weekday could not be determined.
+    /// Returns -1 if the weekday could not be determined.
     /// </summary>
-    optional<int> weekday() const;
+    int weekday() const;
 
     /// <summary>
     /// Return true if this date is equal to comparand.
@@ -85,17 +85,17 @@ struct XLNT_API date
     /// <summary>
     /// The year
     /// </summary>
-    int year;
+    int year = 0;
 
     /// <summary>
     /// The month
     /// </summary>
-    int month;
+    int month = 0;
 
     /// <summary>
     /// The day
     /// </summary>
-    int day;
+    int day = 0;
 
     /// <summary>
     /// Whether the date is in an empty state.

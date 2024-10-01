@@ -103,7 +103,7 @@ datetime::datetime(const date &d, const time &t)
 {
 }
 
-optional<int> datetime::weekday() const
+int datetime::weekday() const
 {
     return date(year, month, day).weekday();
 }

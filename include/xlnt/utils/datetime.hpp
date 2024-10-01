@@ -97,9 +97,9 @@ struct XLNT_API datetime
     /// <summary>
     /// Calculates and returns the day of the week that this date represents in the range
     /// 0 to 6 where 0 represents Sunday.
-    /// Returns an empty optional if the weekday could not be determined.
+    /// Returns -1 if the weekday could not be determined.
     /// </summary>
-    optional<int> weekday() const;
+    int weekday() const;
 
     /// <summary>
     /// The year

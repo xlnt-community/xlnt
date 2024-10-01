@@ -121,7 +121,7 @@ date date::today()
     }
 }
 
-optional<int> date::weekday() const
+int date::weekday() const
 {
     if (!is_null)
     {
@@ -143,12 +143,12 @@ optional<int> date::weekday() const
         }
         else
         {
-            return {};
+            return -1;
         }
     }
     else
     {
-        return {};
+        return -1;
     }
 }
 

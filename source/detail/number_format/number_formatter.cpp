@@ -2036,21 +2036,21 @@ std::string number_formatter::format_number(const format_code &format, double nu
         }
 
         case template_part::template_type::day_abbreviation: {
-            optional<int> weekday = dt.weekday();
+            int weekday = dt.weekday();
 
-            if (weekday.is_set())
+            if (weekday != -1)
             {
-                result.append(day_names.at(static_cast<std::size_t>(weekday.get())).substr(0, 3));
+                result.append(day_names.at(static_cast<std::size_t>(weekday)).substr(0, 3));
             }
             break;
         }
 
         case template_part::template_type::day_name: {
-            optional<int> weekday = dt.weekday();
+            int weekday = dt.weekday();
 
-            if (weekday.is_set())
+            if (weekday != -1)
             {
-                result.append(day_names.at(static_cast<std::size_t>(weekday.get())));
+                result.append(day_names.at(static_cast<std::size_t>(weekday)));
             }
             break;
         }
