@@ -60,7 +60,8 @@ struct XLNT_API date
     date() = default;
 
     /// <summary>
-    /// Return the number of days between this date and base_date.
+    /// Return the number of days between this date and base_date. The date could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an exception will be thrown.
     /// </summary>
     int to_number(calendar base_date) const;
 
@@ -73,27 +74,21 @@ struct XLNT_API date
 
     /// <summary>
     /// Returns the year of the date. The date could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an exception will be thrown.
     /// </summary>
-    int get_year() const
-    {
-        return year;
-    }
+    int get_year() const;
 
     /// <summary>
     /// Returns the month of the date. The date could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an exception will be thrown.
     /// </summary>
-    int get_month() const
-    {
-        return month;
-    }
+    int get_month() const;
 
     /// <summary>
     /// Returns the day of the date. The date could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an exception will be thrown.
     /// </summary>
-    int get_day() const
-    {
-        return day;
-    }
+    int get_day() const;
 
     /// <summary>
     /// Returns whether the date is in an empty/invalid state.

@@ -79,7 +79,6 @@ bool time::operator==(const time &comparand) const
 }
 
 time::time(const std::string &time_string)
-    : hour(0), minute(0), second(0), microsecond(0)
 {
     std::string remaining = time_string;
     auto colon_index = remaining.find(':');

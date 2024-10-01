@@ -38,7 +38,7 @@ inline optional<std::tm> localtime_safe(std::time_t raw_time)
 #ifdef _MSC_VER
     std::tm result{};
     errno_t err = localtime_s(&result, &raw_time);
-    if (err != 0)
+    if (err == 0)
     {
         returned_value = result;
     }
@@ -69,7 +69,7 @@ inline optional<std::tm> gmtime_safe(std::time_t raw_time)
 #ifdef _MSC_VER
     std::tm result{};
     errno_t err = gmtime_s(&result, &raw_time);
-    if (err != 0)
+    if (err == 0)
     {
         returned_value = result;
     }

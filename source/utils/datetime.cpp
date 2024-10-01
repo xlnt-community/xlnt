@@ -27,6 +27,8 @@
 #include <xlnt/utils/datetime.hpp>
 #include <xlnt/utils/time.hpp>
 
+#include <xlnt/utils/optional.hpp>
+
 namespace {
 
 std::string fill(const std::string &string, std::size_t length = 2)
@@ -65,14 +67,26 @@ bool datetime::operator==(const datetime &comparand) const
 
 double datetime::to_number(calendar base_date) const
 {
+    if (_is_null)
+    {
+        throw xlnt::exception("cannot convert invalid/empty datetime to a number");
+    }
+
     return date(year, month, day).to_number(base_date)
         + time(hour, minute, second, microsecond).to_number();
 }
 
 std::string datetime::to_string() const
 {
-    return std::to_string(year) + "/" + std::to_string(month) + "/" + std::to_string(day) + " " + std::to_string(hour)
-        + ":" + std::to_string(minute) + ":" + std::to_string(second) + ":" + std::to_string(microsecond);
+    if (_is_null)
+    {
+        return {};
+    }
+    else
+    {
+        return std::to_string(year) + "/" + std::to_string(month) + "/" + std::to_string(day) + " " + std::to_string(hour)
+            + ":" + std::to_string(minute) + ":" + std::to_string(second) + ":" + std::to_string(microsecond);
+    }
 }
 
 datetime datetime::now()
@@ -91,20 +105,93 @@ datetime::datetime(int year_, int month_, int day_, int hour_, int minute_, int 
 }
 
 datetime::datetime(const date &d, const time &t)
-    : year(d.get_year()),
-      month(d.get_month()),
-      day(d.get_day()),
-      hour(t.hour),
+    : hour(t.hour),
       minute(t.minute),
       second(t.second),
       microsecond(t.microsecond),
       _is_null(d.is_null())
 {
+    if (!d.is_null())
+    {
+        year = d.get_year();
+        month = d.get_month();
+        day = d.get_day();      
+    }
 }
 
 int datetime::weekday() const
 {
     return date(year, month, day).weekday();
+}
+
+int datetime::get_year() const
+{
+    if (_is_null)
+    {
+        throw xlnt::exception("access to invalid/empty year");
+    }
+
+    return year;
+}
+
+int datetime::get_month() const
+{
+    if (_is_null)
+    {
+        throw xlnt::exception("access to invalid/empty month");
+    }
+
+    return month;
+}
+
+int datetime::get_day() const
+{
+    if (_is_null)
+    {
+        throw xlnt::exception("access to invalid/empty day");
+    }
+
+    return day;
+}
+
+int datetime::get_hour() const
+{
+    if (_is_null)
+    {
+        throw xlnt::exception("access to invalid/empty day");
+    }
+
+    return hour;
+}
+
+int datetime::get_minute() const
+{
+    if (_is_null)
+    {
+        throw xlnt::exception("access to invalid/empty minute");
+    }
+
+    return minute;
+}
+
+int datetime::get_second() const
+{
+    if (_is_null)
+    {
+        throw xlnt::exception("access to invalid/empty second");
+    }
+
+    return second;
+}
+
+int datetime::get_microsecond() const
+{
+    if (_is_null)
+    {
+        throw xlnt::exception("access to invalid/empty microsecond");
+    }
+
+    return microsecond;
 }
 
 datetime datetime::from_iso_string(const std::string &string)
@@ -128,8 +215,15 @@ datetime datetime::from_iso_string(const std::string &string)
 
 std::string datetime::to_iso_string() const
 {
-    return std::to_string(year) + "-" + fill(std::to_string(month)) + "-" + fill(std::to_string(day)) + "T"
-        + fill(std::to_string(hour)) + ":" + fill(std::to_string(minute)) + ":" + fill(std::to_string(second)) + "Z";
+    if (_is_null)
+    {
+        return {};
+    }
+    else
+    {
+        return std::to_string(year) + "-" + fill(std::to_string(month)) + "-" + fill(std::to_string(day)) + "T"
+            + fill(std::to_string(hour)) + ":" + fill(std::to_string(minute)) + ":" + fill(std::to_string(second)) + "Z";
+    }
 }
 
 } // namespace xlnt

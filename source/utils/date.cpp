@@ -85,6 +85,11 @@ bool date::operator!=(const date &comparand) const
 
 int date::to_number(calendar base_date) const
 {
+    if (_is_null)
+    {
+        throw xlnt::exception("cannot convert invalid/empty date to a number");
+    }
+
     if (day == 29 && month == 2 && year == 1900)
     {
         return 60;
@@ -150,6 +155,37 @@ int date::weekday() const
     {
         return -1;
     }
+}
+
+int date::get_year() const
+{
+    if (_is_null)
+    {
+        throw xlnt::exception("access to invalid/empty year");
+    }
+
+
+    return year;
+}
+
+int date::get_month() const
+{
+    if (_is_null)
+    {
+        throw xlnt::exception("access to invalid/empty month");
+    }
+
+    return month;
+}
+
+int date::get_day() const
+{
+    if (_is_null)
+    {
+        throw xlnt::exception("access to invalid/empty day");
+    }
+
+    return day;
 }
 
 } // namespace xlnt

@@ -80,17 +80,20 @@ struct XLNT_API datetime
     datetime() = default;
 
     /// <summary>
-    /// Returns a string represenation of this date and time.
+    /// Returns a string represenation of this date and time. The date could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an empty string will be returned.
     /// </summary>
     std::string to_string() const;
 
     /// <summary>
-    /// Returns an ISO-formatted string representation of this date and time.
+    /// Returns an ISO-formatted string representation of this date and time. The date could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an empty string will be returned.
     /// </summary>
     std::string to_iso_string() const;
 
     /// <summary>
-    /// Returns this datetime as a number of seconds since 1900 or 1904 (depending on base_date provided).
+    /// Returns this datetime as a number of seconds since 1900 or 1904 (depending on base_date provided). The date could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an exception will be thrown.
     /// </summary>
     double to_number(calendar base_date) const;
 
@@ -108,59 +111,45 @@ struct XLNT_API datetime
 
     /// <summary>
     /// Returns the year of the datetime. The datetime could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an exception will be thrown.
     /// </summary>
-    int get_year() const
-    {
-        return year;
-    }
+    int get_year() const;
 
     /// <summary>
     /// Returns the month of the datetime. The datetime could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an exception will be thrown.
     /// </summary>
-    int get_month() const
-    {
-        return month;
-    }
+    int get_month() const;
 
     /// <summary>
     /// Returns the day of the datetime. The datetime could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an exception will be thrown.
     /// </summary>
-    int get_day() const
-    {
-        return day;
-    }
+    int get_day() const;
 
     /// <summary>
     /// Returns the hour of the datetime. The datetime could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an exception will be thrown.
     /// </summary>
-    int get_hour() const
-    {
-        return hour;
-    }
+    int get_hour() const;
 
     /// <summary>
     /// Returns the minute of the datetime. The datetime could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an exception will be thrown.
     /// </summary>
-    int get_minute() const
-    {
-        return minute;
-    }
+    int get_minute() const;
 
     /// <summary>
     /// Returns the second of the datetime. The datetime could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an exception will be thrown.
     /// </summary>
-    int get_second() const
-    {
-        return second;
-    }
+    int get_second() const;
 
     /// <summary>
     /// Returns the microsecond of the datetime. The datetime could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an exception will be thrown.
     /// </summary>
-    int get_microsecond() const
-    {
-        return microsecond;
-    }
+    int get_microsecond() const;
 
     /// <summary>
     /// Returns whether the date is in an empty/invalid state.
