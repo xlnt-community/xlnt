@@ -69,10 +69,10 @@ public:
         number += (0.6 / 1000000) / 60 / 60 / 24;
         auto rollover = xlnt::datetime::from_number(number, xlnt::calendar::windows_1900);
 
-        xlnt_assert_equals(rollover.hour, 11);
-        xlnt_assert_equals(rollover.minute, 00);
-        xlnt_assert_equals(rollover.second, 00);
-        xlnt_assert_equals(rollover.microsecond, 00);
+        xlnt_assert_equals(rollover.get_hour(), 11);
+        xlnt_assert_equals(rollover.get_minute(), 00);
+        xlnt_assert_equals(rollover.get_second(), 00);
+        xlnt_assert_equals(rollover.get_microsecond(), 00);
     }
 
     void test_leap_year_bug()

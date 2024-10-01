@@ -72,22 +72,22 @@ struct XLNT_API time
     /// <summary>
     /// The hour
     /// </summary>
-    int hour;
+    int hour = 0;
 
     /// <summary>
     /// The minute
     /// </summary>
-    int minute;
+    int minute = 0;
 
     /// <summary>
     /// The second
     /// </summary>
-    int second;
+    int second = 0;
 
     /// <summary>
     /// The microsecond
     /// </summary>
-    int microsecond;
+    int microsecond = 0;
 };
 
 } // namespace xlnt

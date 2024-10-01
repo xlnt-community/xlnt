@@ -48,8 +48,7 @@ datetime datetime::from_number(double raw_time, calendar base_date)
     auto date_part = date::from_number(static_cast<int>(raw_time), base_date);
     auto time_part = time::from_number(raw_time);
 
-    return datetime(date_part.year, date_part.month, date_part.day, time_part.hour, time_part.minute, time_part.second,
-        time_part.microsecond);
+    return datetime(date_part, time_part);
 }
 
 bool datetime::operator==(const datetime &comparand) const
@@ -61,7 +60,7 @@ bool datetime::operator==(const datetime &comparand) const
         && minute == comparand.minute
         && second == comparand.second
         && microsecond == comparand.microsecond
-        && is_null == comparand.is_null;
+        && _is_null == comparand._is_null;
 }
 
 double datetime::to_number(calendar base_date) const
@@ -87,19 +86,19 @@ datetime datetime::today()
 }
 
 datetime::datetime(int year_, int month_, int day_, int hour_, int minute_, int second_, int microsecond_)
-    : year(year_), month(month_), day(day_), hour(hour_), minute(minute_), second(second_), microsecond(microsecond_)
+    : year(year_), month(month_), day(day_), hour(hour_), minute(minute_), second(second_), microsecond(microsecond_), _is_null(false)
 {
 }
 
 datetime::datetime(const date &d, const time &t)
-    : year(d.year),
-      month(d.month),
-      day(d.day),
+    : year(d.get_year()),
+      month(d.get_month()),
+      day(d.get_day()),
       hour(t.hour),
       minute(t.minute),
       second(t.second),
       microsecond(t.microsecond),
-      is_null(d.is_null)
+      _is_null(d.is_null())
 {
 }
 

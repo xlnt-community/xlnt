@@ -33,7 +33,7 @@ constexpr int INVALID_WDAY = -1;
 namespace xlnt {
 
 date::date(int year_, int month_, int day_)
-    : year(year_), month(month_), day(day_), is_null(false)
+    : year(year_), month(month_), day(day_), _is_null(false)
 {
 }
 
@@ -75,7 +75,7 @@ date date::from_number(int days_since_base_year, calendar base_date)
 
 bool date::operator==(const date &comparand) const
 {
-    return year == comparand.year && month == comparand.month && day == comparand.day && is_null == comparand.is_null;
+    return year == comparand.year && month == comparand.month && day == comparand.day && _is_null == comparand._is_null;
 }
 
 bool date::operator!=(const date &comparand) const
@@ -123,7 +123,7 @@ date date::today()
 
 int date::weekday() const
 {
-    if (!is_null)
+    if (!_is_null)
     {
         std::tm tm = std::tm();
         tm.tm_wday = INVALID_WDAY;

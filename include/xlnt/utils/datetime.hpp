@@ -35,19 +35,20 @@ struct time;
 
 /// <summary>
 /// A datetime is a combination of a date and a time.
+/// IMPORTANT: The datetime could be in an empty/invalid state, so you may want to call is_null() before calling any functions!
 /// </summary>
 struct XLNT_API datetime
 {
     /// <summary>
     /// Returns the current date and time according to the system time.
-    /// If the current date could not be determined, the date will be in an empty state (is_null will return true).
+    /// If the current date could not be determined, the date will be in an empty state (is_null() will return true).
     /// </summary>
     static datetime now();
 
     /// <summary>
     /// Returns the current date and time according to the system time.
     /// This is equivalent to datetime::now().
-    /// If the current date could not be determined, the date will be in an empty state (is_null will return true).
+    /// If the current date could not be determined, the date will be in an empty state (is_null() will return true).
     /// </summary>
     static datetime today();
 
@@ -72,6 +73,11 @@ struct XLNT_API datetime
     /// Constructs a datetime from a year, month, and day plus optional hour, minute, second, and microsecond.
     /// </summary>
     datetime(int year_, int month_, int day_, int hour_ = 0, int minute_ = 0, int second_ = 0, int microsecond_ = 0);
+
+    /// <summary>
+    /// Constructs an empty datetime (a call to is_null() will return true).
+    /// </summary>
+    datetime() = default;
 
     /// <summary>
     /// Returns a string represenation of this date and time.
@@ -101,44 +107,113 @@ struct XLNT_API datetime
     int weekday() const;
 
     /// <summary>
+    /// Returns the year of the datetime. The datetime could be in an empty/invalid state, so you may want to call is_null() first!
+    /// </summary>
+    int get_year() const
+    {
+        return year;
+    }
+
+    /// <summary>
+    /// Returns the month of the datetime. The datetime could be in an empty/invalid state, so you may want to call is_null() first!
+    /// </summary>
+    int get_month() const
+    {
+        return month;
+    }
+
+    /// <summary>
+    /// Returns the day of the datetime. The datetime could be in an empty/invalid state, so you may want to call is_null() first!
+    /// </summary>
+    int get_day() const
+    {
+        return day;
+    }
+
+    /// <summary>
+    /// Returns the hour of the datetime. The datetime could be in an empty/invalid state, so you may want to call is_null() first!
+    /// </summary>
+    int get_hour() const
+    {
+        return hour;
+    }
+
+    /// <summary>
+    /// Returns the minute of the datetime. The datetime could be in an empty/invalid state, so you may want to call is_null() first!
+    /// </summary>
+    int get_minute() const
+    {
+        return minute;
+    }
+
+    /// <summary>
+    /// Returns the second of the datetime. The datetime could be in an empty/invalid state, so you may want to call is_null() first!
+    /// </summary>
+    int get_second() const
+    {
+        return second;
+    }
+
+    /// <summary>
+    /// Returns the microsecond of the datetime. The datetime could be in an empty/invalid state, so you may want to call is_null() first!
+    /// </summary>
+    int get_microsecond() const
+    {
+        return microsecond;
+    }
+
+    /// <summary>
+    /// Returns whether the date is in an empty/invalid state.
+    /// </summary>
+    bool is_null() const
+    {
+        return _is_null;
+    }
+
+    /// ----- TODO IMPORTANT: accessing the members directly is DEPRECATED and will be changed in a further release! Please use the getters instead!
+
+    /// <summary>
     /// The year
     /// </summary>
-    int year;
+    int year = 0;
 
     /// <summary>
     /// The month
     /// </summary>
-    int month;
+    int month = 0;
 
     /// <summary>
     /// The day
     /// </summary>
-    int day;
+    int day = 0;
 
     /// <summary>
     /// The hour
     /// </summary>
-    int hour;
+    int hour = 0;
 
     /// <summary>
     /// The minute
     /// </summary>
-    int minute;
+    int minute = 0;
 
     /// <summary>
     /// The second
     /// </summary>
-    int second;
+    int second = 0;
 
     /// <summary>
     /// The microsecond
     /// </summary>
-    int microsecond;
+    int microsecond = 0;
+
+
+private:
 
     /// <summary>
     /// Whether the date is in an empty state.
     /// </summary>
-    bool is_null = true;
+    bool _is_null = true;
 };
 
 } // namespace xlnt

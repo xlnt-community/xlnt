@@ -32,14 +32,14 @@ namespace xlnt {
 
 /// <summary>
 /// A date is a specific day specified in terms of a year, month, and day.
-/// It can also be initialized as a number of days since a base date
-/// using date::from_number.
+/// It can also be initialized as a number of days since a base date using date::from_number.
+/// IMPORTANT: The date could be in an empty/invalid state, so you may want to call is_null() before calling any functions!
 /// </summary>
 struct XLNT_API date
 {
     /// <summary>
     /// Return the current date according to the system time.
-    /// If the current date could not be determined, the date will be in an empty state (is_null will return true).
+    /// If the current date could not be determined, the date will be in an empty state (is_null() will return true).
     /// </summary>
     static date today();
 
@@ -55,7 +55,7 @@ struct XLNT_API date
     date(int year_, int month_, int day_);
 
     /// <summary>
-    /// Constructs an empty date (a call to is_null will return true).
+    /// Constructs an empty date (a call to is_null() will return true).
     /// </summary>
     date() = default;
 
@@ -72,6 +72,38 @@ struct XLNT_API date
     int weekday() const;
 
     /// <summary>
+    /// Returns the year of the date. The date could be in an empty/invalid state, so you may want to call is_null() first!
+    /// </summary>
+    int get_year() const
+    {
+        return year;
+    }
+
+    /// <summary>
+    /// Returns the month of the date. The date could be in an empty/invalid state, so you may want to call is_null() first!
+    /// </summary>
+    int get_month() const
+    {
+        return month;
+    }
+
+    /// <summary>
+    /// Returns the day of the date. The date could be in an empty/invalid state, so you may want to call is_null() first!
+    /// </summary>
+    int get_day() const
+    {
+        return day;
+    }
+
+    /// <summary>
+    /// Returns whether the date is in an empty/invalid state.
+    /// </summary>
+    bool is_null() const
+    {
+        return _is_null;
+    }
+
+    /// <summary>
     /// Return true if this date is equal to comparand.
     /// </summary>
     bool operator==(const date &comparand) const;
@@ -80,6 +112,9 @@ struct XLNT_API date
     /// Return true if this date is equal to comparand.
     /// </summary>
     bool operator!=(const date &comparand) const;
+
+
+    /// ----- TODO IMPORTANT: accessing the members directly is DEPRECATED and will be changed in a further release! Please use the getters instead!
 
     /// <summary>
     /// The year
@@ -96,10 +131,13 @@ struct XLNT_API date
     /// </summary>
     int day = 0;
 
+
+private:
+
     /// <summary>
     /// Whether the date is in an empty state.
     /// </summary>
-    bool is_null = true;
+    bool _is_null = true;
 };
 
 } // namespace xlnt
