@@ -128,7 +128,7 @@ int datetime::get_year() const
 {
     if (_is_null)
     {
-        throw xlnt::exception("access to invalid/empty year");
+        throw xlnt::exception("access to invalid/empty year of xlnt::datetime");
     }
 
     return year;
@@ -138,7 +138,7 @@ int datetime::get_month() const
 {
     if (_is_null)
     {
-        throw xlnt::exception("access to invalid/empty month");
+        throw xlnt::exception("access to invalid/empty month of xlnt::datetime");
     }
 
     return month;
@@ -148,7 +148,7 @@ int datetime::get_day() const
 {
     if (_is_null)
     {
-        throw xlnt::exception("access to invalid/empty day");
+        throw xlnt::exception("access to invalid/empty day of xlnt::datetime");
     }
 
     return day;
@@ -158,7 +158,7 @@ int datetime::get_hour() const
 {
     if (_is_null)
     {
-        throw xlnt::exception("access to invalid/empty day");
+        throw xlnt::exception("access to invalid/empty hour of xlnt::datetime");
     }
 
     return hour;
@@ -168,7 +168,7 @@ int datetime::get_minute() const
 {
     if (_is_null)
     {
-        throw xlnt::exception("access to invalid/empty minute");
+        throw xlnt::exception("access to invalid/empty minute of xlnt::datetime");
     }
 
     return minute;
@@ -178,7 +178,7 @@ int datetime::get_second() const
 {
     if (_is_null)
     {
-        throw xlnt::exception("access to invalid/empty second");
+        throw xlnt::exception("access to invalid/empty second of xlnt::datetime");
     }
 
     return second;
@@ -188,7 +188,7 @@ int datetime::get_microsecond() const
 {
     if (_is_null)
     {
-        throw xlnt::exception("access to invalid/empty microsecond");
+        throw xlnt::exception("access to invalid/empty microsecond of xlnt::datetime");
     }
 
     return microsecond;

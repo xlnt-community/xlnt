@@ -161,7 +161,7 @@ int date::get_year() const
 {
     if (_is_null)
     {
-        throw xlnt::exception("access to invalid/empty year");
+        throw xlnt::exception("access to invalid/empty year of xlnt::date");
     }
 
 
@@ -172,7 +172,7 @@ int date::get_month() const
 {
     if (_is_null)
     {
-        throw xlnt::exception("access to invalid/empty month");
+        throw xlnt::exception("access to invalid/empty month of xlnt::date");
     }
 
     return month;
@@ -182,7 +182,7 @@ int date::get_day() const
 {
     if (_is_null)
     {
-        throw xlnt::exception("access to invalid/empty day");
+        throw xlnt::exception("access to invalid/empty day of xlnt::date");
     }
 
     return day;
