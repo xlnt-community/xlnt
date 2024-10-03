@@ -54,6 +54,8 @@ class workbook;
 class worksheet;
 class xlsx_consumer;
 class xlsx_producer;
+class xls_consumer;
+class xls_producer;
 class phonetic_pr;
 
 struct date;
@@ -65,6 +67,8 @@ namespace detail {
 
 class xlsx_consumer;
 class xlsx_producer;
+class xls_consumer;
+class xls_producer;
 
 struct cell_impl;
 
@@ -630,6 +634,8 @@ private:
     friend class worksheet;
     friend class detail::xlsx_consumer;
     friend class detail::xlsx_producer;
+    friend class detail::xls_consumer;
+    friend class detail::xls_producer;
     friend struct detail::cell_impl;
 
     /// <summary>

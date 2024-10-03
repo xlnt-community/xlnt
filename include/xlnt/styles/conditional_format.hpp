@@ -42,6 +42,8 @@ struct conditional_format_impl;
 struct stylesheet;
 class xlsx_consumer;
 class xlsx_producer;
+class xls_consumer;
+class xls_producer;
 
 } // namespace detail
 
@@ -60,6 +62,7 @@ public:
 
 private:
     friend class detail::xlsx_producer;
+    friend class detail::xls_producer;
 
     enum class type
     {

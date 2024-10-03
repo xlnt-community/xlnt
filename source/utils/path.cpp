@@ -21,6 +21,8 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+
 #include <algorithm>
 #include <cassert>
 #include <fstream>

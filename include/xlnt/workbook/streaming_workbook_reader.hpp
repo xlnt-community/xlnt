@@ -132,6 +132,7 @@ public:
 private:
     std::string worksheet_rel_id_;
     std::unique_ptr<detail::xlsx_consumer> consumer_;
+    std::unique_ptr<detail::xls_consumer> consume_;
     std::unique_ptr<workbook> workbook_;
     std::unique_ptr<std::istream> stream_;
     std::unique_ptr<std::streambuf> stream_buffer_;
