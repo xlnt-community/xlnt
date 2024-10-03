@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include <stdint.h>
 #include <string>
 
 #include <xlnt/xlnt_config.hpp>

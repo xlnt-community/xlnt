@@ -4,3 +4,4 @@
 * [Worksheet](/docs/basics/Worksheet.md)
 * [Cell](/docs/basics/Cell.md)
 * [Iteration](/docs/basics/Iteration.md)
+* [Memory model](/docs/basics/MemoryModel.md)

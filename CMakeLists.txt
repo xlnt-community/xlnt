@@ -45,6 +45,11 @@ else()
   option(COVERAGE "Generate coverage data using gcov" OFF)
 endif()
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  option(XLNT_ALL_WARNINGS_AS_ERRORS "Set to ON to convert all warnings into errors. This option is used during xlnt development/CI." OFF)
+  mark_as_advanced(XLNT_ALL_WARNINGS_AS_ERRORS)
+endif()
+
 # Add components according to selected options
 if(SAMPLES)
   add_subdirectory(samples)

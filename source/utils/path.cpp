@@ -24,6 +24,7 @@
 #define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 
 #include <algorithm>
+#include <cassert>
 #include <fstream>
 #include <iterator>
 #include <sstream>
@@ -35,8 +36,6 @@
 #include <linux/limits.h>
 #include <sys/types.h>
 #include <unistd.h>
-#elif defined(_MSC_VER)
-#include <codecvt>
 #endif
 
 #include <xlnt/utils/path.hpp>
@@ -233,8 +232,20 @@ const std::string &path::string() const
 #ifdef _MSC_VER
 std::wstring path::wstring() const
 {
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> convert;
-    return convert.from_bytes(string());
+    const std::string &path_str = string();
+    const int allocated_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path_str.c_str(), static_cast<int>(path_str.length()), nullptr, 0);
+
+    if (allocated_size > 0)
+    {
+        std::wstring path_converted(allocated_size, L'\0');
+        const int actual_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path_str.c_str(), static_cast<int>(path_str.length()), &path_converted.at(0), allocated_size);
+        assert(allocated_size == actual_size); // unless a serious error happened, this MUST always be true!
+        return path_converted;
+    }
+    else
+    {
+        return {};
+    }
 }
 #endif
 

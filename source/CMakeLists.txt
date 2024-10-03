@@ -6,9 +6,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CXX_EXTENSIONS OFF)
 
 # Project metadata
-set(PROJECT_VENDOR "Thomas Fussell")
-set(PROJECT_CONTACT "thomas.fussell@gmail.com")
-set(PROJECT_URL "https://github.com/tfussell/xlnt")
+set(PROJECT_VENDOR "xlnt-community")
+set(PROJECT_CONTACT "https://github.com/xlnt-community/xlnt/issues")
+set(PROJECT_URL "https://github.com/xlnt-community/xlnt")
 set(PROJECT_DESCRIPTION "cross-platform user-friendly xlsx library for C++11")
 
 # Commonly used project directories
@@ -32,7 +32,9 @@ if(MSVC)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall") # all warnings
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra") # extra warnings
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") # avoid code being pushed with warnings
+  if (XLNT_ALL_WARNINGS_AS_ERRORS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") # avoid code being pushed with warnings
+  endif()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas") # ignore MSVC and Clang pragmas
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-maybe-uninitialized") # GCC diagnostic with lots of false positives
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -188,7 +190,7 @@ target_include_directories(xlnt
 	${XLNT_SOURCE_DIR}
 	${XLNT_SOURCE_DIR}/../third-party/libstudxml
     ${XLNT_SOURCE_DIR}/../third-party/miniz
-	${XLNT_SOURCE_DIR}/../third-party/utfcpp)
+    ${XLNT_SOURCE_DIR}/../third-party/utfcpp/source)
 
 # Platform- and file-specific settings, MSVC
 if(MSVC)

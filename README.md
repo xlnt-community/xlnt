@@ -3,11 +3,12 @@
 
 [![CircleCI Build status](https://dl.circleci.com/status-badge/img/gh/xlnt-community/xlnt/tree/master.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/xlnt-community/xlnt/tree/master)
 [![Coverage Status](https://coveralls.io/repos/github/xlnt-community/xlnt/badge.svg?branch=master)](https://coveralls.io/github/xlnt-community/xlnt?branch=master)
-[![Documentation Status](https://legacy.gitbook.com/button/status/book/tfussell/xlnt)](https://tfussell.gitbooks.io/xlnt/content/)
+[![Documentation](https://img.shields.io/badge/view-Documentation-blue)](https://xlnt-community.gitbook.io/xlnt)
+[![API reference](https://img.shields.io/badge/view-API_reference-blue)](https://xlnt-community.github.io/xlnt/annotated.html)
 [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://opensource.org/licenses/MIT)
 
 ## Introduction
-xlnt is a modern C++ library for manipulating spreadsheets in memory and reading/writing them from/to XLSX files as described in [ECMA 376 4th edition](http://www.ecma-international.org/publications/standards/Ecma-376.htm). The first public release of xlnt version 1.0 was on May 10th, 2017. Current work is focused on increasing compatibility, improving performance, and brainstorming future development goals. For a high-level summary of what you can do with this library, see [the feature list](https://tfussell.gitbooks.io/xlnt/content/docs/introduction/Features.html). Contributions are welcome in the form of pull requests or discussions on [the repository's Issues page](https://github.com/tfussell/xlnt/issues).
+xlnt is a modern C++ library for manipulating spreadsheets in memory and reading/writing them from/to XLSX files as described in [ECMA 376 5th edition](https://ecma-international.org/publications-and-standards/standards/ecma-376/). The first public release of xlnt version 1.0 was on May 10th, 2017. Current work is focused on increasing compatibility, improving performance, and brainstorming future development goals. For a high-level summary of what you can do with this library, see [the feature list](https://xlnt-community.gitbook.io/xlnt/introduction/features). Contributions are welcome in the form of pull requests or discussions on [the repository's Issues page](https://github.com/xlnt-community/xlnt/issues).
 
 ## About this fork
 This repo is a community effort to continue the development of xlnt, after the [original repo of tfussel](https://github.com/tfussell/xlnt) has been unmaintained for many years (see [Issue #748](https://github.com/tfussell/xlnt/issues/748)).
@@ -36,11 +37,27 @@ int main()
 // compile with -std=c++14 -Ixlnt/include -lxlnt
 ```
 
+More examples can be found [here](https://xlnt-community.gitbook.io/xlnt/introduction/examples).
+
 ## Documentation
 
 Documentation for the current release of xlnt is available [here](https://xlnt-community.gitbook.io/xlnt/).
 
 The latest API reference can be found [here](https://xlnt-community.github.io/xlnt/annotated.html).
+
+## Building xlnt - From source
+
+You can download and install the latest xlnt version as follows:
+
+    git clone https://github.com/xlnt-community/xlnt.git xlnt --recurse-submodules
+    cd xlnt
+    mkdir build
+    cd build
+    cmake ..
+    cmake --build . -j 4
+    cmake --install .
+
+Full installation instructions can be found [here](https://xlnt-community.gitbook.io/xlnt/introduction/installation#compiling-from-source).
 
 ## Building xlnt - Using vcpkg
 
