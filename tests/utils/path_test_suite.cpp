@@ -23,10 +23,10 @@
 
 #include <iostream>
 
+#include <xlnt/utils/path.hpp>
 #include <helpers/path_helper.hpp>
 #include <helpers/temporary_file.hpp>
 #include <helpers/test_suite.hpp>
-#include <xlnt/utils/path.hpp>
 
 class path_test_suite : public test_suite
 {
@@ -34,20 +34,33 @@ public:
     path_test_suite()
     {
         register_test(test_exists);
+#ifdef _MSC_VER
+        register_test(test_msvc_empty_path_wide);
+#endif
     }
 
-	void test_exists()
-	{
-		temporary_file temp;
+    void test_exists()
+    {
+        temporary_file temp;
 
-		if (temp.get_path().exists())
-		{
-			path_helper::delete_file(temp.get_path());
-		}
+        if (temp.get_path().exists())
+        {
+            path_helper::delete_file(temp.get_path());
+        }
 
-		xlnt_assert(!temp.get_path().exists());
-		std::ofstream stream(temp.get_path().string());
-		xlnt_assert(temp.get_path().exists());
-	}
+        xlnt_assert(!temp.get_path().exists());
+        std::ofstream stream(temp.get_path().string());
+        xlnt_assert(temp.get_path().exists());
+    }
+
+#ifdef _MSC_VER
+    void test_msvc_empty_path_wide()
+    {
+        xlnt::path empty_path;
+        std::wstring path_wide;
+        xlnt_assert_throws_nothing(path_wide = empty_path.wstring());
+        xlnt_assert(path_wide.empty());
+    }
+#endif
 };
 static path_test_suite x;
