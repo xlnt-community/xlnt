@@ -1783,7 +1783,7 @@ std::string number_formatter::format_number(const format_code &format, double nu
             dt = xlnt::datetime::from_number(number, calendar_);
         }
 
-        hour = static_cast<std::size_t>(dt.hour);
+        hour = static_cast<std::size_t>(dt.get_hour());
 
         if (format.twelve_hour)
         {
@@ -1831,7 +1831,7 @@ std::string number_formatter::format_number(const format_code &format, double nu
                 auto digits = std::min(
                     static_cast<std::size_t>(6), part.placeholders.num_zeros + part.placeholders.num_optionals);
                 auto denominator = static_cast<int>(std::pow(10.0, digits));
-                auto fractional_seconds = dt.microsecond / 1.0E6 * denominator;
+                auto fractional_seconds = dt.get_microsecond() / 1.0E6 * denominator;
                 fractional_seconds = std::round(fractional_seconds) / denominator;
                 result.append(fill_placeholders(part.placeholders, fractional_seconds));
                 break;
@@ -1873,57 +1873,57 @@ std::string number_formatter::format_number(const format_code &format, double nu
         }
 
         case template_part::template_type::day_number: {
-            result.append(std::to_string(dt.day));
+            result.append(std::to_string(dt.get_day()));
             break;
         }
 
         case template_part::template_type::day_number_leading_zero: {
-            if (dt.day < 10)
+            if (dt.get_day() < 10)
             {
                 result.push_back('0');
             }
 
-            result.append(std::to_string(dt.day));
+            result.append(std::to_string(dt.get_day()));
             break;
         }
 
         case template_part::template_type::month_abbreviation: {
-            result.append(month_names.at(static_cast<std::size_t>(dt.month) - 1).substr(0, 3));
+            result.append(month_names.at(static_cast<std::size_t>(dt.get_month()) - 1).substr(0, 3));
             break;
         }
 
         case template_part::template_type::month_name: {
-            result.append(month_names.at(static_cast<std::size_t>(dt.month) - 1));
+            result.append(month_names.at(static_cast<std::size_t>(dt.get_month()) - 1));
             break;
         }
 
         case template_part::template_type::month_number: {
-            result.append(std::to_string(dt.month));
+            result.append(std::to_string(dt.get_month()));
             break;
         }
 
         case template_part::template_type::month_number_leading_zero: {
-            if (dt.month < 10)
+            if (dt.get_month() < 10)
             {
                 result.push_back('0');
             }
 
-            result.append(std::to_string(dt.month));
+            result.append(std::to_string(dt.get_month()));
             break;
         }
 
         case template_part::template_type::year_short: {
-            if (dt.year % 1000 < 10)
+            if (dt.get_year() % 1000 < 10)
             {
                 result.push_back('0');
             }
 
-            result.append(std::to_string(dt.year % 1000));
+            result.append(std::to_string(dt.get_year() % 1000));
             break;
         }
 
         case template_part::template_type::year_long: {
-            result.append(std::to_string(dt.year));
+            result.append(std::to_string(dt.get_year()));
             break;
         }
 
@@ -1943,52 +1943,52 @@ std::string number_formatter::format_number(const format_code &format, double nu
         }
 
         case template_part::template_type::minute: {
-            result.append(std::to_string(dt.minute));
+            result.append(std::to_string(dt.get_minute()));
             break;
         }
 
         case template_part::template_type::minute_leading_zero: {
-            if (dt.minute < 10)
+            if (dt.get_minute() < 10)
             {
                 result.push_back('0');
             }
 
-            result.append(std::to_string(dt.minute));
+            result.append(std::to_string(dt.get_minute()));
             break;
         }
 
         case template_part::template_type::second: {
-            result.append(std::to_string(dt.second + (dt.microsecond > 500000 ? 1 : 0)));
+            result.append(std::to_string(dt.get_second() + (dt.get_microsecond() > 500000 ? 1 : 0)));
             break;
         }
 
         case template_part::template_type::second_fractional: {
-            result.append(std::to_string(dt.second));
+            result.append(std::to_string(dt.get_second()));
             break;
         }
 
         case template_part::template_type::second_leading_zero: {
-            if ((dt.second + (dt.microsecond > 500000 ? 1 : 0)) < 10)
+            if ((dt.get_second() + (dt.get_microsecond() > 500000 ? 1 : 0)) < 10)
             {
                 result.push_back('0');
             }
 
-            result.append(std::to_string(dt.second + (dt.microsecond > 500000 ? 1 : 0)));
+            result.append(std::to_string(dt.get_second() + (dt.get_microsecond() > 500000 ? 1 : 0)));
             break;
         }
 
         case template_part::template_type::second_leading_zero_fractional: {
-            if (dt.second < 10)
+            if (dt.get_second() < 10)
             {
                 result.push_back('0');
             }
 
-            result.append(std::to_string(dt.second));
+            result.append(std::to_string(dt.get_second()));
             break;
         }
 
         case template_part::template_type::am_pm: {
-            if (dt.hour < 12)
+            if (dt.get_hour() < 12)
             {
                 result.append("AM");
             }
@@ -2001,7 +2001,7 @@ std::string number_formatter::format_number(const format_code &format, double nu
         }
 
         case template_part::template_type::a_p: {
-            if (dt.hour < 12)
+            if (dt.get_hour() < 12)
             {
                 result.append("A");
             }
@@ -2014,34 +2014,44 @@ std::string number_formatter::format_number(const format_code &format, double nu
         }
 
         case template_part::template_type::elapsed_hours: {
-            result.append(std::to_string(24 * static_cast<int>(number) + dt.hour));
+            result.append(std::to_string(24 * static_cast<int>(number) + dt.get_hour()));
             break;
         }
 
         case template_part::template_type::elapsed_minutes: {
             result.append(std::to_string(24 * 60 * static_cast<int>(number)
-                + (60 * dt.hour) + dt.minute));
+                + (60 * dt.get_hour()) + dt.get_minute()));
             break;
         }
 
         case template_part::template_type::elapsed_seconds: {
             result.append(std::to_string(24 * 60 * 60 * static_cast<int>(number)
-                + (60 * 60 * dt.hour) + (60 * dt.minute) + dt.second));
+                + (60 * 60 * dt.get_hour()) + (60 * dt.get_minute()) + dt.get_second()));
             break;
         }
 
         case template_part::template_type::month_letter: {
-            result.append(month_names.at(static_cast<std::size_t>(dt.month) - 1).substr(0, 1));
+            result.append(month_names.at(static_cast<std::size_t>(dt.get_month()) - 1).substr(0, 1));
             break;
         }
 
         case template_part::template_type::day_abbreviation: {
-            result.append(day_names.at(static_cast<std::size_t>(dt.weekday())).substr(0, 3));
+            int weekday = dt.weekday();
+
+            if (weekday != -1)
+            {
+                result.append(day_names.at(static_cast<std::size_t>(weekday)).substr(0, 3));
+            }
             break;
         }
 
         case template_part::template_type::day_name: {
-            result.append(day_names.at(static_cast<std::size_t>(dt.weekday())));
+            int weekday = dt.weekday();
+
+            if (weekday != -1)
+            {
+                result.append(day_names.at(static_cast<std::size_t>(weekday)));
+            }
             break;
         }
         }

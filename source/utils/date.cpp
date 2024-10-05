@@ -20,31 +20,20 @@
 //
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
-#include <cmath>
+
 #include <ctime>
 
 #include <xlnt/utils/date.hpp>
+#include <detail/time_helpers.hpp>
 
-namespace {
-
-std::tm safe_localtime(std::time_t raw_time)
-{
-#ifdef _MSC_VER
-    std::tm result;
-    localtime_s(&result, &raw_time);
-
-    return result;
-#else
-    return *localtime(&raw_time);
-#endif
-}
-
-} // namespace
+/// Invalid weekday for checking whether std::mktime was successful - see below.
+/// Must be outside of the range [0, 6].
+constexpr int INVALID_WDAY = -1;
 
 namespace xlnt {
 
 date::date(int year_, int month_, int day_)
-    : year(year_), month(month_), day(day_)
+    : year(year_), month(month_), day(day_), _is_null(false)
 {
 }
 
@@ -86,7 +75,7 @@ date date::from_number(int days_since_base_year, calendar base_date)
 
 bool date::operator==(const date &comparand) const
 {
-    return year == comparand.year && month == comparand.month && day == comparand.day;
+    return year == comparand.year && month == comparand.month && day == comparand.day && _is_null == comparand._is_null;
 }
 
 bool date::operator!=(const date &comparand) const
@@ -96,6 +85,11 @@ bool date::operator!=(const date &comparand) const
 
 int date::to_number(calendar base_date) const
 {
+    if (_is_null)
+    {
+        throw xlnt::invalid_attribute("cannot convert invalid/empty date to a number");
+    }
+
     if (day == 29 && month == 2 && year == 1900)
     {
         return 60;
@@ -120,19 +114,78 @@ int date::to_number(calendar base_date) const
 
 date date::today()
 {
-    std::tm now = safe_localtime(std::time(nullptr));
-    return date(1900 + now.tm_year, now.tm_mon + 1, now.tm_mday);
+    optional<std::tm> now = detail::localtime_safe(std::time(nullptr));
+
+    if (now.is_set())
+    {
+        return date(1900 + now.get().tm_year, now.get().tm_mon + 1, now.get().tm_mday);
+    }
+    else
+    {
+        return date();
+    }
 }
 
 int date::weekday() const
 {
-    std::tm tm = std::tm();
-    tm.tm_mday = day;
-    tm.tm_mon = month - 1;
-    tm.tm_year = year - 1900;
-    std::time_t time = std::mktime(&tm);
+    if (!_is_null)
+    {
+        std::tm tm = std::tm();
+        tm.tm_wday = INVALID_WDAY;
+        tm.tm_mday = day;
+        tm.tm_mon = month - 1;
+        tm.tm_year = year - 1900;
 
-    return safe_localtime(time).tm_wday;
+        // Important: if the conversion made by std::mktime is successful, the time object is modified. All fields of time are updated
+        // to fit their proper ranges. time->tm_wday and time->tm_yday are recalculated using information available in other fields.
+        // IMPORTANT: the return value -1 could either be an error or mean 1 second before 1970-1-1. However, an application wishing to check
+        // for error situations should set tm_wday to a value less than 0 or greater than 6 before calling mktime(). On return, if tm_wday has not changed an error has occurred.
+        /*std::time_t time =*/std::mktime(&tm);
+
+        if (tm.tm_wday != INVALID_WDAY)
+        {
+            return tm.tm_wday;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+int date::get_year() const
+{
+    if (_is_null)
+    {
+        throw xlnt::invalid_attribute("access to invalid/empty year of xlnt::date");
+    }
+
+
+    return year;
+}
+
+int date::get_month() const
+{
+    if (_is_null)
+    {
+        throw xlnt::invalid_attribute("access to invalid/empty month of xlnt::date");
+    }
+
+    return month;
+}
+
+int date::get_day() const
+{
+    if (_is_null)
+    {
+        throw xlnt::invalid_attribute("access to invalid/empty day of xlnt::date");
+    }
+
+    return day;
 }
 
 } // namespace xlnt

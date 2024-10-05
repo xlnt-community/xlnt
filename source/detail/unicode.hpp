@@ -21,6 +21,8 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
+#pragma once
+
 #include <string>
 
 namespace xlnt {

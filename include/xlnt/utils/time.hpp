@@ -37,12 +37,12 @@ namespace xlnt {
 struct XLNT_API time
 {
     /// <summary>
-    /// Return the current time according to the system time.
+    /// Returns the current time according to the system time.
     /// </summary>
     static time now();
 
     /// <summary>
-    /// Return a time from a number representing a fraction of a day.
+    /// Returns a time from a number representing a fraction of a day.
     /// The integer part of number will be ignored.
     /// 0.5 would return time(12, 0, 0, 0) or noon, halfway through the day.
     /// </summary>
@@ -72,22 +72,22 @@ struct XLNT_API time
     /// <summary>
     /// The hour
     /// </summary>
-    int hour;
+    int hour = 0;
 
     /// <summary>
     /// The minute
     /// </summary>
-    int minute;
+    int minute = 0;
 
     /// <summary>
     /// The second
     /// </summary>
-    int second;
+    int second = 0;
 
     /// <summary>
     /// The microsecond
     /// </summary>
-    int microsecond;
+    int microsecond = 0;
 };
 
 } // namespace xlnt

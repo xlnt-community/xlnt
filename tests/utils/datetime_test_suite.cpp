@@ -41,6 +41,8 @@ public:
         register_test(test_mac_calendar);
         register_test(test_operators);
         register_test(test_weekday);
+        register_test(test_invalid_date_access);
+        register_test(test_invalid_datetime_access);
     }
 
     void test_from_string()
@@ -69,10 +71,10 @@ public:
         number += (0.6 / 1000000) / 60 / 60 / 24;
         auto rollover = xlnt::datetime::from_number(number, xlnt::calendar::windows_1900);
 
-        xlnt_assert_equals(rollover.hour, 11);
-        xlnt_assert_equals(rollover.minute, 00);
-        xlnt_assert_equals(rollover.second, 00);
-        xlnt_assert_equals(rollover.microsecond, 00);
+        xlnt_assert_equals(rollover.get_hour(), 11);
+        xlnt_assert_equals(rollover.get_minute(), 00);
+        xlnt_assert_equals(rollover.get_second(), 00);
+        xlnt_assert_equals(rollover.get_microsecond(), 00);
     }
 
     void test_leap_year_bug()
@@ -120,7 +122,34 @@ public:
         xlnt_assert_equals(xlnt::date(2000, 1, 1).weekday(), 6); // January 1st 2000 was a Saturday
         xlnt_assert_equals(xlnt::date(2016, 7, 15).weekday(), 5); // July 15th 2016 was a Friday
         xlnt_assert_equals(xlnt::date(2018, 10, 29).weekday(), 1); // October 29th 2018 was Monday
-        xlnt_assert_equals(xlnt::date(1970, 1, 1).weekday(), 4); // January 1st 1970 was a Thursday
+        // Note: dates before 1970-1-1 don't work in MSVC when using std::localtime, and dates right after midnight 1970-1-1 cause issues
+        // for time zones with positive UTC offsets. To be on the safe side, we'll test 1970-1-2 which should always work.
+        xlnt_assert_equals(xlnt::date(1970, 1, 2).weekday(), 5); // January 2nd 1970 was a Friday
+    }
+
+    void test_invalid_date_access()
+    {
+        xlnt::date date;
+        xlnt_assert_throws(date.to_number(xlnt::calendar::windows_1900), xlnt::invalid_attribute);
+        xlnt_assert_equals(date.weekday(), -1);
+        xlnt_assert_throws(date.get_year(), xlnt::invalid_attribute);
+        xlnt_assert_throws(date.get_month(), xlnt::invalid_attribute);
+        xlnt_assert_throws(date.get_day(), xlnt::invalid_attribute);
+    }
+
+    void test_invalid_datetime_access()
+    {
+        xlnt::datetime datetime;
+        xlnt_assert_throws(datetime.to_number(xlnt::calendar::windows_1900), xlnt::invalid_attribute);
+        xlnt_assert_equals(datetime.to_string(), std::string{});
+        xlnt_assert_equals(datetime.weekday(), -1);
+        xlnt_assert_throws(datetime.get_year(), xlnt::invalid_attribute);
+        xlnt_assert_throws(datetime.get_month(), xlnt::invalid_attribute);
+        xlnt_assert_throws(datetime.get_day(), xlnt::invalid_attribute);
+        xlnt_assert_throws(datetime.get_hour(), xlnt::invalid_attribute);
+        xlnt_assert_throws(datetime.get_minute(), xlnt::invalid_attribute);
+        xlnt_assert_throws(datetime.get_second(), xlnt::invalid_attribute);
+        xlnt_assert_throws(datetime.get_microsecond(), xlnt::invalid_attribute);
     }
 };
 
