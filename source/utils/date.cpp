@@ -87,7 +87,7 @@ int date::to_number(calendar base_date) const
 {
     if (_is_null)
     {
-        throw xlnt::exception("cannot convert invalid/empty date to a number");
+        throw xlnt::invalid_attribute("cannot convert invalid/empty date to a number");
     }
 
     if (day == 29 && month == 2 && year == 1900)
@@ -161,7 +161,7 @@ int date::get_year() const
 {
     if (_is_null)
     {
-        throw xlnt::exception("access to invalid/empty year of xlnt::date");
+        throw xlnt::invalid_attribute("access to invalid/empty year of xlnt::date");
     }
 
 
@@ -172,7 +172,7 @@ int date::get_month() const
 {
     if (_is_null)
     {
-        throw xlnt::exception("access to invalid/empty month of xlnt::date");
+        throw xlnt::invalid_attribute("access to invalid/empty month of xlnt::date");
     }
 
     return month;
@@ -182,7 +182,7 @@ int date::get_day() const
 {
     if (_is_null)
     {
-        throw xlnt::exception("access to invalid/empty day of xlnt::date");
+        throw xlnt::invalid_attribute("access to invalid/empty day of xlnt::date");
     }
 
     return day;
