@@ -121,7 +121,14 @@ datetime::datetime(const date &d, const time &t)
 
 int datetime::weekday() const
 {
-    return date(year, month, day).weekday();
+    if (!_is_null)
+    {
+        return date(year, month, day).weekday();
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 int datetime::get_year() const
