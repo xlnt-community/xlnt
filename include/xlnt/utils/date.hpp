@@ -38,13 +38,13 @@ namespace xlnt {
 struct XLNT_API date
 {
     /// <summary>
-    /// Return the current date according to the system time.
+    /// Returns the current date according to the system time.
     /// If the current date could not be determined, the date will be in an empty state (is_null() will return true).
     /// </summary>
     static date today();
 
     /// <summary>
-    /// Return a date by adding days_since_base_year to base_date.
+    /// Returns a date by adding days_since_base_year to base_date.
     /// This includes leap years.
     /// </summary>
     static date from_number(int days_since_base_year, calendar base_date);
@@ -60,8 +60,8 @@ struct XLNT_API date
     date() = default;
 
     /// <summary>
-    /// Return the number of days between this date and base_date. The date could be in an empty/invalid state, so you may want to call is_null() first!
-    /// If this function is called when having an empty/invalid state, an exception will be thrown.
+    /// Returns the number of days between this date and base_date. The date could be in an empty/invalid state, so you may want to call is_null() first!
+    /// If this function is called when having an empty/invalid state, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     int to_number(calendar base_date) const;
 
@@ -74,19 +74,19 @@ struct XLNT_API date
 
     /// <summary>
     /// Returns the year of the date. The date could be in an empty/invalid state, so you may want to call is_null() first!
-    /// If this function is called when having an empty/invalid state, an exception will be thrown.
+    /// If this function is called when having an empty/invalid state, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     int get_year() const;
 
     /// <summary>
     /// Returns the month of the date. The date could be in an empty/invalid state, so you may want to call is_null() first!
-    /// If this function is called when having an empty/invalid state, an exception will be thrown.
+    /// If this function is called when having an empty/invalid state, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     int get_month() const;
 
     /// <summary>
     /// Returns the day of the date. The date could be in an empty/invalid state, so you may want to call is_null() first!
-    /// If this function is called when having an empty/invalid state, an exception will be thrown.
+    /// If this function is called when having an empty/invalid state, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     int get_day() const;
 
@@ -99,12 +99,12 @@ struct XLNT_API date
     }
 
     /// <summary>
-    /// Return true if this date is equal to comparand.
+    /// Returns true if this date is equal to comparand.
     /// </summary>
     bool operator==(const date &comparand) const;
 
     /// <summary>
-    /// Return true if this date is equal to comparand.
+    /// Returns true if this date is equal to comparand.
     /// </summary>
     bool operator!=(const date &comparand) const;
 
