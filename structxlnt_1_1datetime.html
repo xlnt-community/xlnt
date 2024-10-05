@@ -72,7 +72,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>A datetime is a combination of a date and a time.  
+<p>A datetime is a combination of a date and a time. IMPORTANT: The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> before calling any functions!  
  <a href="structxlnt_1_1datetime.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="datetime_8hpp_source.html">datetime.hpp</a>&gt;</code></p>
@@ -85,32 +85,59 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aada1949e7087284ab49f7882e14409fe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#aada1949e7087284ab49f7882e14409fe">datetime</a> (int year_, int month_, int day_, int hour_=0, int minute_=0, int second_=0, int microsecond_=0)</td></tr>
 <tr class="memdesc:aada1949e7087284ab49f7882e14409fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a datetime from a year, month, and day plus optional hour, minute, second, and microsecond.  <a href="#aada1949e7087284ab49f7882e14409fe">More...</a><br /></td></tr>
 <tr class="separator:aada1949e7087284ab49f7882e14409fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad299e9eb4923c71fa80eebbcd6c84d5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#aad299e9eb4923c71fa80eebbcd6c84d5">datetime</a> ()=default</td></tr>
+<tr class="memdesc:aad299e9eb4923c71fa80eebbcd6c84d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an empty datetime (a call to <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> will return true).  <a href="#aad299e9eb4923c71fa80eebbcd6c84d5">More...</a><br /></td></tr>
+<tr class="separator:aad299e9eb4923c71fa80eebbcd6c84d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a244c0b83e2b245a826338c453c0b6660"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a244c0b83e2b245a826338c453c0b6660">to_string</a> () const</td></tr>
-<tr class="memdesc:a244c0b83e2b245a826338c453c0b6660"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a string represenation of this date and time.  <a href="#a244c0b83e2b245a826338c453c0b6660">More...</a><br /></td></tr>
+<tr class="memdesc:a244c0b83e2b245a826338c453c0b6660"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a string represenation of this date and time. The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an empty string will be returned.  <a href="#a244c0b83e2b245a826338c453c0b6660">More...</a><br /></td></tr>
 <tr class="separator:a244c0b83e2b245a826338c453c0b6660"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3980987307bc0d456e4ea875e9395857"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a3980987307bc0d456e4ea875e9395857">to_iso_string</a> () const</td></tr>
-<tr class="memdesc:a3980987307bc0d456e4ea875e9395857"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an ISO-formatted string representation of this date and time.  <a href="#a3980987307bc0d456e4ea875e9395857">More...</a><br /></td></tr>
+<tr class="memdesc:a3980987307bc0d456e4ea875e9395857"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an ISO-formatted string representation of this date and time. The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an empty string will be returned.  <a href="#a3980987307bc0d456e4ea875e9395857">More...</a><br /></td></tr>
 <tr class="separator:a3980987307bc0d456e4ea875e9395857"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9a9ab17521f9178289bd8d8bb98cba4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#ad9a9ab17521f9178289bd8d8bb98cba4">to_number</a> (<a class="el" href="namespacexlnt.html#aaddbb735c8ac3a2d09f660fab73b0bb9">calendar</a> base_date) const</td></tr>
-<tr class="memdesc:ad9a9ab17521f9178289bd8d8bb98cba4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns this datetime as a number of seconds since 1900 or 1904 (depending on base_date provided).  <a href="#ad9a9ab17521f9178289bd8d8bb98cba4">More...</a><br /></td></tr>
+<tr class="memdesc:ad9a9ab17521f9178289bd8d8bb98cba4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns this datetime as a number of seconds since 1900 or 1904 (depending on base_date provided). The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#ad9a9ab17521f9178289bd8d8bb98cba4">More...</a><br /></td></tr>
 <tr class="separator:ad9a9ab17521f9178289bd8d8bb98cba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69f8f5359eb14282cf9c9a8de4f51d14"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a69f8f5359eb14282cf9c9a8de4f51d14">operator==</a> (const <a class="el" href="structxlnt_1_1datetime.html">datetime</a> &amp;comparand) const</td></tr>
 <tr class="memdesc:a69f8f5359eb14282cf9c9a8de4f51d14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this datetime is equivalent to comparand.  <a href="#a69f8f5359eb14282cf9c9a8de4f51d14">More...</a><br /></td></tr>
 <tr class="separator:a69f8f5359eb14282cf9c9a8de4f51d14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a216dce8193c1221127293960592665b6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a216dce8193c1221127293960592665b6">weekday</a> () const</td></tr>
-<tr class="memdesc:a216dce8193c1221127293960592665b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates and returns the day of the week that this date represents in the range 0 to 6 where 0 represents Sunday.  <a href="#a216dce8193c1221127293960592665b6">More...</a><br /></td></tr>
+<tr class="memdesc:a216dce8193c1221127293960592665b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates and returns the day of the week that this date represents in the range 0 to 6 where 0 represents Sunday. Returns -1 if the weekday could not be determined.  <a href="#a216dce8193c1221127293960592665b6">More...</a><br /></td></tr>
 <tr class="separator:a216dce8193c1221127293960592665b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7508c815a2af6868ab7fa73d5da30591"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a7508c815a2af6868ab7fa73d5da30591">get_year</a> () const</td></tr>
+<tr class="memdesc:a7508c815a2af6868ab7fa73d5da30591"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the year of the datetime. The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a7508c815a2af6868ab7fa73d5da30591">More...</a><br /></td></tr>
+<tr class="separator:a7508c815a2af6868ab7fa73d5da30591"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a704a3237bc7fd09b2d34bb3f5437901a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a704a3237bc7fd09b2d34bb3f5437901a">get_month</a> () const</td></tr>
+<tr class="memdesc:a704a3237bc7fd09b2d34bb3f5437901a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the month of the datetime. The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a704a3237bc7fd09b2d34bb3f5437901a">More...</a><br /></td></tr>
+<tr class="separator:a704a3237bc7fd09b2d34bb3f5437901a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1d3624b34f7ac60a28679f1b771a81b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#ac1d3624b34f7ac60a28679f1b771a81b">get_day</a> () const</td></tr>
+<tr class="memdesc:ac1d3624b34f7ac60a28679f1b771a81b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the day of the datetime. The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#ac1d3624b34f7ac60a28679f1b771a81b">More...</a><br /></td></tr>
+<tr class="separator:ac1d3624b34f7ac60a28679f1b771a81b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a806059d0d22f9fd328ad1b291dbdab02"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a806059d0d22f9fd328ad1b291dbdab02">get_hour</a> () const</td></tr>
+<tr class="memdesc:a806059d0d22f9fd328ad1b291dbdab02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the hour of the datetime. The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a806059d0d22f9fd328ad1b291dbdab02">More...</a><br /></td></tr>
+<tr class="separator:a806059d0d22f9fd328ad1b291dbdab02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0f7fa85d1c90200a0002329ae12d989"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#ae0f7fa85d1c90200a0002329ae12d989">get_minute</a> () const</td></tr>
+<tr class="memdesc:ae0f7fa85d1c90200a0002329ae12d989"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the minute of the datetime. The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#ae0f7fa85d1c90200a0002329ae12d989">More...</a><br /></td></tr>
+<tr class="separator:ae0f7fa85d1c90200a0002329ae12d989"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe24bf422a53f091cf0ff5ca706b0cda"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#afe24bf422a53f091cf0ff5ca706b0cda">get_second</a> () const</td></tr>
+<tr class="memdesc:afe24bf422a53f091cf0ff5ca706b0cda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the second of the datetime. The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#afe24bf422a53f091cf0ff5ca706b0cda">More...</a><br /></td></tr>
+<tr class="separator:afe24bf422a53f091cf0ff5ca706b0cda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09612e550f15a5388cc9200347c5276d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a09612e550f15a5388cc9200347c5276d">get_microsecond</a> () const</td></tr>
+<tr class="memdesc:a09612e550f15a5388cc9200347c5276d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the microsecond of the datetime. The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a09612e550f15a5388cc9200347c5276d">More...</a><br /></td></tr>
+<tr class="separator:a09612e550f15a5388cc9200347c5276d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbabf267eaa52c7ef211159e5cc0ead6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6">is_null</a> () const</td></tr>
+<tr class="memdesc:afbabf267eaa52c7ef211159e5cc0ead6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether the date is in an empty/invalid state.  <a href="#afbabf267eaa52c7ef211159e5cc0ead6">More...</a><br /></td></tr>
+<tr class="separator:afbabf267eaa52c7ef211159e5cc0ead6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a41218aa574f2b80d48f2f074a0cc3392"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structxlnt_1_1datetime.html">datetime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a41218aa574f2b80d48f2f074a0cc3392">now</a> ()</td></tr>
-<tr class="memdesc:a41218aa574f2b80d48f2f074a0cc3392"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current date and time according to the system time.  <a href="#a41218aa574f2b80d48f2f074a0cc3392">More...</a><br /></td></tr>
+<tr class="memdesc:a41218aa574f2b80d48f2f074a0cc3392"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current date and time according to the system time. If the current date could not be determined, the date will be in an empty state (<a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> will return true).  <a href="#a41218aa574f2b80d48f2f074a0cc3392">More...</a><br /></td></tr>
 <tr class="separator:a41218aa574f2b80d48f2f074a0cc3392"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7fd9da2129eb124c38e143b4485fab3"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structxlnt_1_1datetime.html">datetime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#ae7fd9da2129eb124c38e143b4485fab3">today</a> ()</td></tr>
-<tr class="memdesc:ae7fd9da2129eb124c38e143b4485fab3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current date and time according to the system time. This is equivalent to <a class="el" href="structxlnt_1_1datetime.html#a41218aa574f2b80d48f2f074a0cc3392" title="Returns the current date and time according to the system time. ">datetime::now()</a>.  <a href="#ae7fd9da2129eb124c38e143b4485fab3">More...</a><br /></td></tr>
+<tr class="memdesc:ae7fd9da2129eb124c38e143b4485fab3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current date and time according to the system time. This is equivalent to <a class="el" href="structxlnt_1_1datetime.html#a41218aa574f2b80d48f2f074a0cc3392" title="Returns the current date and time according to the system time. If the current date could not be dete...">datetime::now()</a>. If the current date could not be determined, the date will be in an empty state (<a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> will return true).  <a href="#ae7fd9da2129eb124c38e143b4485fab3">More...</a><br /></td></tr>
 <tr class="separator:ae7fd9da2129eb124c38e143b4485fab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a193da151f58db0df3dcd1010fdf793d3"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structxlnt_1_1datetime.html">datetime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a193da151f58db0df3dcd1010fdf793d3">from_number</a> (double <a class="el" href="namespacexlnt.html#a7084345eee5edf2d4cca71f3c3c04cb2ab1bc248a7ff2b2e95569f56de68615df">number</a>, <a class="el" href="namespacexlnt.html#aaddbb735c8ac3a2d09f660fab73b0bb9">calendar</a> base_date)</td></tr>
-<tr class="memdesc:a193da151f58db0df3dcd1010fdf793d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a datetime from number by converting the integer part into a date and the fractional part into a time according to <a class="el" href="structxlnt_1_1date.html#a6203499cceceda27cc7c5122b1d9ea1d" title="Return a date by adding days_since_base_year to base_date. This includes leap years. ">date::from_number</a> and <a class="el" href="structxlnt_1_1time.html#a6592d7f210b346d9d0ee277f645c28c6" title="Return a time from a number representing a fraction of a day. The integer part of number will be igno...">time::from_number</a>.  <a href="#a193da151f58db0df3dcd1010fdf793d3">More...</a><br /></td></tr>
+<tr class="memdesc:a193da151f58db0df3dcd1010fdf793d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a datetime from number by converting the integer part into a date and the fractional part into a time according to <a class="el" href="structxlnt_1_1date.html#a6203499cceceda27cc7c5122b1d9ea1d" title="Returns a date by adding days_since_base_year to base_date. This includes leap years. ">date::from_number</a> and <a class="el" href="structxlnt_1_1time.html#a6592d7f210b346d9d0ee277f645c28c6" title="Returns a time from a number representing a fraction of a day. The integer part of number will be ign...">time::from_number</a>.  <a href="#a193da151f58db0df3dcd1010fdf793d3">More...</a><br /></td></tr>
 <tr class="separator:a193da151f58db0df3dcd1010fdf793d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd17890b24e0017707ef1d223a59eb91"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structxlnt_1_1datetime.html">datetime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#afd17890b24e0017707ef1d223a59eb91">from_iso_string</a> (const std::string &amp;iso_string)</td></tr>
 <tr class="memdesc:afd17890b24e0017707ef1d223a59eb91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a datetime equivalent to the ISO-formatted string iso_string.  <a href="#afd17890b24e0017707ef1d223a59eb91">More...</a><br /></td></tr>
@@ -118,33 +145,33 @@ Static Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a666b5386bf511954084de696fa8a06c3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a666b5386bf511954084de696fa8a06c3">year</a></td></tr>
-<tr class="memdesc:a666b5386bf511954084de696fa8a06c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">The year  <a href="#a666b5386bf511954084de696fa8a06c3">More...</a><br /></td></tr>
+<tr class="memitem:a666b5386bf511954084de696fa8a06c3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a666b5386bf511954084de696fa8a06c3">year</a> = 0</td></tr>
+<tr class="memdesc:a666b5386bf511954084de696fa8a06c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">&ndash;&mdash; TODO IMPORTANT: accessing the members directly is DEPRECATED and will be changed in a further release! Please use the getters instead!  <a href="#a666b5386bf511954084de696fa8a06c3">More...</a><br /></td></tr>
 <tr class="separator:a666b5386bf511954084de696fa8a06c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ba8fd2c9e5982dd48b0e2456d74c43d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a8ba8fd2c9e5982dd48b0e2456d74c43d">month</a></td></tr>
+<tr class="memitem:a8ba8fd2c9e5982dd48b0e2456d74c43d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a8ba8fd2c9e5982dd48b0e2456d74c43d">month</a> = 0</td></tr>
 <tr class="memdesc:a8ba8fd2c9e5982dd48b0e2456d74c43d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The month  <a href="#a8ba8fd2c9e5982dd48b0e2456d74c43d">More...</a><br /></td></tr>
 <tr class="separator:a8ba8fd2c9e5982dd48b0e2456d74c43d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4749df5a75589bfce9291491f1884fb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#ae4749df5a75589bfce9291491f1884fb">day</a></td></tr>
+<tr class="memitem:ae4749df5a75589bfce9291491f1884fb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#ae4749df5a75589bfce9291491f1884fb">day</a> = 0</td></tr>
 <tr class="memdesc:ae4749df5a75589bfce9291491f1884fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">The day  <a href="#ae4749df5a75589bfce9291491f1884fb">More...</a><br /></td></tr>
 <tr class="separator:ae4749df5a75589bfce9291491f1884fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76dedf91a34d3c93e4a2b4fbcf9fd1ad"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a76dedf91a34d3c93e4a2b4fbcf9fd1ad">hour</a></td></tr>
+<tr class="memitem:a76dedf91a34d3c93e4a2b4fbcf9fd1ad"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a76dedf91a34d3c93e4a2b4fbcf9fd1ad">hour</a> = 0</td></tr>
 <tr class="memdesc:a76dedf91a34d3c93e4a2b4fbcf9fd1ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">The hour  <a href="#a76dedf91a34d3c93e4a2b4fbcf9fd1ad">More...</a><br /></td></tr>
 <tr class="separator:a76dedf91a34d3c93e4a2b4fbcf9fd1ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae22d74ce838a8c0b7f519aa1956279c1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#ae22d74ce838a8c0b7f519aa1956279c1">minute</a></td></tr>
+<tr class="memitem:ae22d74ce838a8c0b7f519aa1956279c1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#ae22d74ce838a8c0b7f519aa1956279c1">minute</a> = 0</td></tr>
 <tr class="memdesc:ae22d74ce838a8c0b7f519aa1956279c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">The minute  <a href="#ae22d74ce838a8c0b7f519aa1956279c1">More...</a><br /></td></tr>
 <tr class="separator:ae22d74ce838a8c0b7f519aa1956279c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a114f4e1a49a93305d536016501af5c33"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a114f4e1a49a93305d536016501af5c33">second</a></td></tr>
+<tr class="memitem:a114f4e1a49a93305d536016501af5c33"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a114f4e1a49a93305d536016501af5c33">second</a> = 0</td></tr>
 <tr class="memdesc:a114f4e1a49a93305d536016501af5c33"><td class="mdescLeft">&#160;</td><td class="mdescRight">The second  <a href="#a114f4e1a49a93305d536016501af5c33">More...</a><br /></td></tr>
 <tr class="separator:a114f4e1a49a93305d536016501af5c33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a243a45a282fb6565006d050797c1b27d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a243a45a282fb6565006d050797c1b27d">microsecond</a></td></tr>
+<tr class="memitem:a243a45a282fb6565006d050797c1b27d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a243a45a282fb6565006d050797c1b27d">microsecond</a> = 0</td></tr>
 <tr class="memdesc:a243a45a282fb6565006d050797c1b27d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The microsecond  <a href="#a243a45a282fb6565006d050797c1b27d">More...</a><br /></td></tr>
 <tr class="separator:a243a45a282fb6565006d050797c1b27d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A datetime is a combination of a date and a time. </p>
+<div class="textblock"><p>A datetime is a combination of a date and a time. IMPORTANT: The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> before calling any functions! </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a407bca2a122b33493e5531c8a28377fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a407bca2a122b33493e5531c8a28377fb">&#9670;&nbsp;</a></span>datetime() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a407bca2a122b33493e5531c8a28377fb">&#9670;&nbsp;</a></span>datetime() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -174,7 +201,7 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="aada1949e7087284ab49f7882e14409fe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aada1949e7087284ab49f7882e14409fe">&#9670;&nbsp;</a></span>datetime() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aada1949e7087284ab49f7882e14409fe">&#9670;&nbsp;</a></span>datetime() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -230,6 +257,33 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Constructs a datetime from a year, month, and day plus optional hour, minute, second, and microsecond. </p>
+
+</div>
+</div>
+<a id="aad299e9eb4923c71fa80eebbcd6c84d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad299e9eb4923c71fa80eebbcd6c84d5">&#9670;&nbsp;</a></span>datetime() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">xlnt::datetime::datetime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs an empty datetime (a call to <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> will return true). </p>
 
 </div>
 </div>
@@ -296,7 +350,167 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns a datetime from number by converting the integer part into a date and the fractional part into a time according to <a class="el" href="structxlnt_1_1date.html#a6203499cceceda27cc7c5122b1d9ea1d" title="Return a date by adding days_since_base_year to base_date. This includes leap years. ">date::from_number</a> and <a class="el" href="structxlnt_1_1time.html#a6592d7f210b346d9d0ee277f645c28c6" title="Return a time from a number representing a fraction of a day. The integer part of number will be igno...">time::from_number</a>. </p>
+<p>Returns a datetime from number by converting the integer part into a date and the fractional part into a time according to <a class="el" href="structxlnt_1_1date.html#a6203499cceceda27cc7c5122b1d9ea1d" title="Returns a date by adding days_since_base_year to base_date. This includes leap years. ">date::from_number</a> and <a class="el" href="structxlnt_1_1time.html#a6592d7f210b346d9d0ee277f645c28c6" title="Returns a time from a number representing a fraction of a day. The integer part of number will be ign...">time::from_number</a>. </p>
+
+</div>
+</div>
+<a id="ac1d3624b34f7ac60a28679f1b771a81b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1d3624b34f7ac60a28679f1b771a81b">&#9670;&nbsp;</a></span>get_day()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int xlnt::datetime::get_day </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the day of the datetime. The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown. </p>
+
+</div>
+</div>
+<a id="a806059d0d22f9fd328ad1b291dbdab02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a806059d0d22f9fd328ad1b291dbdab02">&#9670;&nbsp;</a></span>get_hour()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int xlnt::datetime::get_hour </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the hour of the datetime. The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown. </p>
+
+</div>
+</div>
+<a id="a09612e550f15a5388cc9200347c5276d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09612e550f15a5388cc9200347c5276d">&#9670;&nbsp;</a></span>get_microsecond()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int xlnt::datetime::get_microsecond </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the microsecond of the datetime. The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown. </p>
+
+</div>
+</div>
+<a id="ae0f7fa85d1c90200a0002329ae12d989"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0f7fa85d1c90200a0002329ae12d989">&#9670;&nbsp;</a></span>get_minute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int xlnt::datetime::get_minute </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the minute of the datetime. The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown. </p>
+
+</div>
+</div>
+<a id="a704a3237bc7fd09b2d34bb3f5437901a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a704a3237bc7fd09b2d34bb3f5437901a">&#9670;&nbsp;</a></span>get_month()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int xlnt::datetime::get_month </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the month of the datetime. The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown. </p>
+
+</div>
+</div>
+<a id="afe24bf422a53f091cf0ff5ca706b0cda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe24bf422a53f091cf0ff5ca706b0cda">&#9670;&nbsp;</a></span>get_second()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int xlnt::datetime::get_second </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the second of the datetime. The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown. </p>
+
+</div>
+</div>
+<a id="a7508c815a2af6868ab7fa73d5da30591"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7508c815a2af6868ab7fa73d5da30591">&#9670;&nbsp;</a></span>get_year()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int xlnt::datetime::get_year </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the year of the datetime. The datetime could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown. </p>
+
+</div>
+</div>
+<a id="afbabf267eaa52c7ef211159e5cc0ead6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbabf267eaa52c7ef211159e5cc0ead6">&#9670;&nbsp;</a></span>is_null()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::datetime::is_null </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether the date is in an empty/invalid state. </p>
 
 </div>
 </div>
@@ -323,7 +537,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the current date and time according to the system time. </p>
+<p>Returns the current date and time according to the system time. If the current date could not be determined, the date will be in an empty state (<a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> will return true). </p>
 
 </div>
 </div>
@@ -362,7 +576,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns an ISO-formatted string representation of this date and time. </p>
+<p>Returns an ISO-formatted string representation of this date and time. The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an empty string will be returned. </p>
 
 </div>
 </div>
@@ -382,7 +596,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns this datetime as a number of seconds since 1900 or 1904 (depending on base_date provided). </p>
+<p>Returns this datetime as a number of seconds since 1900 or 1904 (depending on base_date provided). The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -401,7 +615,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns a string represenation of this date and time. </p>
+<p>Returns a string represenation of this date and time. The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an empty string will be returned. </p>
 
 </div>
 </div>
@@ -428,7 +642,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the current date and time according to the system time. This is equivalent to <a class="el" href="structxlnt_1_1datetime.html#a41218aa574f2b80d48f2f074a0cc3392" title="Returns the current date and time according to the system time. ">datetime::now()</a>. </p>
+<p>Returns the current date and time according to the system time. This is equivalent to <a class="el" href="structxlnt_1_1datetime.html#a41218aa574f2b80d48f2f074a0cc3392" title="Returns the current date and time according to the system time. If the current date could not be dete...">datetime::now()</a>. If the current date could not be determined, the date will be in an empty state (<a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> will return true). </p>
 
 </div>
 </div>
@@ -447,7 +661,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Calculates and returns the day of the week that this date represents in the range 0 to 6 where 0 represents Sunday. </p>
+<p>Calculates and returns the day of the week that this date represents in the range 0 to 6 where 0 represents Sunday. Returns -1 if the weekday could not be determined. </p>
 
 </div>
 </div>
@@ -459,7 +673,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int xlnt::datetime::day</td>
+          <td class="memname">int xlnt::datetime::day = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -475,7 +689,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int xlnt::datetime::hour</td>
+          <td class="memname">int xlnt::datetime::hour = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -491,7 +705,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int xlnt::datetime::microsecond</td>
+          <td class="memname">int xlnt::datetime::microsecond = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -507,7 +721,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int xlnt::datetime::minute</td>
+          <td class="memname">int xlnt::datetime::minute = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -523,7 +737,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int xlnt::datetime::month</td>
+          <td class="memname">int xlnt::datetime::month = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -539,7 +753,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int xlnt::datetime::second</td>
+          <td class="memname">int xlnt::datetime::second = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -555,11 +769,12 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int xlnt::datetime::year</td>
+          <td class="memname">int xlnt::datetime::year = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
+<p>&ndash;&mdash; TODO IMPORTANT: accessing the members directly is DEPRECATED and will be changed in a further release! Please use the getters instead! </p>
 <p>The year </p>
 
 </div>

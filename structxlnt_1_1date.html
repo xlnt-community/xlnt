@@ -72,7 +72,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>A date is a specific day specified in terms of a year, month, and day. It can also be initialized as a number of days since a base date using <a class="el" href="structxlnt_1_1date.html#a6203499cceceda27cc7c5122b1d9ea1d" title="Return a date by adding days_since_base_year to base_date. This includes leap years. ">date::from_number</a>.  
+<p>A date is a specific day specified in terms of a year, month, and day. It can also be initialized as a number of days since a base date using <a class="el" href="structxlnt_1_1date.html#a6203499cceceda27cc7c5122b1d9ea1d" title="Returns a date by adding days_since_base_year to base_date. This includes leap years. ">date::from_number</a>. IMPORTANT: The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> before calling any functions!  
  <a href="structxlnt_1_1date.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="date_8hpp_source.html">date.hpp</a>&gt;</code></p>
@@ -80,47 +80,62 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a8d476baff7ac759d8c2f05977fa79788"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#a8d476baff7ac759d8c2f05977fa79788">date</a> (int year_, int month_, int day_)</td></tr>
-<tr class="memdesc:a8d476baff7ac759d8c2f05977fa79788"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a data from a given year, month, and day.  <a href="#a8d476baff7ac759d8c2f05977fa79788">More...</a><br /></td></tr>
+<tr class="memdesc:a8d476baff7ac759d8c2f05977fa79788"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a date from a given year, month, and day.  <a href="#a8d476baff7ac759d8c2f05977fa79788">More...</a><br /></td></tr>
 <tr class="separator:a8d476baff7ac759d8c2f05977fa79788"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa8520b0c376464eebdfccd4d6ef114a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#aaa8520b0c376464eebdfccd4d6ef114a">date</a> ()=default</td></tr>
+<tr class="memdesc:aaa8520b0c376464eebdfccd4d6ef114a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an empty date (a call to <a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> will return true).  <a href="#aaa8520b0c376464eebdfccd4d6ef114a">More...</a><br /></td></tr>
+<tr class="separator:aaa8520b0c376464eebdfccd4d6ef114a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a572c40ae39283f2dda7d52d7a897b727"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#a572c40ae39283f2dda7d52d7a897b727">to_number</a> (<a class="el" href="namespacexlnt.html#aaddbb735c8ac3a2d09f660fab73b0bb9">calendar</a> base_date) const</td></tr>
-<tr class="memdesc:a572c40ae39283f2dda7d52d7a897b727"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of days between this date and base_date.  <a href="#a572c40ae39283f2dda7d52d7a897b727">More...</a><br /></td></tr>
+<tr class="memdesc:a572c40ae39283f2dda7d52d7a897b727"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of days between this date and base_date. The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a572c40ae39283f2dda7d52d7a897b727">More...</a><br /></td></tr>
 <tr class="separator:a572c40ae39283f2dda7d52d7a897b727"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9756120b711701072d93670fd2c0edd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#ab9756120b711701072d93670fd2c0edd">weekday</a> () const</td></tr>
-<tr class="memdesc:ab9756120b711701072d93670fd2c0edd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates and returns the day of the week that this date represents in the range 0 to 6 where 0 represents Sunday.  <a href="#ab9756120b711701072d93670fd2c0edd">More...</a><br /></td></tr>
+<tr class="memdesc:ab9756120b711701072d93670fd2c0edd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates and returns the day of the week that this date represents in the range 0 to 6 where 0 represents Sunday. Returns -1 if the weekday could not be determined.  <a href="#ab9756120b711701072d93670fd2c0edd">More...</a><br /></td></tr>
 <tr class="separator:ab9756120b711701072d93670fd2c0edd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5adf159d394774ce50dc6983f903b96e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#a5adf159d394774ce50dc6983f903b96e">get_year</a> () const</td></tr>
+<tr class="memdesc:a5adf159d394774ce50dc6983f903b96e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the year of the date. The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a5adf159d394774ce50dc6983f903b96e">More...</a><br /></td></tr>
+<tr class="separator:a5adf159d394774ce50dc6983f903b96e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e09a98af8ca8b11047386882cf30319"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#a0e09a98af8ca8b11047386882cf30319">get_month</a> () const</td></tr>
+<tr class="memdesc:a0e09a98af8ca8b11047386882cf30319"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the month of the date. The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a0e09a98af8ca8b11047386882cf30319">More...</a><br /></td></tr>
+<tr class="separator:a0e09a98af8ca8b11047386882cf30319"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af777d704973dd231117b28483d9e5a4d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#af777d704973dd231117b28483d9e5a4d">get_day</a> () const</td></tr>
+<tr class="memdesc:af777d704973dd231117b28483d9e5a4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the day of the date. The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#af777d704973dd231117b28483d9e5a4d">More...</a><br /></td></tr>
+<tr class="separator:af777d704973dd231117b28483d9e5a4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dc1707fee108a6a02635b5e7728c096"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096">is_null</a> () const</td></tr>
+<tr class="memdesc:a4dc1707fee108a6a02635b5e7728c096"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether the date is in an empty/invalid state.  <a href="#a4dc1707fee108a6a02635b5e7728c096">More...</a><br /></td></tr>
+<tr class="separator:a4dc1707fee108a6a02635b5e7728c096"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9ded4a4a7ecc2c593219a16d785e9cc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#af9ded4a4a7ecc2c593219a16d785e9cc">operator==</a> (const <a class="el" href="structxlnt_1_1date.html">date</a> &amp;comparand) const</td></tr>
-<tr class="memdesc:af9ded4a4a7ecc2c593219a16d785e9cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if this date is equal to comparand.  <a href="#af9ded4a4a7ecc2c593219a16d785e9cc">More...</a><br /></td></tr>
+<tr class="memdesc:af9ded4a4a7ecc2c593219a16d785e9cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this date is equal to comparand.  <a href="#af9ded4a4a7ecc2c593219a16d785e9cc">More...</a><br /></td></tr>
 <tr class="separator:af9ded4a4a7ecc2c593219a16d785e9cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b5067842a63174cfefe75736ac95fc1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#a2b5067842a63174cfefe75736ac95fc1">operator!=</a> (const <a class="el" href="structxlnt_1_1date.html">date</a> &amp;comparand) const</td></tr>
-<tr class="memdesc:a2b5067842a63174cfefe75736ac95fc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if this date is equal to comparand.  <a href="#a2b5067842a63174cfefe75736ac95fc1">More...</a><br /></td></tr>
+<tr class="memdesc:a2b5067842a63174cfefe75736ac95fc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this date is equal to comparand.  <a href="#a2b5067842a63174cfefe75736ac95fc1">More...</a><br /></td></tr>
 <tr class="separator:a2b5067842a63174cfefe75736ac95fc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ad9bc11f9ec9c7558a06ee08da8334c7b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structxlnt_1_1date.html">date</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#ad9bc11f9ec9c7558a06ee08da8334c7b">today</a> ()</td></tr>
-<tr class="memdesc:ad9bc11f9ec9c7558a06ee08da8334c7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current date according to the system time.  <a href="#ad9bc11f9ec9c7558a06ee08da8334c7b">More...</a><br /></td></tr>
+<tr class="memdesc:ad9bc11f9ec9c7558a06ee08da8334c7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current date according to the system time. If the current date could not be determined, the date will be in an empty state (<a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> will return true).  <a href="#ad9bc11f9ec9c7558a06ee08da8334c7b">More...</a><br /></td></tr>
 <tr class="separator:ad9bc11f9ec9c7558a06ee08da8334c7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6203499cceceda27cc7c5122b1d9ea1d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structxlnt_1_1date.html">date</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#a6203499cceceda27cc7c5122b1d9ea1d">from_number</a> (int days_since_base_year, <a class="el" href="namespacexlnt.html#aaddbb735c8ac3a2d09f660fab73b0bb9">calendar</a> base_date)</td></tr>
-<tr class="memdesc:a6203499cceceda27cc7c5122b1d9ea1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a date by adding days_since_base_year to base_date. This includes leap years.  <a href="#a6203499cceceda27cc7c5122b1d9ea1d">More...</a><br /></td></tr>
+<tr class="memdesc:a6203499cceceda27cc7c5122b1d9ea1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a date by adding days_since_base_year to base_date. This includes leap years.  <a href="#a6203499cceceda27cc7c5122b1d9ea1d">More...</a><br /></td></tr>
 <tr class="separator:a6203499cceceda27cc7c5122b1d9ea1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a662ca495d6a7abffcf271b13f7ac8714"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#a662ca495d6a7abffcf271b13f7ac8714">year</a></td></tr>
-<tr class="memdesc:a662ca495d6a7abffcf271b13f7ac8714"><td class="mdescLeft">&#160;</td><td class="mdescRight">The year  <a href="#a662ca495d6a7abffcf271b13f7ac8714">More...</a><br /></td></tr>
+<tr class="memitem:a662ca495d6a7abffcf271b13f7ac8714"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#a662ca495d6a7abffcf271b13f7ac8714">year</a> = 0</td></tr>
+<tr class="memdesc:a662ca495d6a7abffcf271b13f7ac8714"><td class="mdescLeft">&#160;</td><td class="mdescRight">&ndash;&mdash; TODO IMPORTANT: accessing the members directly is DEPRECATED and will be changed in a further release! Please use the getters instead!  <a href="#a662ca495d6a7abffcf271b13f7ac8714">More...</a><br /></td></tr>
 <tr class="separator:a662ca495d6a7abffcf271b13f7ac8714"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c0f92250ac76a5fa5425a629b0a19ce"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#a1c0f92250ac76a5fa5425a629b0a19ce">month</a></td></tr>
+<tr class="memitem:a1c0f92250ac76a5fa5425a629b0a19ce"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#a1c0f92250ac76a5fa5425a629b0a19ce">month</a> = 0</td></tr>
 <tr class="memdesc:a1c0f92250ac76a5fa5425a629b0a19ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">The month  <a href="#a1c0f92250ac76a5fa5425a629b0a19ce">More...</a><br /></td></tr>
 <tr class="separator:a1c0f92250ac76a5fa5425a629b0a19ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ec8b82ef9c82626527a6d890bee24ce"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#a1ec8b82ef9c82626527a6d890bee24ce">day</a></td></tr>
+<tr class="memitem:a1ec8b82ef9c82626527a6d890bee24ce"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1date.html#a1ec8b82ef9c82626527a6d890bee24ce">day</a> = 0</td></tr>
 <tr class="memdesc:a1ec8b82ef9c82626527a6d890bee24ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">The day  <a href="#a1ec8b82ef9c82626527a6d890bee24ce">More...</a><br /></td></tr>
 <tr class="separator:a1ec8b82ef9c82626527a6d890bee24ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A date is a specific day specified in terms of a year, month, and day. It can also be initialized as a number of days since a base date using <a class="el" href="structxlnt_1_1date.html#a6203499cceceda27cc7c5122b1d9ea1d" title="Return a date by adding days_since_base_year to base_date. This includes leap years. ">date::from_number</a>. </p>
+<div class="textblock"><p>A date is a specific day specified in terms of a year, month, and day. It can also be initialized as a number of days since a base date using <a class="el" href="structxlnt_1_1date.html#a6203499cceceda27cc7c5122b1d9ea1d" title="Returns a date by adding days_since_base_year to base_date. This includes leap years. ">date::from_number</a>. IMPORTANT: The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> before calling any functions! </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a8d476baff7ac759d8c2f05977fa79788"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d476baff7ac759d8c2f05977fa79788">&#9670;&nbsp;</a></span>date()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d476baff7ac759d8c2f05977fa79788">&#9670;&nbsp;</a></span>date() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -151,7 +166,34 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Constructs a data from a given year, month, and day. </p>
+<p>Constructs a date from a given year, month, and day. </p>
+
+</div>
+</div>
+<a id="aaa8520b0c376464eebdfccd4d6ef114a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa8520b0c376464eebdfccd4d6ef114a">&#9670;&nbsp;</a></span>date() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">xlnt::date::date </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs an empty date (a call to <a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> will return true). </p>
 
 </div>
 </div>
@@ -190,7 +232,91 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Return a date by adding days_since_base_year to base_date. This includes leap years. </p>
+<p>Returns a date by adding days_since_base_year to base_date. This includes leap years. </p>
+
+</div>
+</div>
+<a id="af777d704973dd231117b28483d9e5a4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af777d704973dd231117b28483d9e5a4d">&#9670;&nbsp;</a></span>get_day()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int xlnt::date::get_day </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the day of the date. The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown. </p>
+
+</div>
+</div>
+<a id="a0e09a98af8ca8b11047386882cf30319"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e09a98af8ca8b11047386882cf30319">&#9670;&nbsp;</a></span>get_month()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int xlnt::date::get_month </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the month of the date. The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown. </p>
+
+</div>
+</div>
+<a id="a5adf159d394774ce50dc6983f903b96e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5adf159d394774ce50dc6983f903b96e">&#9670;&nbsp;</a></span>get_year()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int xlnt::date::get_year </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the year of the date. The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown. </p>
+
+</div>
+</div>
+<a id="a4dc1707fee108a6a02635b5e7728c096"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dc1707fee108a6a02635b5e7728c096">&#9670;&nbsp;</a></span>is_null()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::date::is_null </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether the date is in an empty/invalid state. </p>
 
 </div>
 </div>
@@ -210,7 +336,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Return true if this date is equal to comparand. </p>
+<p>Returns true if this date is equal to comparand. </p>
 
 </div>
 </div>
@@ -230,7 +356,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Return true if this date is equal to comparand. </p>
+<p>Returns true if this date is equal to comparand. </p>
 
 </div>
 </div>
@@ -250,7 +376,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Return the number of days between this date and base_date. </p>
+<p>Returns the number of days between this date and base_date. The date could be in an empty/invalid state, so you may want to call <a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> first! If this function is called when having an empty/invalid state, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -277,7 +403,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Return the current date according to the system time. </p>
+<p>Returns the current date according to the system time. If the current date could not be determined, the date will be in an empty state (<a class="el" href="structxlnt_1_1date.html#a4dc1707fee108a6a02635b5e7728c096" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> will return true). </p>
 
 </div>
 </div>
@@ -296,7 +422,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Calculates and returns the day of the week that this date represents in the range 0 to 6 where 0 represents Sunday. </p>
+<p>Calculates and returns the day of the week that this date represents in the range 0 to 6 where 0 represents Sunday. Returns -1 if the weekday could not be determined. </p>
 
 </div>
 </div>
@@ -308,7 +434,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int xlnt::date::day</td>
+          <td class="memname">int xlnt::date::day = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -324,7 +450,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int xlnt::date::month</td>
+          <td class="memname">int xlnt::date::month = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -340,11 +466,12 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int xlnt::date::year</td>
+          <td class="memname">int xlnt::date::year = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
+<p>&ndash;&mdash; TODO IMPORTANT: accessing the members directly is DEPRECATED and will be changed in a further release! Please use the getters instead! </p>
 <p>The year </p>
 
 </div>

@@ -72,7 +72,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>A time is a specific time of the day specified in terms of an hour, minute, second, and microsecond (0-999999). It can also be initialized as a fraction of a day using <a class="el" href="structxlnt_1_1time.html#a6592d7f210b346d9d0ee277f645c28c6" title="Return a time from a number representing a fraction of a day. The integer part of number will be igno...">time::from_number</a>.  
+<p>A time is a specific time of the day specified in terms of an hour, minute, second, and microsecond (0-999999). It can also be initialized as a fraction of a day using <a class="el" href="structxlnt_1_1time.html#a6592d7f210b346d9d0ee277f645c28c6" title="Returns a time from a number representing a fraction of a day. The integer part of number will be ign...">time::from_number</a>.  
  <a href="structxlnt_1_1time.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="time_8hpp_source.html">time.hpp</a>&gt;</code></p>
@@ -95,29 +95,29 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ada37caa720d9aae08cba182f842d1ea7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structxlnt_1_1time.html">time</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1time.html#ada37caa720d9aae08cba182f842d1ea7">now</a> ()</td></tr>
-<tr class="memdesc:ada37caa720d9aae08cba182f842d1ea7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current time according to the system time.  <a href="#ada37caa720d9aae08cba182f842d1ea7">More...</a><br /></td></tr>
+<tr class="memdesc:ada37caa720d9aae08cba182f842d1ea7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current time according to the system time.  <a href="#ada37caa720d9aae08cba182f842d1ea7">More...</a><br /></td></tr>
 <tr class="separator:ada37caa720d9aae08cba182f842d1ea7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6592d7f210b346d9d0ee277f645c28c6"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structxlnt_1_1time.html">time</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1time.html#a6592d7f210b346d9d0ee277f645c28c6">from_number</a> (double <a class="el" href="namespacexlnt.html#a7084345eee5edf2d4cca71f3c3c04cb2ab1bc248a7ff2b2e95569f56de68615df">number</a>)</td></tr>
-<tr class="memdesc:a6592d7f210b346d9d0ee277f645c28c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a time from a number representing a fraction of a day. The integer part of number will be ignored. 0.5 would return time(12, 0, 0, 0) or noon, halfway through the day.  <a href="#a6592d7f210b346d9d0ee277f645c28c6">More...</a><br /></td></tr>
+<tr class="memdesc:a6592d7f210b346d9d0ee277f645c28c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a time from a number representing a fraction of a day. The integer part of number will be ignored. 0.5 would return time(12, 0, 0, 0) or noon, halfway through the day.  <a href="#a6592d7f210b346d9d0ee277f645c28c6">More...</a><br /></td></tr>
 <tr class="separator:a6592d7f210b346d9d0ee277f645c28c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a89ad1dbabe8c2feb3ead88bbc9ac8a05"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1time.html#a89ad1dbabe8c2feb3ead88bbc9ac8a05">hour</a></td></tr>
+<tr class="memitem:a89ad1dbabe8c2feb3ead88bbc9ac8a05"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1time.html#a89ad1dbabe8c2feb3ead88bbc9ac8a05">hour</a> = 0</td></tr>
 <tr class="memdesc:a89ad1dbabe8c2feb3ead88bbc9ac8a05"><td class="mdescLeft">&#160;</td><td class="mdescRight">The hour  <a href="#a89ad1dbabe8c2feb3ead88bbc9ac8a05">More...</a><br /></td></tr>
 <tr class="separator:a89ad1dbabe8c2feb3ead88bbc9ac8a05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6fe4644a42f276c76be6039cc1ad6fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1time.html#ad6fe4644a42f276c76be6039cc1ad6fe">minute</a></td></tr>
+<tr class="memitem:ad6fe4644a42f276c76be6039cc1ad6fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1time.html#ad6fe4644a42f276c76be6039cc1ad6fe">minute</a> = 0</td></tr>
 <tr class="memdesc:ad6fe4644a42f276c76be6039cc1ad6fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">The minute  <a href="#ad6fe4644a42f276c76be6039cc1ad6fe">More...</a><br /></td></tr>
 <tr class="separator:ad6fe4644a42f276c76be6039cc1ad6fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeeb2afa02d19c7afc315322423740a29"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1time.html#aeeb2afa02d19c7afc315322423740a29">second</a></td></tr>
+<tr class="memitem:aeeb2afa02d19c7afc315322423740a29"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1time.html#aeeb2afa02d19c7afc315322423740a29">second</a> = 0</td></tr>
 <tr class="memdesc:aeeb2afa02d19c7afc315322423740a29"><td class="mdescLeft">&#160;</td><td class="mdescRight">The second  <a href="#aeeb2afa02d19c7afc315322423740a29">More...</a><br /></td></tr>
 <tr class="separator:aeeb2afa02d19c7afc315322423740a29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae81bf67138dce324e5595bcfc99d6afb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1time.html#ae81bf67138dce324e5595bcfc99d6afb">microsecond</a></td></tr>
+<tr class="memitem:ae81bf67138dce324e5595bcfc99d6afb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1time.html#ae81bf67138dce324e5595bcfc99d6afb">microsecond</a> = 0</td></tr>
 <tr class="memdesc:ae81bf67138dce324e5595bcfc99d6afb"><td class="mdescLeft">&#160;</td><td class="mdescRight">The microsecond  <a href="#ae81bf67138dce324e5595bcfc99d6afb">More...</a><br /></td></tr>
 <tr class="separator:ae81bf67138dce324e5595bcfc99d6afb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A time is a specific time of the day specified in terms of an hour, minute, second, and microsecond (0-999999). It can also be initialized as a fraction of a day using <a class="el" href="structxlnt_1_1time.html#a6592d7f210b346d9d0ee277f645c28c6" title="Return a time from a number representing a fraction of a day. The integer part of number will be igno...">time::from_number</a>. </p>
+<div class="textblock"><p>A time is a specific time of the day specified in terms of an hour, minute, second, and microsecond (0-999999). It can also be initialized as a fraction of a day using <a class="el" href="structxlnt_1_1time.html#a6592d7f210b346d9d0ee277f645c28c6" title="Returns a time from a number representing a fraction of a day. The integer part of number will be ign...">time::from_number</a>. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a19bf9fcc56c251ad1d01a52a81b6eb3f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a19bf9fcc56c251ad1d01a52a81b6eb3f">&#9670;&nbsp;</a></span>time() <span class="overload">[1/2]</span></h2>
@@ -222,7 +222,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Return a time from a number representing a fraction of a day. The integer part of number will be ignored. 0.5 would return time(12, 0, 0, 0) or noon, halfway through the day. </p>
+<p>Returns a time from a number representing a fraction of a day. The integer part of number will be ignored. 0.5 would return time(12, 0, 0, 0) or noon, halfway through the day. </p>
 
 </div>
 </div>
@@ -249,7 +249,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Return the current time according to the system time. </p>
+<p>Returns the current time according to the system time. </p>
 
 </div>
 </div>
@@ -300,7 +300,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int xlnt::time::hour</td>
+          <td class="memname">int xlnt::time::hour = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -316,7 +316,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int xlnt::time::microsecond</td>
+          <td class="memname">int xlnt::time::microsecond = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -332,7 +332,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int xlnt::time::minute</td>
+          <td class="memname">int xlnt::time::minute = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -348,7 +348,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int xlnt::time::second</td>
+          <td class="memname">int xlnt::time::second = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
