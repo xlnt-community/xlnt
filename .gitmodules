@@ -4,3 +4,7 @@
 [submodule "third-party/utfcpp"]
 	path = third-party/utfcpp
 	url = https://github.com/nemtrif/utfcpp.git
+[submodule "third-party/pybind11"]
+	path = third-party/pybind11
+	url = https://github.com/pybind/pybind11.git
+	branch = v2.13
