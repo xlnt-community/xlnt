@@ -241,9 +241,9 @@ class XLNT_API invalid_attribute : public exception
 {
 public:
     /// <summary>
-    /// Default constructor.
+    /// Constructor.
     /// </summary>
-    invalid_attribute();
+    explicit invalid_attribute(const char *optional_message = nullptr);
 
     /// <summary>
     /// Default copy constructor.

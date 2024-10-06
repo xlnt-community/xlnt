@@ -123,8 +123,8 @@ invalid_parameter::~invalid_parameter()
 {
 }
 
-invalid_attribute::invalid_attribute()
-    : exception("bad attribute")
+invalid_attribute::invalid_attribute(const char *optional_message)
+    : exception(optional_message != nullptr ? optional_message : "bad attribute")
 {
 }
 
