@@ -4,7 +4,7 @@
 >[MIT License](https://github.com/xlnt-community/xlnt/blob/master/LICENSE.md)
 
 ```
-Copyright (c) 2014-2018 Thomas Fussell
+Copyright (c) 2014-2022 Thomas Fussell
 Copyright (c) 2024 xlnt-community
 
 Permission is hereby granted, free of charge, to any person obtaining a

@@ -1,6 +1,7 @@
-// Copyright (C) 2017-2021 Thomas Fussell
+// Copyright (C) 2017-2022 Thomas Fussell
 // Copyright (C) 2013 Tomas Kislan
 // Copyright (C) 2013 Adam Rudd
+// Copyright (c) 2024 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
