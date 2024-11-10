@@ -38,11 +38,22 @@ setupDocker ()
     REPLACE_REGEX+="${REPLACE_REGEX} -e s#PLACEHOLDER_IMAGE($1)#${IMAGE}#"
 }
 
+checkCoveralls ()
+{
+    if [ -n "${COVERALLS_REPO_TOKEN}" ]; then
+        REPLACE_REGEX+="${REPLACE_REGEX} -e s#HAS_COVERALLS#true#"
+    else
+        REPLACE_REGEX+="${REPLACE_REGEX} -e s#HAS_COVERALLS#false#"
+    fi
+}
+
 main ()
 {
     for filename in *.Dockerfile; do
         setupDocker $(basename "$filename" .Dockerfile)
     done
+
+    checkCoveralls
 
     sed ${REPLACE_REGEX} continue_config_in.yml > continue_config.yml
 }
