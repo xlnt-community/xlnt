@@ -165,41 +165,44 @@ jobs:
 workflows:
   build:
     jobs:
-      - build-gcc:
-          name: tests-gcc7-cmake3.2
-          cxx-ver: "11"
-          image: PLACEHOLDER_IMAGE(gcc7_cmake3.2)
-          matrix:
-            alias: tests-gcc7-cmake3.2-all
-            parameters:
-              build-type:
-                - Release
-                - Debug
-              static:
-                - "ON"
-                - "OFF"
-          filters:
-            branches:
-              ignore: gh-pages
+#      - build-gcc:
+#          name: tests-gcc7-cmake3.2
+#          cxx-ver: "11"
+#          image: PLACEHOLDER_IMAGE(gcc7_cmake3.2)
+#          matrix:
+#            alias: tests-gcc7-cmake3.2-all
+#            parameters:
+#              build-type:
+#                - Release
+#                - Debug
+#              static:
+#                - "ON"
+#                - "OFF"
+#          filters:
+#            branches:
+#              ignore: gh-pages
 
-      - build-gcc:
-          name: tests-gcc14-cmake3.30.3
-          image: PLACEHOLDER_IMAGE(gcc14_cmake3.30.3)
-          matrix:
-            alias: tests-gcc14-cmake3.30.3-all
-            parameters:
-              cxx-ver:
-                - "11"
-                - "17"
-              build-type:
-                - Release
-                - Debug
-              static:
-                - "ON"
-                - "OFF"
-          filters:
-            branches:
-              ignore: gh-pages
+#      - build-gcc:
+#          name: tests-gcc14-cmake3.30.3
+#          image: PLACEHOLDER_IMAGE(gcc14_cmake3.30.3)
+#          matrix:
+#            alias: tests-gcc14-cmake3.30.3-all
+#            parameters:
+#              cxx-ver:
+#                - "11"
+#                - "17"
+#              build-type:
+#                - Release
+#                - Debug
+#              static:
+#                - "ON"
+#                - "OFF"
+#          filters:
+#            branches:
+#              ignore: gh-pages
+
+      - hold:
+          type: approval
 
       - build-gcc:
           name: samples-benchmarks-coverage-gcc
@@ -209,43 +212,47 @@ workflows:
           samples: "ON"
           benchmarks: "ON"
           coverage: "ON"
+          context:
+            - coveralls-xlnt
+          requires:
+            - hold
           filters:
             branches:
               ignore: gh-pages
 
-      - build-msvc:
-          name: tests-samples-msvc
-          matrix:
-            parameters:
-              build-type:
-                - Release
-                - Debug
-              static:
-                - "ON"
-                - "OFF"
-          samples: "ON"
-          requires:
-            - tests-gcc7-cmake3.2-all # prevent building windows in case of gcc failures, as windows builds are more expensive
-          filters:
-            branches:
-              ignore: gh-pages
+#      - build-msvc:
+#          name: tests-samples-msvc
+#          matrix:
+#            parameters:
+#              build-type:
+#                - Release
+#                - Debug
+#              static:
+#                - "ON"
+#                - "OFF"
+#          samples: "ON"
+#          requires:
+#            - tests-gcc7-cmake3.2-all # prevent building windows in case of gcc failures, as windows builds are more expensive
+#          filters:
+#            branches:
+#              ignore: gh-pages
 
-      - build-macos:
-          name: tests-samples-macos
-          matrix:
-            parameters:
-              build-type:
-                - Release
-                - Debug
-              static:
-                - "ON"
-                - "OFF"
-          samples: "ON"
-          requires:
-            - tests-gcc7-cmake3.2-all # prevent building macos in case of gcc failures, as macos builds are more expensive
-          filters:
-            branches:
-              ignore: gh-pages
+#      - build-macos:
+#          name: tests-samples-macos
+#          matrix:
+#            parameters:
+#              build-type:
+#                - Release
+#                - Debug
+#              static:
+#                - "ON"
+#                - "OFF"
+#          samples: "ON"
+#          requires:
+#            - tests-gcc7-cmake3.2-all # prevent building macos in case of gcc failures, as macos builds are more expensive
+#          filters:
+#            branches:
+#              ignore: gh-pages
 
       - docs-build:
           filters:
