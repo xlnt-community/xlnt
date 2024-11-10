@@ -470,11 +470,21 @@ struct stylesheet
     format_impl *find_or_create_with(format_impl *pattern, const number_format &new_number_format, optional<bool> applied)
     {
         format_impl new_format = *pattern;
-        if (new_number_format.id() >= 164)
+        if (new_number_format.has_id() && new_number_format.id() < 164)
         {
-            find_or_add(number_formats, new_number_format);
+            new_format.number_format_id = new_number_format.id();
         }
-        new_format.number_format_id = new_number_format.id();
+        else
+        {
+            auto iter = std::find(number_formats.begin(), number_formats.end(), new_number_format);
+            if (iter == number_formats.end())
+            {
+                number_format new_item(new_number_format);
+                new_item.id(next_custom_number_format_id());
+                iter = number_formats.emplace(number_formats.end(), new_item);
+            }
+            new_format.number_format_id = iter->id();
+        }
         new_format.number_format_applied = applied;
         if (pattern->references == 0)
         {
