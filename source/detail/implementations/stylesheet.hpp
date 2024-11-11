@@ -479,9 +479,9 @@ struct stylesheet
             auto iter = std::find(number_formats.begin(), number_formats.end(), new_number_format);
             if (iter == number_formats.end())
             {
-                number_format new_item(new_number_format);
-                new_item.id(next_custom_number_format_id());
-                iter = number_formats.emplace(number_formats.end(), new_item);
+                std::size_t new_id = next_custom_number_format_id();
+                iter = number_formats.emplace(number_formats.end(), new_number_format);
+                iter->id(new_id);
             }
             new_format.number_format_id = iter->id();
         }
