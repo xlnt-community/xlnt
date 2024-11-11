@@ -73,6 +73,7 @@ public:
         register_test(test_fill);
         register_test(test_border);
         register_test(test_number_format);
+        register_test(test_number_format_id);
         register_test(test_alignment);
         register_test(test_protection);
         register_test(test_style);
@@ -460,6 +461,22 @@ private:
         xlnt_assert(cell.has_format());
         xlnt_assert(cell.format().number_format_applied());
         xlnt_assert_equals(cell.number_format().format_string(), "dd--hh--mm");
+    }
+
+    void test_number_format_id()
+    {
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        auto cell1 = ws.cell("A1");
+        auto cell2 = ws.cell("A2");
+
+        xlnt::number_format format1("DD-MM-YYYY hh:mm:ss");
+        xlnt::number_format format2("DD-MM-YYYY hh:mm:ss");
+
+        cell1.number_format(format1);
+        cell2.number_format(format2);
+
+        xlnt_assert_equals(cell1.number_format().id(), cell2.number_format().id());
     }
 
     void test_alignment()
