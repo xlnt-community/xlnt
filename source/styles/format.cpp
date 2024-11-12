@@ -151,15 +151,7 @@ xlnt::number_format format::number_format() const
 
 format format::number_format(const xlnt::number_format &new_number_format, optional<bool> applied)
 {
-    auto copy = new_number_format;
-
-    if (!copy.has_id())
-    {
-        copy.id(d_->parent->next_custom_number_format_id());
-        d_->parent->number_formats.push_back(copy);
-    }
-
-    d_ = d_->parent->find_or_create_with(d_, copy, applied);
+    d_ = d_->parent->find_or_create_with(d_, new_number_format, applied);
     return format(d_);
 }
 
