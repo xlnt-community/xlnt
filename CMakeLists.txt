@@ -32,6 +32,7 @@ option(TESTS "Set to ON to build test executable (in ./tests)" OFF)
 option(SAMPLES "Set to ON to build executable code samples (in ./samples)" OFF)
 option(BENCHMARKS "Set to ON to build performance benchmarks (in ./benchmarks)" OFF)
 option(PYTHON "Set to ON to build Arrow conversion functions (in ./python)" OFF)
+mark_as_advanced(PYTHON)
 option(DOCUMENTATION "Set to ON to build API reference documentation (in ./api-reference)" OFF)
 
 # Platform specific options
@@ -64,6 +65,7 @@ if(TESTS)
 endif()
 
 if(PYTHON)
+  message(WARNING "The Python integration is currently not functional. We would accept a PR to fix the current issues.")
   add_subdirectory(python)
 endif()
 
