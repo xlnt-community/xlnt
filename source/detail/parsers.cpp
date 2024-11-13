@@ -542,8 +542,9 @@ bool xlnt::detail::parse(const char *string, long double &result, char **end)
     return parse(detail::get_system_locale(), string, result, end);
 }
 
+// The following function must be "static" to avoid noexcept-type warnings / errors on GCC. See https://stackoverflow.com/a/46857525
 template <typename T, typename ParseFunc>
-bool parse_number(const std::locale &loc, const char *string, T &result, char **end, ParseFunc func) noexcept
+static bool parse_number(const std::locale &loc, const char *string, T &result, char **end, ParseFunc func)
 {
     // Only accept float, double and long double, but NOT any other floating-point types (e.g. extended floating-point types)
     // since they are NOT supported by the C parsers!
