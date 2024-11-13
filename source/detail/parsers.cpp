@@ -543,7 +543,7 @@ bool xlnt::detail::parse(const char *string, long double &result, char **end)
 }
 
 template <typename T, typename ParseFunc>
-bool parse_number(const std::locale &loc, const char *string, T &result, char **end, ParseFunc func)
+bool parse_number(const std::locale &loc, const char *string, T &result, char **end, ParseFunc func) noexcept
 {
     // Only accept float, double and long double, but NOT any other floating-point types (e.g. extended floating-point types)
     // since they are NOT supported by the C parsers!
