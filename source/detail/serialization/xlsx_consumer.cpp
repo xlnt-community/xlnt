@@ -1434,12 +1434,13 @@ bool xlsx_consumer::has_cell()
         expect_start_element(qn("spreadsheetml", "row"), xml::content::complex); // CT_Row
         row_t row_index = 0;
         bool ok = detail::parse(parser().attribute("r"), row_index);
-#ifdef THROW_ON_INVALID_XML
+
         if (!ok)
         {
+#ifdef THROW_ON_INVALID_XML
             throw xlnt::invalid_parameter();
-        }
 #endif
+        }
         auto &row_properties = ws.row_properties(row_index);
 
         if (parser().attribute_present("ht"))
@@ -1500,12 +1501,14 @@ bool xlsx_consumer::has_cell()
     {
         size_t s = 0;
         bool ok = detail::parse(parser().attribute("s"), s);
-#ifdef THROW_ON_INVALID_XML
+
         if (!ok)
         {
+#ifdef THROW_ON_INVALID_XML
             throw xlnt::invalid_parameter();
-        }
 #endif
+        }
+
         cell.format(target_.format(s));
     }
 
