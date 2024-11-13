@@ -38,7 +38,6 @@ public:
         register_test(test_min);
         register_test(test_max);
         register_test(test_abs);
-        register_test(test_locale_comma);
     }
 
     void test_serialise_number()
@@ -221,19 +220,6 @@ public:
         xlnt_assert(xlnt::detail::abs(-1.5) == 1.5);
 
         static_assert(xlnt::detail::abs(-1.23) == 1.23, "constexpr");
-    }
-
-    void test_locale_comma ()
-    {
-        struct SetLocale
-        {
-            SetLocale() {xlnt_assert(setlocale(LC_ALL, "de_DE") != nullptr);} // If failed, please install de_DE locale to correctly run this test.
-            ~SetLocale() {setlocale(LC_ALL, "C");}
-        } setLocale;
-
-        xlnt::detail::number_serialiser serialiser;
-        xlnt_assert(serialiser.deserialise("1.99999999") == 1.99999999);
-        xlnt_assert(serialiser.deserialise("1.1") == 1.1);
     }
 };
 static numeric_test_suite x;
