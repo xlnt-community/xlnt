@@ -27,6 +27,7 @@
 
 #include <xlnt/utils/time.hpp>
 #include <detail/time_helpers.hpp>
+#include <detail/parsers.hpp>
 
 namespace xlnt {
 
@@ -81,18 +82,28 @@ bool time::operator==(const time &comparand) const
 
 time::time(const std::string &time_string)
 {
-    std::string remaining = time_string;
-    auto colon_index = remaining.find(':');
-    hour = std::stoi(remaining.substr(0, colon_index));
-    remaining = remaining.substr(colon_index + 1);
-    colon_index = remaining.find(':');
-    minute = std::stoi(remaining.substr(0, colon_index));
-    colon_index = remaining.find(':');
-
-    if (colon_index != std::string::npos)
+    bool ok = true;
+    auto next_separator_index = time_string.find(':');
+    next_separator_index =  time_string.find(':');
+    ok = ok && detail::parse(time_string.substr(0, next_separator_index), hour);
+    auto previous_separator_index = next_separator_index;
+    next_separator_index = ok ? time_string.find(':', previous_separator_index + 1) : next_separator_index;
+    ok = ok && detail::parse(time_string.substr(previous_separator_index + 1, next_separator_index), minute);
+    previous_separator_index = next_separator_index;
+    next_separator_index = ok ? time_string.find('.', previous_separator_index + 1) : next_separator_index;
+    bool subseconds_available = next_separator_index != std::string::npos;
+    if (subseconds_available)
     {
-        remaining = remaining.substr(colon_index + 1);
-        second = std::stoi(remaining);
+        // First parse the seconds.
+        ok = ok && detail::parse(time_string.substr(previous_separator_index + 1, next_separator_index), second);
+        previous_separator_index = next_separator_index;
+    }
+    next_separator_index = ok ? std::string::npos : next_separator_index;
+    ok = ok && detail::parse(time_string.substr(previous_separator_index + 1, next_separator_index), subseconds_available ? microsecond : second);
+
+    if (!ok)
+    {
+        throw xlnt::exception("invalid ISO time");
     }
 }
 

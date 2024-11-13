@@ -48,6 +48,7 @@
 #include <detail/serialization/xlsx_consumer.hpp>
 #include <detail/serialization/zstream.hpp>
 #include <detail/limits.hpp>
+#include <detail/parsers.hpp>
 
 namespace {
 /// string_equal
@@ -183,7 +184,11 @@ xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser, std::uno
         }
         else if (string_equal(attr.first.name(), "s"))
         {
-            c.style_index = static_cast<int>(strtol(attr.second.value.c_str(), nullptr, 10));
+            int index = -1;
+            if (xlnt::detail::parse(attr.second.value, index))
+            {
+                c.style_index = index;
+            }
         }
         else if (string_equal(attr.first.name(), "ph"))
         {
@@ -191,7 +196,11 @@ xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser, std::uno
         }
         else if (string_equal(attr.first.name(), "cm"))
         {
-            c.cell_metatdata_idx = static_cast<int>(strtol(attr.second.value.c_str(), nullptr, 10));
+            int index = -1;
+            if (xlnt::detail::parse(attr.second.value, index))
+            {
+                c.cell_metatdata_idx = index;
+            }
         }
     }
     int level = 1; // nesting level
@@ -298,7 +307,11 @@ std::pair<xlnt::row_properties, int> parse_row(xml::parser *parser, xlnt::detail
         }
         else if (string_equal(attr.first.name(), "s"))
         {
-            props.first.style = strtoul(attr.second.value.c_str(), nullptr, 10);
+            unsigned long long style = 0;
+            if (xlnt::detail::parse(attr.second.value, style))
+            {
+                props.first.style = static_cast<size_t>(style);
+            }
         }
         else if (string_equal(attr.first.name(), "hidden"))
         {
@@ -314,11 +327,15 @@ std::pair<xlnt::row_properties, int> parse_row(xml::parser *parser, xlnt::detail
         }
         else if (string_equal(attr.first.name(), "r"))
         {
-            props.second = static_cast<int>(strtol(attr.second.value.c_str(), nullptr, 10));
+            int number = -1;
+            if (xlnt::detail::parse(attr.second.value, number))
+            {
+                props.second = number;
+            }
         }
         else if (string_equal(attr.first.name(), "customHeight"))
         {
-            props.first.custom_height = is_true(attr.second.value.c_str());
+            props.first.custom_height = is_true(attr.second.value);
         }
     }
 
@@ -474,13 +491,13 @@ void read_defined_names(worksheet ws, std::vector<defined_name> defined_names)
             {
                 // Split into components based on "!", ":", and "," characters
                 auto j = i;
-                i = name.value.find("!", j);
+                i = name.value.find('!', j);
                 auto title = name.value.substr(j, i - j);
                 j = i + 2; // skip "!$"
-                i = name.value.find(":", j);
+                i = name.value.find(':', j);
                 auto from = name.value.substr(j, i - j);
                 j = i + 2; // skip ":$"
-                i = name.value.find(",", j);
+                i = name.value.find(',', j);
                 auto to = name.value.substr(j, i - j);
 
                 // Apply to the worksheet
@@ -490,7 +507,13 @@ void read_defined_names(worksheet ws, std::vector<defined_name> defined_names)
                 }
                 else // numeric=>rows
                 {
-                    ws.print_title_rows(std::stoul(from), std::stoul(to));
+                    row_t start = 0;
+                    row_t end = 0;
+
+                    if (detail::parse(from, start) && detail::parse(to, end))
+                    {
+                        ws.print_title_rows(start, end);
+                    }
                 }
                 
                 // Check for end condition
@@ -769,8 +792,17 @@ std::string xlsx_consumer::read_worksheet_begin(const std::string &rel_id)
 
                 skip_attributes(std::vector<std::string>{"collapsed", "outlineLevel"});
 
-                auto min = static_cast<column_t::index_t>(std::stoull(parser().attribute("min")));
-                auto max = static_cast<column_t::index_t>(std::stoull(parser().attribute("max")));
+                column_t::index_t min = 0;
+                column_t::index_t max = 0;
+                bool ok = detail::parse(parser().attribute("min"), min);
+                ok = detail::parse(parser().attribute("max"), max) && ok;
+
+#ifdef THROW_ON_INVALID_XML
+                if (!ok)
+                {
+                    throw xlnt::exception("spreadsheetml invalid min/max");
+                }
+#endif
 
                 // avoid uninitialised warnings in GCC by using a lambda to make the conditional initialisation
                 optional<double> width = [this](xml::parser &p) -> xlnt::optional<double> {
@@ -882,7 +914,11 @@ void xlsx_consumer::read_worksheet_sheetdata()
                 break;
             }
             case cell::type::shared_string: {
-                ws_cell_impl->value_numeric_ = static_cast<double>(strtol(cell.value.c_str(), nullptr, 10));
+                long long value = -1;
+                if (xlnt::detail::parse(cell.value, value))
+                {
+                    ws_cell_impl->value_numeric_ = static_cast<double>(value);
+                }
                 break;
             }
             case cell::type::inline_string: {
@@ -1396,7 +1432,14 @@ bool xlsx_consumer::has_cell()
         }
 
         expect_start_element(qn("spreadsheetml", "row"), xml::content::complex); // CT_Row
-        auto row_index = static_cast<row_t>(std::stoul(parser().attribute("r")));
+        row_t row_index = 0;
+        bool ok = detail::parse(parser().attribute("r"), row_index);
+#ifdef THROW_ON_INVALID_XML
+        if (!ok)
+        {
+            throw xlnt::invalid_parameter();
+        }
+#endif
         auto &row_properties = ws.row_properties(row_index);
 
         if (parser().attribute_present("ht"))
@@ -1455,7 +1498,15 @@ bool xlsx_consumer::has_cell()
 
     if (parser().attribute_present("s"))
     {
-        cell.format(target_.format(static_cast<std::size_t>(std::stoull(parser().attribute("s")))));
+        size_t s = 0;
+        bool ok = detail::parse(parser().attribute("s"), s);
+#ifdef THROW_ON_INVALID_XML
+        if (!ok)
+        {
+            throw xlnt::invalid_parameter();
+        }
+#endif
+        cell.format(target_.format(s));
     }
 
     auto has_value = false;
@@ -3182,7 +3233,17 @@ variant xlsx_consumer::read_variant()
         }
         if (element == qn("vt", "i4"))
         {
-            value = variant(std::stoi(text));
+            int number = -1;
+            if (!detail::parse(text, number))
+            {
+#ifdef THROW_ON_INVALID_XML
+                throw xlnt::invalid_attribute();
+#endif
+            }
+            else
+            {
+                value = variant(number);
+            }
         }
         if (element == qn("vt", "bool"))
         {

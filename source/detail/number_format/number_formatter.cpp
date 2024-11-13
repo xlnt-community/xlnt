@@ -31,6 +31,7 @@
 #include <xlnt/utils/numeric.hpp>
 #include <detail/default_case.hpp>
 #include <detail/number_format/number_formatter.hpp>
+#include <detail/parsers.hpp>
 
 namespace {
 
@@ -1356,9 +1357,8 @@ format_color number_format_parser::color_from_string(const std::string &color)
         }
         else if ((color.substr(0, 5) == "Color") || (color.substr(0, 5) == "COLOR"))
         {
-            auto color_number = std::stoull(color.substr(5));
-
-            if (color_number >= 1 && color_number <= 56)
+            unsigned int color_number = 0;
+            if (detail::parse(color.substr(5), color_number) && color_number >= 1 && color_number <= 56)
             {
                 return static_cast<format_color>(color_number);
             }
@@ -1463,7 +1463,11 @@ std::pair<format_locale, std::string> number_format_parser::locale_from_string(c
         }
     }
 
-    auto country_code = std::stoi(country_code_string, nullptr, 16);
+    int country_code = -1;
+    if (!detail::parse(country_code_string, country_code, nullptr, 16))
+    {
+        throw xlnt::exception("bad locale: " + locale_string);
+    }
     country_code &= 0xFFFF;
 
     for (const auto &known_locale : known_locales())

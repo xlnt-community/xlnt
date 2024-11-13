@@ -822,14 +822,8 @@ public:
 
     void test_locale_comma ()
     {
-        struct SetLocale
-        {
-            SetLocale() {xlnt_assert(setlocale(LC_ALL, "de_DE") != nullptr);} // If failed, please install de_DE locale to correctly run this test.
-            ~SetLocale() {setlocale(LC_ALL, "C");}
-        } setLocale;
-
         xlnt::workbook wb;
-        wb.load(path_helper::test_file("Issue714_local_comma.xlsx"));
+        wb.load(path_helper::test_file("Issue714_locale_comma.xlsx"));
         auto ws = wb.active_sheet();
         xlnt_assert_equals(ws.cell("A1").value<double>(), 1.9999999999);
         xlnt_assert_equals(ws.cell("A2").value<double>(), 1.1);

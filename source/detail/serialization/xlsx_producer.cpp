@@ -46,6 +46,7 @@
 #include <detail/serialization/vector_streambuf.hpp>
 #include <detail/serialization/xlsx_producer.hpp>
 #include <detail/serialization/zstream.hpp>
+#include <detail/parsers.hpp>
 
 namespace {
 
@@ -3250,7 +3251,8 @@ void xlsx_producer::write_vml_drawings(const relationship &rel, worksheet ws, co
         index_pos--;
     }
 
-    auto file_index = std::stoull(filename.substr(index_pos + 1));
+    size_t file_index = 0;
+    detail::parse(filename.substr(index_pos + 1), file_index);
 
     write_attribute("data", file_index);
     write_end_element(xmlns_o, "idmap");
