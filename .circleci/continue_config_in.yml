@@ -18,6 +18,9 @@ jobs:
       benchmarks:
         default: "OFF"
         type: string
+      micro-benchmarks:
+        default: "OFF"
+        type: string
       build-type:
         default: Release
         type: string
@@ -39,7 +42,7 @@ jobs:
     steps:
       - checkout
       - run: git submodule update --init --recursive
-      - run: cmake -D XLNT_ALL_WARNINGS_AS_ERRORS=ON -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=ON -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
+      - run: cmake -D XLNT_ALL_WARNINGS_AS_ERRORS=ON -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D XLNT_MICROBENCH_ENABLED=<< parameters.micro-benchmarks >> -D TESTS=ON -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
       - run: cmake --build . -- -j2
       - run: ./tests/xlnt.test
       - when:
@@ -55,6 +58,12 @@ jobs:
           steps:
             - run: ./benchmarks/benchmark-styles
             - run: ./benchmarks/benchmark-writer
+            - run: ./benchmarks/benchmark-spreadsheet-load
+      - when:
+          condition:
+            equal: ["ON", << parameters.micro-benchmarks >>]
+          steps:
+            - run: ./benchmarks/microbenchmarks/xlnt_ubench
       - when:
           condition:
             equal: ["ON", << parameters.coverage >>]
@@ -204,6 +213,17 @@ workflows:
               static:
                 - "ON"
                 - "OFF"
+          filters:
+            branches:
+              ignore: gh-pages
+
+      - build-gcc:
+          name: benchmarks-gcc
+          image: PLACEHOLDER_IMAGE(gcc14_cmake3.30.3)
+          cxx-ver: "17"
+          build-type: Release
+          benchmarks: "ON"
+          micro-benchmarks: "ON"
           filters:
             branches:
               ignore: gh-pages
