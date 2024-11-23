@@ -8,6 +8,7 @@
 #include <random>
 #include <sstream>
 #include <xlnt/utils/numeric.hpp>
+#include <detail/environment.hpp>
 
 namespace {
 
@@ -200,7 +201,7 @@ BENCHMARK_F(RandFloats, string_from_double_production)
     }
 }
 
-#if defined(_MSC_VER) || __cplusplus >= 201703L
+#if XLNT_HAS_FEATURE(TO_CHARS)
 #include <charconv>
 BENCHMARK_F(RandFloats, string_from_double_std_to_chars)
 (benchmark::State &state)

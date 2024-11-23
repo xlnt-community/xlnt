@@ -27,6 +27,8 @@ FetchContent_MakeAvailable(googlebenchmark)
 
 
 add_executable(xlnt_ubench)
+target_include_directories(xlnt_ubench
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../source)
 target_sources(xlnt_ubench
 	PRIVATE
 		string_to_double.cpp
