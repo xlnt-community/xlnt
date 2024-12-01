@@ -42,7 +42,7 @@
 #define XLNT_CPP_23 202302L
 
 /// <summary>
-/// Returns whether the cpp version `version` is supported by the current build configuration.
+/// Returns whether the C++ version `version` is supported by the current build configuration.
 /// </summary>
 /// <seealso cref="XLNT_CPP_11">
 /// <seealso cref="XLNT_CPP_14">
@@ -56,6 +56,18 @@
 #else
   #define XLNT_DETAIL_FEATURE_TO_CHARS -1
 #endif
+
+#define XLNT_C_11 201112L
+#define XLNT_C_17 201710L
+#define XLNT_C_23 202311L
+
+/// <summary>
+/// Returns whether the C version `version` is supported by the current build configuration.
+/// </summary>
+/// <seealso cref="XLNT_C_11">
+/// <seealso cref="XLNT_C_17">
+/// <seealso cref="XLNT_C_23">
+#define XLNT_HAS_C_VERSION(version) (1/version == 1/version && XLNT_C_VERSION >= version)
 
 // If you get a division by zero error, you probably misspelled the feature name.
 // Developer note: XLNT_DETAIL_FEATURE_##feature should be set to
