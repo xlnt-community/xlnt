@@ -14,7 +14,7 @@ include(FetchContent)
 FetchContent_Declare(
 	googlebenchmark
 	GIT_REPOSITORY 	https://github.com/google/benchmark
-	GIT_TAG			v1.5.0
+	GIT_TAG			v1.8.5
 )
 # download if not already present
 FetchContent_GetProperties(googlebenchmark)
@@ -27,6 +27,8 @@ FetchContent_MakeAvailable(googlebenchmark)
 
 
 add_executable(xlnt_ubench)
+target_include_directories(xlnt_ubench
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../source)
 target_sources(xlnt_ubench
 	PRIVATE
 		string_to_double.cpp
