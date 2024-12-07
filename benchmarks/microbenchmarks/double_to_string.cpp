@@ -7,6 +7,8 @@
 #include <locale>
 #include <random>
 #include <sstream>
+#include <xlnt/utils/numeric.hpp>
+#include <detail/environment.hpp>
 
 namespace {
 
@@ -23,15 +25,17 @@ class RandomFloats : public benchmark::Fixture
     const char *locale_str = nullptr;
 
 public:
-    void SetUp(const ::benchmark::State &state)
+    void SetUp(::benchmark::State &state)
     {
+        locale_str = setlocale(LC_ALL, nullptr);
         if (Decimal_Locale)
         {
-            locale_str = setlocale(LC_ALL, "C");
+            setlocale(LC_ALL, "C");
         }
         else
         {
-            locale_str = setlocale(LC_ALL, "de-DE");
+            if (setlocale(LC_ALL, "de_DE") == nullptr)
+                state.SkipWithError("de_DE locale not installed");
         }
         std::random_device rd; // obtain a seed for the random number engine
         std::mt19937 gen(rd());
@@ -73,13 +77,23 @@ std::string serialize_number_to_string(double num)
     return ss.str();
 }
 
-class number_serialiser
+struct number_serialiser_production
+{
+    std::string serialise(double d)
+    {
+        return serializer.serialise(d);
+    }
+
+    xlnt::detail::number_serialiser serializer;
+};
+
+class number_serialiser_stream
 {
     static constexpr int Excel_Digit_Precision = 15; //sf
     std::ostringstream ss;
 
 public:
-    explicit number_serialiser()
+    explicit number_serialiser_stream()
     {
         ss.precision(Excel_Digit_Precision);
         ss.imbue(std::locale("C"));
@@ -111,7 +125,7 @@ class number_serialiser_mk2
 
 public:
     explicit number_serialiser_mk2()
-        : should_convert_comma(std::use_facet<std::numpunct<char>>(std::locale{}).decimal_point() == ',')
+        : should_convert_comma(localeconv()->decimal_point[0] == ',')
     {
     }
 
@@ -144,7 +158,7 @@ BENCHMARK_F(RandFloats, string_from_double_sstream)
 BENCHMARK_F(RandFloats, string_from_double_sstream_cached)
 (benchmark::State &state)
 {
-    number_serialiser ser;
+    number_serialiser_stream ser;
     while (state.KeepRunning())
     {
         benchmark::DoNotOptimize(
@@ -176,9 +190,18 @@ BENCHMARK_F(RandFloats, string_from_double_snprintf_fixed)
     }
 }
 
-// locale names are different between OS's, and std::from_chars is only complete in MSVC
-#ifdef _MSC_VER
+BENCHMARK_F(RandFloats, string_from_double_production)
+(benchmark::State &state)
+{
+    number_serialiser_production ser;
+    while (state.KeepRunning())
+    {
+        benchmark::DoNotOptimize(
+            ser.serialise(get_rand()));
+    }
+}
 
+#if XLNT_HAS_FEATURE(TO_CHARS)
 #include <charconv>
 BENCHMARK_F(RandFloats, string_from_double_std_to_chars)
 (benchmark::State &state)
@@ -192,6 +215,7 @@ BENCHMARK_F(RandFloats, string_from_double_std_to_chars)
             std::string(buf, result.ptr));
     }
 }
+#endif
 
 BENCHMARK_F(RandFloatsComma, string_from_double_snprintf_fixed_comma)
 (benchmark::State &state)
@@ -204,4 +228,13 @@ BENCHMARK_F(RandFloatsComma, string_from_double_snprintf_fixed_comma)
     }
 }
 
-#endif
+BENCHMARK_F(RandFloatsComma, string_from_double_production_comma)
+(benchmark::State &state)
+{
+    number_serialiser_production ser;
+    while (state.KeepRunning())
+    {
+        benchmark::DoNotOptimize(
+            ser.serialise(get_rand()));
+    }
+}

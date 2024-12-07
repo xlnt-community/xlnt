@@ -2,6 +2,12 @@ version: 2.1
 
 # setup.sh replaces the following patterns:
 # - PLACEHOLDER_IMAGE(*): replaced by the Docker image tagged name built for the .circleci/*.Dockerfile
+# - HAS_COVERALLS: replaced by true / false depending on the availability of coveralls
+
+parameters:
+  run-build:
+    type: boolean
+    default: true
 
 jobs:
   build-gcc:
@@ -10,6 +16,9 @@ jobs:
     resource_class: medium
     parameters:
       benchmarks:
+        default: "OFF"
+        type: string
+      micro-benchmarks:
         default: "OFF"
         type: string
       build-type:
@@ -33,7 +42,7 @@ jobs:
     steps:
       - checkout
       - run: git submodule update --init --recursive
-      - run: cmake -D XLNT_ALL_WARNINGS_AS_ERRORS=ON -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=ON -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
+      - run: cmake -D XLNT_ALL_WARNINGS_AS_ERRORS=ON -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D XLNT_MICROBENCH_ENABLED=<< parameters.micro-benchmarks >> -D TESTS=ON -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
       - run: cmake --build . -- -j2
       - run: ./tests/xlnt.test
       - when:
@@ -49,6 +58,12 @@ jobs:
           steps:
             - run: ./benchmarks/benchmark-styles
             - run: ./benchmarks/benchmark-writer
+            - run: ./benchmarks/benchmark-spreadsheet-load
+      - when:
+          condition:
+            equal: ["ON", << parameters.micro-benchmarks >>]
+          steps:
+            - run: ./benchmarks/microbenchmarks/xlnt_ubench
       - when:
           condition:
             equal: ["ON", << parameters.coverage >>]
@@ -165,6 +180,7 @@ jobs:
 
 workflows:
   build:
+    when: << pipeline.parameters.run-build >>
     jobs:
       - build-gcc:
           name: tests-gcc7-cmake3.2
@@ -203,13 +219,12 @@ workflows:
               ignore: gh-pages
 
       - build-gcc:
-          name: samples-benchmarks-coverage-gcc
-          cxx-ver: "11"
-          build-type: Debug
-          static: "ON"
-          samples: "ON"
+          name: benchmarks-gcc
+          image: PLACEHOLDER_IMAGE(gcc14_cmake3.30.3)
+          cxx-ver: "17"
+          build-type: Release
           benchmarks: "ON"
-          coverage: "ON"
+          micro-benchmarks: "ON"
           filters:
             branches:
               ignore: gh-pages
@@ -258,3 +273,18 @@ workflows:
           filters:
             branches:
               only: master
+
+  coveralls:
+    when: HAS_COVERALLS
+    jobs:
+      - build-gcc:
+          name: samples-benchmarks-coverage-gcc
+          cxx-ver: "11"
+          build-type: Debug
+          static: "ON"
+          samples: "ON"
+          benchmarks: "ON"
+          coverage: "ON"
+          filters:
+            branches:
+              ignore: gh-pages

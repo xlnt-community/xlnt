@@ -5,6 +5,12 @@ setup: true
 orbs:
   continuation: circleci/continuation@1
 
+# parameters are automatically forwarded to continuation
+parameters:
+  run-build:
+    type: boolean
+    default: true
+
 jobs:
   setup:
     docker:

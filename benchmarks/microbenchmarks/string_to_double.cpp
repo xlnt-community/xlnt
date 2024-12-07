@@ -7,6 +7,8 @@
 #include <locale>
 #include <random>
 #include <sstream>
+#include <xlnt/utils/numeric.hpp>
+#include <detail/environment.hpp>
 
 namespace {
 
@@ -23,16 +25,10 @@ class RandomFloatStrs : public benchmark::Fixture
     const char *locale_str = nullptr;
 
 public:
-    void SetUp(const ::benchmark::State &state)
+    void SetUp(::benchmark::State &state)
     {
-        if (Decimal_Locale)
-        {
-            locale_str = setlocale(LC_ALL, "C");
-        }
-        else
-        {
-            locale_str = setlocale(LC_ALL, "de-DE");
-        }
+        locale_str = setlocale(LC_ALL, nullptr);
+        setlocale(LC_ALL, "C");
         std::random_device rd; // obtain a seed for the random number engine
         std::mt19937 gen(rd());
         // doing full range is stupid (<double>::min/max()...), it just ends up generating very large numbers
@@ -46,6 +42,15 @@ public:
             char buf[16];
             snprintf(buf, 16, "%.15f", d);
             inputs.push_back(std::string(buf));
+        }
+        if (Decimal_Locale)
+        {
+            locale_str = setlocale(LC_ALL, "C");
+        }
+        else
+        {
+            if (setlocale(LC_ALL, "de_DE") == nullptr)
+                state.SkipWithError("de_DE locale not installed");
         }
     }
 
@@ -63,11 +68,21 @@ public:
     }
 };
 
+struct number_converter_production
+{
+    double stold(const std::string &s)
+    {
+        return serializer.deserialise(s);
+    }
+
+    xlnt::detail::number_serialiser serializer;
+};
+
 // method used by xlsx_consumer.cpp in commit - ba01de47a7d430764c20ec9ac9600eec0eb38bcf
 // std::istringstream with the locale set to "C"
-struct number_converter
+struct number_converter_stream
 {
-    number_converter()
+    number_converter_stream()
     {
         stream.imbue(std::locale("C"));
     }
@@ -89,7 +104,7 @@ struct number_converter
 struct number_converter_mk2
 {
     explicit number_converter_mk2()
-        : should_convert_to_comma(std::use_facet<std::numpunct<char>>(std::locale{}).decimal_point() == ',')
+        : should_convert_to_comma(localeconv()->decimal_point[0] == ',')
     {
     }
 
@@ -135,7 +150,7 @@ using RandFloatCommaStrs = RandomFloatStrs<false>;
 BENCHMARK_F(RandFloatStrs, double_from_string_sstream)
 (benchmark::State &state)
 {
-    number_converter converter;
+    number_converter_stream converter;
     while (state.KeepRunning())
     {
         benchmark::DoNotOptimize(
@@ -180,9 +195,18 @@ BENCHMARK_F(RandFloatStrs, double_from_string_strtod_fixed_const_ref)
     }
 }
 
-// locale names are different between OS's, and std::from_chars is only complete in MSVC
-#ifdef _MSC_VER
+BENCHMARK_F(RandFloatStrs, double_from_string_production)
+(benchmark::State &state)
+{
+    number_converter_production converter;
+    while (state.KeepRunning())
+    {
+        benchmark::DoNotOptimize(
+            converter.stold(get_rand()));
+    }
+}
 
+#if XLNT_HAS_FEATURE(TO_CHARS)
 #include <charconv>
 BENCHMARK_F(RandFloatStrs, double_from_string_std_from_chars)
 (benchmark::State &state)
@@ -195,6 +219,7 @@ BENCHMARK_F(RandFloatStrs, double_from_string_std_from_chars)
             std::from_chars(input.data(), input.data() + input.size(), output));
     }
 }
+#endif
 
 // not using the standard "C" locale with '.' seperator
 BENCHMARK_F(RandFloatCommaStrs, double_from_string_strtod_fixed_comma_ref)
@@ -220,4 +245,13 @@ BENCHMARK_F(RandFloatCommaStrs, double_from_string_strtod_fixed_comma_const_ref)
     }
 }
 
-#endif
+BENCHMARK_F(RandFloatCommaStrs, double_from_string_production_comma)
+(benchmark::State &state)
+{
+    number_converter_production converter;
+    while (state.KeepRunning())
+    {
+        benchmark::DoNotOptimize(
+            converter.stold(get_rand()));
+    }
+}
