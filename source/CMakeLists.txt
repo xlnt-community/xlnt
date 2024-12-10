@@ -3,6 +3,8 @@ project(xlnt VERSION 1.5.0)
 
 set(CMAKE_CXX_STANDARD ${XLNT_CXX_LANG})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD ${XLNT_C_LANG})
+set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CXX_EXTENSIONS OFF)
 
 # Project metadata
@@ -180,6 +182,7 @@ endif()
 
 # requires cmake 3.8+
 #target_compile_features(xlnt PUBLIC cxx_std_${XLNT_CXX_LANG})
+#target_compile_features(xlnt PUBLIC c_std_${XLNT_C_LANG})
 
 # Includes
 target_include_directories(xlnt
