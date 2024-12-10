@@ -78,7 +78,7 @@
 /// <seealso cref="XLNT_C_17">
 /// <seealso cref="XLNT_C_23">
 #define XLNT_HAS_C_VERSION(version) (1/version == 1/version && \
-    ((defined(__STDC_VERSION__) && __STDC_VERSION__ >= version) || \
+    ((__STDC_VERSION__ >= version) || \
      (version == XLNT_C_11 && XLNT_HAS_CPP_VERSION(XLNT_CPP_17)) || \
      (version == XLNT_C_17 && XLNT_HAS_CPP_VERSION(XLNT_CPP_20)) /*|| \
      (version == CLNT_C_23 && XLNT_HAS_CPP_VERSION(XLNT_CPP_26))*/ \
