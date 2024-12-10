@@ -25,6 +25,7 @@
 
 #include <ctime>
 #include <xlnt/utils/optional.hpp>
+#include <detail/environment.hpp>
 
 namespace xlnt {
 namespace detail {
@@ -42,7 +43,7 @@ inline optional<std::tm> localtime_safe(std::time_t raw_time)
     {
         returned_value = result;
     }
-#elif _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _BSD_SOURCE || _SVID_SOURCE || _POSIX_SOURCE
+#elif XLNT_HAS_C_VERSION(XLNT_C_23) || _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _BSD_SOURCE || _SVID_SOURCE || _POSIX_SOURCE
     std::tm result{};
     if (localtime_r(&raw_time, &result))
     {
@@ -73,7 +74,7 @@ inline optional<std::tm> gmtime_safe(std::time_t raw_time)
     {
         returned_value = result;
     }
-#elif _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _BSD_SOURCE || _SVID_SOURCE || _POSIX_SOURCE
+#elif XLNT_HAS_C_VERSION(XLNT_C_23) || _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _BSD_SOURCE || _SVID_SOURCE || _POSIX_SOURCE
     std::tm result{};
     if (gmtime_r(&raw_time, &result))
     {

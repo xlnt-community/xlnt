@@ -13,14 +13,7 @@ RUN ./bootstrap
 RUN make -j$(nproc --all)
 RUN make install
 
-# 2. Install required de_DE locale (for tests)
-
-RUN apt-get update -y
-RUN apt-get install -y --no-install-recommends locales
-RUN sed -i '/^# de_DE /s/^# //' /etc/locale.gen
-RUN locale-gen
-
-# 3. Cleanup
+# 2. Cleanup
 
 WORKDIR /
 RUN rm -rf /tmp/*

@@ -27,6 +27,7 @@
 #include <xlnt/utils/date.hpp>
 #include <xlnt/utils/datetime.hpp>
 #include <xlnt/utils/time.hpp>
+#include <detail/parsers.hpp>
 
 #include <xlnt/utils/optional.hpp>
 
@@ -206,17 +207,38 @@ datetime datetime::from_iso_string(const std::string &string)
 {
     xlnt::datetime result(1900, 1, 1);
 
-    auto separator_index = string.find('-');
-    result.year = std::stoi(string.substr(0, separator_index));
-    result.month = std::stoi(string.substr(separator_index + 1, string.find('-', separator_index + 1)));
-    separator_index = string.find('-', separator_index + 1);
-    result.day = std::stoi(string.substr(separator_index + 1, string.find('T', separator_index + 1)));
-    separator_index = string.find('T', separator_index + 1);
-    result.hour = std::stoi(string.substr(separator_index + 1, string.find(':', separator_index + 1)));
-    separator_index = string.find(':', separator_index + 1);
-    result.minute = std::stoi(string.substr(separator_index + 1, string.find(':', separator_index + 1)));
-    separator_index = string.find(':', separator_index + 1);
-    result.second = std::stoi(string.substr(separator_index + 1, string.find('Z', separator_index + 1)));
+    bool ok = true;
+    auto next_separator_index = string.find('-');
+    ok = ok && detail::parse(string.substr(0, next_separator_index), result.year);
+    auto previous_separator_index = next_separator_index;
+    next_separator_index = ok ? string.find('-', previous_separator_index + 1) : next_separator_index;
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.month);
+    previous_separator_index = next_separator_index;
+    next_separator_index = ok ? string.find('T', previous_separator_index + 1) : next_separator_index;
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.day);
+    previous_separator_index = next_separator_index;
+    next_separator_index = ok ? string.find(':', previous_separator_index + 1) : next_separator_index;
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.hour);
+    previous_separator_index = next_separator_index;
+    next_separator_index = ok ? string.find(':', previous_separator_index + 1) : next_separator_index;
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.minute);
+    previous_separator_index = next_separator_index;
+    next_separator_index = ok ? string.find('.', previous_separator_index + 1) : next_separator_index;
+    bool subseconds_available = next_separator_index != std::string::npos;
+    if (subseconds_available)
+    {
+        // First parse the seconds.
+        ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.second);
+        previous_separator_index = next_separator_index;
+        
+    }
+    next_separator_index = ok ? string.find('Z', previous_separator_index + 1) : next_separator_index;
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), subseconds_available ? result.microsecond : result.second);
+
+    if (!ok)
+    {
+        throw xlnt::exception("invalid ISO date");
+    }
 
     return result;
 }

@@ -109,9 +109,6 @@ bool float_equals(const LNumber &lhs, const RNumber &rhs,
 
 class number_serialiser
 {
-    static constexpr int Excel_Digit_Precision = 15; //sf
-    bool should_convert_comma;
-
     static void convert_comma_to_pt(char *buf, int len)
     {
         char *buf_end = buf + len;
@@ -133,57 +130,17 @@ class number_serialiser
     }
 
 public:
-    explicit number_serialiser()
-        : should_convert_comma(localeconv()->decimal_point[0] == ',')
-    {
-    }
+    explicit number_serialiser() = default;
 
     // for printing to file.
     // This matches the output format of excel irrespective of current locale
-    std::string serialise(double d) const
-    {
-        char buf[30];
-        int len = snprintf(buf, sizeof(buf), "%.15g", d);
-        if (should_convert_comma)
-        {
-            convert_comma_to_pt(buf, len);
-        }
-        return std::string(buf, static_cast<size_t>(len));
-    }
+    XLNT_API std::string serialise(double d) const;
 
     // replacement for std::to_string / s*printf("%f", ...)
     // behaves same irrespective of locale
-    std::string serialise_short(double d) const
-    {
-        char buf[30];
-        int len = snprintf(buf, sizeof(buf), "%f", d);
-        if (should_convert_comma)
-        {
-            convert_comma_to_pt(buf, len);
-        }
-        return std::string(buf, static_cast<size_t>(len));
-    }
+    XLNT_API std::string serialise_short(double d) const;
 
-    double deserialise(const std::string &s, ptrdiff_t *len_converted) const
-    {
-        assert(!s.empty());
-        assert(len_converted != nullptr);
-        char *end_of_convert;
-        if (!should_convert_comma)
-        {
-            double d = strtod(s.c_str(), &end_of_convert);
-            *len_converted = end_of_convert - s.c_str();
-            return d;
-        }
-        char buf[30];
-        assert(s.size() + 1 < sizeof(buf));
-        const char *cstr = s.c_str();
-        auto copy_end = std::copy(cstr, cstr + s.size() + 1, buf);
-        convert_pt_to_comma(buf, static_cast<size_t>(copy_end - buf));
-        double d = strtod(buf, &end_of_convert);
-        *len_converted = end_of_convert - buf;
-        return d;
-    }
+    XLNT_API double deserialise(const std::string &s, ptrdiff_t *len_converted) const;
 
     double deserialise(const std::string &s) const
     {
