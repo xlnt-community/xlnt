@@ -26,7 +26,7 @@ if(index EQUAL -1)
 endif()
 
 # C language standard to use
-set(XLNT_C_VALID_LANGS 11 17 23)
+set(XLNT_C_VALID_LANGS 99 11 17 23)
 set(XLNT_C_LANG "11" CACHE STRING "C language features to compile with")
 # enumerate allowed values for cmake gui
 set_property(CACHE XLNT_C_LANG PROPERTY STRINGS ${XLNT_C_VALID_LANGS})
