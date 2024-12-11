@@ -5,8 +5,8 @@ project(xlnt.samples)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Require C11 compiler
-set(CMAKE_C_STANDARD 11)
+# Require C99 compiler
+set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 if(NOT COMBINED_PROJECT)

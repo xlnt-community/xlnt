@@ -59,6 +59,7 @@
   #define XLNT_DETAIL_FEATURE_TO_CHARS -1
 #endif
 
+#define XLNT_C_99 199901L
 #define XLNT_C_11 201112L
 #define XLNT_C_17 201710L
 #define XLNT_C_23 202311L
@@ -79,9 +80,10 @@
 /// <seealso cref="XLNT_C_23">
 #define XLNT_HAS_C_VERSION(version) (1/version == 1/version && \
     ((__STDC_VERSION__ >= version) || \
-     (version == XLNT_C_11 && XLNT_HAS_CPP_VERSION(XLNT_CPP_17)) || \
-     (version == XLNT_C_17 && XLNT_HAS_CPP_VERSION(XLNT_CPP_20)) /*|| \
-     (version == CLNT_C_23 && XLNT_HAS_CPP_VERSION(XLNT_CPP_26))*/ \
+     (version >= XLNT_C_99 && XLNT_HAS_CPP_VERSION(XLNT_CPP_11)) || \
+     (version >= XLNT_C_11 && XLNT_HAS_CPP_VERSION(XLNT_CPP_17)) || \
+     (version >= XLNT_C_17 && XLNT_HAS_CPP_VERSION(XLNT_CPP_20)) /*|| \
+     (version >= CLNT_C_23 && XLNT_HAS_CPP_VERSION(XLNT_CPP_26))*/ \
      ))
       
     
