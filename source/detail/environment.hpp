@@ -80,10 +80,10 @@
 /// <seealso cref="XLNT_C_23">
 #define XLNT_HAS_C_VERSION(version) (1/version == 1/version && \
     ((__STDC_VERSION__ >= version) || \
-     (version >= XLNT_C_99 && XLNT_HAS_CPP_VERSION(XLNT_CPP_11)) || \
-     (version >= XLNT_C_11 && XLNT_HAS_CPP_VERSION(XLNT_CPP_17)) || \
-     (version >= XLNT_C_17 && XLNT_HAS_CPP_VERSION(XLNT_CPP_20)) /*|| \
-     (version >= CLNT_C_23 && XLNT_HAS_CPP_VERSION(XLNT_CPP_26))*/ \
+     (XLNT_C_99 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_11)) || \
+     (XLNT_C_11 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_17)) || \
+     (XLNT_C_17 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_20)) /*|| \
+     (CLNT_C_23 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_26))*/ \
      ))
       
     
