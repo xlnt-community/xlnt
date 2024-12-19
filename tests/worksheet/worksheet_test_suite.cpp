@@ -114,6 +114,7 @@ public:
         register_test(test_issue_484);
         register_test(test_issue_5_empty_bottom_rows);
         register_test(test_issue_18_defined_name_with_workbook_scope);
+        register_test(test_non_contiguous_selection);
     }
 
     void test_new_worksheet()
@@ -422,7 +423,7 @@ public:
         auto ws2 = wb.sheet_by_index(1);
 
         xlnt_assert(ws2.has_print_area());
-        xlnt_assert_equals(ws2.print_area().to_string(), "$B$4:$B$4");
+        xlnt_assert_equals(ws2.print_area().to_string(), "$B$4");
 
         xlnt_assert(!ws2.has_auto_filter());
 
@@ -1697,6 +1698,20 @@ public:
     {
         xlnt::workbook wb;
         xlnt_assert_throws_nothing(wb.load(path_helper::test_file("Issue18_defined_name_with_workbook_scope.xlsx")));
+    }
+
+    void test_non_contiguous_selection()
+    {
+        xlnt::selection s;
+        xlnt_assert_throws_nothing(s.sqref("A1 B2:C3 D4:D5 E6:F6"));
+        xlnt_assert_equals(s.has_sqref(), true);
+        xlnt_assert_equals(s.sqrefs().size(), 4);
+        xlnt_assert_equals(s.sqref(), "A1");
+        xlnt_assert_equals(s.sqrefs()[0], "A1");
+        xlnt_assert_equals(s.sqrefs()[1], "B2:C3");
+        xlnt_assert_equals(s.sqrefs()[2], "D4:D5");
+        xlnt_assert_equals(s.sqrefs()[3], "E6:F6");
+        xlnt_assert_differs(s.sqrefs()[0], "B1");
     }
 };
 

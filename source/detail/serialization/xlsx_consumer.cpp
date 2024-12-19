@@ -701,8 +701,7 @@ std::string xlsx_consumer::read_worksheet_begin(const std::string &rel_id)
 
                         if (parser().attribute_present("sqref"))
                         {
-                            const auto sqref = range_reference(parser().attribute("sqref"));
-                            current_selection.sqref(sqref);
+                            current_selection.sqref(parser().attribute("sqref"));
                         }
 
                         if (parser().attribute_present("pane"))

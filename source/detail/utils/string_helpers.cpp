@@ -1,4 +1,3 @@
-// Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2024 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,37 +21,34 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#pragma once
+#include "string_helpers.hpp"
 
-#ifndef XLNT_API
-#if !defined(XLNT_STATIC) && defined(_MSC_VER)
-#ifdef XLNT_EXPORT
-#define XLNT_API __declspec(dllexport)
-#else
-#ifdef XLNT_SHARED
-// For clients of the library, supress warnings about DLL interfaces for standard library classes
-#pragma warning(disable : 4251)
-#pragma warning(disable : 4275)
-#define XLNT_API __declspec(dllimport)
-#else
-#define XLNT_API
-#endif
-#endif
-#else
-#define XLNT_API
-#endif
-#endif
+namespace xlnt {
+namespace detail {
 
-#ifdef XLNT_EXPOSE_INTERNAL_API
-#define XLNT_API_INTERNAL XLNT_API
-#else
-#define XLNT_API_INTERNAL
-#endif
+std::vector<std::string> split_string(const std::string &string, char delim)
+{
+    std::vector<std::string> split;
 
-#ifdef _MSC_VER
-#define XLNT_DEPRECATED __declspec(deprecated)
-#elif defined(__GNUC__) | defined(__clang__)
-#define XLNT_DEPRECATED __attribute__((__deprecated__))
-#else
-#define XLNT_DEPRECATED
-#endif
+    if (string.empty())
+        return split;
+
+    std::string::size_type previous_index = 0;
+    auto separator_index = string.find(delim);
+
+    while (separator_index != std::string::npos)
+    {
+        auto part = string.substr(previous_index, separator_index - previous_index);
+        split.push_back(part);
+
+        previous_index = separator_index + 1;
+        separator_index = string.find(delim, previous_index);
+    }
+
+    split.push_back(string.substr(previous_index));
+
+    return split;
+}
+
+} // namespace detail
+} // namespace xlnt
