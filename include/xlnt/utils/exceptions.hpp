@@ -64,7 +64,7 @@ public:
     /// <summary>
     /// Gets the message containing extra information.
     /// </summary>
-    std::string message();
+    const std::string & message();
 
 private:
     /// <summary>
@@ -82,7 +82,7 @@ public:
     /// <summary>
     /// Default constructor.
     /// </summary>
-    invalid_parameter();
+    explicit invalid_parameter(const char *optional_message = nullptr);
 
     /// <summary>
     /// Default copy constructor.

@@ -65,9 +65,9 @@ namespace {
 std::pair<bool, double> cast_numeric(const std::string &s)
 {
     xlnt::detail::number_serialiser ser;
-    ptrdiff_t len_convert;
+    size_t len_convert = 0;
     double result = ser.deserialise(s, &len_convert);
-    return (len_convert != static_cast<ptrdiff_t>(s.size()))
+    return (len_convert != s.size())
         ? std::make_pair(false, 0.0)
         : std::make_pair(true, result);
 }
