@@ -40,7 +40,7 @@ void exception::message(const std::string &message)
     message_ = message;
 }
 
-std::string exception::message()
+const std::string & exception::message()
 {
     return message_;
 }
@@ -114,8 +114,8 @@ illegal_character::~illegal_character()
 {
 }
 
-invalid_parameter::invalid_parameter()
-    : exception("invalid parameter")
+invalid_parameter::invalid_parameter(const char *optional_message)
+    : exception(optional_message != nullptr ? optional_message : "invalid parameter")
 {
 }
 

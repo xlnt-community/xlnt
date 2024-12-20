@@ -23,6 +23,14 @@
 
 #pragma once
 
+// If available, allow using C++20 feature test macros for precise feature testing. Useful for compilers
+// that partially implement certain features.
+#ifdef __has_include
+# if __has_include(<version>)
+#   include <version>
+# endif
+#endif
+
 // Unfortunately, the macro __cplusplus does not report the correct version under Visual Studio unless /Zc:__cplusplus is used during compilation.
 // Source: https://learn.microsoft.com/en-us/cpp/build/reference/zc-cplusplus?view=msvc-170
 // In order to have proper feature testing for C++ features that don't have feature test macros, but also to avoid forcing others
@@ -53,11 +61,15 @@
 /// <seealso cref="XLNT_CPP_23">
 #define XLNT_HAS_CPP_VERSION(version) (1/version == 1/version && XLNT_CPP_VERSION >= version)
 
-#if XLNT_HAS_CPP_VERSION(XLNT_CPP_17)
+// Note: the first check ensures that a compiler partially implementing C++17 but implementing std::to_chars
+// would be detected correctly, as long as the C++20 feature test macros are implemented. The second check
+// ensures that a fully implemented C++17 compiler would be detected as well.
+#if __cpp_lib_to_chars >= 201611L || XLNT_HAS_CPP_VERSION(XLNT_CPP_17)
   #define XLNT_DETAIL_FEATURE_TO_CHARS 1
 #else
   #define XLNT_DETAIL_FEATURE_TO_CHARS -1
 #endif
+
 
 #define XLNT_C_99 199901L
 #define XLNT_C_11 201112L

@@ -33,18 +33,21 @@ public:
     {
         register_test(test_parse_double_with_dot);
         register_test(test_parse_double_with_comma);
+        register_test(test_parse_double_large);
         register_test(test_parse_double_with_classic_locale);
         register_test(test_parse_double_with_system_locale);
         register_test(test_parse_double_empty);
         register_test(test_parse_double_text);
         register_test(test_parse_float_with_dot);
         register_test(test_parse_float_with_comma);
+        register_test(test_parse_float_large);
         register_test(test_parse_float_with_classic_locale);
         register_test(test_parse_float_with_system_locale);
         register_test(test_parse_float_empty);
         register_test(test_parse_float_text);
         register_test(test_parse_long_double_with_dot);
         register_test(test_parse_long_double_with_comma);
+        register_test(test_parse_long_double_large);
         register_test(test_parse_long_double_with_classic_locale);
         register_test(test_parse_long_double_with_system_locale);
         register_test(test_parse_long_double_empty);
@@ -91,6 +94,16 @@ public:
         double result = std::numeric_limits<double>::quiet_NaN();
         bool ok = xlnt::detail::parse("2,3", result);
         xlnt_assert_equals(result, 2.3);
+        xlnt_assert(ok);
+        xlnt_assert(errno ==  0); // no under/overflow occurred
+    }
+    
+    void test_parse_double_large()
+    {
+        errno = -1; // for testing whether errno gets cleared correctly
+        float result = std::numeric_limits<double>::quiet_NaN();
+        bool ok = xlnt::detail::parse("1000000.5", result);
+        xlnt_assert_equals(result, 1000000.5);
         xlnt_assert(ok);
         xlnt_assert(errno ==  0); // no under/overflow occurred
     }
@@ -164,6 +177,16 @@ public:
         xlnt_assert(ok);
         xlnt_assert(errno ==  0); // no under/overflow occurred
     }
+    
+    void test_parse_float_large()
+    {
+        errno = -1; // for testing whether errno gets cleared correctly
+        float result = std::numeric_limits<float>::quiet_NaN();
+        bool ok = xlnt::detail::parse("1000000.5", result);
+        xlnt_assert_equals(result, 1000000.5f);
+        xlnt_assert(ok);
+        xlnt_assert(errno ==  0); // no under/overflow occurred
+    }
 
     void test_parse_float_with_classic_locale()
     {
@@ -231,6 +254,16 @@ public:
         long double result = std::numeric_limits<long double>::quiet_NaN();
         bool ok = xlnt::detail::parse("2,3", result);
         xlnt_assert_equals(result, 2.3l);
+        xlnt_assert(ok);
+        xlnt_assert(errno ==  0); // no under/overflow occurred
+    }
+    
+    void test_parse_long_double_large()
+    {
+        errno = -1; // for testing whether errno gets cleared correctly
+        float result = std::numeric_limits<long double>::quiet_NaN();
+        bool ok = xlnt::detail::parse("1000000.5", result);
+        xlnt_assert_equals(result, 1000000.5l);
         xlnt_assert(ok);
         xlnt_assert(errno ==  0); // no under/overflow occurred
     }

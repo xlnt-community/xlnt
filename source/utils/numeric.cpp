@@ -46,19 +46,12 @@ std::string xlnt::detail::number_serialiser::serialise_short(double d) const
     return ss.str();
 }
 
-double xlnt::detail::number_serialiser::deserialise(const std::string &s, ptrdiff_t *len_converted) const
+double xlnt::detail::number_serialiser::deserialise(const std::string &s, size_t *len_converted) const
 {
     assert(!s.empty());
     assert(len_converted != nullptr);
     *len_converted = 0;
     double d = std::numeric_limits<double>::quiet_NaN();
-    std::size_t num_parsed_characters = 0;
-    if (detail::parse(s, d, &num_parsed_characters))
-    {
-        // Prevent unwanted overflows.
-        assert(num_parsed_characters <= std::numeric_limits<ptrdiff_t>::max());
-        *len_converted = static_cast<ptrdiff_t>(std::min(num_parsed_characters, static_cast<size_t>(std::numeric_limits<ptrdiff_t>::max())));
-    }
-
+    detail::parse(s, d, len_converted);
     return d;
 }

@@ -184,11 +184,7 @@ xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser, std::uno
         }
         else if (string_equal(attr.first.name(), "s"))
         {
-            int index = -1;
-            if (xlnt::detail::parse(attr.second.value, index))
-            {
-                c.style_index = index;
-            }
+            xlnt::detail::parse(attr.second.value, c.style_index);
         }
         else if (string_equal(attr.first.name(), "ph"))
         {
@@ -196,11 +192,7 @@ xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser, std::uno
         }
         else if (string_equal(attr.first.name(), "cm"))
         {
-            int index = -1;
-            if (xlnt::detail::parse(attr.second.value, index))
-            {
-                c.cell_metatdata_idx = index;
-            }
+            xlnt::detail::parse(attr.second.value, c.cell_metatdata_idx);
         }
     }
     int level = 1; // nesting level
@@ -307,10 +299,10 @@ std::pair<xlnt::row_properties, int> parse_row(xml::parser *parser, xlnt::detail
         }
         else if (string_equal(attr.first.name(), "s"))
         {
-            unsigned long long style = 0;
+            size_t style = 0;
             if (xlnt::detail::parse(attr.second.value, style))
             {
-                props.first.style = static_cast<size_t>(style);
+                props.first.style = style;
             }
         }
         else if (string_equal(attr.first.name(), "hidden"))
@@ -327,11 +319,7 @@ std::pair<xlnt::row_properties, int> parse_row(xml::parser *parser, xlnt::detail
         }
         else if (string_equal(attr.first.name(), "r"))
         {
-            int number = -1;
-            if (xlnt::detail::parse(attr.second.value, number))
-            {
-                props.second = number;
-            }
+            xlnt::detail::parse(attr.second.value, props.second);
         }
         else if (string_equal(attr.first.name(), "customHeight"))
         {

@@ -140,11 +140,11 @@ public:
     // behaves same irrespective of locale
     XLNT_API std::string serialise_short(double d) const;
 
-    XLNT_API double deserialise(const std::string &s, ptrdiff_t *len_converted) const;
+    XLNT_API double deserialise(const std::string &s, size_t *len_converted) const;
 
     double deserialise(const std::string &s) const
     {
-        ptrdiff_t ignore;
+        size_t ignore;
         return deserialise(s, &ignore);
     }
 };

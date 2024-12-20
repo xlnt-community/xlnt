@@ -237,7 +237,7 @@ datetime datetime::from_iso_string(const std::string &string)
 
     if (!ok)
     {
-        throw xlnt::exception("invalid ISO date");
+        throw xlnt::invalid_parameter("invalid ISO date");
     }
 
     return result;
