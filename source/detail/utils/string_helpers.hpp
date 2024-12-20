@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-#include <xlnt/xlnt_config.hpp>
+#include <detail/xlnt_config_impl.hpp>
 
 namespace xlnt {
 namespace detail {
@@ -41,9 +41,19 @@ XLNT_API_INTERNAL std::vector<std::string> split_string(const std::string &strin
 /// Concatenate all the provided items by converting them to a string using its to_string member function.
 /// </summary>
 template<typename T>
-XLNT_API_INTERNAL std::string join(const std::vector<T> &items, char delim);
+XLNT_API_INTERNAL std::string join(const std::vector<T> &items, char delim)
+{
+    std::string refs;
+    for (const auto& item : items)
+    {
+        if (!refs.empty())
+            refs.push_back(delim);
+
+        refs.append(item.to_string());
+    }
+
+    return refs;
+}
 
 } // namespace detail
 } // namespace xlnt
-
-#include "string_helpers_impl.hpp"

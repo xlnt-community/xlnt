@@ -1,3 +1,4 @@
+// Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2024 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,25 +24,10 @@
 
 #pragma once
 
-#include "string_helpers.hpp"
+#include <xlnt/xlnt_config.hpp>
 
-namespace xlnt {
-namespace detail {
-
-template<typename T>
-std::string join(const std::vector<T> &items, char delim)
-{
-    std::string refs;
-    for (const auto& item : items)
-    {
-        if (!refs.empty())
-            refs.push_back(delim);
-
-        refs.append(item.to_string());
-    }
-
-    return refs;
-}
-
-} // namespace detail
-} // namespace xlnt
+#ifdef XLNT_EXPOSE_INTERNAL_API
+    #define XLNT_API_INTERNAL XLNT_API
+#else
+    #define XLNT_API_INTERNAL
+#endif
