@@ -20,6 +20,5 @@ var searchData=
   ['optional_3c_20xlnt_3a_3aorientation_20_3e',['optional&lt; xlnt::orientation &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['optional_3c_20xlnt_3a_3apane_20_3e',['optional&lt; xlnt::pane &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['optional_3c_20xlnt_3a_3apaper_5fsize_20_3e',['optional&lt; xlnt::paper_size &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
-  ['optional_3c_20xlnt_3a_3aphonetic_5fpr_20_3e',['optional&lt; xlnt::phonetic_pr &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
-  ['optional_3c_20xlnt_3a_3arange_5freference_20_3e',['optional&lt; xlnt::range_reference &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]]
+  ['optional_3c_20xlnt_3a_3aphonetic_5fpr_20_3e',['optional&lt; xlnt::phonetic_pr &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]]
 ];

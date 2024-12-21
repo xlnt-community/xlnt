@@ -45,7 +45,6 @@ var searchData=
   ['optional_3c_20xlnt_3a_3apane_20_3e',['optional&lt; xlnt::pane &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['optional_3c_20xlnt_3a_3apaper_5fsize_20_3e',['optional&lt; xlnt::paper_size &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['optional_3c_20xlnt_3a_3aphonetic_5fpr_20_3e',['optional&lt; xlnt::phonetic_pr &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
-  ['optional_3c_20xlnt_3a_3arange_5freference_20_3e',['optional&lt; xlnt::range_reference &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['orientation',['orientation',['../namespacexlnt.html#a07a837198885833ce68be2e6bad4ffb8',1,'xlnt']]],
   ['orientation_5f',['orientation_',['../structxlnt_1_1page__setup.html#a60c01f0a6da142e5a555e9132e9e2dec',1,'xlnt::page_setup']]],
   ['outline',['outline',['../classxlnt_1_1font.html#a20db974c522ccb77f20e9a36674d9c40',1,'xlnt::font::outline(bool outline)'],['../classxlnt_1_1font.html#af7c1d9bfccf322ec7c933eeb833c8bb4',1,'xlnt::font::outline() const']]],

@@ -98,14 +98,20 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aec919b23d8857c10bf97015310ba87ea"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1selection.html#aec919b23d8857c10bf97015310ba87ea">has_sqref</a> () const</td></tr>
 <tr class="memdesc:aec919b23d8857c10bf97015310ba87ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this selection has a defined sqref.  <a href="#aec919b23d8857c10bf97015310ba87ea">More...</a><br /></td></tr>
 <tr class="separator:aec919b23d8857c10bf97015310ba87ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5192faf85c6aa5df4d682dc49429c086"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1range__reference.html">range_reference</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1selection.html#a5192faf85c6aa5df4d682dc49429c086">sqref</a> () const</td></tr>
-<tr class="memdesc:a5192faf85c6aa5df4d682dc49429c086"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the range encompassed by this selection.  <a href="#a5192faf85c6aa5df4d682dc49429c086">More...</a><br /></td></tr>
-<tr class="separator:a5192faf85c6aa5df4d682dc49429c086"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9523a01e135cffffbf2dae3df7af787f"><td class="memItemLeft" align="right" valign="top">XLNT_DEPRECATED <a class="el" href="classxlnt_1_1range__reference.html">range_reference</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1selection.html#a9523a01e135cffffbf2dae3df7af787f">sqref</a> () const</td></tr>
+<tr class="memdesc:a9523a01e135cffffbf2dae3df7af787f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the range encompassed by this selection. If the range contains multiple (non-contiguous) regions, the first range is returned. Use sqrefs to obtain the full selection.  <a href="#a9523a01e135cffffbf2dae3df7af787f">More...</a><br /></td></tr>
+<tr class="separator:a9523a01e135cffffbf2dae3df7af787f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcd10266b5564ea135d0d212300ddb18"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classxlnt_1_1range__reference.html">range_reference</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1selection.html#adcd10266b5564ea135d0d212300ddb18">sqrefs</a> () const</td></tr>
+<tr class="memdesc:adcd10266b5564ea135d0d212300ddb18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the range encompassed by this selection.  <a href="#adcd10266b5564ea135d0d212300ddb18">More...</a><br /></td></tr>
+<tr class="separator:adcd10266b5564ea135d0d212300ddb18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7021975079a9d6e59d3cc13ac798f4ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1selection.html#a7021975079a9d6e59d3cc13ac798f4ea">sqref</a> (const <a class="el" href="classxlnt_1_1range__reference.html">range_reference</a> &amp;ref)</td></tr>
 <tr class="memdesc:a7021975079a9d6e59d3cc13ac798f4ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the range encompassed by this selection.  <a href="#a7021975079a9d6e59d3cc13ac798f4ea">More...</a><br /></td></tr>
 <tr class="separator:a7021975079a9d6e59d3cc13ac798f4ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73a7239bc9e98aa493346e2891c92c64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1selection.html#a73a7239bc9e98aa493346e2891c92c64">sqref</a> (const std::vector&lt; <a class="el" href="classxlnt_1_1range__reference.html">range_reference</a> &gt; &amp;ref)</td></tr>
+<tr class="memdesc:a73a7239bc9e98aa493346e2891c92c64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the range encompassed by this selection.  <a href="#a73a7239bc9e98aa493346e2891c92c64">More...</a><br /></td></tr>
+<tr class="separator:a73a7239bc9e98aa493346e2891c92c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a708da2b25af667475f9a94576b3b5b67"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1selection.html#a708da2b25af667475f9a94576b3b5b67">sqref</a> (const std::string &amp;ref)</td></tr>
-<tr class="memdesc:a708da2b25af667475f9a94576b3b5b67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the range encompassed by this selection.  <a href="#a708da2b25af667475f9a94576b3b5b67">More...</a><br /></td></tr>
+<tr class="memdesc:a708da2b25af667475f9a94576b3b5b67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the range encompassed by this selection. The provided range should be a space delimited list of range references. E.g. "A1 B2:C3"  <a href="#a708da2b25af667475f9a94576b3b5b67">More...</a><br /></td></tr>
 <tr class="separator:a708da2b25af667475f9a94576b3b5b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a58e9a2b379e8542f054e4979ebefaec9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacexlnt.html#aabf687d60cdc5380288e7d2d0114ffde">pane_corner</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1selection.html#a58e9a2b379e8542f054e4979ebefaec9">pane</a> () const</td></tr>
 <tr class="memdesc:a58e9a2b379e8542f054e4979ebefaec9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the sheet quadrant of this selection.  <a href="#a58e9a2b379e8542f054e4979ebefaec9">More...</a><br /></td></tr>
@@ -422,8 +428,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a5192faf85c6aa5df4d682dc49429c086"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5192faf85c6aa5df4d682dc49429c086">&#9670;&nbsp;</a></span>sqref() <span class="overload">[1/3]</span></h2>
+<a id="a9523a01e135cffffbf2dae3df7af787f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9523a01e135cffffbf2dae3df7af787f">&#9670;&nbsp;</a></span>sqref() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -432,7 +438,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classxlnt_1_1range__reference.html">range_reference</a> xlnt::selection::sqref </td>
+          <td class="memname">XLNT_DEPRECATED <a class="el" href="classxlnt_1_1range__reference.html">range_reference</a> xlnt::selection::sqref </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -445,12 +451,13 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the range encompassed by this selection. </p>
+<p>Returns the range encompassed by this selection. If the range contains multiple (non-contiguous) regions, the first range is returned. Use sqrefs to obtain the full selection. </p>
+<p>&lt;deprecated&gt; Use sqrefs instead. &lt;/deprecated&gt; </p>
 
 </div>
 </div>
 <a id="a7021975079a9d6e59d3cc13ac798f4ea"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7021975079a9d6e59d3cc13ac798f4ea">&#9670;&nbsp;</a></span>sqref() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7021975079a9d6e59d3cc13ac798f4ea">&#9670;&nbsp;</a></span>sqref() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -477,8 +484,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a708da2b25af667475f9a94576b3b5b67"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a708da2b25af667475f9a94576b3b5b67">&#9670;&nbsp;</a></span>sqref() <span class="overload">[3/3]</span></h2>
+<a id="a73a7239bc9e98aa493346e2891c92c64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73a7239bc9e98aa493346e2891c92c64">&#9670;&nbsp;</a></span>sqref() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -489,7 +496,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void xlnt::selection::sqref </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classxlnt_1_1range__reference.html">range_reference</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>ref</em></td><td>)</td>
           <td></td>
         </tr>
@@ -502,6 +509,53 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets the range encompassed by this selection. </p>
+
+</div>
+</div>
+<a id="a708da2b25af667475f9a94576b3b5b67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a708da2b25af667475f9a94576b3b5b67">&#9670;&nbsp;</a></span>sqref() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void xlnt::selection::sqref </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>ref</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the range encompassed by this selection. The provided range should be a space delimited list of range references. E.g. "A1 B2:C3" </p>
+
+</div>
+</div>
+<a id="adcd10266b5564ea135d0d212300ddb18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcd10266b5564ea135d0d212300ddb18">&#9670;&nbsp;</a></span>sqrefs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;<a class="el" href="classxlnt_1_1range__reference.html">range_reference</a>&gt;&amp; xlnt::selection::sqrefs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the range encompassed by this selection. </p>
 
 </div>
 </div>
