@@ -25,7 +25,7 @@
 
 #include <ctime>
 #include <xlnt/utils/optional.hpp>
-#include <detail/environment.hpp>
+#include <xlnt/utils/environment.hpp>
 
 namespace xlnt {
 namespace detail {

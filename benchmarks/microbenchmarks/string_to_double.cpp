@@ -8,7 +8,7 @@
 #include <random>
 #include <sstream>
 #include <xlnt/utils/numeric.hpp>
-#include <detail/environment.hpp>
+#include <detail/utils/features.hpp>
 
 namespace {
 

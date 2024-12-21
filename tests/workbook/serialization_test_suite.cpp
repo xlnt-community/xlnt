@@ -77,6 +77,7 @@ public:
         register_test(test_active_sheet);
         register_test(test_locale_comma);
         register_test(test_Issue6_google_missing_workbookView);
+        register_test(test_non_contiguous_selection);
     }
 
     bool workbook_matches_file(xlnt::workbook &wb, const xlnt::path &file)
@@ -834,6 +835,37 @@ public:
         xlnt::workbook wb;
         wb.load(path_helper::test_file("Issue6_google_missing_workbookView.xlsx"));
         xlnt_assert_throws_nothing(wb.save("temp.xlsx"));
+    }
+
+    void test_non_contiguous_selection()
+    {
+        {
+            xlnt::workbook wb;
+            auto ws = wb.active_sheet();
+
+            xlnt::selection s;
+            s.sqref("A1 B2:C3 D4:D5 E6:F6");
+
+            ws.view().add_selection(s);
+
+            xlnt_assert_throws_nothing(wb.save("temp.xlsx"));
+        }
+
+        {
+            xlnt::workbook wb2;
+            wb2.load("temp.xlsx");
+            auto ws2 = wb2.active_sheet();
+
+            xlnt_assert_equals(ws2.view().has_selections(), true);
+            xlnt_assert_equals(ws2.view().selections().size(), 1);
+            xlnt_assert_equals(ws2.view().selection(0).has_sqref(), true);
+            xlnt_assert_equals(ws2.view().selection(0).sqref(), "A1");
+            xlnt_assert_equals(ws2.view().selection(0).sqrefs().size(), 4);
+            xlnt_assert_equals(ws2.view().selection(0).sqrefs()[0], "A1");
+            xlnt_assert_equals(ws2.view().selection(0).sqrefs()[1], "B2:C3");
+            xlnt_assert_equals(ws2.view().selection(0).sqrefs()[2], "D4:D5");
+            xlnt_assert_equals(ws2.view().selection(0).sqrefs()[3], "E6:F6");
+        }
     }
 };
 
