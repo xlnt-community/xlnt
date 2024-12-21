@@ -1,4 +1,3 @@
-// Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2024 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,33 +25,19 @@
 
 #include <xlnt/utils/environment.hpp>
 
-#ifndef XLNT_API
-    #if !defined(XLNT_STATIC) && defined(_MSC_VER)
-        #ifdef XLNT_EXPORT
-            #define XLNT_API __declspec(dllexport)
-        #else
-            #ifdef XLNT_SHARED
-                // For clients of the library, supress warnings about DLL interfaces for standard library classes
-                #pragma warning(disable : 4251)
-                #pragma warning(disable : 4275)
-                #define XLNT_API __declspec(dllimport)
-            #else
-                #define XLNT_API
-            #endif
-        #endif
-    #else
-        #define XLNT_API
-    #endif
+#if XLNT_HAS_CPP_VERSION(XLNT_CPP_17)
+  #define XLNT_DETAIL_FEATURE_TO_CHARS 1
+#else
+  #define XLNT_DETAIL_FEATURE_TO_CHARS -1
 #endif
 
-#if XLNT_HAS_CPP_VERSION(XLNT_CPP_14)
-    #define XLNT_DEPRECATED [[deprecated]]
-#else
-    #ifdef _MSC_VER
-        #define XLNT_DEPRECATED __declspec(deprecated)
-    #elif defined(__GNUC__) | defined(__clang__)
-        #define XLNT_DEPRECATED __attribute__((__deprecated__))
-    #else
-        #define XLNT_DEPRECATED
-    #endif
-#endif
+// If you get a division by zero error, you probably misspelled the feature name.
+// Developer note: XLNT_DETAIL_FEATURE_##feature should be set to
+//    1: if feature is supported
+//    -1: if the feature is not supported
+/// <summary>
+/// Returns whether the `feature` is supported by the current build configuration.
+/// </summary>
+/// Currently, the following features could be tested:
+///  - TO_CHARS: returns whether compliant std::from_chars and std::to_chars implementations are available
+#define XLNT_HAS_FEATURE(feature) (1/XLNT_DETAIL_FEATURE_##feature == 1)

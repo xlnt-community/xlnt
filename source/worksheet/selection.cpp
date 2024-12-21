@@ -1,4 +1,3 @@
-// Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2024 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,37 +21,17 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#pragma once
+#include <xlnt/worksheet/selection.hpp>
+#include <detail/utils/string_helpers.hpp>
 
-#include <xlnt/utils/environment.hpp>
+namespace xlnt {
 
-#ifndef XLNT_API
-    #if !defined(XLNT_STATIC) && defined(_MSC_VER)
-        #ifdef XLNT_EXPORT
-            #define XLNT_API __declspec(dllexport)
-        #else
-            #ifdef XLNT_SHARED
-                // For clients of the library, supress warnings about DLL interfaces for standard library classes
-                #pragma warning(disable : 4251)
-                #pragma warning(disable : 4275)
-                #define XLNT_API __declspec(dllimport)
-            #else
-                #define XLNT_API
-            #endif
-        #endif
-    #else
-        #define XLNT_API
-    #endif
-#endif
+// ref == ST_Sqref: a space delimited list of range references
+void selection::sqref(const std::string &ref)
+{
+    sqref_.clear();
+    for (const auto& range : detail::split_string(ref, ' '))
+        sqref_.push_back(range_reference(range));
+}
 
-#if XLNT_HAS_CPP_VERSION(XLNT_CPP_14)
-    #define XLNT_DEPRECATED [[deprecated]]
-#else
-    #ifdef _MSC_VER
-        #define XLNT_DEPRECATED __declspec(deprecated)
-    #elif defined(__GNUC__) | defined(__clang__)
-        #define XLNT_DEPRECATED __attribute__((__deprecated__))
-    #else
-        #define XLNT_DEPRECATED
-    #endif
-#endif
+} // namespace xlnt

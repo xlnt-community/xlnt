@@ -28,6 +28,7 @@
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/cell/cell_reference.hpp>
 #include <xlnt/cell/index_types.hpp>
+#include <xlnt/utils/optional.hpp>
 
 namespace xlnt {
 

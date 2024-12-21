@@ -46,6 +46,7 @@
 #include <detail/serialization/vector_streambuf.hpp>
 #include <detail/serialization/xlsx_producer.hpp>
 #include <detail/serialization/zstream.hpp>
+#include <detail/utils/string_helpers.hpp>
 
 namespace {
 
@@ -2362,7 +2363,7 @@ void xlsx_producer::write_worksheet(const relationship &rel)
 
     write_start_element(xmlns, "dimension");
     const auto dimension = ws.calculate_dimension();
-    write_attribute("ref", dimension.is_single_cell() ? dimension.top_left().to_string() : dimension.to_string());
+    write_attribute("ref", dimension.to_string());
     write_end_element(xmlns, "dimension");
 
     if (ws.has_view())
@@ -2447,8 +2448,8 @@ void xlsx_producer::write_worksheet(const relationship &rel)
 
             if (current_selection.has_sqref())
             {
-                const auto sqref = current_selection.sqref();
-                write_attribute("sqref", sqref.is_single_cell() ? sqref.top_left().to_string() : sqref.to_string());
+                std::string refs = detail::join(current_selection.sqrefs(), ' ');
+                write_attribute("sqref", refs);
             }
 
             if (current_selection.pane() != pane_corner::top_left)

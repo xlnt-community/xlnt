@@ -24,35 +24,10 @@
 
 #pragma once
 
-#include <xlnt/utils/environment.hpp>
+#include <xlnt/xlnt_config.hpp>
 
-#ifndef XLNT_API
-    #if !defined(XLNT_STATIC) && defined(_MSC_VER)
-        #ifdef XLNT_EXPORT
-            #define XLNT_API __declspec(dllexport)
-        #else
-            #ifdef XLNT_SHARED
-                // For clients of the library, supress warnings about DLL interfaces for standard library classes
-                #pragma warning(disable : 4251)
-                #pragma warning(disable : 4275)
-                #define XLNT_API __declspec(dllimport)
-            #else
-                #define XLNT_API
-            #endif
-        #endif
-    #else
-        #define XLNT_API
-    #endif
-#endif
-
-#if XLNT_HAS_CPP_VERSION(XLNT_CPP_14)
-    #define XLNT_DEPRECATED [[deprecated]]
+#ifdef XLNT_EXPOSE_INTERNAL_API
+    #define XLNT_API_INTERNAL XLNT_API
 #else
-    #ifdef _MSC_VER
-        #define XLNT_DEPRECATED __declspec(deprecated)
-    #elif defined(__GNUC__) | defined(__clang__)
-        #define XLNT_DEPRECATED __attribute__((__deprecated__))
-    #else
-        #define XLNT_DEPRECATED
-    #endif
+    #define XLNT_API_INTERNAL
 #endif
