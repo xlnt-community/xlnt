@@ -50,15 +50,7 @@ range_reference::range_reference(const char *range_string)
 range_reference::range_reference(const std::string &range_string)
     : top_left_("A1"), bottom_right_("A1")
 {
-    auto colon_index = range_string.find(' ');
-
-    if (colon_index != std::string::npos)
-    {
-        // Multiple cell selection is not supported at this time.
-        return;
-    }
-
-    colon_index = range_string.find(':');
+    auto colon_index = range_string.find(':');
 
     if (colon_index != std::string::npos)
     {
@@ -113,7 +105,10 @@ bool range_reference::is_single_cell() const
 
 std::string range_reference::to_string() const
 {
-    return top_left_.to_string() + ":" + bottom_right_.to_string();
+    if (is_single_cell())
+        return top_left().to_string();
+    else
+        return top_left_.to_string() + ":" + bottom_right_.to_string();
 }
 
 bool range_reference::operator==(const range_reference &comparand) const

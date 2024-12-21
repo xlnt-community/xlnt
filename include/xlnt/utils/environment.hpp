@@ -51,12 +51,6 @@
 /// <seealso cref="XLNT_CPP_23">
 #define XLNT_HAS_CPP_VERSION(version) (1/version == 1/version && XLNT_CPP_VERSION >= version)
 
-#if XLNT_HAS_CPP_VERSION(XLNT_CPP_17)
-  #define XLNT_DETAIL_FEATURE_TO_CHARS 1
-#else
-  #define XLNT_DETAIL_FEATURE_TO_CHARS -1
-#endif
-
 #define XLNT_C_11 201112L
 #define XLNT_C_17 201710L
 #define XLNT_C_23 202311L
@@ -68,14 +62,3 @@
 /// <seealso cref="XLNT_C_17">
 /// <seealso cref="XLNT_C_23">
 #define XLNT_HAS_C_VERSION(version) (1/version == 1/version && XLNT_C_VERSION >= version)
-
-// If you get a division by zero error, you probably misspelled the feature name.
-// Developer note: XLNT_DETAIL_FEATURE_##feature should be set to
-//    1: if feature is supported
-//    -1: if the feature is not supported
-/// <summary>
-/// Returns whether the `feature` is supported by the current build configuration.
-/// </summary>
-/// Currently, the following features could be tested:
-///  - TO_CHARS: returns whether compliant std::from_chars and std::to_chars implementations are available
-#define XLNT_HAS_FEATURE(feature) (1/XLNT_DETAIL_FEATURE_##feature == 1)

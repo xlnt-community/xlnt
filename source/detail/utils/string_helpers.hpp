@@ -1,4 +1,3 @@
-// Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2024 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,35 +23,37 @@
 
 #pragma once
 
-#include <xlnt/utils/environment.hpp>
+#include <string>
+#include <vector>
 
-#ifndef XLNT_API
-    #if !defined(XLNT_STATIC) && defined(_MSC_VER)
-        #ifdef XLNT_EXPORT
-            #define XLNT_API __declspec(dllexport)
-        #else
-            #ifdef XLNT_SHARED
-                // For clients of the library, supress warnings about DLL interfaces for standard library classes
-                #pragma warning(disable : 4251)
-                #pragma warning(disable : 4275)
-                #define XLNT_API __declspec(dllimport)
-            #else
-                #define XLNT_API
-            #endif
-        #endif
-    #else
-        #define XLNT_API
-    #endif
-#endif
+#include <detail/xlnt_config_impl.hpp>
 
-#if XLNT_HAS_CPP_VERSION(XLNT_CPP_14)
-    #define XLNT_DEPRECATED [[deprecated]]
-#else
-    #ifdef _MSC_VER
-        #define XLNT_DEPRECATED __declspec(deprecated)
-    #elif defined(__GNUC__) | defined(__clang__)
-        #define XLNT_DEPRECATED __attribute__((__deprecated__))
-    #else
-        #define XLNT_DEPRECATED
-    #endif
-#endif
+namespace xlnt {
+namespace detail {
+
+/// <summary>
+/// Return a vector containing string split at each delim.
+/// If the input string is empty, an empty vector is returned.
+/// </summary>
+XLNT_API_INTERNAL std::vector<std::string> split_string(const std::string &string, char delim);
+
+/// <summary>
+/// Concatenate all the provided items by converting them to a string using its to_string member function.
+/// </summary>
+template<typename T>
+XLNT_API_INTERNAL std::string join(const std::vector<T> &items, char delim)
+{
+    std::string refs;
+    for (const auto& item : items)
+    {
+        if (!refs.empty())
+            refs.push_back(delim);
+
+        refs.append(item.to_string());
+    }
+
+    return refs;
+}
+
+} // namespace detail
+} // namespace xlnt
