@@ -36,7 +36,7 @@ namespace xlnt {
 /// <summary>
 /// Enumerates the possible types a cell can be determined by it's current value.
 /// </summary>
-enum class XLNT_API cell_type
+enum class cell_type
 {
     /// no value
     empty,

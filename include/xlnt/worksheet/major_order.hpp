@@ -31,7 +31,7 @@ namespace xlnt {
 /// <summary>
 /// Defines whether iterating a range returns columns or rows sequentially.
 /// </summary>
-enum class XLNT_API major_order
+enum class major_order
 {
     column,
     row

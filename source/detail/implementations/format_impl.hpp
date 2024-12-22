@@ -2,6 +2,8 @@
 
 #include <cstddef>
 
+#include <detail/xlnt_config_impl.hpp>
+
 #include <xlnt/styles/alignment.hpp>
 #include <xlnt/styles/border.hpp>
 #include <xlnt/styles/fill.hpp>
@@ -50,7 +52,7 @@ struct format_impl
 
     std::size_t references = 0;
 
-    XLNT_API friend bool operator==(const format_impl &left, const format_impl &right)
+    XLNT_API_INTERNAL friend bool operator==(const format_impl &left, const format_impl &right)
     {
         return left.parent == right.parent
             && left.alignment_id == right.alignment_id

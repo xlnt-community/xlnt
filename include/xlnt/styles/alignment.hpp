@@ -33,7 +33,7 @@ namespace xlnt {
 /// <summary>
 /// Text can be aligned horizontally within a cell in these enumerated ways.
 /// </summary>
-enum class XLNT_API horizontal_alignment
+enum class horizontal_alignment
 {
     general,
     left,
@@ -48,7 +48,7 @@ enum class XLNT_API horizontal_alignment
 /// <summary>
 /// Text can be aligned vertically within a cell in these enumerated ways.
 /// </summary>
-enum class XLNT_API vertical_alignment
+enum class vertical_alignment
 {
     top,
     center,

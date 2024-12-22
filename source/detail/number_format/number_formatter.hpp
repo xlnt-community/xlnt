@@ -28,6 +28,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <detail/xlnt_config_impl.hpp>
+
 #include <xlnt/utils/datetime.hpp>
 #include <xlnt/utils/numeric.hpp>
 
@@ -537,7 +539,7 @@ enum class format_locale
 };
 
 // TODO this really shouldn't be exported...
-struct XLNT_API format_condition
+struct XLNT_API_INTERNAL format_condition
 {
     enum class condition_type
     {
@@ -675,7 +677,7 @@ private:
     std::vector<format_code> codes_;
 };
 
-class XLNT_API number_formatter
+class XLNT_API_INTERNAL number_formatter
 {
 public:
     number_formatter(const std::string &format_string, xlnt::calendar calendar);

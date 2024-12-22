@@ -214,7 +214,7 @@ std::streampos vector_ostreambuf::seekpos(std::streampos sp, std::ios_base::open
     return static_cast<std::ptrdiff_t>(position_);
 }
 
-XLNT_API std::vector<std::uint8_t> to_vector(std::istream &in_stream)
+XLNT_API_INTERNAL std::vector<std::uint8_t> to_vector(std::istream &in_stream)
 {
     if (!in_stream)
     {
@@ -226,7 +226,7 @@ XLNT_API std::vector<std::uint8_t> to_vector(std::istream &in_stream)
         std::istreambuf_iterator<char>());
 }
 
-XLNT_API void to_stream(const std::vector<std::uint8_t> &bytes, std::ostream &out_stream)
+XLNT_API_INTERNAL void to_stream(const std::vector<std::uint8_t> &bytes, std::ostream &out_stream)
 {
     if (!out_stream)
     {
@@ -236,7 +236,7 @@ XLNT_API void to_stream(const std::vector<std::uint8_t> &bytes, std::ostream &ou
     out_stream.write(reinterpret_cast<const char *>(bytes.data()), static_cast<std::ptrdiff_t>(bytes.size()));
 }
 
-XLNT_API std::ostream &operator<<(std::ostream &out_stream, const std::vector<std::uint8_t> &bytes)
+XLNT_API_INTERNAL std::ostream &operator<<(std::ostream &out_stream, const std::vector<std::uint8_t> &bytes)
 {
     to_stream(bytes, out_stream);
     return out_stream;
