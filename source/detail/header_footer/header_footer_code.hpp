@@ -28,7 +28,7 @@
 #include <xlnt/cell/rich_text.hpp>
 #include <xlnt/utils/optional.hpp>
 #include <xlnt/worksheet/header_footer.hpp>
-#include <xlnt/utils/numeric.hpp>
+#include <detail/serialization/serialisation_helpers.hpp>
 
 namespace xlnt {
 namespace detail {

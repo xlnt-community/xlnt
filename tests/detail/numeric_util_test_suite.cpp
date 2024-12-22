@@ -22,7 +22,7 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <xlnt/utils/numeric.hpp>
+#include <detail/serialization/serialisation_helpers.hpp>
 #include <helpers/test_suite.hpp>
 #include <cstring>
 

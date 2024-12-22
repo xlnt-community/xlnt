@@ -7,7 +7,7 @@
 #include <locale>
 #include <random>
 #include <sstream>
-#include <xlnt/utils/numeric.hpp>
+#include <detail/serialization/serialisation_helpers.hpp>
 #include <detail/utils/features.hpp>
 
 namespace {

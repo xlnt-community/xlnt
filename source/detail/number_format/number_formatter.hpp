@@ -29,7 +29,7 @@
 #include <vector>
 
 #include <xlnt/utils/datetime.hpp>
-#include <xlnt/utils/numeric.hpp>
+#include <detail/serialization/serialisation_helpers.hpp>
 
 namespace xlnt {
 namespace detail {

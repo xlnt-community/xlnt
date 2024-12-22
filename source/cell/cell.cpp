@@ -58,7 +58,7 @@
 #include <detail/implementations/hyperlink_impl.hpp>
 #include <detail/implementations/stylesheet.hpp>
 #include <detail/implementations/worksheet_impl.hpp>
-#include <xlnt/utils/numeric.hpp>
+#include <detail/serialization/serialisation_helpers.hpp>
 
 namespace {
 

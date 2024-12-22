@@ -24,13 +24,8 @@
 
 #pragma once
 
-#include <xlnt/xlnt_config.hpp>
-#include <algorithm>
-#include <cassert>
 #include <cmath>
-#include <cstddef>
 #include <limits>
-#include <sstream>
 #include <type_traits>
 
 #undef min
@@ -106,48 +101,6 @@ bool float_equals(const LNumber &lhs, const RNumber &rhs,
                                common_t{1}); // clamp
     return ((lhs + scaled_fuzz) >= rhs) && ((rhs + scaled_fuzz) >= lhs);
 }
-
-class number_serialiser
-{
-    static void convert_comma_to_pt(char *buf, int len)
-    {
-        char *buf_end = buf + len;
-        char *decimal = std::find(buf, buf_end, ',');
-        if (decimal != buf_end)
-        {
-            *decimal = '.';
-        }
-    }
-
-    static void convert_pt_to_comma(char *buf, size_t len)
-    {
-        char *buf_end = buf + len;
-        char *decimal = std::find(buf, buf_end, '.');
-        if (decimal != buf_end)
-        {
-            *decimal = ',';
-        }
-    }
-
-public:
-    explicit number_serialiser() = default;
-
-    // for printing to file.
-    // This matches the output format of excel irrespective of current locale
-    XLNT_API std::string serialise(double d) const;
-
-    // replacement for std::to_string / s*printf("%f", ...)
-    // behaves same irrespective of locale
-    XLNT_API std::string serialise_short(double d) const;
-
-    XLNT_API double deserialise(const std::string &s, size_t *len_converted) const;
-
-    double deserialise(const std::string &s) const
-    {
-        size_t ignore;
-        return deserialise(s, &ignore);
-    }
-};
 
 } // namespace detail
 } // namespace xlnt

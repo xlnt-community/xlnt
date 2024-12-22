@@ -35,7 +35,7 @@
 
 #include <detail/external/include_libstudxml.hpp>
 #include <detail/serialization/zstream.hpp>
-#include <xlnt/utils/numeric.hpp>
+#include <detail/serialization/serialisation_helpers.hpp>
 
 namespace xlnt {
 

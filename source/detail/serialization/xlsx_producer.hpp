@@ -30,9 +30,9 @@
 #include <type_traits>
 #include <vector>
 
-#include <xlnt/utils/numeric.hpp>
 #include <detail/constants.hpp>
 #include <detail/external/include_libstudxml.hpp>
+#include <detail/serialization/serialisation_helpers.hpp>
 
 namespace xml {
 class serializer;
