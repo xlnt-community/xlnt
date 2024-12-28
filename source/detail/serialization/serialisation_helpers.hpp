@@ -95,11 +95,11 @@ struct Cell
 
 // for printing to file.
 // This matches the output format of excel irrespective of current locale
-std::string serialise(double d);
+XLNT_API_INTERNAL std::string serialise(double d);
 
-double deserialise(const std::string &s, size_t *len_converted);
-    
-double deserialise(const std::string &s);
+XLNT_API_INTERNAL double deserialise(const std::string &s, size_t *len_converted);
+
+XLNT_API_INTERNAL double deserialise(const std::string &s);
 
 } // namespace detail
 } // namespace xlnt
