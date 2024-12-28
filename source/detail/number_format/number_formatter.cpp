@@ -33,6 +33,9 @@
 #include <detail/parsers.hpp>
 #include <detail/serialization/serialisation_helpers.hpp>
 
+#define FMT_HEADER_ONLY
+#include <fmt/format.h>
+
 namespace {
 
 const std::unordered_map<int, std::string> known_locales()
@@ -628,8 +631,7 @@ void number_format_parser::parse()
                 value = token.string.substr(1);
             }
 
-            detail::number_serialiser ser;
-            section.condition.value = ser.deserialise(value);
+            section.condition.value = xlnt::detail::deserialise(value);
             break;
         }
 
@@ -1575,16 +1577,7 @@ std::string number_formatter::fill_placeholders(const format_placeholders &p, do
     if (p.type == format_placeholders::placeholders_type::general
         || p.type == format_placeholders::placeholders_type::text)
     {
-        auto s = serialiser_.serialise_short(number);
-        while (s.size() > 1 && s.back() == '0')
-        {
-            s.pop_back();
-        }
-        if (s.back() == '.')
-        {
-            s.pop_back();
-        }
-        return s;
+        return fmt::format("{}", number);
     }
 
     if (p.percentage)
@@ -1597,22 +1590,19 @@ std::string number_formatter::fill_placeholders(const format_placeholders &p, do
         number /= std::pow(1000.0, p.thousands_scale);
     }
 
-    auto integer_part = static_cast<int>(number);
+    auto integer_part = static_cast<long long>(number);
 
     if (p.type == format_placeholders::placeholders_type::integer_only
         || p.type == format_placeholders::placeholders_type::integer_part
         || p.type == format_placeholders::placeholders_type::fraction_integer)
     {
-        result = std::to_string(integer_part);
-
-        while (result.size() < p.num_zeros)
+        // Format with leading zeros (if necessary).
+        result = fmt::format("{:0{}d}", integer_part, p.num_zeros);
+        
+        if (result.size() < p.num_zeros + p.num_spaces)
         {
-            result = "0" + result;
-        }
-
-        while (result.size() < p.num_zeros + p.num_spaces)
-        {
-            result = " " + result;
+            // Add leading spaces.
+            result.insert(0, p.num_zeros + p.num_spaces - result.size(), ' ');
         }
 
         if (p.use_comma_separator)
@@ -1641,23 +1631,21 @@ std::string number_formatter::fill_placeholders(const format_placeholders &p, do
     else if (p.type == format_placeholders::placeholders_type::fractional_part)
     {
         auto fractional_part = number - integer_part;
-        result = std::fabs(fractional_part) < std::numeric_limits<double>::min()
-            ? std::string(".")
-            : serialiser_.serialise_short(fractional_part).substr(1);
-
-        while (result.back() == '0' || result.size() > (p.num_zeros + p.num_optionals + p.num_spaces + 1))
+        
+        // Format with zeros.
+        result = fmt::format("{:.{}f}", fractional_part, p.num_zeros + p.num_optionals + p.num_spaces);
+        result.erase(0, 1); // Remove 0 at the beginning so that we only have the decimal point and the rest
+        
+        // Remove unnecessary zeros outside of the maximum precision.
+        while (result.back() == '0' && result.size() > p.num_zeros + 1)
         {
             result.pop_back();
         }
 
-        
-        if (result.size() < p.num_zeros + 1)
-        {
-            result.resize(p.num_zeros + 1, '0');
-        }
-
+        // +1 because the decimal point does not count
         if (result.size() < p.num_zeros + p.num_optionals + p.num_spaces + 1)
         {
+            // Add trailing spaces
             result.resize(p.num_zeros + p.num_optionals + p.num_spaces + 1, ' ');
         }
 
@@ -1687,23 +1675,22 @@ std::string number_formatter::fill_scientific_placeholders(const format_placehol
 
     number /= std::pow(10.0, logarithm);
 
-    auto integer = static_cast<int>(number);
+    auto integer = static_cast<long long>(number);
     auto fraction = number - integer;
 
-    std::string integer_string = std::to_string(integer);
-
+    // Format integer with leading zeros.
+    auto integer_width = integer_part.num_zeros;
+    
     if (number == 0.0)
     {
-        integer_string = std::string(integer_part.num_zeros + integer_part.num_optionals, '0');
+        integer_width += integer_part.num_optionals;
     }
+    std::string integer_string = fmt::format("{:0{}d}", integer, integer_width);
 
-    std::string fractional_string = serialiser_.serialise_short(fraction).substr(1, fractional_part.num_zeros + fractional_part.num_optionals + 1);
-    std::string exponent_string = std::to_string(logarithm);
-
-    while (exponent_string.size() < fractional_part.num_zeros)
-    {
-        exponent_string.insert(0, "0");
-    }
+    // Format with zeros and (optionally) spaces.
+    std::string fractional_string = fmt::format("{:.{}f}", fraction, fractional_part.num_zeros + fractional_part.num_optionals);
+    fractional_string.erase(0, 1); // Remove 0 at the beginning so that we only have the decimal point and the rest
+    std::string exponent_string = fmt::format("{:0{}d}", logarithm, exponent_part.num_zeros);
 
     if (exponent_part.type == format_placeholders::placeholders_type::scientific_exponent_plus)
     {
@@ -1720,29 +1707,29 @@ std::string number_formatter::fill_scientific_placeholders(const format_placehol
 std::string number_formatter::fill_fraction_placeholders(const format_placeholders & /*numerator*/,
     const format_placeholders &denominator, double number, bool /*improper*/)
 {
-    auto fractional_part = number - static_cast<int>(number);
+    auto fractional_part = number - static_cast<long long>(number);
     auto original_fractional_part = fractional_part;
     fractional_part *= 10;
 
-    while (std::abs(fractional_part - static_cast<int>(fractional_part)) > 0.000001
-        && std::abs(fractional_part - static_cast<int>(fractional_part)) < 0.999999)
+    while (std::abs(fractional_part - static_cast<long long>(fractional_part)) > 0.000001
+        && std::abs(fractional_part - static_cast<long long>(fractional_part)) < 0.999999)
     {
         fractional_part *= 10;
     }
 
-    fractional_part = static_cast<int>(fractional_part);
+    fractional_part = static_cast<long long>(fractional_part);
     auto denominator_digits = denominator.num_zeros + denominator.num_optionals + denominator.num_spaces;
     //    auto denominator_digits = static_cast<std::size_t>(std::ceil(std::log10(fractional_part)));
 
-    auto lower = static_cast<int>(std::pow(10, denominator_digits - 1));
-    auto upper = static_cast<int>(std::pow(10, denominator_digits));
+    auto lower = static_cast<long long>(std::pow(10, denominator_digits - 1));
+    auto upper = static_cast<long long>(std::pow(10, denominator_digits));
     auto best_denominator = lower;
     auto best_difference = 1000.0;
 
-    for (int i = lower; i < upper; ++i)
+    for (long long i = lower; i < upper; ++i)
     {
         auto numerator_full = original_fractional_part * i;
-        auto numerator_rounded = static_cast<int>(std::round(numerator_full));
+        auto numerator_rounded = static_cast<long long>(std::round(numerator_full));
         auto difference = std::fabs(original_fractional_part - (numerator_rounded / static_cast<double>(i)));
 
         if (difference < best_difference)
@@ -1752,7 +1739,7 @@ std::string number_formatter::fill_fraction_placeholders(const format_placeholde
         }
     }
 
-    auto numerator_rounded = static_cast<int>(std::round(original_fractional_part * best_denominator));
+    auto numerator_rounded = static_cast<long long>(std::round(original_fractional_part * best_denominator));
     return std::to_string(numerator_rounded) + "/" + std::to_string(best_denominator);
 }
 
@@ -1835,7 +1822,7 @@ std::string number_formatter::format_number(const format_code &format, double nu
             {
                 auto digits = std::min(
                     static_cast<std::size_t>(6), part.placeholders.num_zeros + part.placeholders.num_optionals);
-                auto denominator = static_cast<int>(std::pow(10.0, digits));
+                auto denominator = static_cast<long long>(std::pow(10.0, digits));
                 auto fractional_seconds = dt.get_microsecond() / 1.0E6 * denominator;
                 fractional_seconds = std::round(fractional_seconds) / denominator;
                 result.append(fill_placeholders(part.placeholders, fractional_seconds));
@@ -2019,18 +2006,18 @@ std::string number_formatter::format_number(const format_code &format, double nu
         }
 
         case template_part::template_type::elapsed_hours: {
-            result.append(std::to_string(24 * static_cast<int>(number) + dt.get_hour()));
+            result.append(std::to_string(24 * static_cast<long long>(number) + dt.get_hour()));
             break;
         }
 
         case template_part::template_type::elapsed_minutes: {
-            result.append(std::to_string(24 * 60 * static_cast<int>(number)
+            result.append(std::to_string(24 * 60 * static_cast<long long>(number)
                 + (60 * dt.get_hour()) + dt.get_minute()));
             break;
         }
 
         case template_part::template_type::elapsed_seconds: {
-            result.append(std::to_string(24 * 60 * 60 * static_cast<int>(number)
+            result.append(std::to_string(24 * 60 * 60 * static_cast<long long>(number)
                 + (60 * 60 * dt.get_hour()) + (60 * dt.get_minute()) + dt.get_second()));
             break;
         }

@@ -31,7 +31,10 @@
 #include <limits>
 #include <locale>
 
-bool xlnt::detail::parse(const char *string, long long &result, char **end, int base)
+namespace xlnt {
+namespace detail {
+
+bool parse(const char *string, long long &result, char **end, int base)
 {
     auto &errno_ref = errno; // Nonzero cost, pay it once; note: since c++11, errno is thread-local and thus safe
     errno_ref = 0;
@@ -70,7 +73,7 @@ bool xlnt::detail::parse(const char *string, long long &result, char **end, int 
     return ok;
 }
 
-bool xlnt::detail::parse(const char *string, int &result, char **end, int base)
+bool parse(const char *string, int &result, char **end, int base)
 {
     auto &errno_ref = errno; // Nonzero cost, pay it once; note: since c++11, errno is thread-local and thus safe
     errno_ref = 0;
@@ -119,7 +122,7 @@ bool xlnt::detail::parse(const char *string, int &result, char **end, int base)
     return ok;
 }
 
-bool xlnt::detail::parse(const char *string, long &result, char **end, int base)
+bool parse(const char *string, long &result, char **end, int base)
 {
     auto &errno_ref = errno; // Nonzero cost, pay it once; note: since c++11, errno is thread-local and thus safe
     errno_ref = 0;
@@ -158,7 +161,7 @@ bool xlnt::detail::parse(const char *string, long &result, char **end, int base)
     return ok;
 }
 
-bool xlnt::detail::parse(const std::string &string, long long &result, std::size_t *num_characters_parsed, int base)
+bool parse(const std::string &string, long long &result, std::size_t *num_characters_parsed, int base)
 {
     errno = 0; // Reset errno; note: since c++11, errno is thread-local and thus safe
     bool ok = !string.empty();
@@ -181,7 +184,7 @@ bool xlnt::detail::parse(const std::string &string, long long &result, std::size
     return ok;
 }
 
-bool xlnt::detail::parse(const std::string &string, int &result, std::size_t *num_characters_parsed, int base)
+bool parse(const std::string &string, int &result, std::size_t *num_characters_parsed, int base)
 {
     errno = 0; // Reset errno; note: since c++11, errno is thread-local and thus safe
     bool ok = !string.empty();
@@ -204,7 +207,7 @@ bool xlnt::detail::parse(const std::string &string, int &result, std::size_t *nu
     return ok;
 }
 
-bool xlnt::detail::parse(const std::string &string, long &result, std::size_t *num_characters_parsed, int base)
+bool parse(const std::string &string, long &result, std::size_t *num_characters_parsed, int base)
 {
     errno = 0; // Reset errno; note: since c++11, errno is thread-local and thus safe
     bool ok = !string.empty();
@@ -227,7 +230,7 @@ bool xlnt::detail::parse(const std::string &string, long &result, std::size_t *n
     return ok;
 }
 
-bool xlnt::detail::is_negative_number(const char *string, const char *&end)
+bool is_negative_number(const char *string, const char *&end)
 {
     bool is_negative_number = false;
     end = string;
@@ -265,7 +268,7 @@ bool xlnt::detail::is_negative_number(const char *string, const char *&end)
     return is_negative_number;
 }
 
-bool xlnt::detail::parse(const char *string, unsigned long long &result, char **end, int base)
+bool parse(const char *string, unsigned long long &result, char **end, int base)
 {
     auto &errno_ref = errno; // Nonzero cost, pay it once; note: since c++11, errno is thread-local and thus safe
     errno_ref = 0;
@@ -326,7 +329,7 @@ bool xlnt::detail::parse(const char *string, unsigned long long &result, char **
     return ok;
 }
 
-bool xlnt::detail::parse(const char *string, unsigned int &result, char **end, int base)
+bool parse(const char *string, unsigned int &result, char **end, int base)
 {
     auto &errno_ref = errno; // Nonzero cost, pay it once; note: since c++11, errno is thread-local and thus safe
     errno_ref = 0;
@@ -397,7 +400,7 @@ bool xlnt::detail::parse(const char *string, unsigned int &result, char **end, i
     return ok;
 }
 
-bool xlnt::detail::parse(const char *string, unsigned long &result, char **end, int base)
+bool parse(const char *string, unsigned long &result, char **end, int base)
 {
     auto &errno_ref = errno; // Nonzero cost, pay it once; note: since c++11, errno is thread-local and thus safe
     errno_ref = 0;
@@ -458,7 +461,7 @@ bool xlnt::detail::parse(const char *string, unsigned long &result, char **end, 
     return ok;
 }
 
-bool xlnt::detail::parse(const std::string &string, unsigned long long &result, std::size_t *num_characters_parsed, int base)
+bool parse(const std::string &string, unsigned long long &result, std::size_t *num_characters_parsed, int base)
 {
     errno = 0; // Reset errno; note: since c++11, errno is thread-local and thus safe
     bool ok = !string.empty();
@@ -481,7 +484,7 @@ bool xlnt::detail::parse(const std::string &string, unsigned long long &result, 
     return ok;
 }
 
-bool xlnt::detail::parse(const std::string &string, unsigned int &result, std::size_t *num_characters_parsed, int base)
+bool parse(const std::string &string, unsigned int &result, std::size_t *num_characters_parsed, int base)
 {
     errno = 0; // Reset errno; note: since c++11, errno is thread-local and thus safe
     bool ok = !string.empty();
@@ -504,7 +507,7 @@ bool xlnt::detail::parse(const std::string &string, unsigned int &result, std::s
     return ok;
 }
 
-bool xlnt::detail::parse(const std::string &string, unsigned long &result, std::size_t *num_characters_parsed, int base)
+bool parse(const std::string &string, unsigned long &result, std::size_t *num_characters_parsed, int base)
 {
     errno = 0; // Reset errno; note: since c++11, errno is thread-local and thus safe
     bool ok = !string.empty();
@@ -527,17 +530,17 @@ bool xlnt::detail::parse(const std::string &string, unsigned long &result, std::
     return ok;
 }
 
-bool xlnt::detail::parse(const char *string, double &result, char **end)
+bool parse(const char *string, double &result, char **end)
 {
     return parse(detail::get_system_locale(), string, result, end);
 }
 
-bool xlnt::detail::parse(const char *string, float &result, char **end)
+bool parse(const char *string, float &result, char **end)
 {
     return parse(detail::get_system_locale(), string, result, end);
 }
 
-bool xlnt::detail::parse(const char *string, long double &result, char **end)
+bool parse(const char *string, long double &result, char **end)
 {
     return parse(detail::get_system_locale(), string, result, end);
 }
@@ -666,37 +669,37 @@ static bool parse_number(const std::locale &loc, const char *string, T &result, 
     return ok;
 }
 
-bool xlnt::detail::parse(const std::locale &loc, const char *string, double &result, char **end)
+bool parse(const std::locale &loc, const char *string, double &result, char **end)
 {
-    return ::parse_number<double>(loc, string, result, end, std::strtod);
+    return parse_number<double>(loc, string, result, end, std::strtod);
 }
 
-bool xlnt::detail::parse(const std::locale &loc, const char *string, float &result, char **end)
+bool parse(const std::locale &loc, const char *string, float &result, char **end)
 {
-    return ::parse_number<float>(loc, string, result, end, std::strtof);
+    return parse_number<float>(loc, string, result, end, std::strtof);
 }
 
-bool xlnt::detail::parse(const std::locale &loc, const char *string, long double &result, char **end)
+bool parse(const std::locale &loc, const char *string, long double &result, char **end)
 {
-    return ::parse_number<long double>(loc, string, result, end, std::strtold);
+    return parse_number<long double>(loc, string, result, end, std::strtold);
 }
 
-bool xlnt::detail::parse(const std::string &string, double &result, std::size_t *num_characters_parsed)
-{
-    return parse(detail::get_system_locale(), string, result, num_characters_parsed);
-}
-
-bool xlnt::detail::parse(const std::string &string, float &result, std::size_t *num_characters_parsed)
+bool parse(const std::string &string, double &result, std::size_t *num_characters_parsed)
 {
     return parse(detail::get_system_locale(), string, result, num_characters_parsed);
 }
 
-bool xlnt::detail::parse(const std::string &string, long double &result, std::size_t *num_characters_parsed)
+bool parse(const std::string &string, float &result, std::size_t *num_characters_parsed)
 {
     return parse(detail::get_system_locale(), string, result, num_characters_parsed);
 }
 
-bool xlnt::detail::parse(const std::locale &loc, const std::string &string, double &result, std::size_t *num_characters_parsed)
+bool parse(const std::string &string, long double &result, std::size_t *num_characters_parsed)
+{
+    return parse(detail::get_system_locale(), string, result, num_characters_parsed);
+}
+
+bool parse(const std::locale &loc, const std::string &string, double &result, std::size_t *num_characters_parsed)
 {
     errno = 0; // Reset errno; note: since c++11, errno is thread-local and thus safe
     bool ok = !string.empty();
@@ -719,7 +722,7 @@ bool xlnt::detail::parse(const std::locale &loc, const std::string &string, doub
     return ok;
 }
 
-bool xlnt::detail::parse(const std::locale &loc, const std::string &string, float &result, std::size_t *num_characters_parsed)
+bool parse(const std::locale &loc, const std::string &string, float &result, std::size_t *num_characters_parsed)
 {
     errno = 0; // Reset errno; note: since c++11, errno is thread-local and thus safe
     bool ok = !string.empty();
@@ -742,7 +745,7 @@ bool xlnt::detail::parse(const std::locale &loc, const std::string &string, floa
     return ok;
 }
 
-bool xlnt::detail::parse(const std::locale &loc, const std::string &string, long double &result, std::size_t *num_characters_parsed)
+bool parse(const std::locale &loc, const std::string &string, long double &result, std::size_t *num_characters_parsed)
 {
     errno = 0; // Reset errno; note: since c++11, errno is thread-local and thus safe
     bool ok = !string.empty();
@@ -764,3 +767,6 @@ bool xlnt::detail::parse(const std::locale &loc, const std::string &string, long
 
     return ok;
 }
+
+} // namespace detail
+} // namespace xlnt

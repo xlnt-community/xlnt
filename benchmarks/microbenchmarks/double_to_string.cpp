@@ -81,10 +81,8 @@ struct number_serialiser_production
 {
     std::string serialise(double d)
     {
-        return serializer.serialise(d);
+        return xlnt::detail::serialise(d);
     }
-
-    xlnt::detail::number_serialiser serializer;
 };
 
 class number_serialiser_stream

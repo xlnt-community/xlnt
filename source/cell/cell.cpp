@@ -64,9 +64,8 @@ namespace {
 
 std::pair<bool, double> cast_numeric(const std::string &s)
 {
-    xlnt::detail::number_serialiser ser;
     size_t len_convert = 0;
-    double result = ser.deserialise(s, &len_convert);
+    double result = xlnt::detail::deserialise(s, &len_convert);
     return (len_convert != s.size())
         ? std::make_pair(false, 0.0)
         : std::make_pair(true, result);
@@ -110,8 +109,8 @@ std::pair<bool, xlnt::time> cast_time(const std::string &s)
     }
 
     std::vector<double> numeric_components;
-    xlnt::detail::number_serialiser ser;
-    for (auto component : time_components)
+    
+    for (const auto & component : time_components)
     {
         if (component.empty() || (component.substr(0, component.find('.')).size() > 2))
         {
@@ -125,7 +124,7 @@ std::pair<bool, xlnt::time> cast_time(const std::string &s)
                 return {false, result};
             }
         }
-        auto numeric = ser.deserialise(component);
+        auto numeric = xlnt::detail::deserialise(component);
 
         numeric_components.push_back(numeric);
     }

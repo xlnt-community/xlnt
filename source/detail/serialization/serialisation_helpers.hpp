@@ -3,13 +3,9 @@
 
 #include <xlnt/cell/cell_type.hpp>
 #include <xlnt/cell/index_types.hpp>
-#include <detail/locale.hpp>
-#include <detail/parsers.hpp>
+#include <detail/xlnt_config_impl.hpp>
 
 #include <string>
-#include <iomanip>
-#include <limits>
-#include <cassert>
 
 namespace xlnt {
 namespace detail {
@@ -97,51 +93,13 @@ struct Cell
     std::string formula_string; // <f>
 };
 
-class number_serialiser
-{    
-private:
-    static constexpr int serialization_digits_full_precision = 15;
-    static constexpr int serialization_digits_short = 6;
+// for printing to file.
+// This matches the output format of excel irrespective of current locale
+std::string serialise(double d);
 
-public:
-    explicit number_serialiser() = default;
-
-    // for printing to file.
-    // This matches the output format of excel irrespective of current locale
-    std::string serialise(double d) const
-    {
-        std::ostringstream ss;
-        ss.imbue(detail::get_serialization_locale());
-        ss << std::defaultfloat << std::setprecision(serialization_digits_full_precision) << d;
-        return ss.str();
-    }
-
-    // replacement for std::to_string / s*printf("%f", ...)
-    // behaves same irrespective of locale
-    std::string serialise_short(double d) const
-    {
-        std::ostringstream ss;
-        ss.imbue(detail::get_serialization_locale());
-        ss << std::fixed << std::setprecision(serialization_digits_short) << d;
-        return ss.str();
-    }
-
-    double deserialise(const std::string &s, size_t *len_converted) const
-    {
-        assert(!s.empty());
-        assert(len_converted != nullptr);
-        *len_converted = 0;
-        double d = std::numeric_limits<double>::quiet_NaN();
-        detail::parse(s, d, len_converted);
-        return d;
-    }
-
-    double deserialise(const std::string &s) const
-    {
-        size_t ignore;
-        return deserialise(s, &ignore);
-    }
-};
+double deserialise(const std::string &s, size_t *len_converted);
+    
+double deserialise(const std::string &s);
 
 } // namespace detail
 } // namespace xlnt

@@ -425,7 +425,6 @@ private:
     std::unordered_map<std::string, std::string> array_formulae_;
 
     detail::worksheet_impl *current_worksheet_;
-    number_serialiser converter_;
     
     std::vector<defined_name> defined_names_;
 };

@@ -2513,7 +2513,7 @@ void xlsx_producer::write_worksheet(const relationship &rel)
         if (props.width.is_set())
         {
             double width = (props.width.get() * 7 + 5) / 7;
-            write_attribute("width", converter_.serialise(width));
+            write_attribute("width", xlnt::detail::serialise(width));
         }
 
         if (props.best_fit)
@@ -2622,7 +2622,7 @@ void xlsx_producer::write_worksheet(const relationship &rel)
             if (props.height.is_set())
             {
                 auto height = props.height.get();
-                write_attribute("ht", converter_.serialise(height));
+                write_attribute("ht", xlnt::detail::serialise(height));
             }
 
             if (props.hidden)
@@ -2749,7 +2749,7 @@ void xlsx_producer::write_worksheet(const relationship &rel)
 
                 case cell::type::number:
                     write_start_element(xmlns, "v");
-                    write_characters(converter_.serialise(cell.value<double>()));
+                    write_characters(xlnt::detail::serialise(cell.value<double>()));
                     write_end_element(xmlns, "v");
                     break;
 
@@ -2980,26 +2980,26 @@ void xlsx_producer::write_worksheet(const relationship &rel)
             {
                 if (hf.has_odd_even_header(location))
                 {
-                    odd_header.append(encode_header_footer(hf.odd_header(location), location, converter_));
-                    even_header.append(encode_header_footer(hf.even_header(location), location, converter_));
+                    odd_header.append(encode_header_footer(hf.odd_header(location), location));
+                    even_header.append(encode_header_footer(hf.even_header(location), location));
                 }
 
                 if (hf.has_odd_even_footer(location))
                 {
-                    odd_footer.append(encode_header_footer(hf.odd_footer(location), location, converter_));
-                    even_footer.append(encode_header_footer(hf.even_footer(location), location, converter_));
+                    odd_footer.append(encode_header_footer(hf.odd_footer(location), location));
+                    even_footer.append(encode_header_footer(hf.even_footer(location), location));
                 }
             }
             else
             {
                 if (hf.has_header(location))
                 {
-                    odd_header.append(encode_header_footer(hf.header(location), location, converter_));
+                    odd_header.append(encode_header_footer(hf.header(location), location));
                 }
 
                 if (hf.has_footer(location))
                 {
-                    odd_footer.append(encode_header_footer(hf.footer(location), location, converter_));
+                    odd_footer.append(encode_header_footer(hf.footer(location), location));
                 }
             }
 
@@ -3007,12 +3007,12 @@ void xlsx_producer::write_worksheet(const relationship &rel)
             {
                 if (hf.has_first_page_header(location))
                 {
-                    first_header.append(encode_header_footer(hf.first_page_header(location), location, converter_));
+                    first_header.append(encode_header_footer(hf.first_page_header(location), location));
                 }
 
                 if (hf.has_first_page_footer(location))
                 {
-                    first_footer.append(encode_header_footer(hf.first_page_footer(location), location, converter_));
+                    first_footer.append(encode_header_footer(hf.first_page_footer(location), location));
                 }
             }
         }
@@ -3495,7 +3495,7 @@ void xlsx_producer::write_color(const xlnt::color &color)
     }
     if (color.has_tint())
     {
-        write_attribute("tint", converter_.serialise(color.tint()));
+        write_attribute("tint", xlnt::detail::serialise(color.tint()));
     }
 }
 

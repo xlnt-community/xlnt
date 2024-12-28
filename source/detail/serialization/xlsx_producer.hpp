@@ -183,7 +183,7 @@ private:
     template <typename T, typename std::enable_if<std::is_floating_point<T>::value, T>::type* = nullptr>
     void write_attribute(const std::string &name, T value)
     {
-        current_part_serializer_->attribute(name, converter_.serialise(value));
+        current_part_serializer_->attribute(name, xlnt::detail::serialise(value));
     }
 
     template <typename T, typename std::enable_if<std::is_integral<T>::value, T>::type* = nullptr>
@@ -203,7 +203,7 @@ private:
     template <typename T, typename std::enable_if<std::is_floating_point<T>::value, T>::type* = nullptr>
     void write_attribute(const xml::qname &name, T value)
     {
-        current_part_serializer_->attribute(name, converter_.serialise(value));
+        current_part_serializer_->attribute(name, xlnt::detail::serialise(value));
     }
 
     template <typename T, typename std::enable_if<std::is_integral<T>::value, T>::type* = nullptr>
@@ -241,7 +241,6 @@ private:
     detail::cell_impl *current_cell_;
 
     detail::worksheet_impl *current_worksheet_;
-    detail::number_serialiser converter_;
 };
 
 } // namespace detail

@@ -33,8 +33,8 @@
 namespace xlnt {
 namespace detail {
 
-std::array<xlnt::optional<xlnt::rich_text>, 3> decode_header_footer(const std::string &hf_string, const number_serialiser &serialiser);
-std::string encode_header_footer(const rich_text &t, header_footer::location where, const number_serialiser& serialiser);
+std::array<xlnt::optional<xlnt::rich_text>, 3> decode_header_footer(const std::string &hf_string);
+std::string encode_header_footer(const rich_text &t, header_footer::location where);
 
 } // namespace detail
 } // namespace xlnt

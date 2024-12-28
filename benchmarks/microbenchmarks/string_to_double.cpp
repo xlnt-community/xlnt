@@ -72,10 +72,8 @@ struct number_converter_production
 {
     double stold(const std::string &s)
     {
-        return serializer.deserialise(s);
+        return xlnt::detail::deserialise(s);
     }
-
-    xlnt::detail::number_serialiser serializer;
 };
 
 // method used by xlsx_consumer.cpp in commit - ba01de47a7d430764c20ec9ac9600eec0eb38bcf

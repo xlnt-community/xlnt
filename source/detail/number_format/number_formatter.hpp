@@ -695,7 +695,6 @@ private:
     number_format_parser parser_;
     std::vector<format_code> format_;
     xlnt::calendar calendar_;
-    xlnt::detail::number_serialiser serialiser_;
 };
 
 } // namespace detail
