@@ -335,7 +335,7 @@ std::vector<std::uint8_t> decrypt_xlsx(
 namespace xlnt {
 namespace detail {
 
-std::vector<std::uint8_t> XLNT_API_INTERNAL decrypt_xlsx(const std::vector<std::uint8_t> &data, const std::string &password)
+std::vector<std::uint8_t> decrypt_xlsx(const std::vector<std::uint8_t> &data, const std::string &password)
 {
     return ::decrypt_xlsx(data, utf8_to_utf16(password));
 }

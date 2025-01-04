@@ -538,7 +538,6 @@ enum class format_locale
     system_default_long_date = 0xF800
 };
 
-// TODO this really shouldn't be exported...
 struct XLNT_API_INTERNAL format_condition
 {
     enum class condition_type
