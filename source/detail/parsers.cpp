@@ -530,24 +530,31 @@ bool parse(const std::string &string, unsigned long &result, std::size_t *num_ch
     return ok;
 }
 
-bool parse(const char *string, double &result, char **end)
+const std::locale & get_parsing_locale(bool try_other_decimal_separators)
 {
-    return parse(detail::get_system_locale(), string, result, end);
+    // If other decimal separators should be used as well (for parsing multiple locales), try the system locale first (the classic
+    // locale will be tried as an alternative later). Otherwise, try the classic locale right away.
+    return try_other_decimal_separators ? detail::get_system_locale() : std::locale::classic();
 }
 
-bool parse(const char *string, float &result, char **end)
+bool parse(const char *string, double &result, char **end, bool try_other_decimal_separators)
 {
-    return parse(detail::get_system_locale(), string, result, end);
+    return parse(get_parsing_locale(try_other_decimal_separators), string, result, end, try_other_decimal_separators);
 }
 
-bool parse(const char *string, long double &result, char **end)
+bool parse(const char *string, float &result, char **end, bool try_other_decimal_separators)
 {
-    return parse(detail::get_system_locale(), string, result, end);
+    return parse(get_parsing_locale(try_other_decimal_separators), string, result, end, try_other_decimal_separators);
+}
+
+bool parse(const char *string, long double &result, char **end, bool try_other_decimal_separators)
+{
+    return parse(get_parsing_locale(try_other_decimal_separators), string, result, end, try_other_decimal_separators);
 }
 
 // The following function must be "static" to avoid noexcept-type warnings / errors on GCC. See https://stackoverflow.com/a/46857525
 template <typename T, typename ParseFunc>
-static bool parse_number(const std::locale &loc, const char *string, T &result, char **end, ParseFunc func)
+static bool parse_number(const std::locale &loc, const char *string, T &result, char **end, ParseFunc func, bool try_other_decimal_separators)
 {
     // Only accept float, double and long double, but NOT any other floating-point types (e.g. extended floating-point types)
     // since they are NOT supported by the C parsers!
@@ -571,26 +578,38 @@ static bool parse_number(const std::locale &loc, const char *string, T &result, 
         const char decimal_separator = std::use_facet<std::numpunct<char>>(loc).decimal_point();
         bool tried_dot = false;
         bool tried_comma = false;
-
-        // Step 1: try to parse the number as it is.
         char *internal_end = nullptr;
-        T parsed = func(string, &internal_end);
-
-        if (parser_decimal_separator == '.')
+        T parsed = std::numeric_limits<T>::quiet_NaN();
+        
+        // Step 1: try to parse the number as it is - but only if it makes sense!
+        if (parser_decimal_separator == decimal_separator)
         {
-            tried_dot = true;
+            parsed = func(string, &internal_end);
+    
+            if (parser_decimal_separator == '.')
+            {
+                tried_dot = true;
+            }
+            else if (parser_decimal_separator == ',')
+            {
+                tried_comma = true;
+            }
         }
-        else if (parser_decimal_separator == ',')
-        {
-            tried_comma = true;
-        }
+        
+        std::string copy;
 
-        // Step 2: if the string was only partially parsed, try to replace the decimal separator by the one from the provided locale.
-        if (*internal_end == decimal_separator && parser_decimal_separator != decimal_separator)
+        // Step 2: if the string was not yet or only partially parsed, try to replace the decimal separator by the one from the provided locale.
+        if (internal_end == nullptr || (*internal_end == decimal_separator && parser_decimal_separator != decimal_separator))
         {
-            std::string replaced(string);
-            std::replace(replaced.begin(), replaced.end(), decimal_separator, parser_decimal_separator);
-            parsed = func(replaced.c_str(), &internal_end);
+            copy = string;
+            auto it_separator = std::find(copy.begin(), copy.end(), decimal_separator);
+            
+            if (it_separator != copy.end())
+            {
+                *it_separator = parser_decimal_separator;
+            }
+            
+            parsed = func(copy.c_str(), &internal_end);
 
             if (decimal_separator == '.')
             {
@@ -606,41 +625,63 @@ static bool parse_number(const std::locale &loc, const char *string, T &result, 
             // The end has to point to the end of the original string, not the replaced one.
             // The great C Standard Library is not const correct, so we can't be either... ugh. Note that you are NOT allowed to modify
             // the pointer to the end (thus modifying the string) without resulting in undefined behaviour!
-            internal_end = const_cast<char *>(string + (internal_end - replaced.c_str()));
+            internal_end = const_cast<char *>(string + (internal_end - copy.c_str()));
+            
+            // Revert to the original string in case we need to parse again.
+            if (it_separator != copy.end())
+            {
+                *it_separator = decimal_separator;
+            }
         }
 
         // Step 3: if the string was only partially parsed even when using the provided locale,
         // maybe the locale has the wrong decimal separator and . was the decimal separator?
-        if (*internal_end == '.' && !tried_dot)
+        if (try_other_decimal_separators && *internal_end == '.' && !tried_dot)
         {
             assert(parser_decimal_separator != '.');
-            std::string replaced(string);
-            std::replace(replaced.begin(), replaced.end(), '.', parser_decimal_separator);
-            parsed = func(replaced.c_str(), &internal_end);
+            auto it_separator = std::find(copy.begin(), copy.end(), '.');
+            
+            if (it_separator != copy.end())
+            {
+                *it_separator = parser_decimal_separator;
+            }
+            
+            parsed = func(copy.c_str(), &internal_end);
 
             tried_dot = true;
 
             // The end has to point to the end of the original string, not the replaced one.
             // The great C Standard Library is not const correct, so we can't be either... ugh. Note that you are NOT allowed to modify
             // the pointer to the end (thus modifying the string) without resulting in undefined behaviour!
-            internal_end = const_cast<char *>(string + (internal_end - replaced.c_str()));
+            internal_end = const_cast<char *>(string + (internal_end - copy.c_str()));
+            
+            // Revert to the original string in case we need to parse again.
+            if (it_separator != copy.end())
+            {
+                *it_separator = '.';
+            }
         }
 
         // Step 4: if the string was only partially parsed even when using the provided locale,
         // maybe the locale has the wrong decimal separator and , was the decimal separator?
-        if (*internal_end == ',' && !tried_comma)
+        if (try_other_decimal_separators && *internal_end == ',' && !tried_comma)
         {
             assert(parser_decimal_separator != ',');
-            std::string replaced(string);
-            std::replace(replaced.begin(), replaced.end(), ',', parser_decimal_separator);
-            parsed = func(replaced.c_str(), &internal_end);
+            auto it_separator = std::find(copy.begin(), copy.end(), ',');
+            
+            if (it_separator != copy.end())
+            {
+                *it_separator = parser_decimal_separator;
+            }
+            
+            parsed = func(copy.c_str(), &internal_end);
 
             tried_comma = true;
 
             // The end has to point to the end of the original string, not the replaced one.
             // The great C Standard Library is not const correct, so we can't be either... ugh. Note that you are NOT allowed to modify
             // the pointer to the end (thus modifying the string) without resulting in undefined behaviour!
-            internal_end = const_cast<char *>(string + (internal_end - replaced.c_str()));
+            internal_end = const_cast<char *>(string + (internal_end - copy.c_str()));
         }
 
         if (end != nullptr)
@@ -669,37 +710,37 @@ static bool parse_number(const std::locale &loc, const char *string, T &result, 
     return ok;
 }
 
-bool parse(const std::locale &loc, const char *string, double &result, char **end)
+bool parse(const std::locale &loc, const char *string, double &result, char **end, bool try_other_decimal_separators)
 {
-    return parse_number<double>(loc, string, result, end, std::strtod);
+    return parse_number<double>(loc, string, result, end, std::strtod, try_other_decimal_separators);
 }
 
-bool parse(const std::locale &loc, const char *string, float &result, char **end)
+bool parse(const std::locale &loc, const char *string, float &result, char **end, bool try_other_decimal_separators)
 {
-    return parse_number<float>(loc, string, result, end, std::strtof);
+    return parse_number<float>(loc, string, result, end, std::strtof, try_other_decimal_separators);
 }
 
-bool parse(const std::locale &loc, const char *string, long double &result, char **end)
+bool parse(const std::locale &loc, const char *string, long double &result, char **end, bool try_other_decimal_separators)
 {
-    return parse_number<long double>(loc, string, result, end, std::strtold);
+    return parse_number<long double>(loc, string, result, end, std::strtold, try_other_decimal_separators);
 }
 
-bool parse(const std::string &string, double &result, std::size_t *num_characters_parsed)
+bool parse(const std::string &string, double &result, std::size_t *num_characters_parsed, bool try_other_decimal_separators)
 {
-    return parse(detail::get_system_locale(), string, result, num_characters_parsed);
+    return parse(get_parsing_locale(try_other_decimal_separators), string, result, num_characters_parsed, try_other_decimal_separators);
 }
 
-bool parse(const std::string &string, float &result, std::size_t *num_characters_parsed)
+bool parse(const std::string &string, float &result, std::size_t *num_characters_parsed, bool try_other_decimal_separators)
 {
-    return parse(detail::get_system_locale(), string, result, num_characters_parsed);
+    return parse(get_parsing_locale(try_other_decimal_separators), string, result, num_characters_parsed, try_other_decimal_separators);
 }
 
-bool parse(const std::string &string, long double &result, std::size_t *num_characters_parsed)
+bool parse(const std::string &string, long double &result, std::size_t *num_characters_parsed, bool try_other_decimal_separators)
 {
-    return parse(detail::get_system_locale(), string, result, num_characters_parsed);
+    return parse(get_parsing_locale(try_other_decimal_separators), string, result, num_characters_parsed, try_other_decimal_separators);
 }
 
-bool parse(const std::locale &loc, const std::string &string, double &result, std::size_t *num_characters_parsed)
+bool parse(const std::locale &loc, const std::string &string, double &result, std::size_t *num_characters_parsed, bool try_other_decimal_separators)
 {
     errno = 0; // Reset errno; note: since c++11, errno is thread-local and thus safe
     bool ok = !string.empty();
@@ -707,7 +748,7 @@ bool parse(const std::locale &loc, const std::string &string, double &result, st
     if (ok)
     {
         char *end = nullptr;
-        ok = parse(loc, string.c_str(), result, &end);
+        ok = parse(loc, string.c_str(), result, &end, try_other_decimal_separators);
 
         if (num_characters_parsed != nullptr)
         {
@@ -722,7 +763,7 @@ bool parse(const std::locale &loc, const std::string &string, double &result, st
     return ok;
 }
 
-bool parse(const std::locale &loc, const std::string &string, float &result, std::size_t *num_characters_parsed)
+bool parse(const std::locale &loc, const std::string &string, float &result, std::size_t *num_characters_parsed, bool try_other_decimal_separators)
 {
     errno = 0; // Reset errno; note: since c++11, errno is thread-local and thus safe
     bool ok = !string.empty();
@@ -730,7 +771,7 @@ bool parse(const std::locale &loc, const std::string &string, float &result, std
     if (ok)
     {
         char *end = nullptr;
-        ok = parse(loc, string.c_str(), result, &end);
+        ok = parse(loc, string.c_str(), result, &end, try_other_decimal_separators);
 
         if (num_characters_parsed != nullptr)
         {
@@ -745,7 +786,7 @@ bool parse(const std::locale &loc, const std::string &string, float &result, std
     return ok;
 }
 
-bool parse(const std::locale &loc, const std::string &string, long double &result, std::size_t *num_characters_parsed)
+bool parse(const std::locale &loc, const std::string &string, long double &result, std::size_t *num_characters_parsed, bool try_other_decimal_separators)
 {
     errno = 0; // Reset errno; note: since c++11, errno is thread-local and thus safe
     bool ok = !string.empty();
@@ -753,7 +794,7 @@ bool parse(const std::locale &loc, const std::string &string, long double &resul
     if (ok)
     {
         char *end = nullptr;
-        ok = parse(loc, string.c_str(), result, &end);
+        ok = parse(loc, string.c_str(), result, &end, try_other_decimal_separators);
 
         if (num_characters_parsed != nullptr)
         {

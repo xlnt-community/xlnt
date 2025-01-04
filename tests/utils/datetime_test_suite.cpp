@@ -34,8 +34,14 @@ class datetime_test_suite : public test_suite
 public:
     datetime_test_suite()
     {
-        register_test(test_from_string);
+        register_test(test_time_from_string);
+        register_test(test_time_from_string_subseconds);
+        register_test(test_time_from_string_invalid);
+        register_test(test_datetime_from_string);
+        register_test(test_datetime_from_string_subseconds);
+        register_test(test_datetime_from_string_invalid);
         register_test(test_to_string);
+        register_test(test_to_string_ensure_correct_subseconds);
         register_test(test_carry);
         register_test(test_leap_year_bug);
         register_test(test_early_date);
@@ -46,18 +52,66 @@ public:
         register_test(test_invalid_datetime_access);
     }
 
-    void test_from_string()
+    void test_time_from_string()
     {
         xlnt::time t("10:35:45");
         xlnt_assert_equals(t.hour, 10);
         xlnt_assert_equals(t.minute, 35);
         xlnt_assert_equals(t.second, 45);
     }
+    
+    void test_time_from_string_subseconds()
+    {
+        xlnt::time t("10:35:45.123456");
+        xlnt_assert_equals(t.hour, 10);
+        xlnt_assert_equals(t.minute, 35);
+        xlnt_assert_equals(t.second, 45);
+        xlnt_assert_equals(t.microsecond, 123456);
+    }
+    
+    void test_time_from_string_invalid()
+    {
+        xlnt_assert_throws(xlnt::time("invalid"), xlnt::invalid_parameter);
+    }
+    
+    void test_datetime_from_string()
+    {
+        xlnt::datetime dt = xlnt::datetime::from_iso_string("2018-08-13T10:35:45Z");
+        xlnt_assert_equals(dt.year, 2018);
+        xlnt_assert_equals(dt.month, 8);
+        xlnt_assert_equals(dt.day, 13);
+        xlnt_assert_equals(dt.hour, 10);
+        xlnt_assert_equals(dt.minute, 35);
+        xlnt_assert_equals(dt.second, 45);
+    }
+    
+    void test_datetime_from_string_subseconds()
+    {
+        xlnt::datetime dt = xlnt::datetime::from_iso_string("2018-08-13T10:35:45.123456Z");
+        xlnt_assert_equals(dt.year, 2018);
+        xlnt_assert_equals(dt.month, 8);
+        xlnt_assert_equals(dt.day, 13);
+        xlnt_assert_equals(dt.hour, 10);
+        xlnt_assert_equals(dt.minute, 35);
+        xlnt_assert_equals(dt.second, 45);
+        xlnt_assert_equals(dt.microsecond, 123456);
+    }
+    
+    void test_datetime_from_string_invalid()
+    {
+        xlnt_assert_throws(xlnt::datetime::from_iso_string("invalid"), xlnt::invalid_parameter);
+    }
 
     void test_to_string()
     {
         xlnt::datetime dt(2016, 7, 16, 9, 11, 32, 999999);
-        xlnt_assert_equals(dt.to_string(), "2016/7/16 9:11:32:999999");
+        xlnt_assert_equals(dt.to_string(), "2016/7/16 9:11:32.999999");
+    }
+    
+    void test_to_string_ensure_correct_subseconds()
+    {
+        xlnt::datetime dt(2016, 7, 16, 9, 11, 32, 1);
+        xlnt_assert_equals(dt.to_string(), "2016/7/16 9:11:32.000001");
     }
 
     void test_carry()

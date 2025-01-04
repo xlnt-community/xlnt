@@ -86,8 +86,25 @@ std::string datetime::to_string() const
     }
     else
     {
-        return std::to_string(year) + "/" + std::to_string(month) + "/" + std::to_string(day) + " " + std::to_string(hour)
-            + ":" + std::to_string(minute) + ":" + std::to_string(second) + ":" + std::to_string(microsecond);
+        std::string str = std::to_string(year);
+        str.push_back('/');
+        str.append(std::to_string(month));
+        str.push_back('/');
+        str.append(std::to_string(day));
+        str.push_back(' ');
+        str.append(std::to_string(hour));
+        str.push_back(':');
+        str.append(std::to_string(minute));
+        str.push_back(':');
+        str.append(std::to_string(second));
+        
+        if (microsecond != 0)
+        {
+            str.push_back('.');
+            str.append(fill(std::to_string(microsecond), 6));
+        }
+        
+        return str;
     }
 }
 
@@ -251,8 +268,27 @@ std::string datetime::to_iso_string() const
     }
     else
     {
-        return std::to_string(year) + "-" + fill(std::to_string(month)) + "-" + fill(std::to_string(day)) + "T"
-            + fill(std::to_string(hour)) + ":" + fill(std::to_string(minute)) + ":" + fill(std::to_string(second)) + "Z";
+        std::string iso = std::to_string(year);
+        iso.push_back('-');
+        iso.append(fill(std::to_string(month)));
+        iso.push_back('-');
+        iso.append(fill(std::to_string(day)));
+        iso.push_back('T');
+        iso.append(fill(std::to_string(hour)));
+        iso.push_back(':');
+        iso.append(fill(std::to_string(minute)));
+        iso.push_back(':');
+        iso.append(fill(std::to_string(second)));
+        
+        if (microsecond != 0)
+        {
+            iso.push_back('.');
+            iso.append(fill(std::to_string(microsecond), 6));
+        }
+        
+        iso.push_back('Z');
+        
+        return iso;
     }
 }
 

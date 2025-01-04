@@ -61,25 +61,27 @@ XLNT_API_INTERNAL bool parse(const std::string &string, unsigned long &result, s
 
 /// ----- FLOATING-POINT NUMBER PARSING -----
 
-/// Parse a floating-point number using the system locale (considering the user's system settings).
-XLNT_API_INTERNAL bool parse(const char *string, double &result, char **end = nullptr);
-XLNT_API_INTERNAL bool parse(const char *string, float &result, char **end = nullptr);
-XLNT_API_INTERNAL bool parse(const char *string, long double &result, char **end = nullptr);
+/// Parse a floating-point number. If other decimal separators should be tried, the system locale is used first (the classic
+/// locale will be used as an alternative later) - otherwise the classic locale is used (useful when parsing serialized numbers).
+XLNT_API_INTERNAL bool parse(const char *string, double &result, char **end = nullptr, bool try_other_decimal_separators = false);
+XLNT_API_INTERNAL bool parse(const char *string, float &result, char **end = nullptr, bool try_other_decimal_separators = false);
+XLNT_API_INTERNAL bool parse(const char *string, long double &result, char **end = nullptr, bool try_other_decimal_separators = false);
 
-/// Parse a floating-point number using the provided locale.
-XLNT_API_INTERNAL bool parse(const std::locale &loc, const char *string, double &result, char **end = nullptr);
-XLNT_API_INTERNAL bool parse(const std::locale &loc, const char *string, float &result, char **end = nullptr);
-XLNT_API_INTERNAL bool parse(const std::locale &loc, const char *string, long double &result, char **end = nullptr);
+/// Parse a floating-point number using the provided locale. Optionally, other decimal separators can be tried as well.
+XLNT_API_INTERNAL bool parse(const std::locale &loc, const char *string, double &result, char **end = nullptr, bool try_other_decimal_separators = false);
+XLNT_API_INTERNAL bool parse(const std::locale &loc, const char *string, float &result, char **end = nullptr, bool try_other_decimal_separators = false);
+XLNT_API_INTERNAL bool parse(const std::locale &loc, const char *string, long double &result, char **end = nullptr, bool try_other_decimal_separators = false);
 
-/// Parse a floating-point number using the system locale (considering the user's system settings).
-XLNT_API_INTERNAL bool parse(const std::string &string, double &result, std::size_t *num_characters_parsed = nullptr);
-XLNT_API_INTERNAL bool parse(const std::string &string, float &result, std::size_t *num_characters_parsed = nullptr);
-XLNT_API_INTERNAL bool parse(const std::string &string, long double &result, std::size_t *num_characters_parsed = nullptr);
+/// Parse a floating-point number. If other decimal separators should be tried, the system locale is used first (the classic
+/// locale will be used as an alternative later) - otherwise the classic locale is used (useful when parsing serialized numbers).
+XLNT_API_INTERNAL bool parse(const std::string &string, double &result, std::size_t *num_characters_parsed = nullptr, bool try_other_decimal_separators = false);
+XLNT_API_INTERNAL bool parse(const std::string &string, float &result, std::size_t *num_characters_parsed = nullptr, bool try_other_decimal_separators = false);
+XLNT_API_INTERNAL bool parse(const std::string &string, long double &result, std::size_t *num_characters_parsed = nullptr, bool try_other_decimal_separators = false);
 
-/// Parse a floating-point number using the provided locale.
-XLNT_API_INTERNAL bool parse(const std::locale &loc, const std::string &string, double &result, std::size_t *num_characters_parsed = nullptr);
-XLNT_API_INTERNAL bool parse(const std::locale &loc, const std::string &string, float &result, std::size_t *num_characters_parsed = nullptr);
-XLNT_API_INTERNAL bool parse(const std::locale &loc, const std::string &string, long double &result, std::size_t *num_characters_parsed = nullptr);
+/// Parse a floating-point number using the provided locale. Optionally, other decimal separators can be tried as well.
+XLNT_API_INTERNAL bool parse(const std::locale &loc, const std::string &string, double &result, std::size_t *num_characters_parsed = nullptr, bool try_other_decimal_separators = false);
+XLNT_API_INTERNAL bool parse(const std::locale &loc, const std::string &string, float &result, std::size_t *num_characters_parsed = nullptr, bool try_other_decimal_separators = false);
+XLNT_API_INTERNAL bool parse(const std::locale &loc, const std::string &string, long double &result, std::size_t *num_characters_parsed = nullptr, bool try_other_decimal_separators = false);
 
 } // namespace detail
 } // namespace xlnt
