@@ -599,7 +599,7 @@ static bool parse_number(const std::locale &loc, const char *string, T &result, 
         std::string copy;
 
         // Step 2: if the string was not yet or only partially parsed, try to replace the decimal separator by the one from the provided locale.
-        if (internal_end == nullptr || (*internal_end == decimal_separator && parser_decimal_separator != decimal_separator))
+        if ((internal_end == nullptr || *internal_end == decimal_separator) && parser_decimal_separator != decimal_separator)
         {
             copy = string;
             auto it_separator = std::find(copy.begin(), copy.end(), decimal_separator);
@@ -636,9 +636,13 @@ static bool parse_number(const std::locale &loc, const char *string, T &result, 
 
         // Step 3: if the string was only partially parsed even when using the provided locale,
         // maybe the locale has the wrong decimal separator and . was the decimal separator?
-        if (try_other_decimal_separators && *internal_end == '.' && !tried_dot)
+        if (try_other_decimal_separators && (internal_end == nullptr || *internal_end == '.') && !tried_dot)
         {
             assert(parser_decimal_separator != '.');
+            if (copy.empty())
+            {
+                copy = string;
+            }
             auto it_separator = std::find(copy.begin(), copy.end(), '.');
             
             if (it_separator != copy.end())
@@ -664,9 +668,13 @@ static bool parse_number(const std::locale &loc, const char *string, T &result, 
 
         // Step 4: if the string was only partially parsed even when using the provided locale,
         // maybe the locale has the wrong decimal separator and , was the decimal separator?
-        if (try_other_decimal_separators && *internal_end == ',' && !tried_comma)
+        if (try_other_decimal_separators && (internal_end == nullptr || *internal_end == ',') && !tried_comma)
         {
             assert(parser_decimal_separator != ',');
+            if (copy.empty())
+            {
+                copy = string;
+            }
             auto it_separator = std::find(copy.begin(), copy.end(), ',');
             
             if (it_separator != copy.end())
