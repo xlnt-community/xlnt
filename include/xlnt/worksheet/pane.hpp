@@ -35,7 +35,7 @@ namespace xlnt {
 /// <summary>
 /// Enumeration of possible states of a pane
 /// </summary>
-enum class XLNT_API pane_state
+enum class pane_state
 {
     frozen,
     frozen_split,
@@ -45,7 +45,7 @@ enum class XLNT_API pane_state
 /// <summary>
 /// Enumeration of the four quadrants of a worksheet
 /// </summary>
-enum class XLNT_API pane_corner
+enum class pane_corner
 {
     top_left,
     top_right,

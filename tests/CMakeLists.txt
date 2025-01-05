@@ -5,6 +5,10 @@ set(CMAKE_CXX_STANDARD ${XLNT_CXX_LANG})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CXX_EXTENSIONS OFF)
 
+# Options
+option(XLNT_SKIP_INTERNAL_TESTS "Skip internal tests. Internal API will not be exported. Especially useful for CI testing." OFF)
+mark_as_advanced(XLNT_SKIP_INTERNAL_TESTS)
+
 if(NOT COMBINED_PROJECT)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../source ${CMAKE_CURRENT_BINARY_DIR}/source)
 endif()
@@ -17,6 +21,7 @@ endif()
 file(GLOB CELL_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/cell/*.cpp)
 file(GLOB DRAWING_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/drawing/*.cpp)
 file(GLOB DETAIL_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/detail/*.cpp)
+file(GLOB INTERNAL_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/internal/*.cpp)
 file(GLOB PACKAGING_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/packaging/*.cpp)
 file(GLOB STYLES_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/styles/*.cpp)
 file(GLOB UTILS_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/utils/*.cpp)
@@ -32,6 +37,10 @@ set(TESTS
   ${UTILS_TESTS}
   ${WORKBOOK_TESTS}
   ${WORKSHEET_TESTS})
+
+if (NOT XLNT_SKIP_INTERNAL_TESTS)
+  list(APPEND TESTS ${INTERNAL_TESTS})
+endif()
 
 file(GLOB HELPERS_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/helpers/*.hpp)
 file(GLOB HELPERS_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/helpers/*.cpp)
@@ -65,6 +74,7 @@ source_group(helpers FILES ${HELPERS})
 source_group(runner FILES ${RUNNER})
 source_group(tests\\cell FILES ${CELL_TESTS})
 source_group(tests\\detail FILES ${DETAIL_TESTS})
+source_group(tests\\internal FILES ${INTERNAL_TESTS})
 source_group(tests\\drawing FILES ${DRAWING_TESTS})
 source_group(tests\\packaging FILES ${PACKAGING_TESTS})
 source_group(tests\\serialization FILES ${SERIALIZATION_TESTS})
