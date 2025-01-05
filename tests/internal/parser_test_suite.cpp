@@ -94,7 +94,7 @@ public:
         bool ok = xlnt::detail::parse("2.3", result, nullptr, false);
         xlnt_assert_equals(result, 2.3);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_double_with_comma()
@@ -104,7 +104,7 @@ public:
         bool ok = xlnt::detail::parse("2,3", result, nullptr, true);
         xlnt_assert_equals(result, 2.3);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
     
     void test_parse_double_large()
@@ -114,7 +114,7 @@ public:
         bool ok = xlnt::detail::parse("1000000.5", result, nullptr, false);
         xlnt_assert_equals(result, 1000000.5);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_double_with_classic_locale()
@@ -128,7 +128,7 @@ public:
         bool ok = xlnt::detail::parse(str, result, nullptr, false);
         xlnt_assert_equals(result, 2.3);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_double_with_system_locale()
@@ -142,7 +142,7 @@ public:
         bool ok = xlnt::detail::parse(str, result, nullptr, true);
         xlnt_assert_equals(result, 2.3);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
     
     void test_parse_double_out_of_range()
@@ -164,7 +164,7 @@ public:
         bool ok = xlnt::detail::parse(str, result);
         xlnt_assert_differs(result, std::numeric_limits<double>::quiet_NaN()); // NaN values are never equal
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_double_text()
@@ -175,7 +175,7 @@ public:
         bool ok = xlnt::detail::parse(str, result);
         xlnt_assert_differs(result, std::numeric_limits<double>::quiet_NaN()); // NaN values are never equal
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_float_with_dot()
@@ -185,7 +185,7 @@ public:
         bool ok = xlnt::detail::parse("2.3", result, nullptr, false);
         xlnt_assert_equals(result, 2.3f);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_float_with_comma()
@@ -195,7 +195,7 @@ public:
         bool ok = xlnt::detail::parse("2,3", result, nullptr, true);
         xlnt_assert_equals(result, 2.3f);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
     
     void test_parse_float_large()
@@ -205,7 +205,7 @@ public:
         bool ok = xlnt::detail::parse("1000000.5", result, nullptr, false);
         xlnt_assert_equals(result, 1000000.5f);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_float_with_classic_locale()
@@ -219,7 +219,7 @@ public:
         bool ok = xlnt::detail::parse(str, result, nullptr, false);
         xlnt_assert_equals(result, 2.3f);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_float_with_system_locale()
@@ -233,7 +233,7 @@ public:
         bool ok = xlnt::detail::parse(str, result, nullptr, true);
         xlnt_assert_equals(result, 2.3f);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
     
     void test_parse_float_out_of_range()
@@ -255,7 +255,7 @@ public:
         bool ok = xlnt::detail::parse(str, result);
         xlnt_assert_differs(result, std::numeric_limits<float>::quiet_NaN()); // NaN values are never equal
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_float_text()
@@ -266,7 +266,7 @@ public:
         bool ok = xlnt::detail::parse(str, result);
         xlnt_assert_differs(result, std::numeric_limits<float>::quiet_NaN()); // NaN values are never equal
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_long_double_with_dot()
@@ -276,7 +276,7 @@ public:
         bool ok = xlnt::detail::parse("2.3", result, nullptr, false);
         xlnt_assert_equals(result, 2.3l);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_long_double_with_comma()
@@ -286,7 +286,7 @@ public:
         bool ok = xlnt::detail::parse("2,3", result, nullptr, true);
         xlnt_assert_equals(result, 2.3l);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
     
     void test_parse_long_double_large()
@@ -296,7 +296,7 @@ public:
         bool ok = xlnt::detail::parse("1000000.5", result, nullptr, false);
         xlnt_assert_equals(result, 1000000.5l);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_long_double_with_classic_locale()
@@ -310,7 +310,7 @@ public:
         bool ok = xlnt::detail::parse(str, result, nullptr, false);
         xlnt_assert_equals(result, 2.3l);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_long_double_with_system_locale()
@@ -324,7 +324,7 @@ public:
         bool ok = xlnt::detail::parse(str, result, nullptr, true);
         xlnt_assert_equals(result, 2.3l);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
     
     void test_parse_long_double_out_of_range()
@@ -348,7 +348,7 @@ public:
         bool ok = xlnt::detail::parse(str, result);
         xlnt_assert_differs(result, std::numeric_limits<long double>::quiet_NaN()); // NaN values are never equal
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_long_double_text()
@@ -359,7 +359,7 @@ public:
         bool ok = xlnt::detail::parse(str, result);
         xlnt_assert_differs(result, std::numeric_limits<long double>::quiet_NaN()); // NaN values are never equal
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_int()
@@ -369,7 +369,7 @@ public:
         bool ok = xlnt::detail::parse("-5", i);
         xlnt_assert_equals(i, -5);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
     
     void test_parse_int_out_of_range()
@@ -391,7 +391,7 @@ public:
         bool ok = xlnt::detail::parse(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_int_text()
@@ -402,7 +402,7 @@ public:
         bool ok = xlnt::detail::parse(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno ==  0); // DISABLED, as errno is set on GCC
+        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
     }
 
     void test_parse_long()
@@ -412,7 +412,7 @@ public:
         bool ok = xlnt::detail::parse("-5", i);
         xlnt_assert_equals(i, -5);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
     
     void test_parse_long_out_of_range()
@@ -436,7 +436,7 @@ public:
         bool ok = xlnt::detail::parse(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_long_text()
@@ -447,7 +447,7 @@ public:
         bool ok = xlnt::detail::parse(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno ==  0); // DISABLED, as errno is set on GCC
+        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
     }
 
     void test_parse_long_long()
@@ -457,7 +457,7 @@ public:
         bool ok = xlnt::detail::parse("-5", i);
         xlnt_assert_equals(i, -5);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
     
     void test_parse_long_long_out_of_range()
@@ -479,7 +479,7 @@ public:
         bool ok = xlnt::detail::parse(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_long_long_text()
@@ -490,7 +490,7 @@ public:
         bool ok = xlnt::detail::parse(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno ==  0); // DISABLED, as errno is set on GCC
+        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
     }
 
     void test_parse_unsigned_int()
@@ -500,7 +500,7 @@ public:
         bool ok = xlnt::detail::parse("3", n);
         xlnt_assert_equals(n, 3);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
     
     void test_parse_unsigned_int_out_of_range()
@@ -522,7 +522,7 @@ public:
         bool ok = xlnt::detail::parse(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_unsigned_int_text()
@@ -533,7 +533,7 @@ public:
         bool ok = xlnt::detail::parse(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno ==  0); // DISABLED, as errno is set on GCC
+        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
     }
 
     void test_parse_unsigned_int_minus_number()
@@ -543,7 +543,7 @@ public:
         bool ok = xlnt::detail::parse("-1", n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  ERANGE); // negative number -> out of range!
+        xlnt_assert(errno == ERANGE); // negative number -> out of range!
     }
 
     void test_parse_unsigned_int_minus_string()
@@ -553,7 +553,7 @@ public:
         bool ok = xlnt::detail::parse("-blabla", n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno ==  0); // DISABLED, as errno is set on GCC
+        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
     }
 
     void test_parse_unsigned_long()
@@ -563,7 +563,7 @@ public:
         bool ok = xlnt::detail::parse("3", n);
         xlnt_assert_equals(n, 3);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
     
     void test_parse_unsigned_long_out_of_range()
@@ -587,7 +587,7 @@ public:
         bool ok = xlnt::detail::parse(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_unsigned_long_text()
@@ -598,7 +598,7 @@ public:
         bool ok = xlnt::detail::parse(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno ==  0); // DISABLED, as errno is set on GCC
+        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
     }
 
     void test_parse_unsigned_long_minus_number()
@@ -608,7 +608,7 @@ public:
         bool ok = xlnt::detail::parse("-1", n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  ERANGE); // negative number -> out of range!
+        xlnt_assert(errno == ERANGE); // negative number -> out of range!
     }
 
     void test_parse_unsigned_long_minus_string()
@@ -618,7 +618,7 @@ public:
         bool ok = xlnt::detail::parse("-blabla", n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno ==  0); // DISABLED, as errno is set on GCC
+        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
     }
 
     void test_parse_unsigned_long_long()
@@ -628,7 +628,7 @@ public:
         bool ok = xlnt::detail::parse("3", n);
         xlnt_assert_equals(n, 3);
         xlnt_assert(ok);
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
     
     void test_parse_unsigned_long_long_out_of_range()
@@ -650,7 +650,7 @@ public:
         bool ok = xlnt::detail::parse(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  0); // no under/overflow occurred
+        xlnt_assert(errno == 0); // no under/overflow occurred
     }
 
     void test_parse_unsigned_long_long_text()
@@ -661,7 +661,7 @@ public:
         bool ok = xlnt::detail::parse(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno ==  0); // DISABLED, as errno is set on GCC
+        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
     }
 
     void test_parse_unsigned_long_long_minus_number()
@@ -671,7 +671,7 @@ public:
         bool ok = xlnt::detail::parse("-1", n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        xlnt_assert(errno ==  ERANGE); // negative number -> out of range!
+        xlnt_assert(errno == ERANGE); // negative number -> out of range!
     }
 
     void test_parse_unsigned_long_long_minus_string()
@@ -681,7 +681,7 @@ public:
         bool ok = xlnt::detail::parse("-blabla", n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
         xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno ==  0); // DISABLED, as errno is set on GCC
+        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
     }
 
 };
