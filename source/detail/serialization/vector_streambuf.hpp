@@ -28,7 +28,7 @@
 #include <iostream>
 #include <vector>
 
-#include <xlnt/xlnt_config.hpp>
+#include <detail/xlnt_config_impl.hpp>
 
 namespace xlnt {
 namespace detail {
@@ -36,7 +36,7 @@ namespace detail {
 /// <summary>
 /// Allows a std::vector to be read through a std::istream.
 /// </summary>
-class XLNT_API vector_istreambuf : public std::streambuf
+class XLNT_API_INTERNAL vector_istreambuf : public std::streambuf
 {
     using int_type = std::streambuf::int_type;
 
@@ -65,7 +65,7 @@ private:
 /// <summary>
 /// Allows a std::vector to be written through a std::ostream.
 /// </summary>
-class XLNT_API vector_ostreambuf : public std::streambuf
+class XLNT_API_INTERNAL vector_ostreambuf : public std::streambuf
 {
     using int_type = std::streambuf::int_type;
 
@@ -94,17 +94,17 @@ private:
 /// <summary>
 /// Helper function to read all data from in_stream and store them in a vector.
 /// </summary>
-XLNT_API std::vector<std::uint8_t> to_vector(std::istream &in_stream);
+XLNT_API_INTERNAL std::vector<std::uint8_t> to_vector(std::istream &in_stream);
 
 /// <summary>
 /// Helper function to write all data from bytes into out_stream.
 /// </summary>
-XLNT_API void to_stream(const std::vector<std::uint8_t> &bytes, std::ostream &out_stream);
+XLNT_API_INTERNAL void to_stream(const std::vector<std::uint8_t> &bytes, std::ostream &out_stream);
 
 /// <summary>
 /// Shortcut function to stream a vector of bytes into a std::ostream.
 /// </summary>
-XLNT_API std::ostream &operator<<(std::ostream &out_stream, const std::vector<std::uint8_t> &bytes);
+XLNT_API_INTERNAL std::ostream &operator<<(std::ostream &out_stream, const std::vector<std::uint8_t> &bytes);
 
 } // namespace detail
 } // namespace xlnt

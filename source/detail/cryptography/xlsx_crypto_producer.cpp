@@ -299,7 +299,7 @@ std::vector<std::uint8_t> encrypt_xlsx(
 namespace xlnt {
 namespace detail {
 
-std::vector<std::uint8_t> XLNT_API encrypt_xlsx(
+std::vector<std::uint8_t> encrypt_xlsx(
     const std::vector<std::uint8_t> &plaintext,
     const std::string &password)
 {

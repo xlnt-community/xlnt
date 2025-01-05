@@ -182,7 +182,18 @@ else()
   target_compile_definitions(xlnt PUBLIC XLNT_STATIC=1)
 endif()
 
-if(TESTS)
+# hide all symbols by default
+set_target_properties(xlnt PROPERTIES CXX_VISIBILITY_PRESET hidden)
+
+# generate XLNT_API and XLNT_DEPRECATED
+include(GenerateExportHeader)
+GENERATE_EXPORT_HEADER (xlnt
+    BASE_NAME xlnt_cmake
+    EXPORT_MACRO_NAME XLNT_API
+    DEPRECATED_MACRO_NAME XLNT_DEPRECATED
+    EXPORT_FILE_NAME ${XLNT_INCLUDE_DIR}/xlnt/utils/xlnt_cmake_export.h)
+
+if(TESTS AND NOT XLNT_SKIP_INTERNAL_TESTS)
     target_compile_definitions(xlnt PRIVATE XLNT_EXPOSE_INTERNAL_API=1)
 endif()
 

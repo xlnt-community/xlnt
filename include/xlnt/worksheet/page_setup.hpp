@@ -33,7 +33,7 @@ namespace xlnt {
 /// <summary>
 /// The orientation of the worksheet when it is printed.
 /// </summary>
-enum class XLNT_API orientation
+enum class orientation
 {
     default_orientation,
     portrait,
@@ -43,7 +43,7 @@ enum class XLNT_API orientation
 /// <summary>
 /// The types of page breaks.
 /// </summary>
-enum class XLNT_API page_break
+enum class page_break
 {
     none = 0,
     row = 1,
@@ -53,7 +53,7 @@ enum class XLNT_API page_break
 /// <summary>
 /// The possible paper sizes for printing.
 /// </summary>
-enum class XLNT_API paper_size
+enum class paper_size
 {
     letter = 1,
     letter_small = 2,
@@ -72,7 +72,7 @@ enum class XLNT_API paper_size
 /// Defines how a worksheet appears in the workbook.
 /// A workbook must have at least one sheet which is visible at all times.
 /// </summary>
-enum class XLNT_API sheet_state
+enum class sheet_state
 {
     visible,
     hidden,

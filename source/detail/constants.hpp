@@ -27,13 +27,14 @@
 #include <string>
 #include <unordered_map>
 
-#include <xlnt/xlnt_config.hpp>
+#include <detail/xlnt_config_impl.hpp>
+
 #include <xlnt/cell/index_types.hpp>
 #include <xlnt/utils/path.hpp>
 
 namespace xlnt {
 
-struct XLNT_API constants
+struct XLNT_API_INTERNAL constants
 {
     /// <summary>
     /// Returns the lowest allowable row index in a worksheet.
