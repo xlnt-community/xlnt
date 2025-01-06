@@ -75,7 +75,9 @@ public:
         register_test(test_Issue735_wrong_count);
         register_test(test_formatting);
         register_test(test_active_sheet);
+#if XLNT_RUN_LOCALE_TESTS == 1
         register_test(test_locale_comma);
+#endif
         register_test(test_Issue6_google_missing_workbookView);
         register_test(test_non_contiguous_selection);
     }
@@ -823,6 +825,18 @@ public:
 
     void test_locale_comma ()
     {
+        struct SetLocale
+        {
+            SetLocale() : previous_locale(setlocale(LC_ALL, nullptr))
+            {
+                // If failed, please install de_DE locale to correctly run this test.
+                xlnt_assert(setlocale(LC_ALL, "de_DE") != nullptr);
+            }
+            ~SetLocale() {setlocale(LC_ALL, previous_locale);}
+            
+            char * previous_locale = nullptr;
+        } setLocale;
+        
         xlnt::workbook wb;
         wb.load(path_helper::test_file("Issue714_locale_comma.xlsx"));
         auto ws = wb.active_sheet();

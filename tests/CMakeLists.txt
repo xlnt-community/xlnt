@@ -11,6 +11,8 @@ set(CXX_EXTENSIONS OFF)
 option(XLNT_SKIP_INTERNAL_TESTS "Skip internal tests. Internal API will not be exported. Especially useful for CI testing." OFF)
 mark_as_advanced(XLNT_SKIP_INTERNAL_TESTS)
 
+option(XLNT_TESTS_INCLUDE_LOCALE_SPECIFIC "Set to ON to enable locale-spefic unit tests." OFF)
+
 if(NOT COMBINED_PROJECT)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../source ${CMAKE_CURRENT_BINARY_DIR}/source)
 endif()
@@ -66,6 +68,12 @@ set(XLNT_TEST_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data)
 target_compile_definitions(xlnt.test PRIVATE XLNT_TEST_DATA_DIR=${XLNT_TEST_DATA_DIR})
 # requires cmake 3.8+
 #target_compile_features(xlnt.test PRIVATE cxx_std_${XLNT_CXX_LANG})
+
+if (XLNT_TESTS_INCLUDE_LOCALE_SPECIFIC)
+  target_compile_definitions(xlnt.test PRIVATE XLNT_RUN_LOCALE_TESTS=1)
+endif()
+set(XLNT_TESTS_LOCALE "de_DE" CACHE STRING "The locale used to run unit tests")
+target_compile_definitions(xlnt.test PRIVATE XLNT_TESTS_LOCALE="${XLNT_TESTS_LOCALE}")
 
 if(MSVC)
   # bigobj because there are so many headers in one source file
