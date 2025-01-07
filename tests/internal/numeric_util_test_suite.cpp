@@ -38,7 +38,7 @@ public:
         register_test(test_min);
         register_test(test_max);
         register_test(test_abs);
-#if XLNT_RUN_LOCALE_TESTS == 1
+#if XLNT_TESTS_INCLUDE_LOCALE_SPECIFIC == 1
         register_test(test_locale_comma);
 #endif
     }
@@ -231,7 +231,7 @@ public:
             SetLocale() : previous_locale(setlocale(LC_ALL, nullptr))
             {
                 // If failed, please install the locale specified by the CMake variable TESTS_LOCALE to correctly run this test,
-                // or alternatively disable the CMake option TESTS_INCLUDE_LOCALE_SPECIFIC.
+                // or alternatively disable the CMake option XLNT_TESTS_INCLUDE_LOCALE_SPECIFIC.
                 xlnt_assert(setlocale(LC_ALL, XLNT_TESTS_LOCALE) != nullptr);
             }
             ~SetLocale() {setlocale(LC_ALL, previous_locale);}

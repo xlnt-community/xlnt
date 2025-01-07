@@ -75,7 +75,7 @@ public:
         register_test(test_Issue735_wrong_count);
         register_test(test_formatting);
         register_test(test_active_sheet);
-#if XLNT_RUN_LOCALE_TESTS == 1
+#if XLNT_TESTS_INCLUDE_LOCALE_SPECIFIC == 1
         register_test(test_locale_comma);
 #endif
         register_test(test_Issue6_google_missing_workbookView);
@@ -829,8 +829,9 @@ public:
         {
             SetLocale() : previous_locale(setlocale(LC_ALL, nullptr))
             {
-                // If failed, please install de_DE locale to correctly run this test.
-                xlnt_assert(setlocale(LC_ALL, "de_DE") != nullptr);
+                // If failed, please install the locale specified by the CMake variable TESTS_LOCALE to correctly run this test,
+                // or alternatively disable the CMake option XLNT_TESTS_INCLUDE_LOCALE_SPECIFIC.
+                xlnt_assert(setlocale(LC_ALL, XLNT_TESTS_LOCALE) != nullptr);
             }
             ~SetLocale() {setlocale(LC_ALL, previous_locale);}
             

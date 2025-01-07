@@ -70,7 +70,7 @@ target_compile_definitions(xlnt.test PRIVATE XLNT_TEST_DATA_DIR=${XLNT_TEST_DATA
 #target_compile_features(xlnt.test PRIVATE cxx_std_${XLNT_CXX_LANG})
 
 if (XLNT_TESTS_INCLUDE_LOCALE_SPECIFIC)
-  target_compile_definitions(xlnt.test PRIVATE XLNT_RUN_LOCALE_TESTS=1)
+  target_compile_definitions(xlnt.test PRIVATE XLNT_TESTS_INCLUDE_LOCALE_SPECIFIC=1)
 endif()
 set(XLNT_TESTS_LOCALE "de_DE" CACHE STRING "The locale used to run unit tests")
 target_compile_definitions(xlnt.test PRIVATE XLNT_TESTS_LOCALE="${XLNT_TESTS_LOCALE}")
