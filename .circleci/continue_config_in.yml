@@ -227,10 +227,10 @@ workflows:
               ignore: gh-pages
 
       - build-gcc:
-          name: tests-gcc14-cmake3.30.3
-          image: PLACEHOLDER_IMAGE(gcc14_cmake3.30.3)
+          name: tests-gcc14-cmake3.31.4
+          image: PLACEHOLDER_IMAGE(gcc14_cmake3.31.4)
           matrix:
-            alias: tests-gcc14-cmake3.30.3-all
+            alias: tests-gcc14-cmake3.31.4-all
             parameters:
               cxx-ver:
                 - "11"
@@ -276,7 +276,7 @@ workflows:
 
       - build-gcc:
           name: benchmarks-gcc
-          image: PLACEHOLDER_IMAGE(gcc14_cmake3.30.3)
+          image: PLACEHOLDER_IMAGE(gcc14_cmake3.31.4)
           cxx-ver: "17"
           build-type: Release
           tests: "OFF"
