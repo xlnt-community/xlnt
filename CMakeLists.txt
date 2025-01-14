@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.1...3.31)
 project(xlnt_all)
 
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
