@@ -30,6 +30,7 @@
 #include <cerrno>
 #include <limits>
 #include <locale>
+#include <cstring>
 
 namespace xlnt {
 namespace detail {
@@ -574,49 +575,47 @@ static bool parse_number(const std::locale &loc, const char *string, T &result, 
         // Note: caching the decimal separator used by the parsing functions can cause thread-safety issues in multi-threaded programs. On the other hand,
         // this would also mean that the rest of this function's logic would be wrong in such cases. Since this isn't something we can fix in a thread-safe way,
         // because we cannot control how users of our library call locale-dependent functions, this is a risk we have to take.
-        const char parser_decimal_separator = localeconv()->decimal_point[0];
-        const char decimal_separator = std::use_facet<std::numpunct<char>>(loc).decimal_point();
+        const char * parser_decimal_separator = localeconv()->decimal_point;
+        const std::string decimal_separator = xlnt::detail::get_locale_decimal_separator(loc);
         bool tried_dot = false;
         bool tried_comma = false;
         char *internal_end = nullptr;
         T parsed = std::numeric_limits<T>::quiet_NaN();
-        
+
         // Step 1: try to parse the number as it is - but only if it makes sense!
         if (parser_decimal_separator == decimal_separator)
         {
             parsed = func(string, &internal_end);
-    
-            if (parser_decimal_separator == '.')
+
+            if (strcmp(parser_decimal_separator, ".") == 0)
             {
                 tried_dot = true;
             }
-            else if (parser_decimal_separator == ',')
+            else if (strcmp(parser_decimal_separator, ",") == 0)
             {
                 tried_comma = true;
             }
         }
-        
-        std::string copy;
 
         // Step 2: if the string was not yet or only partially parsed, try to replace the decimal separator by the one from the provided locale.
-        if ((internal_end == nullptr || *internal_end == decimal_separator) && parser_decimal_separator != decimal_separator)
+        if ((internal_end == nullptr || internal_end == decimal_separator) && parser_decimal_separator != decimal_separator)
         {
-            copy = string;
-            auto it_separator = std::find(copy.begin(), copy.end(), decimal_separator);
-            
-            if (it_separator != copy.end())
+            std::string copy = string;
+            size_t separator_index = copy.find(decimal_separator, 0);
+
+            if (separator_index != std::string::npos)
             {
-                *it_separator = parser_decimal_separator;
+                copy.replace(separator_index, decimal_separator.length(), parser_decimal_separator);
             }
-            
+
             parsed = func(copy.c_str(), &internal_end);
 
-            if (decimal_separator == '.')
+            if (decimal_separator == ".")
             {
                 assert(!tried_dot);
                 tried_dot = true;
             }
-            else if (decimal_separator == ',')
+            else if (decimal_separator == ",")
             {
                 assert(!tried_comma);
                 tried_comma = true;
@@ -626,30 +625,21 @@ static bool parse_number(const std::locale &loc, const char *string, T &result, 
             // The great C Standard Library is not const correct, so we can't be either... ugh. Note that you are NOT allowed to modify
             // the pointer to the end (thus modifying the string) without resulting in undefined behaviour!
             internal_end = const_cast<char *>(string + (internal_end - copy.c_str()));
-            
-            // Revert to the original string in case we need to parse again.
-            if (it_separator != copy.end())
-            {
-                *it_separator = decimal_separator;
-            }
         }
 
         // Step 3: if the string was only partially parsed even when using the provided locale,
         // maybe the locale has the wrong decimal separator and . was the decimal separator?
         if (try_other_decimal_separators && (internal_end == nullptr || *internal_end == '.') && !tried_dot)
         {
-            assert(parser_decimal_separator != '.');
-            if (copy.empty())
-            {
-                copy = string;
-            }
+            assert(strcmp(parser_decimal_separator, ".") != 0);
+            std::string copy = string;
             auto it_separator = std::find(copy.begin(), copy.end(), '.');
-            
+
             if (it_separator != copy.end())
             {
-                *it_separator = parser_decimal_separator;
+                copy.replace(it_separator, it_separator + 1, parser_decimal_separator);
             }
-            
+
             parsed = func(copy.c_str(), &internal_end);
 
             tried_dot = true;
@@ -658,30 +648,21 @@ static bool parse_number(const std::locale &loc, const char *string, T &result, 
             // The great C Standard Library is not const correct, so we can't be either... ugh. Note that you are NOT allowed to modify
             // the pointer to the end (thus modifying the string) without resulting in undefined behaviour!
             internal_end = const_cast<char *>(string + (internal_end - copy.c_str()));
-            
-            // Revert to the original string in case we need to parse again.
-            if (it_separator != copy.end())
-            {
-                *it_separator = '.';
-            }
         }
 
         // Step 4: if the string was only partially parsed even when using the provided locale,
         // maybe the locale has the wrong decimal separator and , was the decimal separator?
         if (try_other_decimal_separators && (internal_end == nullptr || *internal_end == ',') && !tried_comma)
         {
-            assert(parser_decimal_separator != ',');
-            if (copy.empty())
-            {
-                copy = string;
-            }
+            assert(strcmp(parser_decimal_separator, ",") != 0);
+            std::string copy = string;
             auto it_separator = std::find(copy.begin(), copy.end(), ',');
-            
+
             if (it_separator != copy.end())
             {
-                *it_separator = parser_decimal_separator;
+                copy.replace(it_separator, it_separator + 1, parser_decimal_separator);
             }
-            
+
             parsed = func(copy.c_str(), &internal_end);
 
             tried_comma = true;

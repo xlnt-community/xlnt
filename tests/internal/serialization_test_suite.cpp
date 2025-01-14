@@ -25,6 +25,8 @@
 #include <iostream>
 
 #include <xlnt/xlnt.hpp>
+#include <detail/locale.hpp>
+#include <internal/locale_helpers.hpp>
 #include <helpers/path_helper.hpp>
 #include <helpers/temporary_file.hpp>
 #include <helpers/test_suite.hpp>
@@ -75,8 +77,8 @@ public:
         register_test(test_Issue735_wrong_count);
         register_test(test_formatting);
         register_test(test_active_sheet);
-#if XLNT_TESTS_INCLUDE_LOCALE_SPECIFIC == 1
-        register_test(test_locale_comma);
+#if XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR == 1
+        register_test(test_locale_comma_decimal_separator);
 #endif
         register_test(test_Issue6_google_missing_workbookView);
         register_test(test_non_contiguous_selection);
@@ -412,7 +414,7 @@ public:
         wb.load(path);
 
         auto ws1 = wb.sheet_by_index(0);
-        
+
         // test has_formula
         // A1:B3 are plain text cells
         // C1:G3,I2,F4 have formulae
@@ -436,7 +438,7 @@ public:
 
         xlnt_assert(!ws1.cell("C9").has_formula()); // empty cell
         xlnt_assert(!ws1.cell("F5").has_formula()); // text cell
-        
+
         xlnt_assert_equals(ws1.cell("C1").formula(), "B1^2"); // basic math with reference
         xlnt_assert_equals(ws1.cell("D1").formula(), "CONCATENATE(A1,B1)"); // concat with ref
         xlnt_assert_equals(ws1.cell("E1").formula(), "CONCATENATE($C$1,$D$1)"); // concat with absolute ref
@@ -661,7 +663,7 @@ public:
     {
         xlnt_assert(round_trip_matches_rw(path_helper::test_file("13_custom_heights_widths.xlsx")));
     }
-    
+
     void test_round_trip_rw_encrypted_agile()
     {
         xlnt_assert(round_trip_matches_rw(path_helper::test_file("5_encrypted_agile.xlsx"), "secret"));
@@ -776,19 +778,19 @@ public:
         wb.load(path_helper::test_file("Issue735_wrong_count.xlsx"));
         xlnt_assert_throws_nothing(wb.active_sheet());
     }
-    
+
     void test_formatting()
     {
         xlnt::workbook wb;
         wb.load(path_helper::test_file("excel_test_sheet.xlsx"));
         auto ws = wb.active_sheet();
         auto cell = ws.cell("A1");
-        
+
         xlnt_assert_equals(cell.value<std::string>(), std::string("Bolder Text mixed with normal \ntext first line Bold And Underline"));
-        
+
         auto rt = cell.value<xlnt::rich_text>();
         xlnt_assert_equals(rt.runs().size(), 12);
-        
+
         auto assert_run = [](xlnt::rich_text_run run, std::string text, std::string typeface, xlnt::color color, std::size_t size, bool bold, bool strike, xlnt::font::underline_style underline)
         {
             xlnt_assert_equals(run.first, text);
@@ -801,7 +803,7 @@ public:
             xlnt_assert_equals(font.strikethrough(), strike);
             xlnt_assert_equals(font.underline(), underline);
         };
-        
+
         assert_run(rt.runs()[0], "Bolder", "Calibri (Body)", xlnt::theme_color(1), 12, true, false, xlnt::font::underline_style::none);
         assert_run(rt.runs()[1], " Text ", "Calibri", xlnt::theme_color(1), 12, true, false, xlnt::font::underline_style::none);
         assert_run(rt.runs()[2], "mixed ", "Calibri", xlnt::color::red(), 12, false, false, xlnt::font::underline_style::none);
@@ -823,21 +825,24 @@ public:
         xlnt_assert_equals(wb.active_sheet(), wb[2]);
     }
 
-    void test_locale_comma ()
+    void test_locale_comma_decimal_separator()
     {
-        struct SetLocale
+        // If failed, please install the locale specified by the CMake variable XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR
+        // to correctly run this test *and* make sure that the locale uses a comma as decimal separator,
+        // or alternatively disable the CMake option XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR.
+        std::locale loc(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR);
+        std::string hopefully_comma = xlnt::detail::get_locale_decimal_separator(loc);
+        if (hopefully_comma != ",")
         {
-            SetLocale() : previous_locale(setlocale(LC_ALL, nullptr))
-            {
-                // If failed, please install the locale specified by the CMake variable TESTS_LOCALE to correctly run this test,
-                // or alternatively disable the CMake option XLNT_TESTS_INCLUDE_LOCALE_SPECIFIC.
-                xlnt_assert(setlocale(LC_ALL, XLNT_TESTS_LOCALE) != nullptr);
-            }
-            ~SetLocale() {setlocale(LC_ALL, previous_locale);}
-            
-            char * previous_locale = nullptr;
-        } setLocale;
-        
+            std::string error = "Locale ";
+            error += XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR;
+            error += " does not use a comma as its decimal separator! Expected , but found ";
+            error += hopefully_comma;
+            throw xlnt::invalid_parameter(error.c_str());
+        }
+
+        test_helpers::SetLocale setLocale(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR, hopefully_comma.c_str());
+
         xlnt::workbook wb;
         wb.load(path_helper::test_file("Issue714_locale_comma.xlsx"));
         auto ws = wb.active_sheet();

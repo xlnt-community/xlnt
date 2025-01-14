@@ -23,7 +23,9 @@
 
 #pragma once
 
+#include <detail/xlnt_config_impl.hpp>
 #include <locale>
+#include <string>
 
 namespace xlnt {
 namespace detail {
@@ -51,6 +53,16 @@ inline const std::locale &get_serialization_locale()
 {
     return std::locale::classic();
 }
+
+/// Returns the locale-specific decimal separator. This function also accounts
+/// for the case where certain decimal separators might not be able to be represented
+/// as single chars in some locales.
+XLNT_API_INTERNAL std::string get_locale_decimal_separator(const std::locale &loc);
+
+/// Converts a single wchar_t to an std::string, with a fallback char for errors.
+/// Useful when certain characters cannot be represented as char (due to multibyte encodings like UTF-8),
+/// but can be represented as wchar_t (which uses UTF-16 on Windows and UTF-32 on Linux/macOS).
+XLNT_API_INTERNAL std::string wide_char_to_str(const std::locale &loc, wchar_t wide, char fallback_for_errors);
 
 } // namespace detail
 } // namespace xlnt

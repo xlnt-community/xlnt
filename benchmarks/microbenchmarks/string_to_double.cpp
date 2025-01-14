@@ -49,8 +49,12 @@ public:
         }
         else
         {
-            if (setlocale(LC_ALL, "de_DE") == nullptr)
-                state.SkipWithError("de_DE locale not installed");
+#if XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR == 1
+            if (setlocale(LC_ALL, XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR) == nullptr)
+                state.SkipWithError(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR " locale not installed");
+#else
+            state.SkipWithError("Benchmarks that use a comma as decimal separator are disabled. Enable XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR if you want to run this benchmark.");
+#endif
         }
     }
 

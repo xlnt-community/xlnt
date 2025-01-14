@@ -23,6 +23,9 @@
 // @author: see AUTHORS file
 
 #include <detail/serialization/serialisation_helpers.hpp>
+#include <detail/locale.hpp>
+#include <internal/locale_helpers.hpp>
+#include <xlnt/utils/exceptions.hpp>
 #include <helpers/test_suite.hpp>
 #include <cstring>
 
@@ -38,8 +41,11 @@ public:
         register_test(test_min);
         register_test(test_max);
         register_test(test_abs);
-#if XLNT_TESTS_INCLUDE_LOCALE_SPECIFIC == 1
-        register_test(test_locale_comma);
+#if XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR == 1
+        register_test(test_locale_comma_decimal_separator);
+#endif
+#if XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR == 1
+        register_test(test_locale_arabic_decimal_separator);
 #endif
     }
 
@@ -223,24 +229,47 @@ public:
 
         static_assert(xlnt::detail::abs(-1.23) == 1.23, "constexpr");
     }
-    
-    void test_locale_comma ()
-    {        
-        struct SetLocale
-        {
-            SetLocale() : previous_locale(setlocale(LC_ALL, nullptr))
-            {
-                // If failed, please install the locale specified by the CMake variable TESTS_LOCALE to correctly run this test,
-                // or alternatively disable the CMake option XLNT_TESTS_INCLUDE_LOCALE_SPECIFIC.
-                xlnt_assert(setlocale(LC_ALL, XLNT_TESTS_LOCALE) != nullptr);
-            }
-            ~SetLocale() {setlocale(LC_ALL, previous_locale);}
-            
-            char * previous_locale = nullptr;
-        } setLocale;
 
+    void test_locale_comma_decimal_separator()
+    {
+        // If failed, please install the locale specified by the CMake variable XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR
+        // to correctly run this test *and* make sure that the locale uses a comma as decimal separator,
+        // or alternatively disable the CMake option XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR.
+        std::locale loc(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR);
+        std::string hopefully_comma = xlnt::detail::get_locale_decimal_separator(loc);
+        if (hopefully_comma != ",")
+        {
+            std::string error = "Locale ";
+            error += XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR;
+            error += " does not use a comma as its decimal separator! Expected , but found ";
+            error += hopefully_comma;
+            throw xlnt::invalid_parameter(error.c_str());
+        }
+
+        test_helpers::SetLocale setLocale(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR, hopefully_comma.c_str());
         xlnt_assert(xlnt::detail::deserialise("1.99999999") == 1.99999999);
         xlnt_assert(xlnt::detail::deserialise("1.1") == 1.1);
+    }
+
+    void test_locale_arabic_decimal_separator()
+    {
+        // If failed, please install the locale specified by the CMake variable XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR
+        // to correctly run this test *and* make sure that the locale uses the arabic decimal separator,
+        // or alternatively disable the CMake option XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR.
+        std::locale loc(XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR);
+        std::string hopefully_arabic_decimal_separator = xlnt::detail::get_locale_decimal_separator(loc);
+        if (hopefully_arabic_decimal_separator != "٫")
+        {
+            std::string error = "Locale ";
+            error += XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR;
+            error += " does not use the arabic decimal separator! Expected ٫ but found ";
+            error += hopefully_arabic_decimal_separator;
+            throw xlnt::invalid_parameter(error.c_str());
+        }
+
+        test_helpers::SetLocale setLocale(XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR, hopefully_arabic_decimal_separator.c_str());
+        xlnt_assert(xlnt::detail::deserialise("1٫99999999") == 1.99999999);
+        xlnt_assert(xlnt::detail::deserialise("1٫1") == 1.1);
     }
 };
 static numeric_test_suite x;

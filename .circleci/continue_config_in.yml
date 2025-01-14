@@ -48,7 +48,7 @@ jobs:
     steps:
       - checkout
       - run: git submodule update --init --recursive
-      - run: cmake -D XLNT_ALL_WARNINGS_AS_ERRORS=ON -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D XLNT_MICROBENCH_ENABLED=<< parameters.micro-benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> -D XLNT_TESTS_INCLUDE_LOCALE_SPECIFIC=ON .
+      - run: cmake -D XLNT_ALL_WARNINGS_AS_ERRORS=ON -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D XLNT_MICROBENCH_ENABLED=<< parameters.micro-benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> -D XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR=ON -D XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR=ON .
       - run: cmake --build . -- -j2
       - when:
           condition:
@@ -113,8 +113,8 @@ jobs:
 
   build-msvc:
     machine:
-      image: 'windows-server-2019-vs2019:current'
-    resource_class: 'windows.medium'
+      image: "windows-server-2019-vs2019:current"
+    resource_class: "windows.medium"
     parameters:
       tests:
         default: "ON"
@@ -163,7 +163,7 @@ jobs:
   build-macos:
     macos:
       xcode: 15.4.0
-    resource_class: 'macos.m1.medium.gen1'
+    resource_class: "macos.m1.medium.gen1"
     parameters:
       benchmarks:
         default: "OFF"
@@ -219,9 +219,9 @@ workflows:
                 - "ON"
                 - "OFF"
             exclude:
-            # Exclude {static: ON, skip-internal-tests: ON} subset
-              - {static: "ON", skip-internal-tests: "ON", build-type: Debug}
-              - {static: "ON", skip-internal-tests: "ON", build-type: Release}
+              # Exclude {static: ON, skip-internal-tests: ON} subset
+              - { static: "ON", skip-internal-tests: "ON", build-type: Debug }
+              - { static: "ON", skip-internal-tests: "ON", build-type: Release }
           filters:
             branches:
               ignore: gh-pages
@@ -245,11 +245,31 @@ workflows:
                 - "ON"
                 - "OFF"
             exclude:
-            # Exclude {static: ON, skip-internal-tests: ON} subset
-              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "11", build-type: Debug}
-              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "11", build-type: Release}
-              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "17", build-type: Debug}
-              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "17", build-type: Release}
+              # Exclude {static: ON, skip-internal-tests: ON} subset
+              - {
+                  static: "ON",
+                  skip-internal-tests: "ON",
+                  cxx-ver: "11",
+                  build-type: Debug,
+                }
+              - {
+                  static: "ON",
+                  skip-internal-tests: "ON",
+                  cxx-ver: "11",
+                  build-type: Release,
+                }
+              - {
+                  static: "ON",
+                  skip-internal-tests: "ON",
+                  cxx-ver: "17",
+                  build-type: Debug,
+                }
+              - {
+                  static: "ON",
+                  skip-internal-tests: "ON",
+                  cxx-ver: "17",
+                  build-type: Release,
+                }
           filters:
             branches:
               ignore: gh-pages
@@ -280,9 +300,9 @@ workflows:
                 - "ON"
                 - "OFF"
             exclude:
-            # Exclude {static: ON, skip-internal-tests: ON} subset
-              - {static: "ON", skip-internal-tests: "ON", build-type: Debug}
-              - {static: "ON", skip-internal-tests: "ON", build-type: Release}
+              # Exclude {static: ON, skip-internal-tests: ON} subset
+              - { static: "ON", skip-internal-tests: "ON", build-type: Debug }
+              - { static: "ON", skip-internal-tests: "ON", build-type: Release }
           samples: "ON"
           requires:
             - tests-gcc7-cmake3.2-all # prevent building windows in case of gcc failures, as windows builds are more expensive

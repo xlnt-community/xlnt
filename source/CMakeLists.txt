@@ -193,7 +193,7 @@ GENERATE_EXPORT_HEADER (xlnt
     DEPRECATED_MACRO_NAME XLNT_DEPRECATED
     EXPORT_FILE_NAME ${XLNT_INCLUDE_DIR}/xlnt/utils/xlnt_cmake_export.h)
 
-if(TESTS AND NOT XLNT_SKIP_INTERNAL_TESTS)
+if((TESTS AND NOT XLNT_SKIP_INTERNAL_TESTS) OR BENCHMARKS)
     target_compile_definitions(xlnt PRIVATE XLNT_EXPOSE_INTERNAL_API=1)
 endif()
 
@@ -239,7 +239,7 @@ else()
 	  PROPERTIES
       COMPILE_FLAGS "-Wno-undef -Wno-shorten-64-to-32")
   endif()
-  
+
   # Platform- and file-specific settings, GCC
   if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/detail/serialization/miniz.cpp
