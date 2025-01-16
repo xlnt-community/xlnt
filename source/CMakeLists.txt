@@ -211,7 +211,8 @@ target_include_directories(xlnt
 	${XLNT_SOURCE_DIR}/../third-party/libstudxml
     ${XLNT_SOURCE_DIR}/../third-party/miniz
     ${XLNT_SOURCE_DIR}/../third-party/utfcpp/source
-    ${XLNT_SOURCE_DIR}/../third-party/fmt/include)
+    ${XLNT_SOURCE_DIR}/../third-party/fmt/include
+    ${XLNT_SOURCE_DIR}/../third-party/fast_float/include)
 
 # Platform- and file-specific settings, MSVC
 if(MSVC)

@@ -1,5 +1,4 @@
 #include <detail/serialization/serialisation_helpers.hpp>
-#include <detail/locale.hpp>
 #include <detail/parsers.hpp>
 
 #include <limits>

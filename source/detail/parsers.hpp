@@ -24,7 +24,8 @@
 #pragma once
 
 #include <string>
-#include <locale>
+#include <system_error>
+#include <fast_float/fast_float.h>
 #include <xlnt/xlnt_config.hpp>
 #include <detail/xlnt_config_impl.hpp>
 
@@ -60,28 +61,61 @@ XLNT_API_INTERNAL bool parse(const std::string &string, unsigned long &result, s
 
 
 /// ----- FLOATING-POINT NUMBER PARSING -----
+namespace internal {
+template <typename T>
+std::errc parse_number(const char *string, size_t length, T &result, const char **end, char decimal_separator);
+template <typename T>
+std::errc parse_number(const std::string &string, T &result, std::size_t *num_characters_parsed, char decimal_separator);
+}
 
-/// Parse a floating-point number. If other decimal separators should be tried, the system locale is used first (the classic
-/// locale will be used as an alternative later) - otherwise the classic locale is used (useful when parsing serialized numbers).
-XLNT_API_INTERNAL bool parse(const char *string, double &result, char **end = nullptr, bool try_other_decimal_separators = false);
-XLNT_API_INTERNAL bool parse(const char *string, float &result, char **end = nullptr, bool try_other_decimal_separators = false);
-XLNT_API_INTERNAL bool parse(const char *string, long double &result, char **end = nullptr, bool try_other_decimal_separators = false);
+/// Parse a floating-point number.
+template <typename T>
+std::errc parse(const char *string, T &result, const char **end = nullptr, char decimal_separator = '.')
+{
+    return internal::parse_number(string, strlen(string), result, end, decimal_separator);
+}
 
-/// Parse a floating-point number using the provided locale. Optionally, other decimal separators can be tried as well.
-XLNT_API_INTERNAL bool parse(const std::locale &loc, const char *string, double &result, char **end = nullptr, bool try_other_decimal_separators = false);
-XLNT_API_INTERNAL bool parse(const std::locale &loc, const char *string, float &result, char **end = nullptr, bool try_other_decimal_separators = false);
-XLNT_API_INTERNAL bool parse(const std::locale &loc, const char *string, long double &result, char **end = nullptr, bool try_other_decimal_separators = false);
+template <typename T>
+std::errc parse(const std::string &string, T &result, std::size_t *num_characters_parsed = nullptr, char decimal_separator = '.')
+{
+    return internal::parse_number(string, result, num_characters_parsed, decimal_separator);
+}
 
-/// Parse a floating-point number. If other decimal separators should be tried, the system locale is used first (the classic
-/// locale will be used as an alternative later) - otherwise the classic locale is used (useful when parsing serialized numbers).
-XLNT_API_INTERNAL bool parse(const std::string &string, double &result, std::size_t *num_characters_parsed = nullptr, bool try_other_decimal_separators = false);
-XLNT_API_INTERNAL bool parse(const std::string &string, float &result, std::size_t *num_characters_parsed = nullptr, bool try_other_decimal_separators = false);
-XLNT_API_INTERNAL bool parse(const std::string &string, long double &result, std::size_t *num_characters_parsed = nullptr, bool try_other_decimal_separators = false);
+namespace internal {
 
-/// Parse a floating-point number using the provided locale. Optionally, other decimal separators can be tried as well.
-XLNT_API_INTERNAL bool parse(const std::locale &loc, const std::string &string, double &result, std::size_t *num_characters_parsed = nullptr, bool try_other_decimal_separators = false);
-XLNT_API_INTERNAL bool parse(const std::locale &loc, const std::string &string, float &result, std::size_t *num_characters_parsed = nullptr, bool try_other_decimal_separators = false);
-XLNT_API_INTERNAL bool parse(const std::locale &loc, const std::string &string, long double &result, std::size_t *num_characters_parsed = nullptr, bool try_other_decimal_separators = false);
+template <typename T>
+std::errc parse_number(const char *string, size_t length, T &result, const char **end, char decimal_separator)
+{
+    fast_float::parse_options options {
+        fast_float::chars_format::general |
+        fast_float::chars_format::allow_leading_plus |
+        fast_float::chars_format::skip_white_space,
+        decimal_separator
+    };
+    auto parsing_result = fast_float::from_chars_advanced(string, string + length, result, options);
 
+    if (end != nullptr)
+    {
+        *end = parsing_result.ptr;
+    }
+
+    return parsing_result.ec;
+}
+
+template <typename T>
+std::errc parse_number(const std::string &string, T &result, std::size_t *num_characters_parsed, char decimal_separator)
+{
+    const char *end = nullptr;
+    std::errc err = parse_number(string.c_str(), string.length(), result, &end, decimal_separator);
+
+    if (num_characters_parsed != nullptr)
+    {
+        *num_characters_parsed = end - string.c_str();
+    }
+
+    return err;
+}
+
+} // namespace internal
 } // namespace detail
 } // namespace xlnt

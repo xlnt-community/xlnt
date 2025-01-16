@@ -25,8 +25,6 @@
 #include <iostream>
 
 #include <xlnt/xlnt.hpp>
-#include <detail/locale.hpp>
-#include <internal/locale_helpers.hpp>
 #include <helpers/path_helper.hpp>
 #include <helpers/temporary_file.hpp>
 #include <helpers/test_suite.hpp>
@@ -77,9 +75,7 @@ public:
         register_test(test_Issue735_wrong_count);
         register_test(test_formatting);
         register_test(test_active_sheet);
-#if XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR == 1
         register_test(test_locale_comma_decimal_separator);
-#endif
         register_test(test_Issue6_google_missing_workbookView);
         register_test(test_non_contiguous_selection);
     }
@@ -827,22 +823,6 @@ public:
 
     void test_locale_comma_decimal_separator()
     {
-        // If failed, please install the locale specified by the CMake variable XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR
-        // to correctly run this test *and* make sure that the locale uses a comma as decimal separator,
-        // or alternatively disable the CMake option XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR.
-        std::locale loc(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR);
-        std::string hopefully_comma = xlnt::detail::get_locale_decimal_separator(loc);
-        if (hopefully_comma != ",")
-        {
-            std::string error = "Locale ";
-            error += XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR;
-            error += " does not use a comma as its decimal separator! Expected , but found ";
-            error += hopefully_comma;
-            throw xlnt::invalid_parameter(error.c_str());
-        }
-
-        test_helpers::SetLocale setLocale(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR, hopefully_comma.c_str());
-
         xlnt::workbook wb;
         wb.load(path_helper::test_file("Issue714_locale_comma.xlsx"));
         auto ws = wb.active_sheet();
