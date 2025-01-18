@@ -85,21 +85,21 @@ time::time(const std::string &time_string)
     bool ok = true;
     auto next_separator_index = time_string.find(':');
     next_separator_index =  time_string.find(':');
-    ok = ok && detail::parse(time_string.substr(0, next_separator_index), hour);
+    ok = ok && detail::parse_integer(time_string.substr(0, next_separator_index), hour) == std::errc();
     auto previous_separator_index = next_separator_index;
     next_separator_index = ok ? time_string.find(':', previous_separator_index + 1) : next_separator_index;
-    ok = ok && detail::parse(time_string.substr(previous_separator_index + 1, next_separator_index), minute);
+    ok = ok && detail::parse_integer(time_string.substr(previous_separator_index + 1, next_separator_index), minute) == std::errc();
     previous_separator_index = next_separator_index;
     next_separator_index = ok ? time_string.find('.', previous_separator_index + 1) : next_separator_index;
     bool subseconds_available = next_separator_index != std::string::npos;
     if (subseconds_available)
     {
         // First parse the seconds.
-        ok = ok && detail::parse(time_string.substr(previous_separator_index + 1, next_separator_index), second);
+        ok = ok && detail::parse_integer(time_string.substr(previous_separator_index + 1, next_separator_index), second) == std::errc();
         previous_separator_index = next_separator_index;
     }
     next_separator_index = ok ? std::string::npos : next_separator_index;
-    ok = ok && detail::parse(time_string.substr(previous_separator_index + 1, next_separator_index), subseconds_available ? microsecond : second);
+    ok = ok && detail::parse_integer(time_string.substr(previous_separator_index + 1, next_separator_index), subseconds_available ? microsecond : second) == std::errc();
 
     if (!ok)
     {

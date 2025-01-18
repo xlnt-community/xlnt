@@ -187,7 +187,7 @@ std::pair<std::string, row_t> cell_reference::split_reference(
     }
 
     xlnt::row_t row = 0;
-    if (!detail::parse(row_string, row))
+    if (detail::parse_integer(row_string, row) != std::errc())
     {
         throw invalid_cell_reference(reference_string);
     }

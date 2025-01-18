@@ -4,6 +4,7 @@
 // - handles atleast 15 significant figures (excel only serialises numbers up to 15sf)
 
 #include <benchmark/benchmark.h>
+#include <cstring>
 #include <locale>
 #include <random>
 #include <sstream>
@@ -86,7 +87,7 @@ struct number_converter_stream
 {
     number_converter_stream()
     {
-        stream.imbue(std::locale("C"));
+        stream.imbue(std::locale::classic());
     }
 
     double stold(const std::string &s)
@@ -102,23 +103,25 @@ struct number_converter_stream
 };
 
 
-// to resolve the locale issue with strtod, a little preprocessing of the input is required
+// To resolve the locale issue with strtod, a little preprocessing of the input is required.
+// IMPORTANT: the string localeconv()->decimal_point might be longer than a single char
+// in some locales (e.g. in the ps_AF locale which uses the arabic decimal separator).
 struct number_converter_mk2
 {
     explicit number_converter_mk2()
-        : should_convert_to_comma(localeconv()->decimal_point[0] == ',')
+        : should_convert(strcmp(localeconv()->decimal_point, ",") == 0)
     {
     }
 
     double stold(std::string &s) const noexcept
     {
         assert(!s.empty());
-        if (should_convert_to_comma)
+        if (should_convert)
         {
             auto decimal_pt = std::find(s.begin(), s.end(), '.');
             if (decimal_pt != s.end())
             {
-                *decimal_pt = ',';
+                s.replace(decimal_pt, decimal_pt + 1, localeconv()->decimal_point);
             }
         }
         return strtod(s.c_str(), nullptr);
@@ -127,7 +130,7 @@ struct number_converter_mk2
     double stold(const std::string &s) const
     {
         assert(!s.empty());
-        if (!should_convert_to_comma)
+        if (!should_convert)
         {
             return strtod(s.c_str(), nullptr);
         }
@@ -135,13 +138,13 @@ struct number_converter_mk2
         auto decimal_pt = std::find(copy.begin(), copy.end(), '.');
         if (decimal_pt != copy.end())
         {
-            *decimal_pt = ',';
+            copy.replace(decimal_pt, decimal_pt + 1, localeconv()->decimal_point);
         }
         return strtod(copy.c_str(), nullptr);
     }
 
 private:
-    bool should_convert_to_comma = false;
+    bool should_convert = false;
 };
 
 using RandFloatStrs = RandomFloatStrs<true>;

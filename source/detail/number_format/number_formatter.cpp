@@ -1359,8 +1359,8 @@ format_color number_format_parser::color_from_string(const std::string &color)
         }
         else if ((color.substr(0, 5) == "Color") || (color.substr(0, 5) == "COLOR"))
         {
-            unsigned int color_number = 0;
-            if (detail::parse(color.substr(5), color_number) && color_number >= 1 && color_number <= 56)
+            unsigned char color_number = 0;
+            if (detail::parse_integer(color.substr(5), color_number) == std::errc() && color_number >= 1 && color_number <= 56)
             {
                 return static_cast<format_color>(color_number);
             }
@@ -1466,7 +1466,7 @@ std::pair<format_locale, std::string> number_format_parser::locale_from_string(c
     }
 
     int country_code = -1;
-    if (!detail::parse(country_code_string, country_code, nullptr, 16))
+    if (detail::parse_integer(country_code_string, country_code, nullptr, 16) != std::errc())
     {
         throw xlnt::exception("bad locale: " + locale_string);
     }
@@ -1598,7 +1598,7 @@ std::string number_formatter::fill_placeholders(const format_placeholders &p, do
     {
         // Format with leading zeros (if necessary).
         result = fmt::format("{:0{}d}", integer_part, p.num_zeros);
-        
+
         if (result.size() < p.num_zeros + p.num_spaces)
         {
             // Add leading spaces.
@@ -1631,11 +1631,11 @@ std::string number_formatter::fill_placeholders(const format_placeholders &p, do
     else if (p.type == format_placeholders::placeholders_type::fractional_part)
     {
         auto fractional_part = number - integer_part;
-        
+
         // Format with zeros.
         result = fmt::format("{:.{}f}", fractional_part, p.num_zeros + p.num_optionals + p.num_spaces);
         result.erase(0, 1); // Remove 0 at the beginning so that we only have the decimal point and the rest
-        
+
         // Remove unnecessary zeros outside of the maximum precision.
         while (result.back() == '0' && result.size() > p.num_zeros + 1)
         {
@@ -1680,7 +1680,7 @@ std::string number_formatter::fill_scientific_placeholders(const format_placehol
 
     // Format integer with leading zeros.
     auto integer_width = integer_part.num_zeros;
-    
+
     if (number == 0.0)
     {
         integer_width += integer_part.num_optionals;

@@ -444,9 +444,9 @@ void xlsx_producer::write_workbook(const relationship &rel)
         {
             num_visible++;
         }
-        
+
         auto title_ref = "'" + ws.title() + "'!";
-        
+
         if (ws.has_auto_filter())
         {
             defined_name name;
@@ -456,7 +456,7 @@ void xlsx_producer::write_workbook(const relationship &rel)
             name.value = title_ref + range_reference::make_absolute(ws.auto_filter()).to_string();
             defined_names.push_back(name);
         }
-        
+
         if (ws.has_print_area())
         {
             defined_name name;
@@ -466,14 +466,14 @@ void xlsx_producer::write_workbook(const relationship &rel)
             name.value = title_ref + range_reference::make_absolute(ws.print_area()).to_string();
             defined_names.push_back(name);
         }
-        
+
         if (ws.has_print_titles())
         {
             defined_name name;
             name.sheet_id = ws.id();
             name.name = "_xlnm.Print_Titles";
             name.hidden = false;
-            
+
             auto cols = ws.print_title_cols();
             if (cols.is_set())
             {
@@ -741,7 +741,7 @@ void xlsx_producer::write_workbook(const relationship &rel)
 
         auto child_target_path = child_rel.target().path();
         path archive_path(child_rel.source().path().parent().append(child_target_path));
-        
+
         // write binary
         if (child_rel.type() == relationship_type::vbaproject)
         {
@@ -2933,7 +2933,7 @@ void xlsx_producer::write_worksheet(const relationship &rel)
         {
             write_attribute("verticalDpi", ws.page_setup().vertical_dpi_.get());
         }
-        
+
         if (ps.has_paper_size())
         {
             write_attribute("paperSize", static_cast<std::size_t>(ps.paper_size()));
@@ -3253,7 +3253,7 @@ void xlsx_producer::write_vml_drawings(const relationship &rel, worksheet ws, co
     }
 
     size_t file_index = 0;
-    detail::parse(filename.substr(index_pos + 1), file_index);
+    detail::parse_integer(filename.substr(index_pos + 1), file_index);
 
     write_attribute("data", file_index);
     write_end_element(xmlns_o, "idmap");

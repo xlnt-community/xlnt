@@ -97,13 +97,13 @@ std::string datetime::to_string() const
         str.append(std::to_string(minute));
         str.push_back(':');
         str.append(std::to_string(second));
-        
+
         if (microsecond != 0)
         {
             str.push_back('.');
             str.append(fill(std::to_string(microsecond), 6));
         }
-        
+
         return str;
     }
 }
@@ -134,7 +134,7 @@ datetime::datetime(const date &d, const time &t)
     {
         year = d.get_year();
         month = d.get_month();
-        day = d.get_day();      
+        day = d.get_day();
     }
 }
 
@@ -226,31 +226,31 @@ datetime datetime::from_iso_string(const std::string &string)
 
     bool ok = true;
     auto next_separator_index = string.find('-');
-    ok = ok && detail::parse(string.substr(0, next_separator_index), result.year);
+    ok = ok && detail::parse_integer(string.substr(0, next_separator_index), result.year) == std::errc();
     auto previous_separator_index = next_separator_index;
     next_separator_index = ok ? string.find('-', previous_separator_index + 1) : next_separator_index;
-    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.month);
+    ok = ok && detail::parse_integer(string.substr(previous_separator_index + 1, next_separator_index), result.month) == std::errc();
     previous_separator_index = next_separator_index;
     next_separator_index = ok ? string.find('T', previous_separator_index + 1) : next_separator_index;
-    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.day);
+    ok = ok && detail::parse_integer(string.substr(previous_separator_index + 1, next_separator_index), result.day) == std::errc();
     previous_separator_index = next_separator_index;
     next_separator_index = ok ? string.find(':', previous_separator_index + 1) : next_separator_index;
-    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.hour);
+    ok = ok && detail::parse_integer(string.substr(previous_separator_index + 1, next_separator_index), result.hour) == std::errc();
     previous_separator_index = next_separator_index;
     next_separator_index = ok ? string.find(':', previous_separator_index + 1) : next_separator_index;
-    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.minute);
+    ok = ok && detail::parse_integer(string.substr(previous_separator_index + 1, next_separator_index), result.minute) == std::errc();
     previous_separator_index = next_separator_index;
     next_separator_index = ok ? string.find('.', previous_separator_index + 1) : next_separator_index;
     bool subseconds_available = next_separator_index != std::string::npos;
     if (subseconds_available)
     {
         // First parse the seconds.
-        ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.second);
+        ok = ok && detail::parse_integer(string.substr(previous_separator_index + 1, next_separator_index), result.second) == std::errc();
         previous_separator_index = next_separator_index;
-        
+
     }
     next_separator_index = ok ? string.find('Z', previous_separator_index + 1) : next_separator_index;
-    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), subseconds_available ? result.microsecond : result.second);
+    ok = ok && detail::parse_integer(string.substr(previous_separator_index + 1, next_separator_index), subseconds_available ? result.microsecond : result.second) == std::errc();
 
     if (!ok)
     {
@@ -279,15 +279,15 @@ std::string datetime::to_iso_string() const
         iso.append(fill(std::to_string(minute)));
         iso.push_back(':');
         iso.append(fill(std::to_string(second)));
-        
+
         if (microsecond != 0)
         {
             iso.push_back('.');
             iso.append(fill(std::to_string(microsecond), 6));
         }
-        
+
         iso.push_back('Z');
-        
+
         return iso;
     }
 }

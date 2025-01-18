@@ -97,9 +97,13 @@ struct Cell
 // This matches the output format of excel irrespective of current locale
 XLNT_API_INTERNAL std::string serialise(double d);
 
-XLNT_API_INTERNAL double deserialise(const std::string &s, size_t *len_converted);
+// Parses a string to a double-precision floating-point number. Optionally, num_characters_parsed can point
+// to a variable where the number of parsed characters will be stored.
+XLNT_API_INTERNAL double deserialise(const std::string &s, size_t *num_characters_parsed = nullptr);
 
-XLNT_API_INTERNAL double deserialise(const std::string &s);
+// Parses a string to a double-precision floating-point number. Optionally, end can point
+// to a pointer where the character after the last successfully parsed character will be stored.
+XLNT_API_INTERNAL double deserialise(const char *s, const char **end = nullptr);
 
 } // namespace detail
 } // namespace xlnt

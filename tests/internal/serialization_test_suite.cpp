@@ -25,10 +25,12 @@
 #include <iostream>
 
 #include <xlnt/xlnt.hpp>
+#include <internal/locale_helpers.hpp>
 #include <helpers/path_helper.hpp>
 #include <helpers/temporary_file.hpp>
 #include <helpers/test_suite.hpp>
 #include <helpers/xml_helper.hpp>
+#include <locale>
 
 class serialization_test_suite : public test_suite
 {
@@ -75,7 +77,9 @@ public:
         register_test(test_Issue735_wrong_count);
         register_test(test_formatting);
         register_test(test_active_sheet);
+#if XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR == 1
         register_test(test_locale_comma_decimal_separator);
+#endif
         register_test(test_Issue6_google_missing_workbookView);
         register_test(test_non_contiguous_selection);
     }
@@ -823,6 +827,29 @@ public:
 
     void test_locale_comma_decimal_separator()
     {
+        // Note: the following test should NOT make any difference at the moment, since our parsers
+        // no longer consider the locale in any way. However, just to be sure in case our
+        // parser implementation changes in the future, this test tests whether the locale
+        // makes any difference when parsing.
+
+        // If failed, please install the locale specified by the CMake variable XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR
+        // to correctly run this test *and* make sure that the locale uses a comma as decimal separator,
+        // or alternatively disable the CMake option XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR.
+        std::locale loc(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR);
+        const char hopefully_comma = std::use_facet<std::numpunct<char>>(loc).decimal_point();
+        if (hopefully_comma != ',')
+        {
+            std::string error = "Locale ";
+            error += XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR;
+            error += " does not use a comma as its decimal separator! Expected , but found ";
+            error += hopefully_comma;
+            throw xlnt::invalid_parameter(error.c_str());
+        }
+
+        const char decimal_str[2] {hopefully_comma, '\0'};
+        test_helpers::SetLocale setLocale(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR, decimal_str);
+
+
         xlnt::workbook wb;
         wb.load(path_helper::test_file("Issue714_locale_comma.xlsx"));
         auto ws = wb.active_sheet();

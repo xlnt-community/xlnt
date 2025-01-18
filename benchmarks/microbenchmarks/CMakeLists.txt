@@ -26,7 +26,6 @@ endif()
 # equivalent of add_subdirectory, now available for use
 FetchContent_MakeAvailable(googlebenchmark)
 
-
 add_executable(xlnt_ubench)
 target_include_directories(xlnt_ubench
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../source)
@@ -37,3 +36,13 @@ target_sources(xlnt_ubench
 )
 target_link_libraries(xlnt_ubench benchmark_main xlnt)
 target_compile_features(xlnt_ubench PRIVATE cxx_std_17)
+
+if (XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR)
+  target_compile_definitions(xlnt_ubench PRIVATE XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR=1)
+endif()
+target_compile_definitions(xlnt_ubench PRIVATE XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR="${XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR}")
+
+if (XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR)
+  target_compile_definitions(xlnt_ubench PRIVATE XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR=1)
+endif()
+target_compile_definitions(xlnt_ubench PRIVATE XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR="${XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR}")

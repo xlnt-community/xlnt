@@ -22,8 +22,11 @@
 // @author: see AUTHORS file
 
 #include <detail/parsers.hpp>
+#include "xlnt/utils/exceptions.hpp"
 
+#include <exception>
 #include <helpers/test_suite.hpp>
+#include <stdexcept>
 
 class parser_test_suite : public test_suite
 {
@@ -77,7 +80,7 @@ public:
     void test_parse_double_with_dot()
     {
         double result = std::numeric_limits<double>::quiet_NaN();
-        std::errc error = xlnt::detail::parse("2.3", result);
+        std::errc error = xlnt::detail::parse_floating_point("2.3", result);
         xlnt_assert_equals(result, 2.3);
         xlnt_assert_equals(error, std::errc());
     }
@@ -85,7 +88,7 @@ public:
     void test_parse_double_with_comma()
     {
         double result = std::numeric_limits<double>::quiet_NaN();
-        std::errc error = xlnt::detail::parse("2,3", result, nullptr, ',');
+        std::errc error = xlnt::detail::parse_floating_point("2,3", result, nullptr, ',');
         xlnt_assert_equals(result, 2.3);
         xlnt_assert_equals(error, std::errc());
     }
@@ -93,7 +96,7 @@ public:
     void test_parse_double_large()
     {
         float result = std::numeric_limits<double>::quiet_NaN();
-        std::errc error = xlnt::detail::parse("1000000.5", result);
+        std::errc error = xlnt::detail::parse_floating_point("1000000.5", result);
         xlnt_assert_equals(result, 1000000.5);
         xlnt_assert_equals(error, std::errc());
     }
@@ -102,7 +105,7 @@ public:
     {
         std::string str = "1.79769e+309";
         double result = std::numeric_limits<double>::quiet_NaN();
-        std::errc error = xlnt::detail::parse(str, result);
+        std::errc error = xlnt::detail::parse_floating_point(str, result);
         xlnt_assert_differs(result, std::numeric_limits<double>::quiet_NaN()); // NaN values are never equal
         xlnt_assert_equals(error, std::errc::result_out_of_range); // must fail
     }
@@ -111,24 +114,24 @@ public:
     {
         std::string str;
         double result = std::numeric_limits<double>::quiet_NaN();
-        std::errc error = xlnt::detail::parse(str, result);
+        std::errc error = xlnt::detail::parse_floating_point(str, result);
         xlnt_assert_differs(result, std::numeric_limits<double>::quiet_NaN()); // NaN values are never equal
-        xlnt_assert_differs(error, std::errc()); // must fail
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_double_text()
     {
         std::string str = "  \n   \r  \t bla bla \n\r";
         double result = std::numeric_limits<double>::quiet_NaN();
-        std::errc error = xlnt::detail::parse(str, result);
+        std::errc error = xlnt::detail::parse_floating_point(str, result);
         xlnt_assert_differs(result, std::numeric_limits<double>::quiet_NaN()); // NaN values are never equal
-        xlnt_assert_differs(error, std::errc()); // must fail
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_float_with_dot()
     {
         float result = std::numeric_limits<float>::quiet_NaN();
-        std::errc error = xlnt::detail::parse("2.3", result);
+        std::errc error = xlnt::detail::parse_floating_point("2.3", result);
         xlnt_assert_equals(result, 2.3f);
         xlnt_assert_equals(error, std::errc());
     }
@@ -136,7 +139,7 @@ public:
     void test_parse_float_with_comma()
     {
         float result = std::numeric_limits<float>::quiet_NaN();
-        std::errc error = xlnt::detail::parse("2,3", result, nullptr, ',');
+        std::errc error = xlnt::detail::parse_floating_point("2,3", result, nullptr, ',');
         xlnt_assert_equals(result, 2.3f);
         xlnt_assert_equals(error, std::errc());
     }
@@ -144,7 +147,7 @@ public:
     void test_parse_float_large()
     {
         float result = std::numeric_limits<float>::quiet_NaN();
-        std::errc error = xlnt::detail::parse("1000000.5", result);
+        std::errc error = xlnt::detail::parse_floating_point("1000000.5", result);
         xlnt_assert_equals(result, 1000000.5f);
         xlnt_assert_equals(error, std::errc());
     }
@@ -153,349 +156,289 @@ public:
     {
         std::string str = "3.40282e+39";
         float result = std::numeric_limits<float>::quiet_NaN();
-        std::errc error = xlnt::detail::parse(str, result);
+        std::errc error = xlnt::detail::parse_floating_point(str, result);
         xlnt_assert_differs(result, std::numeric_limits<float>::quiet_NaN()); // NaN values are never equal
-        xlnt_assert_differs(error, std::errc()); // must fail
+        xlnt_assert_equals(error, std::errc::result_out_of_range); // must fail
     }
 
     void test_parse_float_empty()
     {
         std::string str;
         float result = std::numeric_limits<float>::quiet_NaN();
-        std::errc error = xlnt::detail::parse(str, result);
+        std::errc error = xlnt::detail::parse_floating_point(str, result);
         xlnt_assert_differs(result, std::numeric_limits<float>::quiet_NaN()); // NaN values are never equal
-        xlnt_assert_differs(error, std::errc()); // must fail
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_float_text()
     {
         std::string str = "  \n   \r  \t bla bla \n\r";
         float result = std::numeric_limits<float>::quiet_NaN();
-        std::errc error = xlnt::detail::parse(str, result);
+        std::errc error = xlnt::detail::parse_floating_point(str, result);
         xlnt_assert_differs(result, std::numeric_limits<float>::quiet_NaN()); // NaN values are never equal
-        xlnt_assert_differs(error, std::errc()); // must fail
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_int()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         int i = -1;
-        bool ok = xlnt::detail::parse("-5", i);
+        std::errc error = xlnt::detail::parse_integer("-5", i);
         xlnt_assert_equals(i, -5);
-        xlnt_assert(ok);
-        xlnt_assert(errno == 0); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc());
     }
 
     void test_parse_int_out_of_range()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str = "2147483648";
         int i = -1;
-        bool ok = xlnt::detail::parse(str, i);
+        std::errc error = xlnt::detail::parse_integer(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == ERANGE); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc::result_out_of_range); // must fail
     }
 
     void test_parse_int_empty()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str;
         int i = -1;
-        bool ok = xlnt::detail::parse(str, i);
+        std::errc error = xlnt::detail::parse_integer(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == 0); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_int_text()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str = "  \n   \r  \t bla bla \n\r";
         int i = -1;
-        bool ok = xlnt::detail::parse(str, i);
+        std::errc error = xlnt::detail::parse_integer(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_long()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         long i = -1;
-        bool ok = xlnt::detail::parse("-5", i);
+        std::errc error = xlnt::detail::parse_integer("-5", i);
         xlnt_assert_equals(i, -5);
-        xlnt_assert(ok);
-        xlnt_assert(errno == 0); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc());
     }
 
     void test_parse_long_out_of_range()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         // Note: this will ensure that "long" will be out of range both on systems
         // trating it as 32-bit (Windows) and as 64-bit (Linux / macOS).
         std::string str = "9223372036854775808";
         long i = -1;
-        bool ok = xlnt::detail::parse(str, i);
+        std::errc error = xlnt::detail::parse_integer(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == ERANGE); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc::result_out_of_range); // must fail
     }
 
     void test_parse_long_empty()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str;
         long i = -1;
-        bool ok = xlnt::detail::parse(str, i);
+        std::errc error = xlnt::detail::parse_integer(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == 0); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_long_text()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str = "  \n   \r  \t bla bla \n\r";
         long i = -1;
-        bool ok = xlnt::detail::parse(str, i);
+        std::errc error = xlnt::detail::parse_integer(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_long_long()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         long long i = -1;
-        bool ok = xlnt::detail::parse("-5", i);
+        std::errc error = xlnt::detail::parse_integer("-5", i);
         xlnt_assert_equals(i, -5);
-        xlnt_assert(ok);
-        xlnt_assert(errno == 0); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc());
     }
 
     void test_parse_long_long_out_of_range()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str = "9223372036854775808";
         long long i = -1;
-        bool ok = xlnt::detail::parse(str, i);
+        std::errc error = xlnt::detail::parse_integer(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == ERANGE); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc::result_out_of_range); // must fail
     }
 
     void test_parse_long_long_empty()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str;
         long long i = -1;
-        bool ok = xlnt::detail::parse(str, i);
+        std::errc error = xlnt::detail::parse_integer(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == 0); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_long_long_text()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str = "  \n   \r  \t bla bla \n\r";
         long long i = -1;
-        bool ok = xlnt::detail::parse(str, i);
+        std::errc error = xlnt::detail::parse_integer(str, i);
         xlnt_assert_equals(i, -1); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_unsigned_int()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         unsigned int n = 7;
-        bool ok = xlnt::detail::parse("3", n);
+        std::errc error = xlnt::detail::parse_integer("3", n);
         xlnt_assert_equals(n, 3);
-        xlnt_assert(ok);
-        xlnt_assert(errno == 0); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc());
     }
 
     void test_parse_unsigned_int_out_of_range()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str = "4294967296";
         unsigned int n = 7;
-        bool ok = xlnt::detail::parse(str, n);
+        std::errc error = xlnt::detail::parse_integer(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == ERANGE); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc::result_out_of_range); // must fail
     }
 
     void test_parse_unsigned_int_empty()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str;
         unsigned int n = 7;
-        bool ok = xlnt::detail::parse(str, n);
+        std::errc error = xlnt::detail::parse_integer(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == 0); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_unsigned_int_text()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str = "  \n   \r  \t bla bla \n\r";
         unsigned int n = 7;
-        bool ok = xlnt::detail::parse(str, n);
+        std::errc error = xlnt::detail::parse_integer(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_unsigned_int_minus_number()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         unsigned int n = 7;
-        bool ok = xlnt::detail::parse("-1", n);
+        std::errc error = xlnt::detail::parse_integer("-1", n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == ERANGE); // negative number -> out of range!
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_unsigned_int_minus_string()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         unsigned int n = 7;
-        bool ok = xlnt::detail::parse("-blabla", n);
+        std::errc error = xlnt::detail::parse_integer("-blabla", n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_unsigned_long()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         unsigned long n = 7;
-        bool ok = xlnt::detail::parse("3", n);
+        std::errc error = xlnt::detail::parse_integer("3", n);
         xlnt_assert_equals(n, 3);
-        xlnt_assert(ok);
-        xlnt_assert(errno == 0); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc());
     }
 
     void test_parse_unsigned_long_out_of_range()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         // Note: this will ensure that "unsigned long" will be out of range both on systems
         // trating it as 32-bit (Windows) and as 64-bit (Linux / macOS).
         std::string str = "18446744073709551616";
         unsigned long n = 7;
-        bool ok = xlnt::detail::parse(str, n);
+        std::errc error = xlnt::detail::parse_integer(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == ERANGE); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc::result_out_of_range); // must fail
     }
 
     void test_parse_unsigned_long_empty()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str;
         unsigned long n = 7;
-        bool ok = xlnt::detail::parse(str, n);
+        std::errc error = xlnt::detail::parse_integer(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == 0); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_unsigned_long_text()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str = "  \n   \r  \t bla bla \n\r";
         unsigned long n = 7;
-        bool ok = xlnt::detail::parse(str, n);
+        std::errc error = xlnt::detail::parse_integer(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_unsigned_long_minus_number()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         unsigned long n = 7;
-        bool ok = xlnt::detail::parse("-1", n);
+        std::errc error = xlnt::detail::parse_integer("-1", n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == ERANGE); // negative number -> out of range!
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_unsigned_long_minus_string()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         unsigned long n = 7;
-        bool ok = xlnt::detail::parse("-blabla", n);
+        std::errc error = xlnt::detail::parse_integer("-blabla", n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_unsigned_long_long()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         unsigned long long n = 7;
-        bool ok = xlnt::detail::parse("3", n);
+        std::errc error = xlnt::detail::parse_integer("3", n);
         xlnt_assert_equals(n, 3);
-        xlnt_assert(ok);
-        xlnt_assert(errno == 0); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc());
     }
 
     void test_parse_unsigned_long_long_out_of_range()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str = "18446744073709551616";
         unsigned long long n = 7;
-        bool ok = xlnt::detail::parse(str, n);
+        std::errc error = xlnt::detail::parse_integer(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == ERANGE); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc::result_out_of_range); // must fail
     }
 
     void test_parse_unsigned_long_long_empty()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str;
         unsigned long long n = 7;
-        bool ok = xlnt::detail::parse(str, n);
+        std::errc error = xlnt::detail::parse_integer(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == 0); // no under/overflow occurred
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_unsigned_long_long_text()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         std::string str = "  \n   \r  \t bla bla \n\r";
         unsigned long long n = 7;
-        bool ok = xlnt::detail::parse(str, n);
+        std::errc error = xlnt::detail::parse_integer(str, n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_unsigned_long_long_minus_number()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         unsigned long long n = 7;
-        bool ok = xlnt::detail::parse("-1", n);
+        std::errc error = xlnt::detail::parse_integer("-1", n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        xlnt_assert(errno == ERANGE); // negative number -> out of range!
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
     void test_parse_unsigned_long_long_minus_string()
     {
-        errno = -1; // for testing whether errno gets cleared correctly
         unsigned long long n = 7;
-        bool ok = xlnt::detail::parse("-blabla", n);
+        std::errc error = xlnt::detail::parse_integer("-blabla", n);
         xlnt_assert_equals(n, 7); // expectation: leave unchanged
-        xlnt_assert(!ok); // must fail
-        //xlnt_assert(errno == 0); // DISABLED, as errno is set on GCC
+        xlnt_assert_equals(error, std::errc::invalid_argument); // must fail
     }
 
 };

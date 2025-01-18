@@ -34,65 +34,26 @@
 namespace xlnt {
 namespace detail {
 
-/// ----- (SIGNED) INTEGER PARSING -----
-
-XLNT_API_INTERNAL bool parse(const char *string, long long &result, char **end = nullptr, int base = 10);
-XLNT_API_INTERNAL bool parse(const char *string, int &result, char **end = nullptr, int base = 10);
-XLNT_API_INTERNAL bool parse(const char *string, long &result, char **end = nullptr, int base = 10);
-
-XLNT_API_INTERNAL bool parse(const std::string &string, long long &result, std::size_t *num_characters_parsed = nullptr, int base = 10);
-XLNT_API_INTERNAL bool parse(const std::string &string, int &result, std::size_t *num_characters_parsed = nullptr, int base = 10);
-XLNT_API_INTERNAL bool parse(const std::string &string, long &result, std::size_t *num_characters_parsed = nullptr, int base = 10);
-
-
-/// ----- UNSIGNED INTEGER PARSING -----
-
-/// Special case: std::stoul does NOT handle the minus sign properly (the C specification makes no sense here),
-/// so -1 becomes ULONG_MAX - 1 instead of failing. However, we want it to fail instead, so let's handle it properly.
-XLNT_API_INTERNAL bool is_negative_number(const char *string, const char *&end);
-
-XLNT_API_INTERNAL bool parse(const char *string, unsigned long long &result, char **end = nullptr, int base = 10);
-XLNT_API_INTERNAL bool parse(const char *string, unsigned int &result, char **end = nullptr, int base = 10);
-XLNT_API_INTERNAL bool parse(const char *string, unsigned long &result, char **end = nullptr, int base = 10);
-
-XLNT_API_INTERNAL bool parse(const std::string &string, unsigned long long &result, std::size_t *num_characters_parsed = nullptr, int base = 10);
-XLNT_API_INTERNAL bool parse(const std::string &string, unsigned int &result, std::size_t *num_characters_parsed = nullptr, int base = 10);
-XLNT_API_INTERNAL bool parse(const std::string &string, unsigned long &result, std::size_t *num_characters_parsed = nullptr, int base = 10);
-
-
-/// ----- FLOATING-POINT NUMBER PARSING -----
+/// ----- INTERNAL FUNCTIONS -----
 namespace internal {
-template <typename T>
-std::errc parse_number(const char *string, size_t length, T &result, const char **end, char decimal_separator);
-template <typename T>
-std::errc parse_number(const std::string &string, T &result, std::size_t *num_characters_parsed, char decimal_separator);
+static constexpr fast_float::chars_format FAST_FLOAT_FORMAT =
+    fast_float::chars_format::general |
+    fast_float::chars_format::allow_leading_plus |
+    fast_float::chars_format::skip_white_space;
 }
 
-/// Parse a floating-point number.
-template <typename T>
-std::errc parse(const char *string, T &result, const char **end = nullptr, char decimal_separator = '.')
-{
-    return internal::parse_number(string, strlen(string), result, end, decimal_separator);
-}
+/// ----- INTEGER PARSING -----
 
 template <typename T>
-std::errc parse(const std::string &string, T &result, std::size_t *num_characters_parsed = nullptr, char decimal_separator = '.')
-{
-    return internal::parse_number(string, result, num_characters_parsed, decimal_separator);
-}
-
-namespace internal {
-
-template <typename T>
-std::errc parse_number(const char *string, size_t length, T &result, const char **end, char decimal_separator)
+std::errc parse_integer(const char *string, T &result, const char **end = nullptr, int base = 10)
 {
     fast_float::parse_options options {
-        fast_float::chars_format::general |
-        fast_float::chars_format::allow_leading_plus |
-        fast_float::chars_format::skip_white_space,
-        decimal_separator
+        internal::FAST_FLOAT_FORMAT,
+        '.',
+        base
     };
-    auto parsing_result = fast_float::from_chars_advanced(string, string + length, result, options);
+
+    auto parsing_result = fast_float::from_chars_int_advanced(string, string + strlen(string), result, options);
 
     if (end != nullptr)
     {
@@ -103,19 +64,62 @@ std::errc parse_number(const char *string, size_t length, T &result, const char 
 }
 
 template <typename T>
-std::errc parse_number(const std::string &string, T &result, std::size_t *num_characters_parsed, char decimal_separator)
+std::errc parse_integer(const std::string &string, T &result, std::size_t *num_characters_parsed = nullptr, int base = 10)
 {
-    const char *end = nullptr;
-    std::errc err = parse_number(string.c_str(), string.length(), result, &end, decimal_separator);
+    fast_float::parse_options options {
+        internal::FAST_FLOAT_FORMAT,
+        '.',
+        base
+    };
+
+    auto parsing_result = fast_float::from_chars_int_advanced(string.c_str(), string.c_str() + string.length(), result, options);
 
     if (num_characters_parsed != nullptr)
     {
-        *num_characters_parsed = end - string.c_str();
+        *num_characters_parsed = parsing_result.ptr - string.c_str();
     }
 
-    return err;
+    return parsing_result.ec;
 }
 
-} // namespace internal
+
+/// ----- FLOATING-POINT NUMBER PARSING -----
+
+template <typename T>
+std::errc parse_floating_point(const char *string, T &result, const char **end = nullptr, char decimal_separator = '.')
+{
+    fast_float::parse_options options {
+        internal::FAST_FLOAT_FORMAT,
+        decimal_separator
+    };
+
+    auto parsing_result = fast_float::from_chars_float_advanced(string, string + strlen(string), result, options);
+
+    if (end != nullptr)
+    {
+        *end = parsing_result.ptr;
+    }
+
+    return parsing_result.ec;
+}
+
+template <typename T>
+std::errc parse_floating_point(const std::string &string, T &result, std::size_t *num_characters_parsed = nullptr, char decimal_separator = '.')
+{
+    fast_float::parse_options options {
+        internal::FAST_FLOAT_FORMAT,
+        decimal_separator
+    };
+
+    auto parsing_result = fast_float::from_chars_float_advanced(string.c_str(), string.c_str() + string.length(), result, options);
+
+    if (num_characters_parsed != nullptr)
+    {
+        *num_characters_parsed = parsing_result.ptr - string.c_str();
+    }
+
+    return parsing_result.ec;
+}
+
 } // namespace detail
 } // namespace xlnt

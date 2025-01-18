@@ -18,17 +18,17 @@ std::string serialise(double d)
 double deserialise(const std::string &s, size_t *len_converted)
 {
     assert(!s.empty());
-    assert(len_converted != nullptr);
-    *len_converted = 0;
     double d = std::numeric_limits<double>::quiet_NaN();
-    detail::parse(s, d, len_converted);
+    detail::parse_floating_point(s, d, len_converted);
     return d;
 }
 
-double deserialise(const std::string &s)
+double deserialise(const char *s, const char **end)
 {
-    size_t ignore;
-    return deserialise(s, &ignore);
+    assert(s != nullptr);
+    double d = std::numeric_limits<double>::quiet_NaN();
+    detail::parse_floating_point(s, d, end);
+    return d;
 }
 
 } // namespace detail
