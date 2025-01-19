@@ -1620,6 +1620,15 @@ std::vector<relationship> xlsx_consumer::read_relationships(const path &part)
     return relationships;
 }
 
+void xlsx_consumer::read_stylesheet (const std::string& xml)
+{
+    std::istringstream part_stream(xml);
+    xml::parser parser(part_stream, "/xl/styles.xml");
+    parser_ = &parser;
+    read_stylesheet();
+    parser_ = nullptr;
+}
+
 void xlsx_consumer::read_part(const std::vector<relationship> &rel_chain)
 {
     const auto &manifest = target_.manifest();
@@ -2398,72 +2407,78 @@ void xlsx_consumer::read_stylesheet()
                 auto &new_fill = fills.back();
 
                 expect_start_element(qn("spreadsheetml", "fill"), xml::content::complex);
-                auto fill_element = expect_start_element(xml::content::complex);
 
-                if (fill_element == qn("spreadsheetml", "patternFill"))
+                if (in_element(qn("spreadsheetml", "fill")))
                 {
-                    xlnt::pattern_fill pattern;
 
-                    if (parser().attribute_present("patternType"))
+                    auto fill_element = expect_start_element(xml::content::complex);
+
+                    if (fill_element == qn("spreadsheetml", "patternFill"))
                     {
-                        pattern.type(parser().attribute<xlnt::pattern_fill_type>("patternType"));
+                        xlnt::pattern_fill pattern;
 
-                        while (in_element(qn("spreadsheetml", "patternFill")))
+                        if (parser().attribute_present("patternType"))
                         {
-                            auto pattern_type_element = expect_start_element(xml::content::complex);
+                            pattern.type(parser().attribute<xlnt::pattern_fill_type>("patternType"));
 
-                            if (pattern_type_element == qn("spreadsheetml", "fgColor"))
+                            while (in_element(qn("spreadsheetml", "patternFill")))
                             {
-                                pattern.foreground(read_color());
-                            }
-                            else if (pattern_type_element == qn("spreadsheetml", "bgColor"))
-                            {
-                                pattern.background(read_color());
-                            }
-                            else
-                            {
-                                unexpected_element(pattern_type_element);
-                            }
+                                auto pattern_type_element = expect_start_element(xml::content::complex);
 
-                            expect_end_element(pattern_type_element);
+                                if (pattern_type_element == qn("spreadsheetml", "fgColor"))
+                                {
+                                    pattern.foreground(read_color());
+                                }
+                                else if (pattern_type_element == qn("spreadsheetml", "bgColor"))
+                                {
+                                    pattern.background(read_color());
+                                }
+                                else
+                                {
+                                    unexpected_element(pattern_type_element);
+                                }
+
+                                expect_end_element(pattern_type_element);
+                            }
                         }
+
+                        new_fill = pattern;
                     }
-
-                    new_fill = pattern;
-                }
-                else if (fill_element == qn("spreadsheetml", "gradientFill"))
-                {
-                    xlnt::gradient_fill gradient;
-
-                    if (parser().attribute_present("type"))
+                    else if (fill_element == qn("spreadsheetml", "gradientFill"))
                     {
-                        gradient.type(parser().attribute<xlnt::gradient_fill_type>("type"));
+                        xlnt::gradient_fill gradient;
+
+                        if (parser().attribute_present("type"))
+                        {
+                            gradient.type(parser().attribute<xlnt::gradient_fill_type>("type"));
+                        }
+                        else
+                        {
+                            gradient.type(xlnt::gradient_fill_type::linear);
+                        }
+
+                        while (in_element(qn("spreadsheetml", "gradientFill")))
+                        {
+                            expect_start_element(qn("spreadsheetml", "stop"), xml::content::complex);
+                            auto position = converter_.deserialise(parser().attribute("position"));
+                            expect_start_element(qn("spreadsheetml", "color"), xml::content::complex);
+                            auto color = read_color();
+                            expect_end_element(qn("spreadsheetml", "color"));
+                            expect_end_element(qn("spreadsheetml", "stop"));
+
+                            gradient.add_stop(position, color);
+                        }
+
+                        new_fill = gradient;
                     }
                     else
                     {
-                        gradient.type(xlnt::gradient_fill_type::linear);
+                        unexpected_element(fill_element);
                     }
 
-                    while (in_element(qn("spreadsheetml", "gradientFill")))
-                    {
-                        expect_start_element(qn("spreadsheetml", "stop"), xml::content::complex);
-                        auto position = converter_.deserialise(parser().attribute("position"));
-                        expect_start_element(qn("spreadsheetml", "color"), xml::content::complex);
-                        auto color = read_color();
-                        expect_end_element(qn("spreadsheetml", "color"));
-                        expect_end_element(qn("spreadsheetml", "stop"));
-
-                        gradient.add_stop(position, color);
-                    }
-
-                    new_fill = gradient;
-                }
-                else
-                {
-                    unexpected_element(fill_element);
+                    expect_end_element(fill_element);
                 }
 
-                expect_end_element(fill_element);
                 expect_end_element(qn("spreadsheetml", "fill"));
             }
 
