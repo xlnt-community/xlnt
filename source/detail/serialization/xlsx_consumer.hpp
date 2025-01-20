@@ -371,12 +371,6 @@ private:
     bool in_element(const xml::qname &name);
 
     /// <summary>
-    /// Same as in_element, but if THROW_ON_INVALID_XML is set, an exception
-    /// is thrown instead of returning false.
-    /// </summary>
-    bool assume_in_element(const xml::qname &name);
-
-    /// <summary>
     /// Throws an exception or skips remaining elements depending on
     /// the value of THROW_ON_INVALID_XML.
     /// </summary>
