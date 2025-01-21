@@ -23,6 +23,7 @@
 // @author: see AUTHORS file
 
 #include <iostream>
+#include <locale>
 
 #include <xlnt/xlnt.hpp>
 #include <internal/locale_helpers.hpp>
@@ -30,7 +31,7 @@
 #include <helpers/temporary_file.hpp>
 #include <helpers/test_suite.hpp>
 #include <helpers/xml_helper.hpp>
-#include <locale>
+#include <detail/serialization/xlsx_consumer.hpp>
 
 class serialization_test_suite : public test_suite
 {
@@ -82,6 +83,7 @@ public:
 #endif
         register_test(test_Issue6_google_missing_workbookView);
         register_test(test_non_contiguous_selection);
+        register_test(test_Issue41_empty_fill)
     }
 
     bool workbook_matches_file(xlnt::workbook &wb, const xlnt::path &file)
@@ -893,6 +895,21 @@ public:
             xlnt_assert_equals(ws2.view().selection(0).sqrefs()[2], "D4:D5");
             xlnt_assert_equals(ws2.view().selection(0).sqrefs()[3], "E6:F6");
         }
+    }
+
+    void test_Issue41_empty_fill()
+    {
+        std::string xml(
+R"TEST(<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <fills count="1">
+        <fill/>
+    </fills>
+</styleSheet>)TEST");
+
+        xlnt::workbook wb;
+        xlnt::detail::xlsx_consumer consumer(wb);
+        xlnt_assert_throws_nothing(consumer.read_stylesheet(xml));
     }
 };
 

@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <detail/xlnt_config_impl.hpp>
 #include <cstdint>
 #include <functional>
 #include <iostream>
@@ -63,7 +64,7 @@ struct worksheet_impl;
 /// <summary>
 /// Handles writing a workbook into an XLSX file.
 /// </summary>
-class xlsx_consumer
+class XLNT_API_INTERNAL xlsx_consumer
 {
 public:
 	xlsx_consumer(workbook &destination);
@@ -73,6 +74,9 @@ public:
 	void read(std::istream &source);
 
 	void read(std::istream &source, const std::string &password);
+
+        // For unit testing purpose only
+        void read_stylesheet (const std::string& xml);
 
 private:
     friend class xlnt::streaming_workbook_reader;
