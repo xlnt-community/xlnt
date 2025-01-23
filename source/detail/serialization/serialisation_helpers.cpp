@@ -19,7 +19,7 @@ double deserialise(const std::string &s, size_t *len_converted)
 {
     assert(!s.empty());
     double d = std::numeric_limits<double>::quiet_NaN();
-    detail::parse_floating_point(s, d, len_converted);
+    detail::parse(s, d, len_converted);
     return d;
 }
 
@@ -27,7 +27,7 @@ double deserialise(const char *s, const char **end)
 {
     assert(s != nullptr);
     double d = std::numeric_limits<double>::quiet_NaN();
-    detail::parse_floating_point(s, d, end);
+    detail::parse(s, d, end);
     return d;
 }
 

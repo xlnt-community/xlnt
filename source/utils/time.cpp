@@ -85,21 +85,40 @@ time::time(const std::string &time_string)
     bool ok = true;
     auto next_separator_index = time_string.find(':');
     next_separator_index =  time_string.find(':');
-    ok = ok && detail::parse_integer(time_string.substr(0, next_separator_index), hour) == std::errc();
+    ok = ok && detail::parse(time_string.substr(0, next_separator_index), hour) == std::errc();
     auto previous_separator_index = next_separator_index;
     next_separator_index = ok ? time_string.find(':', previous_separator_index + 1) : next_separator_index;
-    ok = ok && detail::parse_integer(time_string.substr(previous_separator_index + 1, next_separator_index), minute) == std::errc();
+    ok = ok && detail::parse(time_string.substr(previous_separator_index + 1, next_separator_index), minute) == std::errc();
     previous_separator_index = next_separator_index;
     next_separator_index = ok ? time_string.find('.', previous_separator_index + 1) : next_separator_index;
     bool subseconds_available = next_separator_index != std::string::npos;
     if (subseconds_available)
     {
         // First parse the seconds.
-        ok = ok && detail::parse_integer(time_string.substr(previous_separator_index + 1, next_separator_index), second) == std::errc();
+        ok = ok && detail::parse(time_string.substr(previous_separator_index + 1, next_separator_index), second) == std::errc();
         previous_separator_index = next_separator_index;
     }
     next_separator_index = ok ? std::string::npos : next_separator_index;
-    ok = ok && detail::parse_integer(time_string.substr(previous_separator_index + 1, next_separator_index), subseconds_available ? microsecond : second) == std::errc();
+    size_t num_characters_parsed = 0;
+    ok = ok && detail::parse(time_string.substr(previous_separator_index + 1, next_separator_index), subseconds_available ? microsecond : second, &num_characters_parsed) == std::errc();
+
+    if (subseconds_available)
+    {
+        constexpr size_t expected_digits = 6; // microseconds have 6 digits
+        size_t actual_digits = num_characters_parsed;
+
+        while (actual_digits > expected_digits)
+        {
+            microsecond /= 10;
+            --actual_digits;
+        }
+
+        while (actual_digits < expected_digits)
+        {
+            microsecond *= 10;
+            ++actual_digits;
+        }
+    }
 
     if (!ok)
     {

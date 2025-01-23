@@ -47,9 +47,6 @@ option(PYTHON "Set to ON to build Arrow conversion functions (in ./python)" OFF)
 mark_as_advanced(PYTHON)
 option(DOCUMENTATION "Set to ON to build API reference documentation (in ./api-reference)" OFF)
 
-option(XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR "Set to ON to enable unit tests and/or benchmarks that use a locale containing a comma as the decimal separator." OFF)
-option(XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR "Set to ON to enable unit tests and/or benchmarks that use a locale containing the arabic decimal separator." OFF)
-
 # Platform specific options
 if(MSVC)
   option(STATIC_CRT "Link with the static version of MSVCRT (/MT[d])" OFF)
@@ -80,6 +77,8 @@ if(TESTS)
 endif()
 
 if (BENCHMARKS OR TESTS)
+  option(XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR "Set to ON to enable unit tests and/or benchmarks that use a locale containing a comma as the decimal separator." OFF)
+  option(XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR "Set to ON to enable unit tests and/or benchmarks that use a locale containing the arabic decimal separator." OFF)
   set(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR "de_DE" CACHE STRING "The locale used to run unit tests and/or benchmarks using a comma as decimal separator")
   set(XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR "ps_AF" CACHE STRING "The locale used to run unit tests and/or benchmarks using the arabic decimal separator")
 endif()

@@ -1360,7 +1360,7 @@ format_color number_format_parser::color_from_string(const std::string &color)
         else if ((color.substr(0, 5) == "Color") || (color.substr(0, 5) == "COLOR"))
         {
             unsigned char color_number = 0;
-            if (detail::parse_integer(color.substr(5), color_number) == std::errc() && color_number >= 1 && color_number <= 56)
+            if (detail::parse(color.substr(5), color_number) == std::errc() && color_number >= 1 && color_number <= 56)
             {
                 return static_cast<format_color>(color_number);
             }
@@ -1440,7 +1440,7 @@ std::pair<format_locale, std::string> number_format_parser::locale_from_string(c
 
     if (locale_string.empty() || locale_string.front() != '$' || hyphen_index == std::string::npos)
     {
-        throw xlnt::exception("bad locale: " + locale_string);
+        throw xlnt::invalid_attribute(("bad locale: " + locale_string).c_str());
     }
 
     std::pair<format_locale, std::string> result;
@@ -1454,21 +1454,21 @@ std::pair<format_locale, std::string> number_format_parser::locale_from_string(c
 
     if (country_code_string.empty())
     {
-        throw xlnt::exception("bad locale: " + locale_string);
+        throw xlnt::invalid_attribute(("bad locale: " + locale_string).c_str());
     }
 
     for (auto c : country_code_string)
     {
         if (!((c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f') || (c >= '0' && c <= '9')))
         {
-            throw xlnt::exception("bad locale: " + locale_string);
+            throw xlnt::invalid_attribute(("bad locale: " + locale_string).c_str());
         }
     }
 
     int country_code = -1;
-    if (detail::parse_integer(country_code_string, country_code, nullptr, 16) != std::errc())
+    if (detail::parse(country_code_string, country_code, nullptr, 16) != std::errc())
     {
-        throw xlnt::exception("bad locale: " + locale_string);
+        throw xlnt::invalid_attribute(("bad locale: " + locale_string).c_str());
     }
     country_code &= 0xFFFF;
 

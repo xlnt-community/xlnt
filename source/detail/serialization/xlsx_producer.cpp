@@ -3253,7 +3253,7 @@ void xlsx_producer::write_vml_drawings(const relationship &rel, worksheet ws, co
     }
 
     size_t file_index = 0;
-    detail::parse_integer(filename.substr(index_pos + 1), file_index);
+    detail::parse(filename.substr(index_pos + 1), file_index);
 
     write_attribute("data", file_index);
     write_end_element(xmlns_o, "idmap");

@@ -23,9 +23,10 @@
 // @author: see AUTHORS file
 
 #include <detail/serialization/serialisation_helpers.hpp>
-#include <xlnt/utils/exceptions.hpp>
+#include <internal/locale_helpers.hpp>
 #include <helpers/test_suite.hpp>
 #include <cstring>
+#include <locale>
 
 class numeric_test_suite : public test_suite
 {
@@ -39,6 +40,13 @@ public:
         register_test(test_min);
         register_test(test_max);
         register_test(test_abs);
+#ifdef XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR
+        register_test(test_locale_comma_decimal_separator);
+#endif
+#ifdef XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR
+        register_test(test_locale_arabic_decimal_separator);
+#endif
+
     }
 
     void test_serialise_number()
@@ -221,6 +229,27 @@ public:
 
         static_assert(xlnt::detail::abs(-1.23) == 1.23, "constexpr");
     }
+
+    void test_locale_comma_decimal_separator()
+    {
+        std::locale loc(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR);
+        std::string hopefully_comma = test_helpers::get_locale_decimal_separator(loc);
+
+        test_helpers::SetLocale setLocale(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR, hopefully_comma.c_str());
+        xlnt_assert(xlnt::detail::deserialise("1.99999999") == 1.99999999);
+        xlnt_assert(xlnt::detail::deserialise("1.1") == 1.1);
+    }
+
+    void test_locale_arabic_decimal_separator()
+    {
+        std::locale loc(XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR);
+        std::string hopefully_arabic_decimal_separator = test_helpers::get_locale_decimal_separator(loc);
+
+        test_helpers::SetLocale setLocale(XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR, hopefully_arabic_decimal_separator.c_str());
+        xlnt_assert(xlnt::detail::deserialise("1.99999999") == 1.99999999);
+        xlnt_assert(xlnt::detail::deserialise("1.1") == 1.1);
+    }
+
 
 };
 static numeric_test_suite x;

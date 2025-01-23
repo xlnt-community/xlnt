@@ -184,7 +184,7 @@ xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser, std::uno
         }
         else if (string_equal(attr.first.name(), "s"))
         {
-            xlnt::detail::parse_integer(attr.second.value, c.style_index);
+            xlnt::detail::parse(attr.second.value, c.style_index);
         }
         else if (string_equal(attr.first.name(), "ph"))
         {
@@ -192,7 +192,7 @@ xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser, std::uno
         }
         else if (string_equal(attr.first.name(), "cm"))
         {
-            xlnt::detail::parse_integer(attr.second.value, c.cell_metatdata_idx);
+            xlnt::detail::parse(attr.second.value, c.cell_metatdata_idx);
         }
     }
     int level = 1; // nesting level
@@ -300,7 +300,7 @@ std::pair<xlnt::row_properties, int> parse_row(xml::parser *parser, std::vector<
         else if (string_equal(attr.first.name(), "s"))
         {
             size_t style = 0;
-            if (xlnt::detail::parse_integer(attr.second.value, style) == std::errc())
+            if (xlnt::detail::parse(attr.second.value, style) == std::errc())
             {
                 props.first.style = style;
             }
@@ -319,7 +319,7 @@ std::pair<xlnt::row_properties, int> parse_row(xml::parser *parser, std::vector<
         }
         else if (string_equal(attr.first.name(), "r"))
         {
-            xlnt::detail::parse_integer(attr.second.value, props.second);
+            xlnt::detail::parse(attr.second.value, props.second);
         }
         else if (string_equal(attr.first.name(), "customHeight"))
         {
@@ -498,8 +498,8 @@ void read_defined_names(worksheet ws, std::vector<defined_name> defined_names)
                     row_t start = 0;
                     row_t end = 0;
 
-                    if (detail::parse_integer(from, start) == std::errc() &&
-                        detail::parse_integer(to, end) == std::errc())
+                    if (detail::parse(from, start) == std::errc() &&
+                        detail::parse(to, end) == std::errc())
                     {
                         ws.print_title_rows(start, end);
                     }
@@ -782,13 +782,13 @@ std::string xlsx_consumer::read_worksheet_begin(const std::string &rel_id)
 
                 column_t::index_t min = 0;
                 column_t::index_t max = 0;
-                bool ok = detail::parse_integer(parser().attribute("min"), min) == std::errc();
-                ok = detail::parse_integer(parser().attribute("max"), max) == std::errc() && ok;
+                bool ok = detail::parse(parser().attribute("min"), min) == std::errc();
+                ok = detail::parse(parser().attribute("max"), max) == std::errc() && ok;
 
 #ifdef THROW_ON_INVALID_XML
                 if (!ok)
                 {
-                    throw xlnt::exception("spreadsheetml invalid min/max");
+                    throw xlnt::invalid_parameter("spreadsheetml invalid min/max");
                 }
 #endif
 
@@ -903,7 +903,7 @@ void xlsx_consumer::read_worksheet_sheetdata()
             }
             case cell::type::shared_string: {
                 long long value = -1;
-                if (xlnt::detail::parse_integer(cell.value, value) == std::errc())
+                if (xlnt::detail::parse(cell.value, value) == std::errc())
                 {
                     ws_cell_impl->value_numeric_ = static_cast<double>(value);
                 }
@@ -1421,7 +1421,7 @@ bool xlsx_consumer::has_cell()
 
         expect_start_element(qn("spreadsheetml", "row"), xml::content::complex); // CT_Row
         row_t row_index = 0;
-        bool ok = detail::parse_integer(parser().attribute("r"), row_index) == std::errc();
+        bool ok = detail::parse(parser().attribute("r"), row_index) == std::errc();
 
         if (!ok)
         {
@@ -1488,7 +1488,7 @@ bool xlsx_consumer::has_cell()
     if (parser().attribute_present("s"))
     {
         size_t s = 0;
-        bool ok = detail::parse_integer(parser().attribute("s"), s) == std::errc();
+        bool ok = detail::parse(parser().attribute("s"), s) == std::errc();
 
         if (!ok)
         {
@@ -3240,10 +3240,10 @@ variant xlsx_consumer::read_variant()
         if (element == qn("vt", "i4"))
         {
             int number = -1;
-            if (detail::parse_integer(text, number) != std::errc())
+            if (detail::parse(text, number) != std::errc())
             {
 #ifdef THROW_ON_INVALID_XML
-                throw xlnt::invalid_attribute();
+                throw xlnt::invalid_parameter();
 #endif
             }
             else

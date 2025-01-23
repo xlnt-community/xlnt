@@ -226,31 +226,50 @@ datetime datetime::from_iso_string(const std::string &string)
 
     bool ok = true;
     auto next_separator_index = string.find('-');
-    ok = ok && detail::parse_integer(string.substr(0, next_separator_index), result.year) == std::errc();
+    ok = ok && detail::parse(string.substr(0, next_separator_index), result.year) == std::errc();
     auto previous_separator_index = next_separator_index;
     next_separator_index = ok ? string.find('-', previous_separator_index + 1) : next_separator_index;
-    ok = ok && detail::parse_integer(string.substr(previous_separator_index + 1, next_separator_index), result.month) == std::errc();
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.month) == std::errc();
     previous_separator_index = next_separator_index;
     next_separator_index = ok ? string.find('T', previous_separator_index + 1) : next_separator_index;
-    ok = ok && detail::parse_integer(string.substr(previous_separator_index + 1, next_separator_index), result.day) == std::errc();
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.day) == std::errc();
     previous_separator_index = next_separator_index;
     next_separator_index = ok ? string.find(':', previous_separator_index + 1) : next_separator_index;
-    ok = ok && detail::parse_integer(string.substr(previous_separator_index + 1, next_separator_index), result.hour) == std::errc();
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.hour) == std::errc();
     previous_separator_index = next_separator_index;
     next_separator_index = ok ? string.find(':', previous_separator_index + 1) : next_separator_index;
-    ok = ok && detail::parse_integer(string.substr(previous_separator_index + 1, next_separator_index), result.minute) == std::errc();
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.minute) == std::errc();
     previous_separator_index = next_separator_index;
     next_separator_index = ok ? string.find('.', previous_separator_index + 1) : next_separator_index;
     bool subseconds_available = next_separator_index != std::string::npos;
     if (subseconds_available)
     {
         // First parse the seconds.
-        ok = ok && detail::parse_integer(string.substr(previous_separator_index + 1, next_separator_index), result.second) == std::errc();
+        ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.second) == std::errc();
         previous_separator_index = next_separator_index;
 
     }
     next_separator_index = ok ? string.find('Z', previous_separator_index + 1) : next_separator_index;
-    ok = ok && detail::parse_integer(string.substr(previous_separator_index + 1, next_separator_index), subseconds_available ? result.microsecond : result.second) == std::errc();
+    size_t num_characters_parsed = 0;
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), subseconds_available ? result.microsecond : result.second, &num_characters_parsed) == std::errc();
+
+    if (subseconds_available)
+    {
+        constexpr size_t expected_digits = 6; // microseconds have 6 digits
+        size_t actual_digits = num_characters_parsed;
+
+        while (actual_digits > expected_digits)
+        {
+            result.microsecond /= 10;
+            --actual_digits;
+        }
+
+        while (actual_digits < expected_digits)
+        {
+            result.microsecond *= 10;
+            ++actual_digits;
+        }
+    }
 
     if (!ok)
     {

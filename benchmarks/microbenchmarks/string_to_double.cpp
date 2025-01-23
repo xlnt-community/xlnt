@@ -50,7 +50,7 @@ public:
         }
         else
         {
-#if XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR == 1
+#ifdef XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR
             if (setlocale(LC_ALL, XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR) == nullptr)
                 state.SkipWithError(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR " locale not installed");
 #else
@@ -109,7 +109,7 @@ struct number_converter_stream
 struct number_converter_mk2
 {
     explicit number_converter_mk2()
-        : should_convert(strcmp(localeconv()->decimal_point, ",") == 0)
+        : should_convert(strcmp(localeconv()->decimal_point, ".") != 0)
     {
     }
 

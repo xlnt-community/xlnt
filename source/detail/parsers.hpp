@@ -1,4 +1,4 @@
-// Copyright (c) 2024 xlnt-community
+// Copyright (c) 2024-2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -44,8 +44,8 @@ static constexpr fast_float::chars_format FAST_FLOAT_FORMAT =
 
 /// ----- INTEGER PARSING -----
 
-template <typename T>
-std::errc parse_integer(const char *string, T &result, const char **end = nullptr, int base = 10)
+template <typename T, typename std::enable_if<fast_float::is_supported_integer_type<T>::value, bool>::type = true>
+std::errc parse(const char *string, T &result, const char **end = nullptr, int base = 10)
 {
     fast_float::parse_options options {
         internal::FAST_FLOAT_FORMAT,
@@ -63,8 +63,8 @@ std::errc parse_integer(const char *string, T &result, const char **end = nullpt
     return parsing_result.ec;
 }
 
-template <typename T>
-std::errc parse_integer(const std::string &string, T &result, std::size_t *num_characters_parsed = nullptr, int base = 10)
+template <typename T, typename std::enable_if<fast_float::is_supported_integer_type<T>::value, bool>::type = true>
+std::errc parse(const std::string &string, T &result, std::size_t *num_characters_parsed = nullptr, int base = 10)
 {
     fast_float::parse_options options {
         internal::FAST_FLOAT_FORMAT,
@@ -85,8 +85,8 @@ std::errc parse_integer(const std::string &string, T &result, std::size_t *num_c
 
 /// ----- FLOATING-POINT NUMBER PARSING -----
 
-template <typename T>
-std::errc parse_floating_point(const char *string, T &result, const char **end = nullptr, char decimal_separator = '.')
+template <typename T, typename std::enable_if<fast_float::is_supported_float_type<T>::value, bool>::type = true>
+std::errc parse(const char *string, T &result, const char **end = nullptr, char decimal_separator = '.')
 {
     fast_float::parse_options options {
         internal::FAST_FLOAT_FORMAT,
@@ -103,8 +103,8 @@ std::errc parse_floating_point(const char *string, T &result, const char **end =
     return parsing_result.ec;
 }
 
-template <typename T>
-std::errc parse_floating_point(const std::string &string, T &result, std::size_t *num_characters_parsed = nullptr, char decimal_separator = '.')
+template <typename T, typename std::enable_if<fast_float::is_supported_float_type<T>::value, bool>::type = true>
+std::errc parse(const std::string &string, T &result, std::size_t *num_characters_parsed = nullptr, char decimal_separator = '.')
 {
     fast_float::parse_options options {
         internal::FAST_FLOAT_FORMAT,

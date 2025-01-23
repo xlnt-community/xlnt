@@ -227,8 +227,8 @@ workflows:
               ignore: gh-pages
 
       - build-gcc:
-          name: tests-gcc14-cmake3.31.4
-          image: PLACEHOLDER_IMAGE(gcc14_cmake3.31.4)
+          name: tests-gcc-cmake-latest
+          image: PLACEHOLDER_IMAGE(gcc_cmake_latest)
           matrix:
             alias: tests-gcc14-cmake3.31.4-all
             parameters:
@@ -246,30 +246,10 @@ workflows:
                 - "OFF"
             exclude:
               # Exclude {static: ON, skip-internal-tests: ON} subset
-              - {
-                  static: "ON",
-                  skip-internal-tests: "ON",
-                  cxx-ver: "11",
-                  build-type: Debug,
-                }
-              - {
-                  static: "ON",
-                  skip-internal-tests: "ON",
-                  cxx-ver: "11",
-                  build-type: Release,
-                }
-              - {
-                  static: "ON",
-                  skip-internal-tests: "ON",
-                  cxx-ver: "17",
-                  build-type: Debug,
-                }
-              - {
-                  static: "ON",
-                  skip-internal-tests: "ON",
-                  cxx-ver: "17",
-                  build-type: Release,
-                }
+              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "11", build-type: Debug}
+              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "11", build-type: Release}
+              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "17", build-type: Debug}
+              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "17", build-type: Release}
           filters:
             branches:
               ignore: gh-pages

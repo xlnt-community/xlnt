@@ -247,7 +247,7 @@ std::unordered_map<std::string, std::string> manifest::unregister_relationship(c
 
     std::unordered_map<std::string, std::string> id_map;
     size_t rel_index = 0;
-    detail::parse_integer(rel_id.substr(3), rel_index);
+    detail::parse(rel_id.substr(3), rel_index);
     auto &part_rels = relationships_.at(source.path());
 
     for (auto i = rel_index; i <= part_rels.size() + 1; ++i)
