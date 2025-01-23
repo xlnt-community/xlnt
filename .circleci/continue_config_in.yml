@@ -230,7 +230,7 @@ workflows:
           name: tests-gcc-cmake-latest
           image: PLACEHOLDER_IMAGE(gcc_cmake_latest)
           matrix:
-            alias: tests-gcc14-cmake3.31.4-all
+            alias: tests-gcc-cmake-latest-all
             parameters:
               cxx-ver:
                 - "11"
@@ -256,7 +256,7 @@ workflows:
 
       - build-gcc:
           name: benchmarks-gcc
-          image: PLACEHOLDER_IMAGE(gcc14_cmake3.31.4)
+          image: PLACEHOLDER_IMAGE(gcc_cmake_latest)
           cxx-ver: "17"
           build-type: Release
           tests: "OFF"
