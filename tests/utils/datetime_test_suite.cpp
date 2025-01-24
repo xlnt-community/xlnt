@@ -39,12 +39,16 @@ public:
         register_test(test_time_from_string_milliseconds_leading_zeros);
         register_test(test_time_from_string_microseconds);
         register_test(test_time_from_string_microseconds_leading_zeros);
+        register_test(test_time_from_string_nanoseconds);
+        register_test(test_time_from_string_nanoseconds_leading_zeros);
         register_test(test_time_from_string_invalid);
         register_test(test_datetime_from_string);
         register_test(test_datetime_from_string_milliseconds);
         register_test(test_datetime_from_string_milliseconds_leading_zeros);
         register_test(test_datetime_from_string_microseconds);
         register_test(test_datetime_from_string_microseconds_leading_zeros);
+        register_test(test_datetime_from_string_nanoseconds);
+        register_test(test_datetime_from_string_nanoseconds_leading_zeros);
         register_test(test_datetime_from_string_invalid);
         register_test(test_datetime_to_string);
         register_test(test_datetime_to_string_ensure_correct_subseconds);
@@ -98,6 +102,24 @@ public:
     void test_time_from_string_microseconds_leading_zeros()
     {
         xlnt::time t("10:35:45.001234");
+        xlnt_assert_equals(t.hour, 10);
+        xlnt_assert_equals(t.minute, 35);
+        xlnt_assert_equals(t.second, 45);
+        xlnt_assert_equals(t.microsecond, 1234);
+    }
+
+    void test_time_from_string_nanoseconds()
+    {
+        xlnt::time t("10:35:45.123456789");
+        xlnt_assert_equals(t.hour, 10);
+        xlnt_assert_equals(t.minute, 35);
+        xlnt_assert_equals(t.second, 45);
+        xlnt_assert_equals(t.microsecond, 123456);
+    }
+
+    void test_time_from_string_nanoseconds_leading_zeros()
+    {
+        xlnt::time t("10:35:45.001234567");
         xlnt_assert_equals(t.hour, 10);
         xlnt_assert_equals(t.minute, 35);
         xlnt_assert_equals(t.second, 45);
@@ -159,6 +181,30 @@ public:
     void test_datetime_from_string_microseconds_leading_zeros()
     {
         xlnt::datetime dt = xlnt::datetime::from_iso_string("2018-08-13T10:35:45.001234Z");
+        xlnt_assert_equals(dt.year, 2018);
+        xlnt_assert_equals(dt.month, 8);
+        xlnt_assert_equals(dt.day, 13);
+        xlnt_assert_equals(dt.hour, 10);
+        xlnt_assert_equals(dt.minute, 35);
+        xlnt_assert_equals(dt.second, 45);
+        xlnt_assert_equals(dt.microsecond, 1234);
+    }
+
+    void test_datetime_from_string_nanoseconds()
+    {
+        xlnt::datetime dt = xlnt::datetime::from_iso_string("2018-08-13T10:35:45.123456789Z");
+        xlnt_assert_equals(dt.year, 2018);
+        xlnt_assert_equals(dt.month, 8);
+        xlnt_assert_equals(dt.day, 13);
+        xlnt_assert_equals(dt.hour, 10);
+        xlnt_assert_equals(dt.minute, 35);
+        xlnt_assert_equals(dt.second, 45);
+        xlnt_assert_equals(dt.microsecond, 123456);
+    }
+
+    void test_datetime_from_string_nanoseconds_leading_zeros()
+    {
+        xlnt::datetime dt = xlnt::datetime::from_iso_string("2018-08-13T10:35:45.001234567Z");
         xlnt_assert_equals(dt.year, 2018);
         xlnt_assert_equals(dt.month, 8);
         xlnt_assert_equals(dt.day, 13);

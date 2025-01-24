@@ -834,9 +834,7 @@ public:
         // parser implementation changes in the future, this test tests whether the locale
         // makes any difference when parsing.
 
-        std::locale loc(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR);
-        std::string hopefully_comma = test_helpers::get_locale_decimal_separator(loc);
-        test_helpers::SetLocale setLocale(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR, hopefully_comma.c_str());
+        test_helpers::SetLocale setLocale(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR, ",");
 
         xlnt::workbook wb;
         wb.load(path_helper::test_file("Issue714_locale_comma.xlsx"));

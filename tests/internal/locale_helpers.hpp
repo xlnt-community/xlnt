@@ -48,7 +48,7 @@ struct SetLocale
             error += localeconv()->decimal_point;
 
             // If failed, please install the locale specified by the CMake variable XLNT_LOCALE_****_DECIMAL_SEPARATOR
-            // to correctly run this test *and* make sure that the locale uses a comma as decimal separator,
+            // to correctly run this test *and* make sure that the locale uses the expected decimal separator,
             // or alternatively disable the CMake option XLNT_USE_LOCALE_****_DECIMAL_SEPARATOR.
             throw xlnt::invalid_parameter(error.c_str());
         }
@@ -58,36 +58,5 @@ struct SetLocale
 
     char * previous_locale = nullptr;
 };
-
-inline std::string wide_char_to_str(const std::locale & loc, wchar_t wide, char fallback_for_errors)
-{
-    // Note: here we'll use the non-deprecated std::codecvt directly, since std::wstring_convert
-    // has been deprecated in C++17 and removed in C++26.
-    const auto &facet = std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t>>(loc);
-    std::mbstate_t state {};
-    const wchar_t *input_next = nullptr;
-    char *output_next = nullptr;
-    std::string conv(facet.max_length(), '\0');
-    auto result = facet.out(state, &wide, &wide + 1, input_next, &conv.at(0), &conv.at(0) + conv.length(), output_next);
-
-    if (result == std::codecvt_base::ok)
-    {
-        conv.resize(output_next - conv.c_str());
-    }
-    else
-    {
-        conv.clear();
-        conv.push_back(fallback_for_errors);
-    }
-
-    return conv;
-}
-
-inline std::string get_locale_decimal_separator(const std::locale &loc)
-{
-    const char narrow = std::use_facet<std::numpunct<char>>(loc).decimal_point();
-    const wchar_t wide = std::use_facet<std::numpunct<wchar_t>>(loc).decimal_point();
-    return wide_char_to_str(loc, wide, narrow);
-}
 
 } // namespace test_helpers
