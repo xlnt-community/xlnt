@@ -26,7 +26,6 @@
 #include <helpers/assertions.hpp>
 #include <clocale>
 #include <cstring>
-#include <locale>
 
 namespace test_helpers
 {

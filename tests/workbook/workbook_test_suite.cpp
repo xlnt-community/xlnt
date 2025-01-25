@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024 xlnt-community
+// Copyright (c) 2024-2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -78,7 +78,7 @@ public:
     {
         xlnt::workbook wb;
         xlnt_assert_equals(wb.active_sheet(), wb[0]);
-        
+
         wb.create_sheet();
         wb.create_sheet();
         wb.active_sheet(2);

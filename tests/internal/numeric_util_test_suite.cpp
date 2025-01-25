@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024 xlnt-community
+// Copyright (c) 2024-2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@
 #include <internal/locale_helpers.hpp>
 #include <helpers/test_suite.hpp>
 #include <cstring>
-#include <locale>
 
 class numeric_test_suite : public test_suite
 {

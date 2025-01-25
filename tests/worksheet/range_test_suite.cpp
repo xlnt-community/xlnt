@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024 xlnt-community
+// Copyright (c) 2024-2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -100,7 +100,7 @@ public:
 
         xlnt_assert(!ws.cell("B2").has_format());
     }
-    
+
     void test_clear_cells()
     {
         xlnt::workbook wb;

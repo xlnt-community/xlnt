@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024 xlnt-community
+// Copyright (c) 2024-2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ public:
         using string_pair = std::pair<std::string, std::string>;
         using string_pair_vector = std::vector<string_pair>;
         using expected_pair = std::pair<std::string, string_pair_vector>;
-        
+
         std::vector<expected_pair> expected_pairs =
         {
             { "'My Sheet'!$D$8", {{ "My Sheet", "$D$8" }} },

@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024 xlnt-community
+// Copyright (c) 2024-2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -424,12 +424,12 @@ private:
     bool streaming_ = false;
 
     std::unique_ptr<detail::cell_impl> streaming_cell_;
-    
+
     std::unordered_map<int, std::string> shared_formulae_;
     std::unordered_map<std::string, std::string> array_formulae_;
 
     detail::worksheet_impl *current_worksheet_;
-    
+
     std::vector<defined_name> defined_names_;
 };
 
