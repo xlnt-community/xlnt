@@ -62,7 +62,7 @@ cmake ..
 By default, xlnt is built as a shared library. Some important options are:
 
  - STATIC: Set to ON to build xlnt as a static library instead of a shared library.
- - TESTS: Set to ON to build test executable (in ./tests). Requires de_DE locale being installed on your system for all tests to succeed.
+ - TESTS: Set to ON to build test executable (in ./tests).
  - DOCUMENTATION: Set to ON to build API reference documentation (in ./api-reference). Requires doxygen being installed on your system.
  - CMAKE_INSTALL_PREFIX: specify the location where you want to install xlnt.
  - CMAKE_BUILD_TYPE: Specify the desired build type (Debug, Release, RelWithDebInfo or MinSizeRel). Only applicable for single-configuration generators (Makefile or Ninja), typically used on Linux derivatives (e.g. Ubuntu).

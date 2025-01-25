@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.1...3.31)
 project(xlnt_all)
 
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
@@ -14,15 +14,27 @@ set(COMBINED_PROJECT TRUE)
 # Library type
 option(STATIC "Set to ON to build xlnt as a static library instead of a shared library" OFF)
 
-# c++ language standard to use
-set(XLNT_VALID_LANGS 11 14 17)
-set(XLNT_CXX_LANG "14" CACHE STRING "c++ language features to compile with")
+# C++ language standard to use
+set(XLNT_CXX_VALID_LANGS 11 14 17)
+set(XLNT_CXX_LANG "14" CACHE STRING "C++ language features to compile with")
 # enumerate allowed values for cmake gui
-set_property(CACHE XLNT_CXX_LANG PROPERTY STRINGS ${XLNT_VALID_LANGS})
-# validate value is in XLNT_VALID_LANGS
-list(FIND XLNT_VALID_LANGS ${XLNT_CXX_LANG} index)
+set_property(CACHE XLNT_CXX_LANG PROPERTY STRINGS ${XLNT_CXX_VALID_LANGS})
+# validate value is in XLNT_CXX_VALID_LANGS
+list(FIND XLNT_CXX_VALID_LANGS ${XLNT_CXX_LANG} index)
 if(index EQUAL -1)
-    message(FATAL_ERROR "XLNT_CXX_LANG must be one of ${XLNT_VALID_LANGS}")
+    message(FATAL_ERROR "XLNT_CXX_LANG must be one of ${XLNT_CXX_VALID_LANGS}")
+endif()
+
+# C language standard to use
+set(XLNT_C_VALID_LANGS 99 11 17 23)
+set(XLNT_C_LANG "11" CACHE STRING "C language features to compile with")
+mark_as_advanced(XLNT_C_LANG)
+# enumerate allowed values for cmake gui
+set_property(CACHE XLNT_C_LANG PROPERTY STRINGS ${XLNT_C_VALID_LANGS})
+# validate value is in XLNT_C_VALID_LANGS
+list(FIND XLNT_C_VALID_LANGS ${XLNT_C_LANG} index)
+if(index EQUAL -1)
+    message(FATAL_ERROR "XLNT_C_LANG must be one of ${XLNT_C_VALID_LANGS}")
 endif()
 
 
@@ -62,6 +74,13 @@ endif()
 
 if(TESTS)
   add_subdirectory(tests)
+endif()
+
+if (BENCHMARKS OR TESTS)
+  option(XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR "Set to ON to enable unit tests and/or benchmarks that use a locale containing a comma as the decimal separator." OFF)
+  option(XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR "Set to ON to enable unit tests and/or benchmarks that use a locale containing the arabic decimal separator." OFF)
+  set(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR "de_DE" CACHE STRING "The locale used to run unit tests and/or benchmarks using a comma as decimal separator")
+  set(XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR "ps_AF" CACHE STRING "The locale used to run unit tests and/or benchmarks using the arabic decimal separator")
 endif()
 
 if(PYTHON)

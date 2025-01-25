@@ -27,6 +27,7 @@
 #include <xlnt/utils/date.hpp>
 #include <xlnt/utils/datetime.hpp>
 #include <xlnt/utils/time.hpp>
+#include <detail/serialization/parsers.hpp>
 
 #include <xlnt/utils/optional.hpp>
 
@@ -85,8 +86,25 @@ std::string datetime::to_string() const
     }
     else
     {
-        return std::to_string(year) + "/" + std::to_string(month) + "/" + std::to_string(day) + " " + std::to_string(hour)
-            + ":" + std::to_string(minute) + ":" + std::to_string(second) + ":" + std::to_string(microsecond);
+        std::string str = std::to_string(year);
+        str.push_back('/');
+        str.append(std::to_string(month));
+        str.push_back('/');
+        str.append(std::to_string(day));
+        str.push_back(' ');
+        str.append(std::to_string(hour));
+        str.push_back(':');
+        str.append(std::to_string(minute));
+        str.push_back(':');
+        str.append(std::to_string(second));
+
+        if (microsecond != 0)
+        {
+            str.push_back('.');
+            str.append(fill(std::to_string(microsecond), 6));
+        }
+
+        return str;
     }
 }
 
@@ -116,7 +134,7 @@ datetime::datetime(const date &d, const time &t)
     {
         year = d.get_year();
         month = d.get_month();
-        day = d.get_day();      
+        day = d.get_day();
     }
 }
 
@@ -206,17 +224,57 @@ datetime datetime::from_iso_string(const std::string &string)
 {
     xlnt::datetime result(1900, 1, 1);
 
-    auto separator_index = string.find('-');
-    result.year = std::stoi(string.substr(0, separator_index));
-    result.month = std::stoi(string.substr(separator_index + 1, string.find('-', separator_index + 1)));
-    separator_index = string.find('-', separator_index + 1);
-    result.day = std::stoi(string.substr(separator_index + 1, string.find('T', separator_index + 1)));
-    separator_index = string.find('T', separator_index + 1);
-    result.hour = std::stoi(string.substr(separator_index + 1, string.find(':', separator_index + 1)));
-    separator_index = string.find(':', separator_index + 1);
-    result.minute = std::stoi(string.substr(separator_index + 1, string.find(':', separator_index + 1)));
-    separator_index = string.find(':', separator_index + 1);
-    result.second = std::stoi(string.substr(separator_index + 1, string.find('Z', separator_index + 1)));
+    bool ok = true;
+    auto next_separator_index = string.find('-');
+    ok = ok && detail::parse(string.substr(0, next_separator_index), result.year) == std::errc();
+    auto previous_separator_index = next_separator_index;
+    next_separator_index = ok ? string.find('-', previous_separator_index + 1) : next_separator_index;
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.month) == std::errc();
+    previous_separator_index = next_separator_index;
+    next_separator_index = ok ? string.find('T', previous_separator_index + 1) : next_separator_index;
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.day) == std::errc();
+    previous_separator_index = next_separator_index;
+    next_separator_index = ok ? string.find(':', previous_separator_index + 1) : next_separator_index;
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.hour) == std::errc();
+    previous_separator_index = next_separator_index;
+    next_separator_index = ok ? string.find(':', previous_separator_index + 1) : next_separator_index;
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.minute) == std::errc();
+    previous_separator_index = next_separator_index;
+    next_separator_index = ok ? string.find('.', previous_separator_index + 1) : next_separator_index;
+    bool subseconds_available = next_separator_index != std::string::npos;
+    if (subseconds_available)
+    {
+        // First parse the seconds.
+        ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), result.second) == std::errc();
+        previous_separator_index = next_separator_index;
+
+    }
+    next_separator_index = ok ? string.find('Z', previous_separator_index + 1) : next_separator_index;
+    size_t num_characters_parsed = 0;
+    ok = ok && detail::parse(string.substr(previous_separator_index + 1, next_separator_index), subseconds_available ? result.microsecond : result.second, &num_characters_parsed) == std::errc();
+
+    if (subseconds_available)
+    {
+        constexpr size_t expected_digits = 6; // microseconds have 6 digits
+        size_t actual_digits = num_characters_parsed;
+
+        while (actual_digits > expected_digits)
+        {
+            result.microsecond /= 10;
+            --actual_digits;
+        }
+
+        while (actual_digits < expected_digits)
+        {
+            result.microsecond *= 10;
+            ++actual_digits;
+        }
+    }
+
+    if (!ok)
+    {
+        throw xlnt::invalid_parameter("invalid ISO date");
+    }
 
     return result;
 }
@@ -229,8 +287,27 @@ std::string datetime::to_iso_string() const
     }
     else
     {
-        return std::to_string(year) + "-" + fill(std::to_string(month)) + "-" + fill(std::to_string(day)) + "T"
-            + fill(std::to_string(hour)) + ":" + fill(std::to_string(minute)) + ":" + fill(std::to_string(second)) + "Z";
+        std::string iso = std::to_string(year);
+        iso.push_back('-');
+        iso.append(fill(std::to_string(month)));
+        iso.push_back('-');
+        iso.append(fill(std::to_string(day)));
+        iso.push_back('T');
+        iso.append(fill(std::to_string(hour)));
+        iso.push_back(':');
+        iso.append(fill(std::to_string(minute)));
+        iso.push_back(':');
+        iso.append(fill(std::to_string(second)));
+
+        if (microsecond != 0)
+        {
+            iso.push_back('.');
+            iso.append(fill(std::to_string(microsecond), 6));
+        }
+
+        iso.push_back('Z');
+
+        return iso;
     }
 }
 

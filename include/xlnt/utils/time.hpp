@@ -56,6 +56,7 @@ struct XLNT_API time
 
     /// <summary>
     /// Constructs a time object from a string representing the time.
+    /// If the string could not be parsed correctly, an xlnt::invalid_parameter exception is thrown.
     /// </summary>
     explicit time(const std::string &time_string);
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.2...3.31)
 project(xlntpyarrow)
 
 if(NOT COMBINED_PROJECT)

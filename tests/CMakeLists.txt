@@ -1,8 +1,10 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.1...3.31)
 project(xlnt.test)
 
 set(CMAKE_CXX_STANDARD ${XLNT_CXX_LANG})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD ${XLNT_C_LANG})
+set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CXX_EXTENSIONS OFF)
 
 # Options
@@ -58,12 +60,23 @@ target_include_directories(xlnt.test
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../source
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/libstudxml
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/miniz)
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/miniz
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/fast_float/include)
 
 set(XLNT_TEST_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data)
 target_compile_definitions(xlnt.test PRIVATE XLNT_TEST_DATA_DIR=${XLNT_TEST_DATA_DIR})
 # requires cmake 3.8+
 #target_compile_features(xlnt.test PRIVATE cxx_std_${XLNT_CXX_LANG})
+
+if (XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR)
+  target_compile_definitions(xlnt.test PRIVATE XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR=1)
+endif()
+target_compile_definitions(xlnt.test PRIVATE XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR="${XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR}")
+
+if (XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR)
+  target_compile_definitions(xlnt.test PRIVATE XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR=1)
+endif()
+target_compile_definitions(xlnt.test PRIVATE XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR="${XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR}")
 
 if(MSVC)
   # bigobj because there are so many headers in one source file

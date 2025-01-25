@@ -30,6 +30,7 @@
 #include <xlnt/worksheet/range_reference.hpp>
 
 #include <detail/constants.hpp>
+#include <detail/serialization/parsers.hpp>
 
 namespace xlnt {
 
@@ -185,7 +186,13 @@ std::pair<std::string, row_t> cell_reference::split_reference(
         row_string = row_string.substr(1);
     }
 
-    return {column_string, std::stoi(row_string)};
+    xlnt::row_t row = 0;
+    if (detail::parse(row_string, row) != std::errc())
+    {
+        throw invalid_cell_reference(reference_string);
+    }
+
+    return {column_string, row};
 }
 
 bool cell_reference::column_absolute() const

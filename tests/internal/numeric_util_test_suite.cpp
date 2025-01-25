@@ -22,9 +22,11 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <xlnt/utils/numeric.hpp>
+#include <detail/serialization/serialisation_helpers.hpp>
+#include <internal/locale_helpers.hpp>
 #include <helpers/test_suite.hpp>
 #include <cstring>
+#include <locale>
 
 class numeric_test_suite : public test_suite
 {
@@ -38,23 +40,28 @@ public:
         register_test(test_min);
         register_test(test_max);
         register_test(test_abs);
-        register_test(test_locale_comma);
+#ifdef XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR
+        register_test(test_locale_comma_decimal_separator);
+#endif
+#ifdef XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR
+        register_test(test_locale_arabic_decimal_separator);
+#endif
+
     }
 
     void test_serialise_number()
     {
-        xlnt::detail::number_serialiser serialiser;
         // excel serialises numbers as floating point values with <= 15 digits of precision
-        xlnt_assert(serialiser.serialise(1) == "1");
+        xlnt_assert(xlnt::detail::serialise(1) == "1");
         // trailing zeroes are ignored
-        xlnt_assert(serialiser.serialise(1.0) == "1");
-        xlnt_assert(serialiser.serialise(1.0f) == "1");
+        xlnt_assert(xlnt::detail::serialise(1.0) == "1");
+        xlnt_assert(xlnt::detail::serialise(1.0f) == "1");
         // one to 1 relation
-        xlnt_assert(serialiser.serialise(1.23456) == "1.23456");
-        xlnt_assert(serialiser.serialise(1.23456789012345) == "1.23456789012345");
-        xlnt_assert(serialiser.serialise(123456.789012345) == "123456.789012345");
-        xlnt_assert(serialiser.serialise(1.23456789012345e+67) == "1.23456789012345e+67");
-        xlnt_assert(serialiser.serialise(1.23456789012345e-67) == "1.23456789012345e-67");
+        xlnt_assert(xlnt::detail::serialise(1.23456) == "1.23456");
+        xlnt_assert(xlnt::detail::serialise(1.23456789012345) == "1.23456789012345");
+        xlnt_assert(xlnt::detail::serialise(123456.789012345) == "123456.789012345");
+        xlnt_assert(xlnt::detail::serialise(1.23456789012345e+67) == "1.23456789012345e+67");
+        xlnt_assert(xlnt::detail::serialise(1.23456789012345e-67) == "1.23456789012345e-67");
     }
 
     void test_float_equals_zero()
@@ -223,17 +230,20 @@ public:
         static_assert(xlnt::detail::abs(-1.23) == 1.23, "constexpr");
     }
 
-    void test_locale_comma ()
+    void test_locale_comma_decimal_separator()
     {
-        struct SetLocale
-        {
-            SetLocale() {xlnt_assert(setlocale(LC_ALL, "de_DE") != nullptr);} // If failed, please install de_DE locale to correctly run this test.
-            ~SetLocale() {setlocale(LC_ALL, "C");}
-        } setLocale;
-
-        xlnt::detail::number_serialiser serialiser;
-        xlnt_assert(serialiser.deserialise("1.99999999") == 1.99999999);
-        xlnt_assert(serialiser.deserialise("1.1") == 1.1);
+        test_helpers::SetLocale setLocale(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR,",");
+        xlnt_assert(xlnt::detail::deserialise("1.99999999") == 1.99999999);
+        xlnt_assert(xlnt::detail::deserialise("1.1") == 1.1);
     }
+
+    void test_locale_arabic_decimal_separator()
+    {
+        test_helpers::SetLocale setLocale(XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR, "٫");
+        xlnt_assert(xlnt::detail::deserialise("1.99999999") == 1.99999999);
+        xlnt_assert(xlnt::detail::deserialise("1.1") == 1.1);
+    }
+
+
 };
 static numeric_test_suite x;

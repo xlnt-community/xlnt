@@ -4,10 +4,11 @@
 // - handles atleast 15 significant figures (excel only serialises numbers up to 15sf)
 
 #include <benchmark/benchmark.h>
+#include <cstring>
 #include <locale>
 #include <random>
 #include <sstream>
-#include <xlnt/utils/numeric.hpp>
+#include <detail/serialization/serialisation_helpers.hpp>
 #include <detail/utils/features.hpp>
 
 namespace {
@@ -49,8 +50,12 @@ public:
         }
         else
         {
-            if (setlocale(LC_ALL, "de_DE") == nullptr)
-                state.SkipWithError("de_DE locale not installed");
+#ifdef XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR
+            if (setlocale(LC_ALL, XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR) == nullptr)
+                state.SkipWithError(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR " locale not installed");
+#else
+            state.SkipWithError("Benchmarks that use a comma as decimal separator are disabled. Enable XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR if you want to run this benchmark.");
+#endif
         }
     }
 
@@ -72,10 +77,8 @@ struct number_converter_production
 {
     double stold(const std::string &s)
     {
-        return serializer.deserialise(s);
+        return xlnt::detail::deserialise(s);
     }
-
-    xlnt::detail::number_serialiser serializer;
 };
 
 // method used by xlsx_consumer.cpp in commit - ba01de47a7d430764c20ec9ac9600eec0eb38bcf
@@ -84,7 +87,7 @@ struct number_converter_stream
 {
     number_converter_stream()
     {
-        stream.imbue(std::locale("C"));
+        stream.imbue(std::locale::classic());
     }
 
     double stold(const std::string &s)
@@ -100,23 +103,25 @@ struct number_converter_stream
 };
 
 
-// to resolve the locale issue with strtod, a little preprocessing of the input is required
+// To resolve the locale issue with strtod, a little preprocessing of the input is required.
+// IMPORTANT: the string localeconv()->decimal_point might be longer than a single char
+// in some locales (e.g. in the ps_AF locale which uses the arabic decimal separator).
 struct number_converter_mk2
 {
     explicit number_converter_mk2()
-        : should_convert_to_comma(localeconv()->decimal_point[0] == ',')
+        : should_convert(strcmp(localeconv()->decimal_point, ".") != 0)
     {
     }
 
     double stold(std::string &s) const noexcept
     {
         assert(!s.empty());
-        if (should_convert_to_comma)
+        if (should_convert)
         {
             auto decimal_pt = std::find(s.begin(), s.end(), '.');
             if (decimal_pt != s.end())
             {
-                *decimal_pt = ',';
+                s.replace(decimal_pt, decimal_pt + 1, localeconv()->decimal_point);
             }
         }
         return strtod(s.c_str(), nullptr);
@@ -125,7 +130,7 @@ struct number_converter_mk2
     double stold(const std::string &s) const
     {
         assert(!s.empty());
-        if (!should_convert_to_comma)
+        if (!should_convert)
         {
             return strtod(s.c_str(), nullptr);
         }
@@ -133,13 +138,13 @@ struct number_converter_mk2
         auto decimal_pt = std::find(copy.begin(), copy.end(), '.');
         if (decimal_pt != copy.end())
         {
-            *decimal_pt = ',';
+            copy.replace(decimal_pt, decimal_pt + 1, localeconv()->decimal_point);
         }
         return strtod(copy.c_str(), nullptr);
     }
 
 private:
-    bool should_convert_to_comma = false;
+    bool should_convert = false;
 };
 
 using RandFloatStrs = RandomFloatStrs<true>;

@@ -31,7 +31,7 @@
 #include <detail/xlnt_config_impl.hpp>
 
 #include <xlnt/utils/datetime.hpp>
-#include <xlnt/utils/numeric.hpp>
+#include <detail/serialization/serialisation_helpers.hpp>
 
 namespace xlnt {
 namespace detail {
@@ -696,7 +696,6 @@ private:
     number_format_parser parser_;
     std::vector<format_code> format_;
     xlnt::calendar calendar_;
-    xlnt::detail::number_serialiser serialiser_;
 };
 
 } // namespace detail

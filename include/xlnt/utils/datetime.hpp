@@ -62,6 +62,7 @@ struct XLNT_API datetime
 
     /// <summary>
     /// Returns a datetime equivalent to the ISO-formatted string iso_string.
+    /// If the string could not be parsed correctly, an xlnt::invalid_parameter exception is thrown.
     /// </summary>
     static datetime from_iso_string(const std::string &iso_string);
 

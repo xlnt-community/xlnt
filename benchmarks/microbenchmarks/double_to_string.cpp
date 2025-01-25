@@ -4,10 +4,11 @@
 // - outputs up to 15 significant figures (excel only serialises numbers up to 15sf)
 
 #include "benchmark/benchmark.h"
+#include <cstring>
 #include <locale>
 #include <random>
 #include <sstream>
-#include <xlnt/utils/numeric.hpp>
+#include <detail/serialization/serialisation_helpers.hpp>
 #include <detail/utils/features.hpp>
 
 namespace {
@@ -34,8 +35,12 @@ public:
         }
         else
         {
-            if (setlocale(LC_ALL, "de_DE") == nullptr)
-                state.SkipWithError("de_DE locale not installed");
+#ifdef XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR
+            if (setlocale(LC_ALL, XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR) == nullptr)
+                state.SkipWithError(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR " locale not installed");
+#else
+            state.SkipWithError("Benchmarks that use a comma as decimal separator are disabled. Enable XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR if you want to run this benchmark.");
+#endif
         }
         std::random_device rd; // obtain a seed for the random number engine
         std::mt19937 gen(rd());
@@ -81,10 +86,8 @@ struct number_serialiser_production
 {
     std::string serialise(double d)
     {
-        return serializer.serialise(d);
+        return xlnt::detail::serialise(d);
     }
-
-    xlnt::detail::number_serialiser serializer;
 };
 
 class number_serialiser_stream
@@ -96,7 +99,7 @@ public:
     explicit number_serialiser_stream()
     {
         ss.precision(Excel_Digit_Precision);
-        ss.imbue(std::locale("C"));
+        ss.imbue(std::locale::classic());
     }
 
     std::string serialise(double d)
@@ -108,36 +111,39 @@ public:
     }
 };
 
+// To resolve the locale issue with snprintf, a little preprocessing of the input is required.
+// IMPORTANT: the string localeconv()->decimal_point might be longer than a single char
+// in some locales (e.g. in the ps_AF locale which uses the arabic decimal separator).
 class number_serialiser_mk2
 {
     static constexpr int Excel_Digit_Precision = 15; //sf
-    bool should_convert_comma;
+    bool should_convert = false;
 
-    void convert_comma(char *buf, int len)
+    void convert(std::string & buf)
     {
-        char *buf_end = buf + len;
-        char *decimal = std::find(buf, buf_end, ',');
-        if (decimal != buf_end)
+        size_t decimal_pos = buf.find(localeconv()->decimal_point);
+
+        if (decimal_pos != std::string::npos)
         {
-            *decimal = '.';
+            buf.replace(decimal_pos, strlen(localeconv()->decimal_point), ".");
         }
     }
 
 public:
     explicit number_serialiser_mk2()
-        : should_convert_comma(localeconv()->decimal_point[0] == ',')
+        : should_convert(strcmp(localeconv()->decimal_point, ".") != 0)
     {
     }
 
     std::string serialise(double d)
     {
-        char buf[Excel_Digit_Precision + 1]; // need space for trailing '\0'
-        int len = snprintf(buf, sizeof(buf), "%.15g", d);
-        if (should_convert_comma)
+        std::string buf(Excel_Digit_Precision, '\0');
+        int len = snprintf(&buf.at(0), buf.length() + 1, "%.15g", d);
+        if (should_convert)
         {
-            convert_comma(buf, len);
+            convert(buf);
         }
-        return std::string(buf, len);
+        return buf;
     }
 };
 

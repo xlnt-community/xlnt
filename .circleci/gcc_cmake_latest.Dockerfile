@@ -2,7 +2,7 @@ FROM gcc:14
 
 # 1. Install CMake
 
-ARG CMAKE_VERSION=3.30.3
+ARG CMAKE_VERSION=3.31.4
 
 WORKDIR /tmp/
 RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz
@@ -13,11 +13,12 @@ RUN ./bootstrap
 RUN make -j$(nproc --all)
 RUN make install
 
-# 2. Install required de_DE locale (for tests)
+# 2. Install required de_DE and ps_AF locale (for benchmarks)
 
 RUN apt-get update -y
 RUN apt-get install -y --no-install-recommends locales
 RUN sed -i '/^# de_DE /s/^# //' /etc/locale.gen
+RUN sed -i '/^# ps_AF /s/^# //' /etc/locale.gen
 RUN locale-gen
 
 # 3. Cleanup

@@ -46,6 +46,7 @@
 #include <detail/serialization/vector_streambuf.hpp>
 #include <detail/serialization/xlsx_producer.hpp>
 #include <detail/serialization/zstream.hpp>
+#include <detail/serialization/parsers.hpp>
 #include <detail/utils/string_helpers.hpp>
 
 namespace {
@@ -443,9 +444,9 @@ void xlsx_producer::write_workbook(const relationship &rel)
         {
             num_visible++;
         }
-        
+
         auto title_ref = "'" + ws.title() + "'!";
-        
+
         if (ws.has_auto_filter())
         {
             defined_name name;
@@ -455,7 +456,7 @@ void xlsx_producer::write_workbook(const relationship &rel)
             name.value = title_ref + range_reference::make_absolute(ws.auto_filter()).to_string();
             defined_names.push_back(name);
         }
-        
+
         if (ws.has_print_area())
         {
             defined_name name;
@@ -465,14 +466,14 @@ void xlsx_producer::write_workbook(const relationship &rel)
             name.value = title_ref + range_reference::make_absolute(ws.print_area()).to_string();
             defined_names.push_back(name);
         }
-        
+
         if (ws.has_print_titles())
         {
             defined_name name;
             name.sheet_id = ws.id();
             name.name = "_xlnm.Print_Titles";
             name.hidden = false;
-            
+
             auto cols = ws.print_title_cols();
             if (cols.is_set())
             {
@@ -740,7 +741,7 @@ void xlsx_producer::write_workbook(const relationship &rel)
 
         auto child_target_path = child_rel.target().path();
         path archive_path(child_rel.source().path().parent().append(child_target_path));
-        
+
         // write binary
         if (child_rel.type() == relationship_type::vbaproject)
         {
@@ -2512,7 +2513,7 @@ void xlsx_producer::write_worksheet(const relationship &rel)
         if (props.width.is_set())
         {
             double width = (props.width.get() * 7 + 5) / 7;
-            write_attribute("width", converter_.serialise(width));
+            write_attribute("width", xlnt::detail::serialise(width));
         }
 
         if (props.best_fit)
@@ -2621,7 +2622,7 @@ void xlsx_producer::write_worksheet(const relationship &rel)
             if (props.height.is_set())
             {
                 auto height = props.height.get();
-                write_attribute("ht", converter_.serialise(height));
+                write_attribute("ht", xlnt::detail::serialise(height));
             }
 
             if (props.hidden)
@@ -2748,7 +2749,7 @@ void xlsx_producer::write_worksheet(const relationship &rel)
 
                 case cell::type::number:
                     write_start_element(xmlns, "v");
-                    write_characters(converter_.serialise(cell.value<double>()));
+                    write_characters(xlnt::detail::serialise(cell.value<double>()));
                     write_end_element(xmlns, "v");
                     break;
 
@@ -2932,7 +2933,7 @@ void xlsx_producer::write_worksheet(const relationship &rel)
         {
             write_attribute("verticalDpi", ws.page_setup().vertical_dpi_.get());
         }
-        
+
         if (ps.has_paper_size())
         {
             write_attribute("paperSize", static_cast<std::size_t>(ps.paper_size()));
@@ -2979,26 +2980,26 @@ void xlsx_producer::write_worksheet(const relationship &rel)
             {
                 if (hf.has_odd_even_header(location))
                 {
-                    odd_header.append(encode_header_footer(hf.odd_header(location), location, converter_));
-                    even_header.append(encode_header_footer(hf.even_header(location), location, converter_));
+                    odd_header.append(encode_header_footer(hf.odd_header(location), location));
+                    even_header.append(encode_header_footer(hf.even_header(location), location));
                 }
 
                 if (hf.has_odd_even_footer(location))
                 {
-                    odd_footer.append(encode_header_footer(hf.odd_footer(location), location, converter_));
-                    even_footer.append(encode_header_footer(hf.even_footer(location), location, converter_));
+                    odd_footer.append(encode_header_footer(hf.odd_footer(location), location));
+                    even_footer.append(encode_header_footer(hf.even_footer(location), location));
                 }
             }
             else
             {
                 if (hf.has_header(location))
                 {
-                    odd_header.append(encode_header_footer(hf.header(location), location, converter_));
+                    odd_header.append(encode_header_footer(hf.header(location), location));
                 }
 
                 if (hf.has_footer(location))
                 {
-                    odd_footer.append(encode_header_footer(hf.footer(location), location, converter_));
+                    odd_footer.append(encode_header_footer(hf.footer(location), location));
                 }
             }
 
@@ -3006,12 +3007,12 @@ void xlsx_producer::write_worksheet(const relationship &rel)
             {
                 if (hf.has_first_page_header(location))
                 {
-                    first_header.append(encode_header_footer(hf.first_page_header(location), location, converter_));
+                    first_header.append(encode_header_footer(hf.first_page_header(location), location));
                 }
 
                 if (hf.has_first_page_footer(location))
                 {
-                    first_footer.append(encode_header_footer(hf.first_page_footer(location), location, converter_));
+                    first_footer.append(encode_header_footer(hf.first_page_footer(location), location));
                 }
             }
         }
@@ -3251,7 +3252,8 @@ void xlsx_producer::write_vml_drawings(const relationship &rel, worksheet ws, co
         index_pos--;
     }
 
-    auto file_index = std::stoull(filename.substr(index_pos + 1));
+    size_t file_index = 0;
+    detail::parse(filename.substr(index_pos + 1), file_index);
 
     write_attribute("data", file_index);
     write_end_element(xmlns_o, "idmap");
@@ -3493,7 +3495,7 @@ void xlsx_producer::write_color(const xlnt::color &color)
     }
     if (color.has_tint())
     {
-        write_attribute("tint", converter_.serialise(color.tint()));
+        write_attribute("tint", xlnt::detail::serialise(color.tint()));
     }
 }
 

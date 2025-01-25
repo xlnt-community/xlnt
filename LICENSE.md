@@ -58,7 +58,7 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-## [POLE](http://www.dimin.net/software/pole/)
+## [POLE](https://www.dimin.net/software/pole/)
 >[BSD 2-Clause License](https://bitbucket.org/dimin/pole/src/c15e513bdce4c3a52b3dbc925d4d2bb520dc71d8/pole/LICENSE)
 
 ```
@@ -87,8 +87,8 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-## [libstudxml](http://www.codesynthesis.com/projects/libstudxml/)
->[MIT License](http://www.codesynthesis.com/licenses/mit.txt)
+## [libstudxml](https://www.codesynthesis.com/projects/libstudxml/)
+>[MIT License](https://www.codesynthesis.com/licenses/mit.txt)
 
 ```
 MIT License
@@ -114,6 +114,74 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+```
+
+## [fmt](https://github.com/fmtlib/fmt)
+>[MIT License](https://github.com/fmtlib/fmt/blob/master/LICENSE)
+
+```
+Copyright (c) 2012 - present, Victor Zverovich and {fmt} contributors
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+--- Optional exception to the license ---
+
+As an exception, if, as a result of your compiling your source code, portions
+of this Software are embedded into a machine-executable object form of such
+source code, you may redistribute such embedded portions in such object form
+without including the above copyright and permission notices.
+
+```
+
+## [fast_float](https://github.com/fastfloat/fast_float)
+>[MIT License](https://github.com/fastfloat/fast_float/blob/main/LICENSE-MIT)
+
+```
+MIT License
+
+Copyright (c) 2021 The fast_float authors
+
+Permission is hereby granted, free of charge, to any
+person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the
+Software without restriction, including without
+limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice
+shall be included in all copies or substantial portions
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
 
 ```
 
@@ -181,7 +249,7 @@ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
-For more information, please refer to <http://unlicense.org/>
+For more information, please refer to <https://unlicense.org/>
 
 Copyright 2013-2014 RAD Game Tools and Valve Software
 Copyright 2010-2014 Rich Geldreich and Tenacious Software LLC
@@ -259,7 +327,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-## [LibTomCrypt](http://www.libtom.net/)
+## [LibTomCrypt](https://www.libtom.net/)
 >[Public Domain](https://github.com/libtom/libtomcrypt/blob/develop/LICENSE)
 
 ```
@@ -315,7 +383,7 @@ derivative works thereof, in binary and source code form.
 
 # Dependency Licences (Testing Only)
 
-## [CxxTest](http://cxxtest.com/)
+## [CxxTest](https://cxxtest.com/)
 >[LGPL License](https://github.com/CxxTest/cxxtest/blob/master/COPYING)
 
 ```

@@ -40,6 +40,8 @@
 #define XLNT_CPP_17 201703L
 #define XLNT_CPP_20 202002L
 #define XLNT_CPP_23 202302L
+// TODO: when C++26 is out, please update the C version check below as well!
+//#define XLNT_CPP_26 TODO_VERSION
 
 /// <summary>
 /// Returns whether the C++ version `version` is supported by the current build configuration.
@@ -51,14 +53,30 @@
 /// <seealso cref="XLNT_CPP_23">
 #define XLNT_HAS_CPP_VERSION(version) (1/version == 1/version && XLNT_CPP_VERSION >= version)
 
+
+#define XLNT_C_99 199901L
 #define XLNT_C_11 201112L
 #define XLNT_C_17 201710L
 #define XLNT_C_23 202311L
 
 /// <summary>
 /// Returns whether the C version `version` is supported by the current build configuration.
+/// Unfortunately, while __STDC_VERSION__ must be defined in C compilers, when using C++ compilers it is
+/// implementation-defined whether the __STDC_VERSION__ is defined or not. However, the C++ standard defines
+/// for each C++ version which C version it refers to. This can be found out by using the following list:
+/// C++98 -> C95
+/// C++11 -> C99
+/// C++17 -> C11
+/// C++20 -> C17
+/// C++26 -> C23
 /// </summary>
 /// <seealso cref="XLNT_C_11">
 /// <seealso cref="XLNT_C_17">
 /// <seealso cref="XLNT_C_23">
-#define XLNT_HAS_C_VERSION(version) (1/version == 1/version && XLNT_C_VERSION >= version)
+#define XLNT_HAS_C_VERSION(version) (1/version == 1/version && \
+    ((__STDC_VERSION__ >= version) || \
+     (XLNT_C_99 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_11)) || \
+     (XLNT_C_11 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_17)) || \
+     (XLNT_C_17 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_20)) /*|| \
+     (CLNT_C_23 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_26))*/ \
+     ))

@@ -1,8 +1,10 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.1...3.31)
 project(xlnt VERSION 1.5.0)
 
 set(CMAKE_CXX_STANDARD ${XLNT_CXX_LANG})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD ${XLNT_C_LANG})
+set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CXX_EXTENSIONS OFF)
 
 # Project metadata
@@ -191,12 +193,13 @@ GENERATE_EXPORT_HEADER (xlnt
     DEPRECATED_MACRO_NAME XLNT_DEPRECATED
     EXPORT_FILE_NAME ${XLNT_INCLUDE_DIR}/xlnt/utils/xlnt_cmake_export.h)
 
-if(TESTS AND NOT XLNT_SKIP_INTERNAL_TESTS)
+if((TESTS AND NOT XLNT_SKIP_INTERNAL_TESTS) OR BENCHMARKS)
     target_compile_definitions(xlnt PRIVATE XLNT_EXPOSE_INTERNAL_API=1)
 endif()
 
 # requires cmake 3.8+
 #target_compile_features(xlnt PUBLIC cxx_std_${XLNT_CXX_LANG})
+#target_compile_features(xlnt PUBLIC c_std_${XLNT_C_LANG})
 
 # Includes
 target_include_directories(xlnt
@@ -207,7 +210,9 @@ target_include_directories(xlnt
 	${XLNT_SOURCE_DIR}
 	${XLNT_SOURCE_DIR}/../third-party/libstudxml
     ${XLNT_SOURCE_DIR}/../third-party/miniz
-    ${XLNT_SOURCE_DIR}/../third-party/utfcpp/source)
+    ${XLNT_SOURCE_DIR}/../third-party/utfcpp/source
+    ${XLNT_SOURCE_DIR}/../third-party/fmt/include
+    ${XLNT_SOURCE_DIR}/../third-party/fast_float/include)
 
 # Platform- and file-specific settings, MSVC
 if(MSVC)
@@ -235,7 +240,7 @@ else()
 	  PROPERTIES
       COMPILE_FLAGS "-Wno-undef -Wno-shorten-64-to-32")
   endif()
-  
+
   # Platform- and file-specific settings, GCC
   if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/detail/serialization/miniz.cpp
