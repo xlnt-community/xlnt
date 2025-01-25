@@ -28,7 +28,7 @@
 
 #include <xlnt/styles/color.hpp>
 #include <xlnt/utils/exceptions.hpp>
-#include <detail/parsers.hpp>
+#include <detail/serialization/parsers.hpp>
 
 namespace {
 

@@ -48,7 +48,7 @@
 #include <detail/serialization/xlsx_consumer.hpp>
 #include <detail/serialization/zstream.hpp>
 #include <detail/limits.hpp>
-#include <detail/parsers.hpp>
+#include <detail/serialization/parsers.hpp>
 
 namespace {
 /// string_equal

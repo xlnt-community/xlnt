@@ -30,7 +30,7 @@
 #include <xlnt/utils/exceptions.hpp>
 #include <detail/default_case.hpp>
 #include <detail/number_format/number_formatter.hpp>
-#include <detail/parsers.hpp>
+#include <detail/serialization/parsers.hpp>
 #include <detail/serialization/serialisation_helpers.hpp>
 
 #define FMT_HEADER_ONLY

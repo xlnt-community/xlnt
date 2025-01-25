@@ -27,7 +27,7 @@
 
 #include <xlnt/utils/time.hpp>
 #include <detail/time_helpers.hpp>
-#include <detail/parsers.hpp>
+#include <detail/serialization/parsers.hpp>
 
 namespace xlnt {
 

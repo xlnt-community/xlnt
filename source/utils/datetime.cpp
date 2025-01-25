@@ -27,7 +27,7 @@
 #include <xlnt/utils/date.hpp>
 #include <xlnt/utils/datetime.hpp>
 #include <xlnt/utils/time.hpp>
-#include <detail/parsers.hpp>
+#include <detail/serialization/parsers.hpp>
 
 #include <xlnt/utils/optional.hpp>
 

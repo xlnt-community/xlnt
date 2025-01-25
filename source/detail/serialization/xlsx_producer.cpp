@@ -46,7 +46,7 @@
 #include <detail/serialization/vector_streambuf.hpp>
 #include <detail/serialization/xlsx_producer.hpp>
 #include <detail/serialization/zstream.hpp>
-#include <detail/parsers.hpp>
+#include <detail/serialization/parsers.hpp>
 #include <detail/utils/string_helpers.hpp>
 
 namespace {

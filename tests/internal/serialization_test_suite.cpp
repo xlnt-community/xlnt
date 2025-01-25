@@ -23,7 +23,6 @@
 // @author: see AUTHORS file
 
 #include <iostream>
-#include <locale>
 
 #include <xlnt/xlnt.hpp>
 #include <internal/locale_helpers.hpp>
