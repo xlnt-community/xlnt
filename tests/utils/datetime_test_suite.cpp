@@ -22,8 +22,6 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <iostream>
-
 #include <helpers/test_suite.hpp>
 #include <xlnt/utils/date.hpp>
 #include <xlnt/utils/datetime.hpp>
@@ -326,6 +324,7 @@ public:
         xlnt::datetime datetime;
         xlnt_assert_throws(datetime.to_number(xlnt::calendar::windows_1900), xlnt::invalid_attribute);
         xlnt_assert_equals(datetime.to_string(), std::string{});
+        xlnt_assert_equals(datetime.to_iso_string(), std::string{});
         xlnt_assert_equals(datetime.weekday(), -1);
         xlnt_assert_throws(datetime.get_year(), xlnt::invalid_attribute);
         xlnt_assert_throws(datetime.get_month(), xlnt::invalid_attribute);
