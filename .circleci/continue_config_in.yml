@@ -80,7 +80,8 @@ jobs:
           steps:
             - run: apt-get update -y
             - run: apt-get install -y --no-install-recommends lcov
-            - run: lcov --directory source/CMakeFiles/xlnt.dir --capture --output-file coverage.info --base-directory source --no-external
+            - run: lcov --directory . --capture --output-file coverage.info --base-directory . --no-external
+            - run: lcov --extract coverage.info "$PWD/include/*" "$PWD/source/*" --output-file coverage.info
             - run: curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz && ./coveralls report coverage.info
 
   docs-build:
