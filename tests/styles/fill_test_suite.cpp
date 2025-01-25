@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024 xlnt-community
+// Copyright (c) 2024-2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,7 @@ public:
     void test_properties()
     {
         xlnt::fill fill;
-        
+
         xlnt_assert_equals(fill.type(), xlnt::fill_type::pattern);
         fill = xlnt::fill(xlnt::gradient_fill());
         xlnt_assert_equals(fill.type(), xlnt::fill_type::gradient);
@@ -72,12 +72,12 @@ public:
         xlnt_assert(fill.pattern_fill().background().is_set());
         xlnt_assert_equals(fill.pattern_fill().background().get().rgb().hex_string(),
             xlnt::color::green().rgb().hex_string());
-        
+
         const auto &const_fill = fill;
         xlnt_assert(const_fill.pattern_fill().foreground().is_set());
         xlnt_assert(const_fill.pattern_fill().background().is_set());
     }
-    
+
     void test_comparison()
     {
         xlnt::fill pattern_fill = xlnt::pattern_fill().type(xlnt::pattern_fill_type::solid);

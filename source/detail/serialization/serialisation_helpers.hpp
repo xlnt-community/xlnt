@@ -86,7 +86,7 @@ struct Cell
 
     bool is_phonetic = false; // 'ph'
     xlnt::cell_type type = xlnt::cell_type::number; // 't'
-    int cell_metatdata_idx = -1; // 'cm'
+    int cell_metadata_idx = -1; // 'cm'
     int style_index = -1; // 's'
     Cell_Reference ref{0, 0}; // 'r'
     std::string value; // <v> OR <is>

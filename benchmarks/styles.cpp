@@ -1,5 +1,5 @@
 // Copyright (c) 2017-2022 Thomas Fussell
-// Copyright (c) 2024 xlnt-community
+// Copyright (c) 2024-2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 #include <chrono>
 #include <string>
 #include <iostream>
-#include <sstream> 
+#include <sstream>
 #include <iterator>
 #include <random>
 
@@ -186,8 +186,8 @@ void to_save_profile(xlnt::workbook &wb, const std::string &f)
 void to_load_profile(xlnt::workbook &wb, const std::string &f)
 {
 	using xlnt::benchmarks::current_time;
-	
-	auto start = current_time();	
+
+	auto start = current_time();
 	wb.load(f);
 	auto elapsed = current_time() - start;
 
@@ -214,7 +214,7 @@ void read_formats_profile(xlnt::workbook &wb, int rows_number, int columns_numbe
 
 	auto elapsed = current_time() - start;
 
-	std::cout << "elapsed " << elapsed / 1000.0 << ". read values and formats for cells. values count " << values.size() 
+	std::cout << "elapsed " << elapsed / 1000.0 << ". read values and formats for cells. values count " << values.size()
 		<< ". formats count " << formats.size() << std::endl;
 }
 
@@ -225,7 +225,7 @@ int main(int argc, char * argv[])
     int rows_number = 1000;
 	int columns_number = 10;
 
-	try 
+	try
 	{
 		if (argc > 1)
 			rows_number = std::stoi(argv[1]);

@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024 xlnt-community
+// Copyright (c) 2024-2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -191,7 +191,7 @@ xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser, std::uno
         }
         else if (string_equal(attr.first.name(), "cm"))
         {
-            xlnt::detail::parse(attr.second.value, c.cell_metatdata_idx);
+            xlnt::detail::parse(attr.second.value, c.cell_metadata_idx);
         }
     }
     int level = 1; // nesting level
@@ -877,7 +877,7 @@ void xlsx_consumer::read_worksheet_sheetdata()
         {
             ws_cell_impl->format_ = target_.format(static_cast<size_t>(cell.style_index)).d_;
         }
-        if (cell.cell_metatdata_idx != -1)
+        if (cell.cell_metadata_idx != -1)
         {
         }
         ws_cell_impl->phonetics_visible_ = cell.is_phonetic;

@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024 xlnt-community
+// Copyright (c) 2024-2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -406,7 +406,7 @@ public:
     {
         xlnt::workbook wb;
         wb.load(path_helper::test_file("19_defined_names.xlsx"));
-        
+
         auto ws1 = wb.sheet_by_index(0);
 
         xlnt_assert(!ws1.has_print_area());
@@ -419,7 +419,7 @@ public:
         xlnt_assert(ws1.print_title_rows().is_set());
         xlnt_assert_equals(ws1.print_title_rows().get().first, 1);
         xlnt_assert_equals(ws1.print_title_rows().get().second, 3);
-        
+
         auto ws2 = wb.sheet_by_index(1);
 
         xlnt_assert(ws2.has_print_area());
@@ -432,7 +432,7 @@ public:
         xlnt_assert(ws2.print_title_cols().is_set());
         xlnt_assert_equals(ws2.print_title_cols().get().first, "A");
         xlnt_assert_equals(ws2.print_title_cols().get().second, "D");
-        
+
         auto ws3 = wb.sheet_by_index(2);
 
         xlnt_assert(ws3.has_print_area());
@@ -1669,12 +1669,12 @@ public:
         // if skip_null is false.
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
-        
+
         ws.cell("B12").value("AAA");
-        
+
         xlnt_assert_equals("B12:B12", ws.rows(true).reference());
         xlnt_assert_equals("A1:B12", ws.rows(false).reference());
-        
+
         xlnt_assert_equals("B12:B12", ws.columns(true).reference());
         xlnt_assert_equals("A1:B12", ws.columns(false).reference());
     }

@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024 xlnt-community
+// Copyright (c) 2024-2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -669,7 +669,7 @@ public:
     /// Sets columns to repeat at left during printing.
     /// </summary>
     void print_title_cols(column_t start, column_t end);
-    
+
     /// <summary>
     /// Get columns to repeat at left during printing.
     /// </summary>
@@ -699,7 +699,7 @@ public:
     /// Returns the print area defined for this sheet.
     /// </summary>
     range_reference print_area() const;
-    
+
     /// <summary>
     /// Returns true if the print area is defined for this sheet.
     /// </summary>

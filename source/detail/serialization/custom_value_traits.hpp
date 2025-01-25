@@ -1,5 +1,5 @@
 // Copyright (c) 2016-2022 Thomas Fussell
-// Copyright (c) 2024 xlnt-community
+// Copyright (c) 2024-2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -200,14 +200,14 @@ pattern_fill_type from_string(const std::string &string)
         { "solid", pattern_fill_type::solid }
     };
 #pragma clang diagnostic pop
-    
+
     auto toLower = [](std::string str) {
         auto bg = std::begin (str);
         auto en = std::end (str);
-        std::transform(bg, en, bg, 
+        std::transform(bg, en, bg,
                        [](char c) {
                         // static cast to avoid int -> char narrowing warning
-                           return static_cast<char>(tolower(c)); 
+                           return static_cast<char>(tolower(c));
                        });
 
         return str;
@@ -612,5 +612,3 @@ struct value_traits<xlnt::orientation>
 };
 
 } // namespace xml
-
-
