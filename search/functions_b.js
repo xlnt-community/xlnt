@@ -7,5 +7,5 @@ var searchData=
   ['merge_5fcells',['merge_cells',['../classxlnt_1_1worksheet.html#a5e51e2f8e3396adfc0a2751a3826aebf',1,'xlnt::worksheet::merge_cells(const std::string &amp;reference_string)'],['../classxlnt_1_1worksheet.html#a370b7d922dc8662fa02fb6b413bbe7bc',1,'xlnt::worksheet::merge_cells(const range_reference &amp;reference)']]],
   ['merged',['merged',['../classxlnt_1_1cell.html#a4c659baf4eb9d8b5c410a28f18fe9639',1,'xlnt::cell']]],
   ['merged_5franges',['merged_ranges',['../classxlnt_1_1worksheet.html#aa3614f2b86082c15b97133ecb2b12de0',1,'xlnt::worksheet']]],
-  ['message',['message',['../classxlnt_1_1exception.html#ae3c5019d8888e71be5a99c21935fbde7',1,'xlnt::exception::message(const std::string &amp;message)'],['../classxlnt_1_1exception.html#ad30f2e72f945e6b09152fe80d19ac86e',1,'xlnt::exception::message()']]]
+  ['message',['message',['../classxlnt_1_1exception.html#ae3c5019d8888e71be5a99c21935fbde7',1,'xlnt::exception::message(const std::string &amp;message)'],['../classxlnt_1_1exception.html#a11c2ca0f7bd6cb39d275796d84dc7476',1,'xlnt::exception::message()']]]
 ];

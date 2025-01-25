@@ -140,7 +140,7 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:a193da151f58db0df3dcd1010fdf793d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a datetime from number by converting the integer part into a date and the fractional part into a time according to <a class="el" href="structxlnt_1_1date.html#a6203499cceceda27cc7c5122b1d9ea1d" title="Returns a date by adding days_since_base_year to base_date. This includes leap years. ">date::from_number</a> and <a class="el" href="structxlnt_1_1time.html#a6592d7f210b346d9d0ee277f645c28c6" title="Returns a time from a number representing a fraction of a day. The integer part of number will be ign...">time::from_number</a>.  <a href="#a193da151f58db0df3dcd1010fdf793d3">More...</a><br /></td></tr>
 <tr class="separator:a193da151f58db0df3dcd1010fdf793d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd17890b24e0017707ef1d223a59eb91"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structxlnt_1_1datetime.html">datetime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#afd17890b24e0017707ef1d223a59eb91">from_iso_string</a> (const std::string &amp;iso_string)</td></tr>
-<tr class="memdesc:afd17890b24e0017707ef1d223a59eb91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a datetime equivalent to the ISO-formatted string iso_string.  <a href="#afd17890b24e0017707ef1d223a59eb91">More...</a><br /></td></tr>
+<tr class="memdesc:afd17890b24e0017707ef1d223a59eb91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a datetime equivalent to the ISO-formatted string iso_string. If the string could not be parsed correctly, an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">xlnt::invalid_parameter</a> exception is thrown.  <a href="#afd17890b24e0017707ef1d223a59eb91">More...</a><br /></td></tr>
 <tr class="separator:afd17890b24e0017707ef1d223a59eb91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -312,7 +312,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns a datetime equivalent to the ISO-formatted string iso_string. </p>
+<p>Returns a datetime equivalent to the ISO-formatted string iso_string. If the string could not be parsed correctly, an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">xlnt::invalid_parameter</a> exception is thrown. </p>
 
 </div>
 </div>

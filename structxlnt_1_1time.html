@@ -83,7 +83,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a19bf9fcc56c251ad1d01a52a81b6eb3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a time object from an optional hour, minute, second, and microsecond.  <a href="#a19bf9fcc56c251ad1d01a52a81b6eb3f">More...</a><br /></td></tr>
 <tr class="separator:a19bf9fcc56c251ad1d01a52a81b6eb3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4bc79bde4f28158bb3945593750eeb5b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1time.html#a4bc79bde4f28158bb3945593750eeb5b">time</a> (const std::string &amp;time_string)</td></tr>
-<tr class="memdesc:a4bc79bde4f28158bb3945593750eeb5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a time object from a string representing the time.  <a href="#a4bc79bde4f28158bb3945593750eeb5b">More...</a><br /></td></tr>
+<tr class="memdesc:a4bc79bde4f28158bb3945593750eeb5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a time object from a string representing the time. If the string could not be parsed correctly, an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">xlnt::invalid_parameter</a> exception is thrown.  <a href="#a4bc79bde4f28158bb3945593750eeb5b">More...</a><br /></td></tr>
 <tr class="separator:a4bc79bde4f28158bb3945593750eeb5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aecffc54d34f56dcdd64cfe6c98ee32c9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1time.html#aecffc54d34f56dcdd64cfe6c98ee32c9">to_number</a> () const</td></tr>
 <tr class="memdesc:aecffc54d34f56dcdd64cfe6c98ee32c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a numeric representation of the time in the range 0-1 where the value is equal to the fraction of the day elapsed.  <a href="#aecffc54d34f56dcdd64cfe6c98ee32c9">More...</a><br /></td></tr>
@@ -193,7 +193,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Constructs a time object from a string representing the time. </p>
+<p>Constructs a time object from a string representing the time. If the string could not be parsed correctly, an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">xlnt::invalid_parameter</a> exception is thrown. </p>
 
 </div>
 </div>
