@@ -26,13 +26,25 @@
 #pragma once
 
 #include <detail/xlnt_config_impl.hpp>
-#include <cstdint>
-#include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+// If available, allow using C++20 feature test macros for precise feature testing. Useful for compilers
+// that partially implement certain features.
+#ifdef __has_include
+# if __has_include(<version>)
+#   include <version>
+# endif
+#endif
+
+#ifdef __has_include
+# if __has_include(<string_view>)
+#   include <string_view>
+# endif
+#endif
 
 #include <detail/external/include_libstudxml.hpp>
 #include <detail/serialization/zstream.hpp>
@@ -75,8 +87,12 @@ public:
 
 	void read(std::istream &source, const std::string &password);
 
-        // For unit testing purpose only
-        void read_stylesheet (const std::string& xml);
+#ifdef __cpp_lib_char8_t
+	void read(std::istream &source, std::u8string_view password);
+#endif
+
+    // For unit testing purpose only
+    void read_stylesheet (const std::string& xml);
 
 private:
     friend class xlnt::streaming_workbook_reader;

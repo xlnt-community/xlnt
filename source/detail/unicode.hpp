@@ -26,13 +26,36 @@
 
 #include <string>
 
+// If available, allow using C++20 feature test macros for precise feature testing. Useful for compilers
+// that partially implement certain features.
+#ifdef __has_include
+# if __has_include(<version>)
+#   include <version>
+# endif
+#endif
+
+#ifdef __has_include
+# if __has_include(<string_view>)
+#   include <string_view>
+# endif
+#endif
+
 namespace xlnt {
 namespace detail {
 
 std::u16string utf8_to_utf16(const std::string &utf8_string);
+std::u32string utf8_to_utf32(const std::string &utf8_string);
 std::string utf16_to_utf8(const std::u16string &utf16_string);
+std::string utf32_to_utf8(const std::u32string &utf32_string);
 std::string latin1_to_utf8(const std::string &latin1);
 size_t string_length(const std::string &utf8_string);
+
+#ifdef __cpp_lib_char8_t
+std::u16string utf8_to_utf16(std::u8string_view utf8_string);
+std::u32string utf8_to_utf32(std::u8string_view utf8_string);
+std::u8string utf16_to_utf8(std::u16string_view utf16_string);
+std::u8string utf32_to_utf8(std::u32string_view utf32_string);
+#endif
 
 } // namespace detail
 } // namespace xlnt

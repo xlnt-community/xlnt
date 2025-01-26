@@ -35,6 +35,7 @@
 #include <detail/serialization/xlsx_producer.hpp>
 #include <detail/serialization/zstream.hpp>
 #include <detail/unicode.hpp>
+#include <detail/utils/string_helpers.hpp>
 
 namespace {
 
@@ -306,6 +307,15 @@ std::vector<std::uint8_t> encrypt_xlsx(
     return ::encrypt_xlsx(plaintext, utf8_to_utf16(password));
 }
 
+#ifdef __cpp_lib_char8_t
+std::vector<std::uint8_t> encrypt_xlsx(
+    const std::vector<std::uint8_t> &plaintext,
+    std::u8string_view password)
+{
+    return ::encrypt_xlsx(plaintext, utf8_to_utf16(password));
+}
+#endif
+
 void xlsx_producer::write(std::ostream &destination, const std::string &password)
 {
     std::vector<std::uint8_t> plaintext;
@@ -319,6 +329,13 @@ void xlsx_producer::write(std::ostream &destination, const std::string &password
 
     destination << &encrypted_buffer;
 }
+
+#ifdef __cpp_lib_char8_t
+void xlsx_producer::write(std::ostream &destination, std::u8string_view password)
+{
+    write(destination, detail::to_string_copy(password));
+}
+#endif
 
 } // namespace detail
 } // namespace xlnt

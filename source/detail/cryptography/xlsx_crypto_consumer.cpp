@@ -22,7 +22,6 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -39,6 +38,7 @@
 #include <detail/serialization/vector_streambuf.hpp>
 #include <detail/serialization/xlsx_consumer.hpp>
 #include <detail/unicode.hpp>
+#include <detail/utils/string_helpers.hpp>
 
 namespace {
 
@@ -340,6 +340,13 @@ std::vector<std::uint8_t> decrypt_xlsx(const std::vector<std::uint8_t> &data, co
     return ::decrypt_xlsx(data, utf8_to_utf16(password));
 }
 
+#ifdef __cpp_lib_char8_t
+std::vector<std::uint8_t> decrypt_xlsx(const std::vector<std::uint8_t> &data, std::u8string_view password)
+{
+    return ::decrypt_xlsx(data, utf8_to_utf16(password));
+}
+#endif
+
 void xlsx_consumer::read(std::istream &source, const std::string &password)
 {
     std::vector<std::uint8_t> data((std::istreambuf_iterator<char>(source)), (std::istreambuf_iterator<char>()));
@@ -348,6 +355,13 @@ void xlsx_consumer::read(std::istream &source, const std::string &password)
     std::istream decrypted_stream(&decrypted_buffer);
     read(decrypted_stream);
 }
+
+#ifdef __cpp_lib_char8_t
+void xlsx_consumer::read(std::istream &source, std::u8string_view password)
+{
+    return read(source, detail::to_string_copy(password));
+}
+#endif
 
 } // namespace detail
 } // namespace xlnt

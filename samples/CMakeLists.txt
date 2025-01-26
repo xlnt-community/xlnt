@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.1...3.31)
 project(xlnt.samples)
 
-# Require C++11 compiler
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD ${XLNT_CXX_LANG})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD ${XLNT_C_LANG})
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CXX_EXTENSIONS OFF)
 
 if(NOT COMBINED_PROJECT)
   # Include xlnt library
@@ -35,7 +37,7 @@ foreach(SAMPLE_SOURCE IN ITEMS ${SAMPLE_SOURCES})
   target_include_directories(${SAMPLE_EXECUTABLE}
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../tests)
   target_compile_definitions(${SAMPLE_EXECUTABLE}
-    PRIVATE XLNT_SAMPLE_DATA_DIR=${XLNT_SAMPLE_DATA_DIR})
+    PRIVATE XLNT_SAMPLE_DATA_DIR="${XLNT_SAMPLE_DATA_DIR}")
 
   if(MSVC AND NOT STATIC)
     # Copy xlnt DLL into samples directory

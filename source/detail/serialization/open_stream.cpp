@@ -24,9 +24,28 @@
 
 #include <xlnt/utils/path.hpp>
 #include <detail/serialization/open_stream.hpp>
+#include "detail/utils/string_helpers.hpp"
 
 namespace xlnt {
 namespace detail {
+
+void open_stream(std::ifstream &stream, const std::string &path)
+{
+#ifdef _MSC_VER
+    open_stream(stream, xlnt::path(path).wstring());
+#else
+    stream.open(path, std::ios::binary);
+#endif
+}
+
+void open_stream(std::ofstream &stream, const std::string &path)
+{
+#ifdef _MSC_VER
+    open_stream(stream, xlnt::path(path).wstring());
+#else
+    stream.open(path, std::ios::binary);
+#endif
+}
 
 #ifdef _MSC_VER
 void open_stream(std::ifstream &stream, const std::wstring &path)
@@ -38,25 +57,33 @@ void open_stream(std::ofstream &stream, const std::wstring &path)
 {
     stream.open(path, std::ios::binary);
 }
+#endif
 
-void open_stream(std::ifstream &stream, const std::string &path)
+#ifdef __cpp_lib_char8_t
+void open_stream(std::ifstream &stream, std::u8string_view path)
 {
+#ifdef _MSC_VER
     open_stream(stream, xlnt::path(path).wstring());
-}
-
-void open_stream(std::ofstream &stream, const std::string &path)
-{
-    open_stream(stream, xlnt::path(path).wstring());
-}
 #else
-void open_stream(std::ifstream &stream, const std::string &path)
-{
-    stream.open(path, std::ios::binary);
+    // TODO: this cannot work if the user's locale is not UTF-8. In such cases we cannot ensure
+    // that this always works - however, in such cases we can still attempt to do a conversion to
+    // the locale encoding, which will still work if the string can be represented
+    // with the user's locale encoding.
+    stream.open(to_const_char_ptr(path.data()), std::ios::binary);
+#endif
 }
 
-void open_stream(std::ofstream &stream, const std::string &path)
+void open_stream(std::ofstream &stream, std::u8string_view path)
 {
-    stream.open(path, std::ios::binary);
+#ifdef _MSC_VER
+    open_stream(stream, xlnt::path(path).wstring());
+#else
+    // TODO: this cannot work if the user's locale is not UTF-8. In such cases we cannot ensure
+    // that this always works - however, in such cases we can still attempt to do a conversion to
+    // the locale encoding, which will still work if the string can be represented
+    // with the user's locale encoding.
+    stream.open(to_const_char_ptr(path.data()), std::ios::binary);
+#endif
 }
 #endif
 

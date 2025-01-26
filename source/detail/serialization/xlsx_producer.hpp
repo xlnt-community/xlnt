@@ -24,11 +24,24 @@
 
 #pragma once
 
-#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <type_traits>
 #include <vector>
+
+// If available, allow using C++20 feature test macros for precise feature testing. Useful for compilers
+// that partially implement certain features.
+#ifdef __has_include
+# if __has_include(<version>)
+#   include <version>
+# endif
+#endif
+
+#ifdef __has_include
+# if __has_include(<string_view>)
+#   include <string_view>
+# endif
+#endif
 
 #include <detail/constants.hpp>
 #include <detail/external/include_libstudxml.hpp>
@@ -73,6 +86,10 @@ public:
 	void write(std::ostream &destination);
 
     void write(std::ostream &destination, const std::string &password);
+
+#ifdef __cpp_lib_char8_t
+    void write(std::ostream &destination, std::u8string_view password);
+#endif
 
 private:
     friend class xlnt::streaming_workbook_writer;

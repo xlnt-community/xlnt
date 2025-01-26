@@ -26,12 +26,31 @@
 #include <string>
 #include <vector>
 
+// If available, allow using C++20 feature test macros for precise feature testing. Useful for compilers
+// that partially implement certain features.
+#ifdef __has_include
+# if __has_include(<version>)
+#   include <version>
+# endif
+#endif
+
+#ifdef __has_include
+# if __has_include(<string_view>)
+#   include <string_view>
+# endif
+#endif
+
 #include <xlnt/xlnt_config.hpp>
+#include <detail/xlnt_config_impl.hpp>
 
 namespace xlnt {
 namespace detail {
 
-std::vector<std::uint8_t> XLNT_API_INTERNAL encrypt_xlsx(const std::vector<std::uint8_t> &bytes, const std::string &password);
+XLNT_API_INTERNAL std::vector<std::uint8_t> encrypt_xlsx(const std::vector<std::uint8_t> &bytes, const std::string &password);
+
+#ifdef __cpp_lib_char8_t
+XLNT_API_INTERNAL std::vector<std::uint8_t> encrypt_xlsx(const std::vector<std::uint8_t> &bytes, std::u8string_view password);
+#endif
 
 } // namespace detail
 } // namespace xlnt

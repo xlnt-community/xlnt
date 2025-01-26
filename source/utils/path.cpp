@@ -39,6 +39,7 @@
 
 #include <xlnt/utils/path.hpp>
 #include <detail/external/include_windows.hpp>
+#include <detail/utils/string_helpers.hpp>
 
 namespace {
 
@@ -158,6 +159,21 @@ path::path(const std::string &path_string, char sep)
         }
     }
 }
+
+#ifdef __cpp_lib_char8_t
+path::path(std::u8string_view path_string)
+    : path(detail::to_string_copy(path_string))
+{
+
+}
+
+path::path(std::u8string_view path_string, char sep)
+    : path(detail::to_string_copy(path_string), sep)
+{
+
+}
+#endif
+
 
 // general attributes
 
@@ -319,6 +335,13 @@ path path::append(const std::string &to_append) const
 
     return copy;
 }
+
+#ifdef __cpp_lib_char8_t
+path path::append(std::u8string_view to_append) const
+{
+    return append(detail::to_string_copy(to_append));
+}
+#endif
 
 path path::append(const path &to_append) const
 {

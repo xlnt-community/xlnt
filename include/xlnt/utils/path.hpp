@@ -28,6 +28,20 @@
 #include <utility>
 #include <vector>
 
+// If available, allow using C++20 feature test macros for precise feature testing. Useful for compilers
+// that partially implement certain features.
+#ifdef __has_include
+# if __has_include(<version>)
+#   include <version>
+# endif
+#endif
+
+#ifdef __has_include
+# if __has_include(<string_view>)
+#   include <string_view>
+# endif
+#endif
+
 #include <xlnt/xlnt_config.hpp>
 
 namespace xlnt {
@@ -57,6 +71,18 @@ public:
     /// Construct a path from a string with an explicit directory seprator.
     /// </summary>
     path(const std::string &path_string, char sep);
+
+#ifdef __cpp_lib_char8_t
+    /// <summary>
+    /// Counstruct a path from a string representing the path.
+    /// </summary>
+    explicit path(std::u8string_view path_string);
+
+    /// <summary>
+    /// Construct a path from a string with an explicit directory seprator.
+    /// </summary>
+    path(std::u8string_view path_string, char sep);
+#endif
 
     // general attributes
 
@@ -166,6 +192,13 @@ public:
     /// Append the provided part to this path and return the result.
     /// </summary>
     path append(const std::string &to_append) const;
+
+#ifdef __cpp_lib_char8_t
+    /// <summary>
+    /// Append the provided part to this path and return the result.
+    /// </summary>
+    path append(std::u8string_view to_append) const;
+#endif
 
     /// <summary>
     /// Append the provided part to this path and return the result.

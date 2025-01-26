@@ -15,7 +15,7 @@ set(COMBINED_PROJECT TRUE)
 option(STATIC "Set to ON to build xlnt as a static library instead of a shared library" OFF)
 
 # C++ language standard to use
-set(XLNT_CXX_VALID_LANGS 11 14 17)
+set(XLNT_CXX_VALID_LANGS 11 14 17 20 23 26)
 set(XLNT_CXX_LANG "14" CACHE STRING "C++ language features to compile with")
 # enumerate allowed values for cmake gui
 set_property(CACHE XLNT_CXX_LANG PROPERTY STRINGS ${XLNT_CXX_VALID_LANGS})

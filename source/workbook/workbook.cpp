@@ -24,10 +24,8 @@
 // @author: see AUTHORS file
 
 #include <algorithm>
-#include <array>
 #include <fstream>
 #include <functional>
-#include <set>
 
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/packaging/manifest.hpp>
@@ -521,6 +519,14 @@ workbook::workbook(const xlnt::path &file, const std::string &password)
     load(file, password);
 }
 
+#ifdef __cpp_lib_char8_t
+workbook::workbook(const xlnt::path &file, std::u8string_view password)
+{
+    *this = empty();
+    load(file, password);
+}
+#endif
+
 workbook::workbook(std::istream &data)
 {
     *this = empty();
@@ -532,6 +538,14 @@ workbook::workbook(std::istream &data, const std::string &password)
     *this = empty();
     load(data, password);
 }
+
+#ifdef __cpp_lib_char8_t
+workbook::workbook(std::istream &data, std::u8string_view password)
+{
+    *this = empty();
+    load(data, password);
+}
+#endif
 
 workbook::workbook(detail::workbook_impl *impl)
     : d_(impl)
@@ -961,6 +975,21 @@ void workbook::load(const path &filename, const std::string &password)
     return load(file_stream, password);
 }
 
+#ifdef __cpp_lib_char8_t
+void workbook::load(const xlnt::path &filename, std::u8string_view password)
+{
+    std::ifstream file_stream;
+    open_stream(file_stream, filename.string());
+
+    if (!file_stream.good())
+    {
+        throw xlnt::exception("file not found " + filename.string());
+    }
+
+    return load(file_stream, password);
+}
+#endif
+
 void workbook::load(const std::vector<std::uint8_t> &data, const std::string &password)
 {
     if (data.size() < 22) // the shortest ZIP file is 22 bytes
@@ -973,12 +1002,35 @@ void workbook::load(const std::vector<std::uint8_t> &data, const std::string &pa
     load(data_stream, password);
 }
 
+#ifdef __cpp_lib_char8_t
+void workbook::load(const std::vector<std::uint8_t> &data, std::u8string_view password)
+{
+    if (data.size() < 22) // the shortest ZIP file is 22 bytes
+    {
+        throw xlnt::exception("file is empty or malformed");
+    }
+
+    xlnt::detail::vector_istreambuf data_buffer(data);
+    std::istream data_stream(&data_buffer);
+    load(data_stream, password);
+}
+#endif
+
 void workbook::load(std::istream &stream, const std::string &password)
 {
     clear();
     detail::xlsx_consumer consumer(*this);
     consumer.read(stream, password);
 }
+
+#ifdef __cpp_lib_char8_t
+void workbook::load(std::istream &stream, std::u8string_view password)
+{
+    clear();
+    detail::xlsx_consumer consumer(*this);
+    consumer.read(stream, password);
+}
+#endif
 
 void workbook::save(std::vector<std::uint8_t> &data) const
 {
@@ -993,6 +1045,15 @@ void workbook::save(std::vector<std::uint8_t> &data, const std::string &password
     std::ostream data_stream(&data_buffer);
     save(data_stream, password);
 }
+
+#ifdef __cpp_lib_char8_t
+void workbook::save(std::vector<std::uint8_t> &data, std::u8string_view password) const
+{
+    xlnt::detail::vector_ostreambuf data_buffer(data);
+    std::ostream data_stream(&data_buffer);
+    save(data_stream, password);
+}
+#endif
 
 void workbook::save(const std::string &filename) const
 {
@@ -1018,6 +1079,15 @@ void workbook::save(const path &filename, const std::string &password) const
     save(file_stream, password);
 }
 
+#ifdef __cpp_lib_char8_t
+void workbook::save(const xlnt::path &filename, std::u8string_view password) const
+{
+    std::ofstream file_stream;
+    open_stream(file_stream, filename.string());
+    save(file_stream, password);
+}
+#endif
+
 void workbook::save(std::ostream &stream) const
 {
     detail::xlsx_producer producer(*this);
@@ -1029,6 +1099,14 @@ void workbook::save(std::ostream &stream, const std::string &password) const
     detail::xlsx_producer producer(*this);
     producer.write(stream, password);
 }
+
+#ifdef __cpp_lib_char8_t
+void workbook::save(std::ostream &stream, std::u8string_view password) const
+{
+    detail::xlsx_producer producer(*this);
+    producer.write(stream, password);
+}
+#endif
 
 #ifdef _MSC_VER
 void workbook::save(const std::wstring &filename) const
@@ -1053,6 +1131,36 @@ void workbook::load(const std::wstring &filename)
 }
 
 void workbook::load(const std::wstring &filename, const std::string &password)
+{
+    std::ifstream file_stream;
+    open_stream(file_stream, filename);
+    load(file_stream, password);
+}
+#endif
+
+#ifdef __cpp_lib_char8_t
+void workbook::save(std::u8string_view filename) const
+{
+    std::ofstream file_stream;
+    open_stream(file_stream, filename);
+    save(file_stream);
+}
+
+void workbook::save(std::u8string_view filename, std::u8string_view password) const
+{
+    std::ofstream file_stream;
+    open_stream(file_stream, filename);
+    save(file_stream, password);
+}
+
+void workbook::load(std::u8string_view filename)
+{
+    std::ifstream file_stream;
+    open_stream(file_stream, filename);
+    load(file_stream);
+}
+
+void workbook::load(std::u8string_view filename, std::u8string_view password)
 {
     std::ifstream file_stream;
     open_stream(file_stream, filename);
