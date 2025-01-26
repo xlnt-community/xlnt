@@ -36,6 +36,9 @@ foreach(SAMPLE_SOURCE IN ITEMS ${SAMPLE_SOURCES})
   # Need to use some test helpers
   target_include_directories(${SAMPLE_EXECUTABLE}
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../tests)
+  # Some helpers also need further internal includes
+  target_include_directories(${SAMPLE_EXECUTABLE}
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../source)
   target_compile_definitions(${SAMPLE_EXECUTABLE}
     PRIVATE XLNT_SAMPLE_DATA_DIR="${XLNT_SAMPLE_DATA_DIR}")
 
