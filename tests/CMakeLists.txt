@@ -51,6 +51,7 @@ set(HELPERS ${HELPERS_HEADERS} ${HELPERS_SOURCES})
 set(RUNNER ${CMAKE_CURRENT_SOURCE_DIR}/runner.cpp)
 
 if(COVERAGE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
 endif()
 
