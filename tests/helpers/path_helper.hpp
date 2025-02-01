@@ -3,23 +3,14 @@
 #include <fstream>
 #include <string>
 
-// If available, allow using C++20 feature test macros for precise feature testing. Useful for compilers
-// that partially implement certain features.
-#ifdef __has_include
-# if __has_include(<version>)
-#   include <version>
-# endif
-#endif
-
-#ifdef __has_include
-# if __has_include(<string_view>)
-#   include <string_view>
-# endif
-#endif
-
 #include <xlnt/utils/exceptions.hpp>
 #include <xlnt/utils/path.hpp>
 #include <detail/utils/string_helpers.hpp>
+#include <xlnt/internal/features.hpp>
+
+#if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
+  #include <string_view>
+#endif
 
 #ifndef XLNT_TEST_DATA_DIR
 #define XLNT_TEST_DATA_DIR ""
@@ -36,84 +27,57 @@
 class path_helper
 {
 public:
-    static xlnt::path test_data_directory(const std::string &append = "")
+    static xlnt::path test_data_directory()
     {
-        // Note: the following weird cast ensures that the string is UTF-8 encoded at all costs!
-        static const std::string data_dir = U8_CAST_CONST_LITERAL(U8STRING_LITERAL(XLNT_TEST_DATA_DIR));
+        static const std::string data_dir = LITERAL_AS_U8(XLNT_TEST_DATA_DIR);
         return xlnt::path(data_dir);
     }
-
-#ifdef __cpp_lib_char8_t
-    static xlnt::path test_data_directory_u8(std::u8string_view append = u8"")
-    {
-        static constexpr std::u8string_view data_dir = U8STRING_LITERAL(XLNT_TEST_DATA_DIR);
-        return xlnt::path(data_dir);
-    }
-#endif
 
     static xlnt::path test_file(const std::string &filename)
     {
         return test_data_directory().append(xlnt::path(filename));
     }
 
-#ifdef __cpp_lib_char8_t
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
     static xlnt::path test_file(std::u8string_view filename)
     {
-        return test_data_directory_u8().append(xlnt::path(filename));
+        return test_data_directory().append(xlnt::path(filename));
     }
 #endif
 
-    static xlnt::path benchmark_data_directory(const std::string &append = "")
+    static xlnt::path benchmark_data_directory()
     {
-        // Note: the following weird cast ensures that the string is UTF-8 encoded at all costs!
-        static const std::string data_dir = U8_CAST_CONST_LITERAL(U8STRING_LITERAL(XLNT_BENCHMARK_DATA_DIR));
+        static const std::string data_dir = LITERAL_AS_U8(XLNT_BENCHMARK_DATA_DIR);
         return xlnt::path(data_dir);
     }
-
-#ifdef __cpp_lib_char8_t
-    static xlnt::path benchmark_data_directory_u8(std::u8string_view append = u8"")
-    {
-        static constexpr std::u8string_view data_dir = U8STRING_LITERAL(XLNT_BENCHMARK_DATA_DIR);
-        return xlnt::path(data_dir);
-    }
-#endif
 
     static xlnt::path benchmark_file(const std::string &filename)
     {
         return benchmark_data_directory().append(xlnt::path(filename));
     }
 
-#ifdef __cpp_lib_char8_t
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
     static xlnt::path benchmark_file(std::u8string_view filename)
     {
-        return benchmark_data_directory_u8().append(xlnt::path(filename));
+        return benchmark_data_directory().append(xlnt::path(filename));
     }
 #endif
 
-    static xlnt::path sample_data_directory(const std::string &append = "")
+    static xlnt::path sample_data_directory()
     {
-        // Note: the following weird cast ensures that the string is UTF-8 encoded at all costs!
-        static const std::string data_dir = U8_CAST_CONST_LITERAL(U8STRING_LITERAL(XLNT_SAMPLE_DATA_DIR));
+        static const std::string data_dir = LITERAL_AS_U8(XLNT_SAMPLE_DATA_DIR);
         return xlnt::path(data_dir);
     }
-
-#ifdef __cpp_lib_char8_t
-    static xlnt::path sample_data_directory_u8(std::u8string_view append = u8"")
-    {
-        static constexpr std::u8string_view data_dir = U8STRING_LITERAL(XLNT_SAMPLE_DATA_DIR);
-        return xlnt::path(data_dir);
-    }
-#endif
 
     static xlnt::path sample_file(const std::string &filename)
     {
         return sample_data_directory().append(xlnt::path(filename));
     }
 
-#ifdef __cpp_lib_char8_t
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
     static xlnt::path sample_file(std::u8string_view filename)
     {
-        return sample_data_directory_u8().append(xlnt::path(filename));
+        return sample_data_directory().append(xlnt::path(filename));
     }
 #endif
 

@@ -25,21 +25,44 @@
 
 #include <xlnt/utils/environment.hpp>
 
+// Header detection helper. Available beginning with C++17.
+#ifdef __has_include
+  #define XLNT_HAS_INCLUDE(HEADER_NAME) __has_include(HEADER_NAME)
+#else
+  #define XLNT_HAS_INCLUDE(HEADER_NAME) 0
+#endif
+
 // If available, allow using C++20 feature test macros for precise feature testing. Useful for compilers
 // that partially implement certain features.
-#ifdef __has_include
-# if __has_include(<version>)
-#   include <version>
-# endif
+#if XLNT_HAS_INCLUDE(<version>)
+  #include <version>
 #endif
 
 // Note: the first check ensures that a compiler partially implementing C++17 but implementing std::to_chars
 // would be detected correctly, as long as the C++20 feature test macros are implemented. The second check
 // ensures that a fully implemented C++17 compiler would be detected as well.
-#if __cpp_lib_to_chars >= 201611L || XLNT_HAS_CPP_VERSION(XLNT_CPP_17)
+#if defined(__cpp_lib_to_chars) || XLNT_HAS_CPP_VERSION(XLNT_CPP_17)
   #define XLNT_DETAIL_FEATURE_TO_CHARS 1
 #else
   #define XLNT_DETAIL_FEATURE_TO_CHARS -1
+#endif
+
+#if defined(__cpp_lib_string_view) || XLNT_HAS_CPP_VERSION(XLNT_CPP_17)
+  #define XLNT_DETAIL_FEATURE_STRING_VIEW 1
+#else
+  #define XLNT_DETAIL_FEATURE_STRING_VIEW -1
+#endif
+
+#if defined(__cpp_lib_filesystem) || XLNT_HAS_CPP_VERSION(XLNT_CPP_17)
+  #define XLNT_DETAIL_FEATURE_FILESYSTEM 1
+#else
+  #define XLNT_DETAIL_FEATURE_FILESYSTEM -1
+#endif
+
+#if XLNT_DETAIL_FEATURE_STRING_VIEW == 1 && defined(__cpp_lib_char8_t)
+  #define XLNT_DETAIL_FEATURE_U8_STRING_VIEW 1
+#else
+  #define XLNT_DETAIL_FEATURE_U8_STRING_VIEW -1
 #endif
 
 // If you get a division by zero error, you probably misspelled the feature name.

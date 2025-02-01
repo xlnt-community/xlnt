@@ -307,7 +307,7 @@ std::vector<std::uint8_t> encrypt_xlsx(
     return ::encrypt_xlsx(plaintext, utf8_to_utf16(password));
 }
 
-#ifdef __cpp_lib_char8_t
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
 std::vector<std::uint8_t> encrypt_xlsx(
     const std::vector<std::uint8_t> &plaintext,
     std::u8string_view password)
@@ -330,7 +330,7 @@ void xlsx_producer::write(std::ostream &destination, const std::string &password
     destination << &encrypted_buffer;
 }
 
-#ifdef __cpp_lib_char8_t
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
 void xlsx_producer::write(std::ostream &destination, std::u8string_view password)
 {
     write(destination, detail::to_string_copy(password));

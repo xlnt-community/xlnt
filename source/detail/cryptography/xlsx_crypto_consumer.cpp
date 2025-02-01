@@ -340,7 +340,7 @@ std::vector<std::uint8_t> decrypt_xlsx(const std::vector<std::uint8_t> &data, co
     return ::decrypt_xlsx(data, utf8_to_utf16(password));
 }
 
-#ifdef __cpp_lib_char8_t
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
 std::vector<std::uint8_t> decrypt_xlsx(const std::vector<std::uint8_t> &data, std::u8string_view password)
 {
     return ::decrypt_xlsx(data, utf8_to_utf16(password));
@@ -356,7 +356,7 @@ void xlsx_consumer::read(std::istream &source, const std::string &password)
     read(decrypted_stream);
 }
 
-#ifdef __cpp_lib_char8_t
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
 void xlsx_consumer::read(std::istream &source, std::u8string_view password)
 {
     return read(source, detail::to_string_copy(password));

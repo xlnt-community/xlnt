@@ -30,19 +30,10 @@
 #include <helpers/xml_helper.hpp>
 #include <detail/serialization/xlsx_consumer.hpp>
 #include <detail/utils/string_helpers.hpp>
+#include <xlnt/internal/features.hpp>
 
-// If available, allow using C++20 feature test macros for precise feature testing. Useful for compilers
-// that partially implement certain features.
-#ifdef __has_include
-# if __has_include(<version>)
-#   include <version>
-# endif
-#endif
-
-#ifdef __has_include
-# if __has_include(<string_view>)
-#   include <string_view>
-# endif
+#if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
+  #include <string_view>
 #endif
 
 class serialization_test_suite : public test_suite
@@ -369,7 +360,7 @@ public:
         // L"/9_unicode_\u039B_\U0001F607.xlsx" gives the correct output
         const auto path = LSTRING_LITERAL(XLNT_TEST_DATA_DIR) L"/9_unicode_\u039B_\U0001F607.xlsx"; // L"/9_unicode_Λ_😇.xlsx"
         wb.load(path);
-        xlnt_assert_equals(wb.active_sheet().cell("A1").value<std::string>(), U8_CAST_CONST_LITERAL(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
+        xlnt_assert_equals(wb.active_sheet().cell("A1").value<std::string>(), U8_CAST_LITERAL(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
 #endif
 
 #ifndef __MINGW32__
@@ -378,7 +369,7 @@ public:
         // u8"/9_unicode_\u039B_\U0001F607.xlsx" gives the correct output
         const auto path2 = U8STRING_LITERAL(XLNT_TEST_DATA_DIR) u8"/9_unicode_\u039B_\U0001F607.xlsx"; // u8"/9_unicode_Λ_😇.xlsx"
         wb2.load(path2);
-        xlnt_assert_equals(wb2.active_sheet().cell("A1").value<std::string>(), U8_CAST_CONST_LITERAL(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
+        xlnt_assert_equals(wb2.active_sheet().cell("A1").value<std::string>(), U8_CAST_LITERAL(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
 #endif
     }
 
@@ -636,7 +627,7 @@ public:
         return true;
     }
 
-#ifdef __cpp_lib_char8_t
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
     bool round_trip_matches_rw(const xlnt::path &source, std::u8string_view password)
     {
         return round_trip_matches_rw(source, xlnt::detail::to_string_copy(password));

@@ -28,21 +28,12 @@
 #include <utility>
 #include <vector>
 
-// If available, allow using C++20 feature test macros for precise feature testing. Useful for compilers
-// that partially implement certain features.
-#ifdef __has_include
-# if __has_include(<version>)
-#   include <version>
-# endif
-#endif
-
-#ifdef __has_include
-# if __has_include(<string_view>)
-#   include <string_view>
-# endif
-#endif
-
 #include <xlnt/xlnt_config.hpp>
+#include <xlnt/internal/features.hpp>
+
+#if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
+  #include <string_view>
+#endif
 
 namespace xlnt {
 
@@ -72,7 +63,7 @@ public:
     /// </summary>
     path(const std::string &path_string, char sep);
 
-#ifdef __cpp_lib_char8_t
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
     /// <summary>
     /// Counstruct a path from a string representing the path.
     /// </summary>
@@ -193,7 +184,7 @@ public:
     /// </summary>
     path append(const std::string &to_append) const;
 
-#ifdef __cpp_lib_char8_t
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
     /// <summary>
     /// Append the provided part to this path and return the result.
     /// </summary>

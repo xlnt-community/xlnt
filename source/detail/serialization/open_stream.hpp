@@ -27,18 +27,10 @@
 #include <fstream>
 #include <string>
 
-// If available, allow using C++20 feature test macros for precise feature testing. Useful for compilers
-// that partially implement certain features.
-#ifdef __has_include
-# if __has_include(<version>)
-#   include <version>
-# endif
-#endif
+#include <xlnt/internal/features.hpp>
 
-#ifdef __has_include
-# if __has_include(<string_view>)
-#   include <string_view>
-# endif
+#if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
+  #include <string_view>
 #endif
 
 namespace xlnt {
@@ -48,7 +40,7 @@ void open_stream(std::ifstream &stream, const std::string &path);
 
 void open_stream(std::ofstream &stream, const std::string &path);
 
-#ifdef __cpp_lib_char8_t
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
 void open_stream(std::ifstream &stream, std::u8string_view path);
 
 void open_stream(std::ofstream &stream, std::u8string_view path);

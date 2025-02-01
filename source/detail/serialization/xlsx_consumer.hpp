@@ -32,23 +32,14 @@
 #include <unordered_map>
 #include <vector>
 
-// If available, allow using C++20 feature test macros for precise feature testing. Useful for compilers
-// that partially implement certain features.
-#ifdef __has_include
-# if __has_include(<version>)
-#   include <version>
-# endif
-#endif
-
-#ifdef __has_include
-# if __has_include(<string_view>)
-#   include <string_view>
-# endif
-#endif
-
 #include <detail/external/include_libstudxml.hpp>
 #include <detail/serialization/zstream.hpp>
 #include <detail/serialization/serialisation_helpers.hpp>
+#include <xlnt/internal/features.hpp>
+
+#if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
+  #include <string_view>
+#endif
 
 namespace xlnt {
 
@@ -87,7 +78,7 @@ public:
 
 	void read(std::istream &source, const std::string &password);
 
-#ifdef __cpp_lib_char8_t
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
 	void read(std::istream &source, std::u8string_view password);
 #endif
 

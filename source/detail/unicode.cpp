@@ -95,7 +95,7 @@ size_t string_length(const std::string &utf8_string)
     return static_cast<std::size_t>(utf8::distance(utf8_string.begin(), end_it));
 }
 
-#ifdef __cpp_lib_char8_t
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
 std::u16string utf8_to_utf16(std::u8string_view utf8_string)
 {
     std::u16string result;
@@ -110,14 +110,14 @@ std::u32string utf8_to_utf32(std::u8string_view utf8_string)
     return result;
 }
 
-std::u8string utf16_to_utf8(std::u16string_view utf16_string)
+std::u8string utf16_to_utf8_u8(std::u16string_view utf16_string)
 {
     std::u8string result;
     utf8::utf16to8(utf16_string.begin(), utf16_string.end(), std::back_inserter(result));
     return result;
 }
 
-std::u8string utf32_to_utf8(std::u32string_view utf32_string)
+std::u8string utf32_to_utf8_u8(std::u32string_view utf32_string)
 {
     std::u8string result;
     utf8::utf32to8(utf32_string.begin(), utf32_string.end(), std::back_inserter(result));

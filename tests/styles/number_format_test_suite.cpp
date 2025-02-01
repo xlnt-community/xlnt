@@ -23,6 +23,7 @@
 // @author: see AUTHORS file
 
 #include <iostream>
+#include <array>
 
 #include <helpers/test_suite.hpp>
 

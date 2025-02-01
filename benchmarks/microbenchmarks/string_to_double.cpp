@@ -9,7 +9,7 @@
 #include <random>
 #include <sstream>
 #include <detail/serialization/serialisation_helpers.hpp>
-#include <detail/utils/features.hpp>
+#include <xlnt/internal/features.hpp>
 
 namespace {
 
