@@ -324,6 +324,7 @@ workflows:
     jobs:
       - build-gcc:
           name: samples-benchmarks-coverage-gcc
+          image: PLACEHOLDER_IMAGE(gcc_cmake_latest)
           cxx-ver: "23"
           build-type: Debug
           static: "ON"
