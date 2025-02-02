@@ -38,6 +38,22 @@
   #include <version>
 #endif
 
+// If you get a division by zero error, you probably misspelled the feature name.
+// Developer note: XLNT_DETAIL_FEATURE_##feature should be set to
+//    1: if feature is supported
+//    -1: if the feature is not supported
+/// <summary>
+/// Returns whether the `feature` is supported by the current build configuration.
+/// </summary>
+/// Currently, the following features could be tested:
+///  - TO_CHARS: returns whether compliant std::from_chars and std::to_chars implementations are available
+///  - STRING_VIEW: returns whether compliant std::string_view, std::wstring_view, std::u16string_view and
+///                 std::u32string_view implementations are available (note: std::u8string_view is part
+///                 of C++20 - see U8_STRING_VIEW below)
+///  - FILESYSTEM: returns whether a compliant std::filesystem implementations is available
+///  - U8_STRING_VIEW: returns whether a compliant std::u8string_view implementation is available
+#define XLNT_HAS_FEATURE(feature) (1/XLNT_DETAIL_FEATURE_##feature == 1)
+
 // Note: the first check ensures that a compiler partially implementing C++17 but implementing std::to_chars
 // would be detected correctly, as long as the C++20 feature test macros are implemented. The second check
 // ensures that a fully implemented C++17 compiler would be detected as well.
@@ -59,19 +75,8 @@
   #define XLNT_DETAIL_FEATURE_FILESYSTEM -1
 #endif
 
-#if XLNT_DETAIL_FEATURE_STRING_VIEW == 1 && defined(__cpp_lib_char8_t)
+#if XLNT_HAS_FEATURE(STRING_VIEW) && defined(__cpp_lib_char8_t)
   #define XLNT_DETAIL_FEATURE_U8_STRING_VIEW 1
 #else
   #define XLNT_DETAIL_FEATURE_U8_STRING_VIEW -1
 #endif
-
-// If you get a division by zero error, you probably misspelled the feature name.
-// Developer note: XLNT_DETAIL_FEATURE_##feature should be set to
-//    1: if feature is supported
-//    -1: if the feature is not supported
-/// <summary>
-/// Returns whether the `feature` is supported by the current build configuration.
-/// </summary>
-/// Currently, the following features could be tested:
-///  - TO_CHARS: returns whether compliant std::from_chars and std::to_chars implementations are available
-#define XLNT_HAS_FEATURE(feature) (1/XLNT_DETAIL_FEATURE_##feature == 1)

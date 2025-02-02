@@ -324,7 +324,7 @@ workflows:
     jobs:
       - build-gcc:
           name: samples-benchmarks-coverage-gcc
-          cxx-ver: "11"
+          cxx-ver: "23"
           build-type: Debug
           static: "ON"
           samples: "ON"

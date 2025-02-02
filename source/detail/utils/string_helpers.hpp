@@ -50,15 +50,15 @@ namespace detail {
 // Casts a UTF-8 string literal to a narrow string literal without changing its encoding.
 #ifdef __cpp_char8_t
 // For C++20 and newer, interpret as UTF-8 and then cast to string literal
-#define U8_CAST_LITERAL(a) xlnt::detail::to_char_ptr(a)
+#define U8_TO_CHAR_PTR(a) xlnt::detail::to_char_ptr(a)
 #else
 // For C++11, C++14 and C++17, simply interpret as UTF-8, which works with classic string literals.
-#define U8_CAST_LITERAL(a) a
+#define U8_TO_CHAR_PTR(a) a
 #endif
 
 
 // The following weird cast ensures that the string is UTF-8 encoded at all costs!
-#define LITERAL_AS_U8(a) U8_CAST_LITERAL(U8STRING_LITERAL(a))
+#define ENSURE_UTF8_LITERAL(a) U8_TO_CHAR_PTR(U8STRING_LITERAL(a))
 
 #ifdef __cpp_char8_t
 /// Casts const char8_t arrays from C++20 to const char arrays.
