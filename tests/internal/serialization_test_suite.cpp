@@ -603,7 +603,8 @@ public:
         return xml_helper::xlsx_archives_match(xlnt::detail::to_vector(source_stream), destination);
     }
 
-    bool round_trip_matches_rw(const xlnt::path &source, const std::string &password)
+    template <typename T>
+    bool round_trip_matches_rw(const xlnt::path &source, const T &password)
     {
 #ifdef _MSC_VER
         std::ifstream source_stream(source.wstring(), std::ios::binary);
@@ -617,22 +618,15 @@ public:
 
         std::vector<std::uint8_t> destination_data;
         //source_workbook.save(destination_data, password);
-        source_workbook.save("encrypted.xlsx", password);
+        source_workbook.save(xlnt::path("encrypted.xlsx"), password);
 
         //xlnt::workbook temp;
-        //temp.load("encrypted.xlsx", password);
+        //temp.load(xlnt::path("encrypted.xlsx"), password);
 
         //TODO: finish implementing encryption and uncomment this
         //return source_data == destination_data;
         return true;
     }
-
-#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
-    bool round_trip_matches_rw(const xlnt::path &source, std::u8string_view password)
-    {
-        return round_trip_matches_rw(source, xlnt::detail::to_string_copy(password));
-    }
-#endif
 
     void test_round_trip_rw_minimal()
     {
