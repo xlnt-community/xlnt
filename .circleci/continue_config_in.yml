@@ -42,13 +42,16 @@ jobs:
       skip-internal-tests:
         default: "OFF"
         type: string
+      warnings-as-errors:
+        default: "ON"
+        type: string
       image:
         default: PLACEHOLDER_IMAGE(gcc7_cmake3.9.5)
         type: string
     steps:
       - checkout
       - run: git submodule update --init --recursive
-      - run: cmake -D XLNT_ALL_WARNINGS_AS_ERRORS=ON -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D XLNT_MICROBENCH_ENABLED=<< parameters.micro-benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> -D XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR=de_DE -D XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR=ps_AF .
+      - run: cmake -D XLNT_ALL_WARNINGS_AS_ERRORS=<< parameters.warnings-as-errors >> -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D XLNT_MICROBENCH_ENABLED=<< parameters.micro-benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> -D XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR=de_DE -D XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR=ps_AF .
       - run: cmake --build . -- -j2
       - when:
           condition:
@@ -326,6 +329,7 @@ workflows:
           name: samples-benchmarks-coverage-gcc
           image: PLACEHOLDER_IMAGE(gcc_cmake_latest)
           cxx-ver: "23"
+          warnings-as-errors: "ON"
           build-type: Debug
           static: "ON"
           samples: "ON"
