@@ -49,6 +49,7 @@ public:
         register_test(test_load_non_xlsx);
         register_test(test_decrypt_agile);
         register_test(test_decrypt_libre_office);
+        register_test(test_decrypt_libre_office_constructor);
         register_test(test_decrypt_standard);
         register_test(test_decrypt_numbers);
         register_test(test_read_unicode_filename);
@@ -334,6 +335,13 @@ public:
         const auto path = path_helper::test_file("6_encrypted_libre.xlsx");
         xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::exception);
         xlnt_assert_throws_nothing(wb.load(path, u8"\u043F\u0430\u0440\u043E\u043B\u044C")); // u8"пароль"
+    }
+
+    void test_decrypt_libre_office_constructor()
+    {
+        const auto path = path_helper::test_file("6_encrypted_libre.xlsx");
+        xlnt_assert_throws(xlnt::workbook(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws_nothing(xlnt::workbook(path, u8"\u043F\u0430\u0440\u043E\u043B\u044C")); // u8"пароль"
     }
 
     void test_decrypt_standard()
