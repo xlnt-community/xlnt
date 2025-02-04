@@ -117,13 +117,13 @@ std::vector<std::string> split_path(const std::string &path, char delim)
 #ifdef _MSC_VER
 bool file_exists(const std::wstring &path)
 {
-    struct stat info;
+    struct _stat info;
     return _wstat(path.c_str(), &info) == 0 && (info.st_mode & S_IFREG);
 }
 
 bool directory_exists(const std::wstring &path)
 {
-    struct stat info;
+    struct _stat info;
     return _wstat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR);
 }
 #else
