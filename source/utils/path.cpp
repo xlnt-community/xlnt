@@ -114,17 +114,31 @@ std::vector<std::string> split_path(const std::string &path, char delim)
     return split;
 }
 
+#ifdef _MSC_VER
+bool file_exists(const std::wstring &path)
+{
+    struct stat info;
+    return _wstat(path.c_str(), &info) == 0 && (info.st_mode & S_IFREG);
+}
+
+bool directory_exists(const std::wstring &path)
+{
+    struct stat info;
+    return _wstat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR);
+}
+#else
 bool file_exists(const std::string &path)
 {
     struct stat info;
     return stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFREG);
 }
 
-bool directory_exists(const std::string path)
+bool directory_exists(const std::string &path)
 {
     struct stat info;
     return stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR);
 }
+#endif
 
 } // namespace
 
@@ -301,19 +315,31 @@ bool path::exists() const
 
 bool path::is_directory() const
 {
+#ifdef _MSC_VER
+    return directory_exists(wstring());
+#else
     return directory_exists(string());
+#endif
 }
 
 bool path::is_file() const
 {
+#ifdef _MSC_VER
+    return file_exists(wstring());
+#else
     return file_exists(string());
+#endif
 }
 
 // filesystem
 
 std::string path::read_contents() const
 {
+#ifdef _MSC_VER
+    std::ifstream f(wstring());
+#else
     std::ifstream f(string());
+#endif
     std::ostringstream ss;
     ss << f.rdbuf();
 
