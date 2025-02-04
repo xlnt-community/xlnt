@@ -22,9 +22,8 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <iostream>
-
 #include <xlnt/utils/path.hpp>
+#include <detail/utils/string_helpers.hpp>
 #include <helpers/path_helper.hpp>
 #include <helpers/temporary_file.hpp>
 #include <helpers/test_suite.hpp>
@@ -37,6 +36,10 @@ public:
         register_test(test_exists);
 #ifdef _MSC_VER
         register_test(test_msvc_empty_path_wide);
+#endif
+        register_test(test_append);
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+        register_test(test_append_u8);
 #endif
     }
 
@@ -63,5 +66,22 @@ public:
         xlnt_assert(path_wide.empty());
     }
 #endif
+
+    void test_append()
+    {
+        xlnt::path path("hello");
+        path = path.append("world");
+        xlnt_assert_equals(path.string(), "hello/world");
+    }
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+    void test_append_u8()
+    {
+        xlnt::path path(u8"🤔🥳😇");
+        path = path.append(u8"🍕🍟🍔");
+        xlnt_assert_equals(path.string(), U8_TO_CHAR_PTR(u8"🤔🥳😇/🍕🍟🍔"));
+    }
+#endif
+
 };
 static path_test_suite x;

@@ -53,6 +53,7 @@ public:
         register_test(test_decrypt_standard);
         register_test(test_decrypt_numbers);
         register_test(test_read_unicode_filename);
+        register_test(test_write_unicode_filename);
         register_test(test_comments);
         register_test(test_read_hyperlink);
         register_test(test_read_formulae);
@@ -378,6 +379,27 @@ public:
         const auto path2 = U8STRING_LITERAL(XLNT_TEST_DATA_DIR) u8"/9_unicode_\u039B_\U0001F607.xlsx"; // u8"/9_unicode_Λ_😇.xlsx"
         wb2.load(path2);
         xlnt_assert_equals(wb2.active_sheet().cell("A1").value<std::string>(), U8_TO_CHAR_PTR(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
+#endif
+    }
+
+    void test_write_unicode_filename()
+    {
+        // "/temp_unicode_Λ_😇.xlsx"
+        // "/temp_unicode_\u039B_\U0001F607.xlsx" gives the correct output
+#define TEMP_PATH "temp_unicode_\u039B_\U0001F607.xlsx"
+
+#ifdef _MSC_VER
+        xlnt::workbook wb;
+        const auto path = LSTRING_LITERAL(TEMP_PATH);
+        xlnt_assert_throws_nothing(wb.save(path));
+        xlnt_assert(xlnt::path(U8STRING_LITERAL(TEMP_PATH)).exists());
+#endif
+
+#ifndef __MINGW32__
+        xlnt::workbook wb2;
+        const auto path2 = U8STRING_LITERAL(TEMP_PATH);
+        xlnt_assert_throws_nothing(wb2.save(path2));
+        xlnt_assert(xlnt::path(path2).exists());
 #endif
     }
 
