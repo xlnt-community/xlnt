@@ -90,6 +90,9 @@ private:
 
     void open(std::istream &source);
 
+    template <typename T>
+    void read_internal(std::istream &source, const T &password);
+
     bool has_cell();
 
     /// <summary>

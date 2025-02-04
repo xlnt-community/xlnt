@@ -87,6 +87,9 @@ private:
 
     void open(std::ostream &destination);
 
+    template <typename T>
+    void write_internal(std::ostream &destination, const T &password);
+
     cell add_cell(const cell_reference &ref);
 
     worksheet add_worksheet(const std::string &title);
