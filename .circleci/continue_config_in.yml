@@ -238,7 +238,7 @@ workflows:
             parameters:
               cxx-ver:
                 - "11"
-                - "17"
+                - "23"
               build-type:
                 - Release
                 - Debug
@@ -252,8 +252,8 @@ workflows:
               # Exclude {static: ON, skip-internal-tests: ON} subset
               - {static: "ON", skip-internal-tests: "ON", cxx-ver: "11", build-type: Debug}
               - {static: "ON", skip-internal-tests: "ON", cxx-ver: "11", build-type: Release}
-              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "17", build-type: Debug}
-              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "17", build-type: Release}
+              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "23", build-type: Debug}
+              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "23", build-type: Release}
           filters:
             branches:
               ignore: gh-pages
@@ -329,7 +329,7 @@ workflows:
           name: samples-benchmarks-coverage-gcc
           image: PLACEHOLDER_IMAGE(gcc_cmake_latest)
           cxx-ver: "23"
-          warnings-as-errors: "OFF"
+          warnings-as-errors: "ON"
           build-type: Debug
           static: "ON"
           samples: "ON"

@@ -39,6 +39,7 @@
 
 #include <xlnt/utils/path.hpp>
 #include <detail/external/include_windows.hpp>
+#include <detail/utils/string_helpers.hpp>
 
 namespace {
 
@@ -113,17 +114,31 @@ std::vector<std::string> split_path(const std::string &path, char delim)
     return split;
 }
 
+#ifdef _MSC_VER
+bool file_exists(const std::wstring &path)
+{
+    struct _stat info;
+    return _wstat(path.c_str(), &info) == 0 && (info.st_mode & S_IFREG);
+}
+
+bool directory_exists(const std::wstring &path)
+{
+    struct _stat info;
+    return _wstat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR);
+}
+#else
 bool file_exists(const std::string &path)
 {
     struct stat info;
     return stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFREG);
 }
 
-bool directory_exists(const std::string path)
+bool directory_exists(const std::string &path)
 {
     struct stat info;
     return stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR);
 }
+#endif
 
 } // namespace
 
@@ -158,6 +173,21 @@ path::path(const std::string &path_string, char sep)
         }
     }
 }
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+path::path(std::u8string_view path_string)
+    : path(detail::to_string_copy(path_string))
+{
+
+}
+
+path::path(std::u8string_view path_string, char sep)
+    : path(detail::to_string_copy(path_string), sep)
+{
+
+}
+#endif
+
 
 // general attributes
 
@@ -285,19 +315,31 @@ bool path::exists() const
 
 bool path::is_directory() const
 {
+#ifdef _MSC_VER
+    return directory_exists(wstring());
+#else
     return directory_exists(string());
+#endif
 }
 
 bool path::is_file() const
 {
+#ifdef _MSC_VER
+    return file_exists(wstring());
+#else
     return file_exists(string());
+#endif
 }
 
 // filesystem
 
 std::string path::read_contents() const
 {
+#ifdef _MSC_VER
+    std::ifstream f(wstring());
+#else
     std::ifstream f(string());
+#endif
     std::ostringstream ss;
     ss << f.rdbuf();
 
@@ -319,6 +361,13 @@ path path::append(const std::string &to_append) const
 
     return copy;
 }
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+path path::append(std::u8string_view to_append) const
+{
+    return append(detail::to_string_copy(to_append));
+}
+#endif
 
 path path::append(const path &to_append) const
 {

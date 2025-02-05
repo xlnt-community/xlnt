@@ -26,8 +26,6 @@
 #pragma once
 
 #include <detail/xlnt_config_impl.hpp>
-#include <cstdint>
-#include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -37,6 +35,11 @@
 #include <detail/external/include_libstudxml.hpp>
 #include <detail/serialization/zstream.hpp>
 #include <detail/serialization/serialisation_helpers.hpp>
+#include <xlnt/internal/features.hpp>
+
+#if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
+  #include <string_view>
+#endif
 
 namespace xlnt {
 
@@ -75,13 +78,20 @@ public:
 
 	void read(std::istream &source, const std::string &password);
 
-        // For unit testing purpose only
-        void read_stylesheet (const std::string& xml);
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+	void read(std::istream &source, std::u8string_view password);
+#endif
+
+    // For unit testing purpose only
+    void read_stylesheet (const std::string& xml);
 
 private:
     friend class xlnt::streaming_workbook_reader;
 
     void open(std::istream &source);
+
+    template <typename T>
+    void read_internal(std::istream &source, const T &password);
 
     bool has_cell();
 

@@ -23,6 +23,7 @@
 // @author: see AUTHORS file
 
 #include <detail/serialization/serialisation_helpers.hpp>
+#include <xlnt/utils/numeric.hpp>
 #include <internal/locale_helpers.hpp>
 #include <helpers/test_suite.hpp>
 #include <cstring>

@@ -1,19 +1,20 @@
 #pragma once
 
-#include <array>
 #include <fstream>
 #include <string>
-#include <sstream>
 
 #include <xlnt/utils/exceptions.hpp>
 #include <xlnt/utils/path.hpp>
+#include <detail/utils/string_helpers.hpp>
+#include <xlnt/internal/features.hpp>
 
-#define STRING_LITERAL2(a) #a
-#define LSTRING_LITERAL2(a) L#a
-#define U8STRING_LITERAL2(a) u8#a
-#define STRING_LITERAL(a) STRING_LITERAL2(a)
-#define LSTRING_LITERAL(a) STRING_LITERAL2(a)
-#define U8STRING_LITERAL(a) STRING_LITERAL2(a)
+#if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
+  #include <string_view>
+#endif
+
+#ifndef XLNT_TEST_DATA_DIR
+#define XLNT_TEST_DATA_DIR ""
+#endif
 
 #ifndef XLNT_BENCHMARK_DATA_DIR
 #define XLNT_BENCHMARK_DATA_DIR ""
@@ -26,9 +27,9 @@
 class path_helper
 {
 public:
-    static xlnt::path test_data_directory(const std::string &append = "")
+    static xlnt::path test_data_directory()
     {
-        static const std::string data_dir = STRING_LITERAL(XLNT_TEST_DATA_DIR);
+        static const std::string data_dir = ENSURE_UTF8_LITERAL(XLNT_TEST_DATA_DIR);
         return xlnt::path(data_dir);
     }
 
@@ -37,9 +38,16 @@ public:
         return test_data_directory().append(xlnt::path(filename));
     }
 
-    static xlnt::path benchmark_data_directory(const std::string &append = "")
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+    static xlnt::path test_file(std::u8string_view filename)
     {
-        static const std::string data_dir = STRING_LITERAL(XLNT_BENCHMARK_DATA_DIR);
+        return test_data_directory().append(xlnt::path(filename));
+    }
+#endif
+
+    static xlnt::path benchmark_data_directory()
+    {
+        static const std::string data_dir = ENSURE_UTF8_LITERAL(XLNT_BENCHMARK_DATA_DIR);
         return xlnt::path(data_dir);
     }
 
@@ -48,9 +56,16 @@ public:
         return benchmark_data_directory().append(xlnt::path(filename));
     }
 
-    static xlnt::path sample_data_directory(const std::string &append = "")
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+    static xlnt::path benchmark_file(std::u8string_view filename)
     {
-        static const std::string data_dir = STRING_LITERAL(XLNT_SAMPLE_DATA_DIR);
+        return benchmark_data_directory().append(xlnt::path(filename));
+    }
+#endif
+
+    static xlnt::path sample_data_directory()
+    {
+        static const std::string data_dir = ENSURE_UTF8_LITERAL(XLNT_SAMPLE_DATA_DIR);
         return xlnt::path(data_dir);
     }
 
@@ -58,6 +73,13 @@ public:
     {
         return sample_data_directory().append(xlnt::path(filename));
     }
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+    static xlnt::path sample_file(std::u8string_view filename)
+    {
+        return sample_data_directory().append(xlnt::path(filename));
+    }
+#endif
 
     static void copy_file(const xlnt::path &source, const xlnt::path &destination, bool overwrite)
     {

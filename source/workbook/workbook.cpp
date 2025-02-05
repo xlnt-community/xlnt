@@ -24,10 +24,8 @@
 // @author: see AUTHORS file
 
 #include <algorithm>
-#include <array>
 #include <fstream>
 #include <functional>
-#include <set>
 
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/packaging/manifest.hpp>
@@ -515,11 +513,24 @@ workbook::workbook(const xlnt::path &file)
     load(file);
 }
 
-workbook::workbook(const xlnt::path &file, const std::string &password)
+template <typename T>
+void workbook::construct(const xlnt::path &file, const T &password)
 {
     *this = empty();
     load(file, password);
 }
+
+workbook::workbook(const xlnt::path &file, const std::string &password)
+{
+    construct(file, password);
+}
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+workbook::workbook(const xlnt::path &file, std::u8string_view password)
+{
+    construct(file, password);
+}
+#endif
 
 workbook::workbook(std::istream &data)
 {
@@ -527,11 +538,24 @@ workbook::workbook(std::istream &data)
     load(data);
 }
 
-workbook::workbook(std::istream &data, const std::string &password)
+template <typename T>
+void workbook::construct(std::istream &data, const T &password)
 {
     *this = empty();
     load(data, password);
 }
+
+workbook::workbook(std::istream &data, const std::string &password)
+{
+    construct(data, password);
+}
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+workbook::workbook(std::istream &data, std::u8string_view password)
+{
+    construct(data, password);
+}
+#endif
 
 workbook::workbook(detail::workbook_impl *impl)
     : d_(impl)
@@ -925,9 +949,21 @@ void workbook::load(const std::vector<std::uint8_t> &data)
     load(data_stream);
 }
 
-void workbook::load(const std::string &filename)
+template <typename T>
+void workbook::load_internal(const T &filename)
 {
     return load(path(filename));
+}
+
+template <typename T>
+void workbook::load_internal(const T &filename, const T &password)
+{
+    return load(path(filename), password);
+}
+
+void workbook::load(const std::string &filename)
+{
+    return load_internal(filename);
 }
 
 void workbook::load(const path &filename)
@@ -945,10 +981,11 @@ void workbook::load(const path &filename)
 
 void workbook::load(const std::string &filename, const std::string &password)
 {
-    return load(path(filename), password);
+    return load_internal(filename, password);
 }
 
-void workbook::load(const path &filename, const std::string &password)
+template <typename T>
+void workbook::load_internal(const xlnt::path &filename, const T &password)
 {
     std::ifstream file_stream;
     open_stream(file_stream, filename.string());
@@ -961,7 +998,20 @@ void workbook::load(const path &filename, const std::string &password)
     return load(file_stream, password);
 }
 
-void workbook::load(const std::vector<std::uint8_t> &data, const std::string &password)
+void workbook::load(const path &filename, const std::string &password)
+{
+    load_internal(filename, password);
+}
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+void workbook::load(const xlnt::path &filename, std::u8string_view password)
+{
+    load_internal(filename, password);
+}
+#endif
+
+template <typename T>
+void workbook::load_internal(const std::vector<std::uint8_t> &data, const T &password)
 {
     if (data.size() < 22) // the shortest ZIP file is 22 bytes
     {
@@ -973,12 +1023,37 @@ void workbook::load(const std::vector<std::uint8_t> &data, const std::string &pa
     load(data_stream, password);
 }
 
-void workbook::load(std::istream &stream, const std::string &password)
+void workbook::load(const std::vector<std::uint8_t> &data, const std::string &password)
+{
+    load_internal(data, password);
+}
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+void workbook::load(const std::vector<std::uint8_t> &data, std::u8string_view password)
+{
+    load_internal(data, password);
+}
+#endif
+
+template <typename T>
+void workbook::load_internal(std::istream &stream, const T &password)
 {
     clear();
     detail::xlsx_consumer consumer(*this);
     consumer.read(stream, password);
 }
+
+void workbook::load(std::istream &stream, const std::string &password)
+{
+    load_internal(stream, password);
+}
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+void workbook::load(std::istream &stream, std::u8string_view password)
+{
+    load_internal(stream, password);
+}
+#endif
 
 void workbook::save(std::vector<std::uint8_t> &data) const
 {
@@ -987,21 +1062,46 @@ void workbook::save(std::vector<std::uint8_t> &data) const
     save(data_stream);
 }
 
-void workbook::save(std::vector<std::uint8_t> &data, const std::string &password) const
+template <typename T>
+void workbook::save_internal(std::vector<std::uint8_t> &data, const T &password) const
 {
     xlnt::detail::vector_ostreambuf data_buffer(data);
     std::ostream data_stream(&data_buffer);
     save(data_stream, password);
 }
 
-void workbook::save(const std::string &filename) const
+void workbook::save(std::vector<std::uint8_t> &data, const std::string &password) const
+{
+    save_internal(data, password);
+}
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+void workbook::save(std::vector<std::uint8_t> &data, std::u8string_view password) const
+{
+    save_internal(data, password);
+}
+#endif
+
+template <typename T>
+void workbook::save_internal(const T &filename) const
 {
     save(path(filename));
 }
 
-void workbook::save(const std::string &filename, const std::string &password) const
+template <typename T>
+void workbook::save_internal(const T &filename, const T &password) const
 {
     save(path(filename), password);
+}
+
+void workbook::save(const std::string &filename) const
+{
+    save_internal(filename);
+}
+
+void workbook::save(const std::string &filename, const std::string &password) const
+{
+    save_internal(filename, password);
 }
 
 void workbook::save(const path &filename) const
@@ -1011,12 +1111,25 @@ void workbook::save(const path &filename) const
     save(file_stream);
 }
 
-void workbook::save(const path &filename, const std::string &password) const
+template <typename T>
+void workbook::save_internal(const xlnt::path &filename, const T &password) const
 {
     std::ofstream file_stream;
     open_stream(file_stream, filename.string());
     save(file_stream, password);
 }
+
+void workbook::save(const path &filename, const std::string &password) const
+{
+    save_internal(filename, password);
+}
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+void workbook::save(const xlnt::path &filename, std::u8string_view password) const
+{
+    save_internal(filename, password);
+}
+#endif
 
 void workbook::save(std::ostream &stream) const
 {
@@ -1024,11 +1137,24 @@ void workbook::save(std::ostream &stream) const
     producer.write(stream);
 }
 
-void workbook::save(std::ostream &stream, const std::string &password) const
+template <typename T>
+void workbook::save_internal(std::ostream &stream, const T &password) const
 {
     detail::xlsx_producer producer(*this);
     producer.write(stream, password);
 }
+
+void workbook::save(std::ostream &stream, const std::string &password) const
+{
+    save_internal(stream, password);
+}
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+void workbook::save(std::ostream &stream, std::u8string_view password) const
+{
+    save_internal(stream, password);
+}
+#endif
 
 #ifdef _MSC_VER
 void workbook::save(const std::wstring &filename) const
@@ -1057,6 +1183,28 @@ void workbook::load(const std::wstring &filename, const std::string &password)
     std::ifstream file_stream;
     open_stream(file_stream, filename);
     load(file_stream, password);
+}
+#endif
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+void workbook::save(std::u8string_view filename) const
+{
+    save_internal(filename);
+}
+
+void workbook::save(std::u8string_view filename, std::u8string_view password) const
+{
+    save_internal(filename, password);
+}
+
+void workbook::load(std::u8string_view filename)
+{
+    load_internal(filename);
+}
+
+void workbook::load(std::u8string_view filename, std::u8string_view password)
+{
+    load_internal(filename, password);
 }
 #endif
 

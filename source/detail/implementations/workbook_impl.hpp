@@ -92,7 +92,7 @@ struct workbook_impl
         return *this;
     }
 
-    bool operator==(const workbook_impl &other)
+    bool operator==(const workbook_impl &other) const
     {
         return active_sheet_index_ == other.active_sheet_index_
             && worksheets_ == other.worksheets_

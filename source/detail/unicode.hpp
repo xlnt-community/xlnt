@@ -26,13 +26,29 @@
 
 #include <string>
 
+#include <xlnt/internal/features.hpp>
+#include <detail/xlnt_config_impl.hpp>
+
+#if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
+  #include <string_view>
+#endif
+
 namespace xlnt {
 namespace detail {
 
-std::u16string utf8_to_utf16(const std::string &utf8_string);
-std::string utf16_to_utf8(const std::u16string &utf16_string);
-std::string latin1_to_utf8(const std::string &latin1);
-size_t string_length(const std::string &utf8_string);
+XLNT_API_INTERNAL std::u16string utf8_to_utf16(const std::string &utf8_string);
+XLNT_API_INTERNAL std::u32string utf8_to_utf32(const std::string &utf8_string);
+XLNT_API_INTERNAL std::string utf16_to_utf8(const std::u16string &utf16_string);
+XLNT_API_INTERNAL std::string utf32_to_utf8(const std::u32string &utf32_string);
+XLNT_API_INTERNAL std::string latin1_to_utf8(const std::string &latin1);
+XLNT_API_INTERNAL size_t string_length(const std::string &utf8_string);
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+XLNT_API_INTERNAL std::u16string utf8_to_utf16(std::u8string_view utf8_string);
+XLNT_API_INTERNAL std::u32string utf8_to_utf32(std::u8string_view utf8_string);
+XLNT_API_INTERNAL std::u8string utf16_to_utf8_u8(std::u16string_view utf16_string);
+XLNT_API_INTERNAL std::u8string utf32_to_utf8_u8(std::u32string_view utf32_string);
+#endif
 
 } // namespace detail
 } // namespace xlnt

@@ -27,11 +27,21 @@
 #include <vector>
 
 #include <xlnt/xlnt_config.hpp>
+#include <detail/xlnt_config_impl.hpp>
+#include <xlnt/internal/features.hpp>
+
+#if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
+  #include <string_view>
+#endif
 
 namespace xlnt {
 namespace detail {
 
-std::vector<std::uint8_t> XLNT_API_INTERNAL encrypt_xlsx(const std::vector<std::uint8_t> &bytes, const std::string &password);
+XLNT_API_INTERNAL std::vector<std::uint8_t> encrypt_xlsx(const std::vector<std::uint8_t> &bytes, const std::string &password);
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+XLNT_API_INTERNAL std::vector<std::uint8_t> encrypt_xlsx(const std::vector<std::uint8_t> &bytes, std::u8string_view password);
+#endif
 
 } // namespace detail
 } // namespace xlnt

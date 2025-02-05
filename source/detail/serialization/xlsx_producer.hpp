@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <type_traits>
@@ -33,6 +32,11 @@
 #include <detail/constants.hpp>
 #include <detail/external/include_libstudxml.hpp>
 #include <detail/serialization/serialisation_helpers.hpp>
+#include <xlnt/internal/features.hpp>
+
+#if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
+  #include <string_view>
+#endif
 
 namespace xml {
 class serializer;
@@ -74,10 +78,17 @@ public:
 
     void write(std::ostream &destination, const std::string &password);
 
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+    void write(std::ostream &destination, std::u8string_view password);
+#endif
+
 private:
     friend class xlnt::streaming_workbook_writer;
 
     void open(std::ostream &destination);
+
+    template <typename T>
+    void write_internal(std::ostream &destination, const T &password);
 
     cell add_cell(const cell_reference &ref);
 

@@ -51,6 +51,7 @@
 /// <seealso cref="XLNT_CPP_17">
 /// <seealso cref="XLNT_CPP_20">
 /// <seealso cref="XLNT_CPP_23">
+/// <seealso cref="XLNT_CPP_26">
 #define XLNT_HAS_CPP_VERSION(version) (1/version == 1/version && XLNT_CPP_VERSION >= version)
 
 

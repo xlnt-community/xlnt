@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.1...3.31)
 project(xlnt.benchmarks)
 
-# Require C++11 compiler
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD ${XLNT_CXX_LANG})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD ${XLNT_C_LANG})
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CXX_EXTENSIONS OFF)
 
 if(NOT COMBINED_PROJECT)
   # Include xlnt library
@@ -34,8 +36,11 @@ foreach(BENCHMARK_SOURCE IN ITEMS ${BENCHMARK_SOURCES})
   # Need to use some test helpers
   target_include_directories(${BENCHMARK_EXECUTABLE}
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../tests)
+  # Some helpers also need further internal includes
+  target_include_directories(${BENCHMARK_EXECUTABLE}
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../source)
   target_compile_definitions(${BENCHMARK_EXECUTABLE}
-    PRIVATE XLNT_BENCHMARK_DATA_DIR=${XLNT_BENCHMARK_DATA_DIR})
+    PRIVATE XLNT_BENCHMARK_DATA_DIR="${XLNT_BENCHMARK_DATA_DIR}")
 
   if (XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR)
     target_compile_definitions(${BENCHMARK_EXECUTABLE} PRIVATE XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR=1)

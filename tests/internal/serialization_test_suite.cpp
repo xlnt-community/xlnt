@@ -22,8 +22,6 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <iostream>
-
 #include <xlnt/xlnt.hpp>
 #include <internal/locale_helpers.hpp>
 #include <helpers/path_helper.hpp>
@@ -31,6 +29,12 @@
 #include <helpers/test_suite.hpp>
 #include <helpers/xml_helper.hpp>
 #include <detail/serialization/xlsx_consumer.hpp>
+#include <detail/utils/string_helpers.hpp>
+#include <xlnt/internal/features.hpp>
+
+#if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
+  #include <string_view>
+#endif
 
 class serialization_test_suite : public test_suite
 {
@@ -45,9 +49,11 @@ public:
         register_test(test_load_non_xlsx);
         register_test(test_decrypt_agile);
         register_test(test_decrypt_libre_office);
+        register_test(test_decrypt_libre_office_constructor);
         register_test(test_decrypt_standard);
         register_test(test_decrypt_numbers);
         register_test(test_read_unicode_filename);
+        register_test(test_write_unicode_filename);
         register_test(test_comments);
         register_test(test_read_hyperlink);
         register_test(test_read_formulae);
@@ -329,7 +335,14 @@ public:
         xlnt::workbook wb;
         const auto path = path_helper::test_file("6_encrypted_libre.xlsx");
         xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::exception);
-        xlnt_assert_throws_nothing(wb.load(path, reinterpret_cast<const char*>(u8"\u043F\u0430\u0440\u043E\u043B\u044C"))); // u8"пароль"
+        xlnt_assert_throws_nothing(wb.load(path, u8"\u043F\u0430\u0440\u043E\u043B\u044C")); // u8"пароль"
+    }
+
+    void test_decrypt_libre_office_constructor()
+    {
+        const auto path = path_helper::test_file("6_encrypted_libre.xlsx");
+        xlnt_assert_throws(xlnt::workbook(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws_nothing(xlnt::workbook(path, u8"\u043F\u0430\u0440\u043E\u043B\u044C")); // u8"пароль"
     }
 
     void test_decrypt_standard()
@@ -356,16 +369,37 @@ public:
         // L"/9_unicode_\u039B_\U0001F607.xlsx" gives the correct output
         const auto path = LSTRING_LITERAL(XLNT_TEST_DATA_DIR) L"/9_unicode_\u039B_\U0001F607.xlsx"; // L"/9_unicode_Λ_😇.xlsx"
         wb.load(path);
-        xlnt_assert_equals(wb.active_sheet().cell("A1").value<std::string>(), u8"un\u00EFc\u00F4d\u0117!"); // u8"unïcôdė!"
+        xlnt_assert_equals(wb.active_sheet().cell("A1").value<std::string>(), U8_TO_CHAR_PTR(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
 #endif
 
 #ifndef __MINGW32__
         xlnt::workbook wb2;
         // u8"/9_unicode_Λ_😇.xlsx" doesn't use 0xC3AA for the capital lambda...
         // u8"/9_unicode_\u039B_\U0001F607.xlsx" gives the correct output
-        const auto path2 = reinterpret_cast<const char*>(U8STRING_LITERAL(XLNT_TEST_DATA_DIR) u8"/9_unicode_\u039B_\U0001F607.xlsx"); // u8"/9_unicode_Λ_😇.xlsx"
+        const auto path2 = U8STRING_LITERAL(XLNT_TEST_DATA_DIR) u8"/9_unicode_\u039B_\U0001F607.xlsx"; // u8"/9_unicode_Λ_😇.xlsx"
         wb2.load(path2);
-        xlnt_assert_equals(wb2.active_sheet().cell("A1").value<std::string>(), reinterpret_cast<const char*>(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
+        xlnt_assert_equals(wb2.active_sheet().cell("A1").value<std::string>(), U8_TO_CHAR_PTR(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
+#endif
+    }
+
+    void test_write_unicode_filename()
+    {
+        // "/temp_unicode_Λ_😇.xlsx"
+        // "/temp_unicode_\u039B_\U0001F607.xlsx" gives the correct output
+#define TEMP_PATH "temp_unicode_\u039B_\U0001F607.xlsx"
+
+#ifdef _MSC_VER
+        xlnt::workbook wb;
+        const auto path = LSTRING_LITERAL(TEMP_PATH);
+        xlnt_assert_throws_nothing(wb.save(path));
+        xlnt_assert(xlnt::path(U8STRING_LITERAL(TEMP_PATH)).exists());
+#endif
+
+#ifndef __MINGW32__
+        xlnt::workbook wb2;
+        const auto path2 = U8STRING_LITERAL(TEMP_PATH);
+        xlnt_assert_throws_nothing(wb2.save(path2));
+        xlnt_assert(xlnt::path(path2).exists());
 #endif
     }
 
@@ -599,7 +633,8 @@ public:
         return xml_helper::xlsx_archives_match(xlnt::detail::to_vector(source_stream), destination);
     }
 
-    bool round_trip_matches_rw(const xlnt::path &source, const std::string &password)
+    template <typename T>
+    bool round_trip_matches_rw(const xlnt::path &source, const T &password)
     {
 #ifdef _MSC_VER
         std::ifstream source_stream(source.wstring(), std::ios::binary);
@@ -613,10 +648,10 @@ public:
 
         std::vector<std::uint8_t> destination_data;
         //source_workbook.save(destination_data, password);
-        source_workbook.save("encrypted.xlsx", password);
+        source_workbook.save(xlnt::path("encrypted.xlsx"), password);
 
         //xlnt::workbook temp;
-        //temp.load("encrypted.xlsx", password);
+        //temp.load(xlnt::path("encrypted.xlsx"), password);
 
         //TODO: finish implementing encryption and uncomment this
         //return source_data == destination_data;
@@ -642,7 +677,7 @@ public:
     {
         // u8"/9_unicode_Λ_😇.xlsx" doesn't use 0xC3AA for the capital lambda...
         // u8"/9_unicode_\u039B_\U0001F607.xlsx" gives the correct output
-        xlnt_assert(round_trip_matches_rw(path_helper::test_file(reinterpret_cast<const char*>(u8"9_unicode_\u039B_\U0001F607.xlsx"))));
+        xlnt_assert(round_trip_matches_rw(path_helper::test_file(u8"9_unicode_\u039B_\U0001F607.xlsx")));
     }
 
     void test_round_trip_rw_comments_hyperlinks_formulae()
@@ -672,7 +707,7 @@ public:
 
     void test_round_trip_rw_encrypted_libre()
     {
-        xlnt_assert(round_trip_matches_rw(path_helper::test_file("6_encrypted_libre.xlsx"), reinterpret_cast<const char*>(u8"\u043F\u0430\u0440\u043E\u043B\u044C"))); // u8"пароль"
+        xlnt_assert(round_trip_matches_rw(path_helper::test_file("6_encrypted_libre.xlsx"), u8"\u043F\u0430\u0440\u043E\u043B\u044C")); // u8"пароль"
     }
 
     void test_round_trip_rw_encrypted_standard()

@@ -43,8 +43,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/utils/path.hpp>
 
-//TODO: don't export these classes (some tests are using them for now)
-
 namespace xlnt {
 namespace detail {
 

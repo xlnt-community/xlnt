@@ -35,6 +35,7 @@
 #include <detail/serialization/xlsx_producer.hpp>
 #include <detail/serialization/zstream.hpp>
 #include <detail/unicode.hpp>
+#include <detail/utils/string_helpers.hpp>
 
 namespace {
 
@@ -306,7 +307,17 @@ std::vector<std::uint8_t> encrypt_xlsx(
     return ::encrypt_xlsx(plaintext, utf8_to_utf16(password));
 }
 
-void xlsx_producer::write(std::ostream &destination, const std::string &password)
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+std::vector<std::uint8_t> encrypt_xlsx(
+    const std::vector<std::uint8_t> &plaintext,
+    std::u8string_view password)
+{
+    return ::encrypt_xlsx(plaintext, utf8_to_utf16(password));
+}
+#endif
+
+template <typename T>
+void xlsx_producer::write_internal(std::ostream &destination, const T &password)
 {
     std::vector<std::uint8_t> plaintext;
     vector_ostreambuf plaintext_buffer(plaintext);
@@ -319,6 +330,18 @@ void xlsx_producer::write(std::ostream &destination, const std::string &password
 
     destination << &encrypted_buffer;
 }
+
+void xlsx_producer::write(std::ostream &destination, const std::string &password)
+{
+    write_internal(destination, password);
+}
+
+#if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+void xlsx_producer::write(std::ostream &destination, std::u8string_view password)
+{
+    write_internal(destination, password);
+}
+#endif
 
 } // namespace detail
 } // namespace xlnt

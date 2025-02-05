@@ -35,7 +35,13 @@ target_sources(xlnt_ubench
 		double_to_string.cpp
 )
 target_link_libraries(xlnt_ubench benchmark_main xlnt)
-target_compile_features(xlnt_ubench PRIVATE cxx_std_17)
+# Require C++17 for benchmarking std::to_chars and std::from_chars
+if (XLNT_CXX_LANG LESS 17)
+  target_compile_features(xlnt_ubench PRIVATE cxx_std_17)
+else()
+  target_compile_features(xlnt_ubench PRIVATE cxx_std_${XLNT_CXX_LANG})
+endif()
+target_compile_features(xlnt_ubench PRIVATE c_std_${XLNT_C_LANG})
 
 if (XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR)
   target_compile_definitions(xlnt_ubench PRIVATE XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR=1)

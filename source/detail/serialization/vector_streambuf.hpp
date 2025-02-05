@@ -89,8 +89,6 @@ private:
     std::size_t position_;
 };
 
-//TODO: detail headers shouldn't be exporting such functions
-
 /// <summary>
 /// Helper function to read all data from in_stream and store them in a vector.
 /// </summary>

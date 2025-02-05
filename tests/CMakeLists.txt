@@ -65,9 +65,10 @@ target_include_directories(xlnt.test
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/fast_float/include)
 
 set(XLNT_TEST_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data)
-target_compile_definitions(xlnt.test PRIVATE XLNT_TEST_DATA_DIR=${XLNT_TEST_DATA_DIR})
+target_compile_definitions(xlnt.test PRIVATE XLNT_TEST_DATA_DIR="${XLNT_TEST_DATA_DIR}")
 # requires cmake 3.8+
 #target_compile_features(xlnt.test PRIVATE cxx_std_${XLNT_CXX_LANG})
+#target_compile_features(xlnt.test PRIVATE c_std_${XLNT_C_LANG})
 
 if (XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR)
   target_compile_definitions(xlnt.test PRIVATE XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR=1)

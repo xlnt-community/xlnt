@@ -15,7 +15,7 @@ set(COMBINED_PROJECT TRUE)
 option(STATIC "Set to ON to build xlnt as a static library instead of a shared library" OFF)
 
 # C++ language standard to use
-set(XLNT_CXX_VALID_LANGS 11 14 17 20 23)
+set(XLNT_CXX_VALID_LANGS 11 14 17 20 23 26)
 set(XLNT_CXX_LANG "14" CACHE STRING "C++ language features to compile with")
 # enumerate allowed values for cmake gui
 set_property(CACHE XLNT_CXX_LANG PROPERTY STRINGS ${XLNT_CXX_VALID_LANGS})
@@ -23,6 +23,9 @@ set_property(CACHE XLNT_CXX_LANG PROPERTY STRINGS ${XLNT_CXX_VALID_LANGS})
 list(FIND XLNT_CXX_VALID_LANGS ${XLNT_CXX_LANG} index)
 if(index EQUAL -1)
     message(FATAL_ERROR "XLNT_CXX_LANG must be one of ${XLNT_CXX_VALID_LANGS}")
+endif()
+if(XLNT_CXX_LANG EQUAL 26)
+    message(WARNING "Support for C++26 in XLNT is still experimental. Please report any C++26-related warnings or errors!")
 endif()
 
 # C language standard to use

@@ -25,21 +25,17 @@
 
 #include <xlnt/utils/environment.hpp>
 
-// If available, allow using C++20 feature test macros for precise feature testing. Useful for compilers
-// that partially implement certain features.
+// Header detection helper. Available beginning with C++17.
 #ifdef __has_include
-# if __has_include(<version>)
-#   include <version>
-# endif
+  #define XLNT_HAS_INCLUDE(HEADER_NAME) __has_include(HEADER_NAME)
+#else
+  #define XLNT_HAS_INCLUDE(HEADER_NAME) 0
 #endif
 
-// Note: the first check ensures that a compiler partially implementing C++17 but implementing std::to_chars
-// would be detected correctly, as long as the C++20 feature test macros are implemented. The second check
-// ensures that a fully implemented C++17 compiler would be detected as well.
-#if __cpp_lib_to_chars >= 201611L || XLNT_HAS_CPP_VERSION(XLNT_CPP_17)
-  #define XLNT_DETAIL_FEATURE_TO_CHARS 1
-#else
-  #define XLNT_DETAIL_FEATURE_TO_CHARS -1
+// If available, allow using C++20 feature test macros for precise feature testing. Useful for compilers
+// that partially implement certain features.
+#if XLNT_HAS_INCLUDE(<version>)
+  #include <version>
 #endif
 
 // If you get a division by zero error, you probably misspelled the feature name.
@@ -51,4 +47,36 @@
 /// </summary>
 /// Currently, the following features could be tested:
 ///  - TO_CHARS: returns whether compliant std::from_chars and std::to_chars implementations are available
+///  - STRING_VIEW: returns whether compliant std::string_view, std::wstring_view, std::u16string_view and
+///                 std::u32string_view implementations are available (note: std::u8string_view is part
+///                 of C++20 - see U8_STRING_VIEW below)
+///  - FILESYSTEM: returns whether a compliant std::filesystem implementations is available
+///  - U8_STRING_VIEW: returns whether a compliant std::u8string_view implementation is available
 #define XLNT_HAS_FEATURE(feature) (1/XLNT_DETAIL_FEATURE_##feature == 1)
+
+// Note: the first check ensures that a compiler partially implementing C++17 but implementing std::to_chars
+// would be detected correctly, as long as the C++20 feature test macros are implemented. The second check
+// ensures that a fully implemented C++17 compiler would be detected as well.
+#if defined(__cpp_lib_to_chars) || XLNT_HAS_CPP_VERSION(XLNT_CPP_17)
+  #define XLNT_DETAIL_FEATURE_TO_CHARS 1
+#else
+  #define XLNT_DETAIL_FEATURE_TO_CHARS -1
+#endif
+
+#if defined(__cpp_lib_string_view) || XLNT_HAS_CPP_VERSION(XLNT_CPP_17)
+  #define XLNT_DETAIL_FEATURE_STRING_VIEW 1
+#else
+  #define XLNT_DETAIL_FEATURE_STRING_VIEW -1
+#endif
+
+#if defined(__cpp_lib_filesystem) || XLNT_HAS_CPP_VERSION(XLNT_CPP_17)
+  #define XLNT_DETAIL_FEATURE_FILESYSTEM 1
+#else
+  #define XLNT_DETAIL_FEATURE_FILESYSTEM -1
+#endif
+
+#if XLNT_HAS_FEATURE(STRING_VIEW) && defined(__cpp_lib_char8_t)
+  #define XLNT_DETAIL_FEATURE_U8_STRING_VIEW 1
+#else
+  #define XLNT_DETAIL_FEATURE_U8_STRING_VIEW -1
+#endif
