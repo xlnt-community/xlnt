@@ -24,6 +24,7 @@
 // @author: see AUTHORS file
 #pragma once
 
+#include <algorithm>
 #include <list>
 #include <string>
 #include <vector>
