@@ -108,7 +108,7 @@ public:
     variant(bool value);
 
     /// <summary>
-    /// Creates a date-type variant with the given value.
+    /// Creates a datetime-type variant with the given value.
     /// </summary>
     variant(const datetime &value);
 
@@ -143,6 +143,26 @@ public:
     variant(const std::vector<std::string> &value);
 
     /// <summary>
+    /// Creates a vector_bool-type variant with the given value.
+    /// </summary>
+    variant(const std::initializer_list<bool> &value);
+
+    /// <summary>
+    /// Creates a vector_bool-type variant with the given value.
+    /// </summary>
+    variant(const std::vector<bool> &value);
+
+    /// <summary>
+    /// Creates a vector_datetime-type variant with the given value.
+    /// </summary>
+    variant(const std::initializer_list<datetime> &value);
+
+    /// <summary>
+    /// Creates a vector_datetime-type variant with the given value.
+    /// </summary>
+    variant(const std::vector<datetime> &value);
+
+    /// <summary>
     /// Creates a vector_variant-type variant with the given value.
     /// </summary>
     variant(const std::vector<variant> &value);
@@ -169,6 +189,12 @@ public:
     bool operator!=(const variant &rhs) const;
 
 private:
+    template<typename T>
+    void construct_vector_internal(const T &vec);
+
+    template<typename T>
+    std::vector<T> get_vector_internal() const;
+
     type type_;
     std::vector<variant> vector_value_;
     std::int32_t i4_value_;
@@ -189,5 +215,17 @@ XLNT_API datetime variant::get() const;
 
 template <>
 XLNT_API std::vector<variant> variant::get() const;
+
+template <>
+XLNT_API std::vector<bool> variant::get() const;
+
+template <>
+XLNT_API std::vector<std::int32_t> variant::get() const;
+
+template <>
+XLNT_API std::vector<std::string> variant::get() const;
+
+template <>
+XLNT_API std::vector<datetime> variant::get() const;
 
 } // namespace xlnt

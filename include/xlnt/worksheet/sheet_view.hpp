@@ -232,8 +232,7 @@ public:
     }
 
     /// <summary>
-    /// Returns true if this view is different than rhs based on its id, grid lines setting,
-    /// default grid color, pane, and selections.
+    /// Returns the negation of the equality operator.
     /// </summary>
     bool operator!=(const sheet_view &rhs) const
     {

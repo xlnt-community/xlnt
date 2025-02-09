@@ -40,9 +40,9 @@ public:
         return true;
     }
 
-    bool operator!=(const theme &) const
+    bool operator!=(const theme &other) const
     {
-        return false;
+        return !(*this == other);
     }
 };
 

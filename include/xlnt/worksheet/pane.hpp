@@ -97,8 +97,7 @@ struct XLNT_API pane
     }
 
     /// <summary>
-    /// Returns true if this pane is different than rhs based on its top-left cell, state,
-    /// active pane, and x/y split location.
+    /// Returns the negation of the equality operator.
     /// </summary>
     bool operator!=(const pane &rhs) const
     {

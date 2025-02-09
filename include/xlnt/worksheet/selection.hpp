@@ -171,8 +171,7 @@ public:
     }
 
     // <summary>
-    /// Returns true if this selection is different than rhs based on its active cell,
-    /// sqref, and pane.
+    /// Returns the negation of the equality operator.
     /// </summary>
     bool operator!=(const selection &rhs) const
     {
