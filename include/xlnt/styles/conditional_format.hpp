@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <cstdint>
 #include <string>
 
 #include <xlnt/xlnt_config.hpp>
@@ -165,7 +164,7 @@ private:
     /// <summary>
     ///
     /// </summary>
-    detail::conditional_format_impl *d_;
+    detail::conditional_format_impl *d_ = nullptr;
 };
 
 } // namespace xlnt

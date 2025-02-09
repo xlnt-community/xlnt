@@ -24,8 +24,6 @@
 
 #pragma once
 
-#include <string>
-
 #include <xlnt/xlnt_config.hpp>
 
 namespace xlnt {

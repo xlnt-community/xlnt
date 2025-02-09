@@ -22,8 +22,6 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <iostream>
-
 #include <helpers/test_suite.hpp>
 
 #include <xlnt/utils/timedelta.hpp>

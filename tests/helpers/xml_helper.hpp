@@ -1,6 +1,5 @@
 #pragma once
 
-#include <sstream>
 #include <unordered_set>
 
 #include <xlnt/packaging/manifest.hpp>
@@ -344,10 +343,10 @@ public:
                 auto rels = left_manifest.relationships(part);
                 for (auto &rel : rels)
                 {
-                    std::cout << rel.id() << ':' 
-                        << static_cast<int>(rel.type()) 
-                        << ':' << static_cast<int>(rel.target_mode()) 
-                        << ':' << rel.source().path().string() 
+                    std::cout << rel.id() << ':'
+                        << static_cast<int>(rel.type())
+                        << ':' << static_cast<int>(rel.target_mode())
+                        << ':' << rel.source().path().string()
                         << ':' << rel.target().path().string() << '\n';
                 }
             }
@@ -358,10 +357,10 @@ public:
                 auto rels = right_manifest.relationships(part);
                 for (auto &rel : rels)
                 {
-                    std::cout << rel.id() 
-                        << ':' << static_cast<int>(rel.type()) 
-                        << ':' << static_cast<int>(rel.target_mode()) 
-                        << ':' << rel.source().path().string() 
+                    std::cout << rel.id()
+                        << ':' << static_cast<int>(rel.type())
+                        << ':' << static_cast<int>(rel.target_mode())
+                        << ':' << rel.source().path().string()
                         << ':' << rel.target().path().string() << '\n';
                 }
             }

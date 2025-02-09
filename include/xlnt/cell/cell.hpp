@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -652,7 +651,7 @@ private:
     /// <summary>
     /// A pointer to this cell's implementation.
     /// </summary>
-    detail::cell_impl *d_;
+    detail::cell_impl *d_ = nullptr;
 };
 
 /// <summary>
@@ -672,42 +671,42 @@ XLNT_API bool operator==(const cell &cell, std::nullptr_t);
 XLNT_API std::ostream &operator<<(std::ostream &stream, const xlnt::cell &cell);
 
 template <>
-bool cell::value<bool>() const;
+XLNT_API bool cell::value<bool>() const;
 
 template <>
-int cell::value<int>() const;
+XLNT_API int cell::value<int>() const;
 
 template <>
-unsigned int cell::value<unsigned int>() const;
+XLNT_API unsigned int cell::value<unsigned int>() const;
 
 template <>
-long long int cell::value<long long int>() const;
+XLNT_API long long int cell::value<long long int>() const;
 
 template <>
-unsigned long long cell::value<unsigned long long int>() const;
+XLNT_API unsigned long long cell::value<unsigned long long int>() const;
 
 template <>
-float cell::value<float>() const;
+XLNT_API float cell::value<float>() const;
 
 template <>
-double cell::value<double>() const;
+XLNT_API double cell::value<double>() const;
 
 template <>
-date cell::value<date>() const;
+XLNT_API date cell::value<date>() const;
 
 template <>
-time cell::value<time>() const;
+XLNT_API time cell::value<time>() const;
 
 template <>
-datetime cell::value<datetime>() const;
+XLNT_API datetime cell::value<datetime>() const;
 
 template <>
-timedelta cell::value<timedelta>() const;
+XLNT_API timedelta cell::value<timedelta>() const;
 
 template <>
-std::string cell::value<std::string>() const;
+XLNT_API std::string cell::value<std::string>() const;
 
 template <>
-rich_text cell::value<rich_text>() const;
+XLNT_API rich_text cell::value<rich_text>() const;
 
 } // namespace xlnt

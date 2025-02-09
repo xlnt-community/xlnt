@@ -98,7 +98,7 @@ XLNT_API_INTERNAL std::vector<std::string> split_string(const std::string &strin
 /// Concatenate all the provided items by converting them to a string using its to_string member function.
 /// </summary>
 template<typename T>
-XLNT_API_INTERNAL std::string join(const std::vector<T> &items, char delim)
+std::string join(const std::vector<T> &items, char delim)
 {
     std::string refs;
     for (const auto& item : items)

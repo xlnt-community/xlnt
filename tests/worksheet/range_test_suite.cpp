@@ -22,9 +22,6 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <iostream>
-
-
 #include <helpers/test_suite.hpp>
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/styles/font.hpp>

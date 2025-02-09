@@ -4,9 +4,9 @@
 #include <cstdio>
 #include <string>
 
-#include <detail/include_windows.hpp>
+#include <detail/external/include_windows.hpp>
 
-#include "PathHelper.h"
+#include <helpers/path_helper.hpp>
 
 class temporary_directory
 {

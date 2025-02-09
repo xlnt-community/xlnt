@@ -25,7 +25,10 @@
 
 #pragma once
 
+#include <string>
+
 #include <xlnt/xlnt_config.hpp>
+#include <xlnt/utils/optional.hpp>
 
 namespace xlnt {
 

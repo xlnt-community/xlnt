@@ -152,31 +152,31 @@ bool variant::is(type t) const
 }
 
 template <>
-XLNT_API std::string variant::get() const
+std::string variant::get() const
 {
     return lpstr_value_;
 }
 
 template <>
-XLNT_API std::vector<variant> variant::get() const
+std::vector<variant> variant::get() const
 {
     return vector_value_;
 }
 
 template <>
-XLNT_API bool variant::get() const
+bool variant::get() const
 {
     return i4_value_ != 0;
 }
 
 template <>
-XLNT_API std::int32_t variant::get() const
+std::int32_t variant::get() const
 {
     return i4_value_;
 }
 
 template <>
-XLNT_API datetime variant::get() const
+datetime variant::get() const
 {
     return datetime::from_iso_string(lpstr_value_);
 }

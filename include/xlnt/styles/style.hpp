@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <cstdint>
 #include <string>
 
 #include <xlnt/xlnt_config.hpp>
@@ -256,7 +255,7 @@ private:
     /// <summary>
     /// The internal implementation of this style
     /// </summary>
-    detail::style_impl *d_;
+    detail::style_impl *d_ = nullptr;
 };
 
 } // namespace xlnt

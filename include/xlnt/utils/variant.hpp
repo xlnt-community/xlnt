@@ -174,24 +174,18 @@ private:
 };
 
 template <>
-bool variant::get() const;
+XLNT_API bool variant::get() const;
 
 template <>
-std::int32_t variant::get() const;
+XLNT_API std::int32_t variant::get() const;
 
 template <>
-std::string variant::get() const;
+XLNT_API std::string variant::get() const;
 
 template <>
-datetime variant::get() const;
+XLNT_API datetime variant::get() const;
 
 template <>
-std::vector<std::int32_t> variant::get() const;
-
-template <>
-std::vector<std::string> variant::get() const;
-
-template <>
-std::vector<variant> variant::get() const;
+XLNT_API std::vector<variant> variant::get() const;
 
 } // namespace xlnt

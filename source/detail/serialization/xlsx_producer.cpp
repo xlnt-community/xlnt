@@ -25,7 +25,6 @@
 #include <cmath>
 #include <numeric> // for std::accumulate
 #include <string>
-#include <type_traits>
 #include <unordered_set>
 
 #include <xlnt/cell/cell.hpp>

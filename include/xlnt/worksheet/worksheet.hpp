@@ -26,9 +26,7 @@
 #pragma once
 
 #include <iterator>
-#include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include <xlnt/xlnt_config.hpp>
@@ -841,7 +839,7 @@ private:
     /// <summary>
     /// The pointer to this sheet's implementation.
     /// </summary>
-    detail::worksheet_impl *d_;
+    detail::worksheet_impl *d_ = nullptr;
 };
 
 } // namespace xlnt

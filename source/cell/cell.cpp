@@ -25,7 +25,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <sstream>
 
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/cell/cell_reference.hpp>
@@ -353,12 +352,12 @@ cell_reference cell::reference() const
 
 bool cell::operator==(const cell &comparand) const
 {
-    return d_ == comparand.d_;
+    return *d_ == *comparand.d_;
 }
 
 bool cell::operator!=(const cell &comparand) const
 {
-    return d_ != comparand.d_;
+    return *d_ != *comparand.d_;
 }
 
 cell &cell::operator=(const cell &rhs) = default;
@@ -602,67 +601,67 @@ void cell::clear_value()
 }
 
 template <>
-XLNT_API bool cell::value() const
+bool cell::value() const
 {
     return d_->value_numeric_ != 0.0;
 }
 
 template <>
-XLNT_API int cell::value() const
+int cell::value() const
 {
     return static_cast<int>(d_->value_numeric_);
 }
 
 template <>
-XLNT_API long long int cell::value() const
+long long int cell::value() const
 {
     return static_cast<long long int>(d_->value_numeric_);
 }
 
 template <>
-XLNT_API unsigned int cell::value() const
+unsigned int cell::value() const
 {
     return static_cast<unsigned int>(d_->value_numeric_);
 }
 
 template <>
-XLNT_API unsigned long long cell::value() const
+unsigned long long cell::value() const
 {
     return static_cast<unsigned long long>(d_->value_numeric_);
 }
 
 template <>
-XLNT_API float cell::value() const
+float cell::value() const
 {
     return static_cast<float>(d_->value_numeric_);
 }
 
 template <>
-XLNT_API double cell::value() const
+double cell::value() const
 {
     return static_cast<double>(d_->value_numeric_);
 }
 
 template <>
-XLNT_API time cell::value() const
+time cell::value() const
 {
     return time::from_number(d_->value_numeric_);
 }
 
 template <>
-XLNT_API datetime cell::value() const
+datetime cell::value() const
 {
     return datetime::from_number(d_->value_numeric_, base_date());
 }
 
 template <>
-XLNT_API date cell::value() const
+date cell::value() const
 {
     return date::from_number(static_cast<int>(d_->value_numeric_), base_date());
 }
 
 template <>
-XLNT_API timedelta cell::value() const
+timedelta cell::value() const
 {
     return timedelta::from_number(d_->value_numeric_);
 }
@@ -704,13 +703,13 @@ void cell::protection(const class protection &protection_)
 }
 
 template <>
-XLNT_API std::string cell::value() const
+std::string cell::value() const
 {
     return value<rich_text>().plain_text();
 }
 
 template <>
-XLNT_API rich_text cell::value() const
+rich_text cell::value() const
 {
     if (data_type() == cell::type::shared_string)
     {
@@ -779,7 +778,7 @@ bool operator==(const cell &cell, std::nullptr_t)
     return nullptr == cell;
 }
 
-XLNT_API std::ostream &operator<<(std::ostream &stream, const xlnt::cell &cell)
+std::ostream &operator<<(std::ostream &stream, const xlnt::cell &cell)
 {
     return stream << cell.to_string();
 }

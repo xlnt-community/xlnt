@@ -23,7 +23,6 @@
 // @author: see AUTHORS file
 #pragma once
 
-#include <cstddef>
 #include <string>
 
 #include <xlnt/cell/cell_type.hpp>
@@ -34,7 +33,6 @@
 #include <xlnt/utils/optional.hpp>
 #include <detail/implementations/format_impl.hpp>
 #include <detail/implementations/hyperlink_impl.hpp>
-//#include "../numeric_utils.hpp"
 
 namespace xlnt {
 namespace detail {
@@ -43,24 +41,18 @@ struct worksheet_impl;
 
 struct cell_impl
 {
-    cell_impl();
-    cell_impl(const cell_impl &other) = default;
-    cell_impl(cell_impl &&other) = default;
-    cell_impl &operator=(const cell_impl &other) = default;
-    cell_impl &operator=(cell_impl &&other) = default;
+    cell_type type_ = cell_type::empty;
 
-    cell_type type_;
+    worksheet_impl *parent_ = nullptr;
 
-    worksheet_impl *parent_;
+    column_t column_ = 1;
+    row_t row_ = 1;
 
-    column_t column_;
-    row_t row_;
-
-    bool is_merged_;
-    bool phonetics_visible_;
+    bool is_merged_ = false;
+    bool phonetics_visible_ = false;
 
     rich_text value_text_;
-    double value_numeric_;
+    double value_numeric_ = 0.0;
 
     optional<std::string> formula_;
     optional<hyperlink_impl> hyperlink_;

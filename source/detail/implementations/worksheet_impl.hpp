@@ -96,10 +96,11 @@ struct worksheet_impl
         }
     }
 
-    workbook *parent_;
+    workbook *parent_ = nullptr;
 
     bool operator==(const worksheet_impl& rhs) const
     {
+        // not comparing parent
         return id_ == rhs.id_
             && title_ == rhs.title_
             && format_properties_ == rhs.format_properties_
@@ -125,7 +126,7 @@ struct worksheet_impl
             && extension_list_ == rhs.extension_list_;
     }
 
-    std::size_t id_;
+    std::size_t id_ = 0;
     std::string title_;
 
     sheet_format_properties format_properties_;

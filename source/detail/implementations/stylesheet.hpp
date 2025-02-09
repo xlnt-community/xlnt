@@ -543,7 +543,7 @@ struct stylesheet
 		return xlnt::conditional_format(&impl);
 	}
 
-    workbook *parent;
+    workbook *parent = nullptr;
 
     bool operator==(const stylesheet& rhs) const
     {

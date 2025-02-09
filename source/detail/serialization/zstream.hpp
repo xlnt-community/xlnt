@@ -41,6 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 #include <vector>
 
 #include <xlnt/xlnt_config.hpp>
+#include <detail/xlnt_config_impl.hpp>
 #include <xlnt/utils/path.hpp>
 
 namespace xlnt {
