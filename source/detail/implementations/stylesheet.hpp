@@ -564,6 +564,11 @@ struct stylesheet
             && colors == rhs.colors;
     }
 
+    bool operator!=(const stylesheet& rhs) const
+    {
+        return !(*this == rhs);
+    }
+
     bool garbage_collection_enabled = true;
     bool known_fonts_enabled = false;
 

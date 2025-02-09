@@ -95,6 +95,15 @@ struct XLNT_API pane
             && y_split == rhs.y_split
             && x_split == rhs.x_split;
     }
+
+    /// <summary>
+    /// Returns true if this pane is different than rhs based on its top-left cell, state,
+    /// active pane, and x/y split location.
+    /// </summary>
+    bool operator!=(const pane &rhs) const
+    {
+        return !(*this == rhs);
+    }
 };
 
 } // namespace xlnt

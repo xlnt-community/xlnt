@@ -65,4 +65,9 @@ inline bool operator==(const sheet_format_properties &lhs, const sheet_format_pr
         && lhs.dy_descent == rhs.dy_descent;
 }
 
+inline bool operator!=(const sheet_format_properties &lhs, const sheet_format_properties &rhs)
+{
+    return !(lhs == rhs);
+}
+
 } // namespace xlnt

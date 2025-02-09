@@ -58,6 +58,11 @@ public:
         return text_comparand_ == rhs.text_comparand_;
     }
 
+    bool operator!=(const condition &rhs) const
+    {
+        return !(*this == rhs);
+    }
+
 private:
     friend class detail::xlsx_producer;
 

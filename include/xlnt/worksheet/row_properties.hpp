@@ -87,4 +87,9 @@ inline bool operator==(const row_properties &lhs, const row_properties &rhs)
         && lhs.spans == rhs.spans;
 }
 
+inline bool operator!=(const row_properties &lhs, const row_properties &rhs)
+{
+    return !(lhs == rhs);
+}
+
 } // namespace xlnt

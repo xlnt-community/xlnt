@@ -76,4 +76,9 @@ inline bool operator==(const column_properties &lhs, const column_properties &rh
         && lhs.hidden == rhs.hidden;
 }
 
+inline bool operator!=(const column_properties &lhs, const column_properties &rhs)
+{
+    return !(lhs == rhs);
+}
+
 } // namespace xlnt

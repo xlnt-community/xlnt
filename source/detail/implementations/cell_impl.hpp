@@ -81,5 +81,10 @@ inline bool operator==(const cell_impl &lhs, const cell_impl &rhs)
         && (lhs.comment_.is_set() == rhs.comment_.is_set() && (!lhs.comment_.is_set() || *lhs.comment_.get() == *rhs.comment_.get()));
 }
 
+inline bool operator!=(const cell_impl &lhs, const cell_impl &rhs)
+{
+    return !(lhs == rhs);
+}
+
 } // namespace detail
 } // namespace xlnt

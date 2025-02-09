@@ -144,4 +144,9 @@ bool page_setup::operator==(const page_setup &rhs) const
         && rel_id_ == rhs.rel_id_;
 }
 
+bool page_setup::operator!=(const page_setup &rhs) const
+{
+    return !(*this == rhs);
+}
+
 } // namespace xlnt

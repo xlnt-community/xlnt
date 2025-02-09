@@ -55,4 +55,9 @@ inline bool operator==(const calculation_properties &lhs, const calculation_prop
         && lhs.concurrent_calc == rhs.concurrent_calc;
 }
 
+inline bool operator!=(const calculation_properties &lhs, const calculation_properties &rhs)
+{
+    return !(lhs == rhs);
+}
+
 } // namespace xlnt

@@ -346,4 +346,9 @@ bool manifest::operator==(const manifest &other) const
         && relationships_ == other.relationships_;
 }
 
+bool manifest::operator!=(const manifest &other) const
+{
+    return !(*this == other);
+}
+
 } // namespace xlnt

@@ -117,7 +117,7 @@ bool range_reference::operator==(const range_reference &comparand) const
 
 bool range_reference::operator!=(const range_reference &comparand) const
 {
-    return comparand.top_left_ != top_left_ || comparand.bottom_right_ != bottom_right_;
+    return !(*this == comparand);
 }
 
 cell_reference range_reference::top_left() const

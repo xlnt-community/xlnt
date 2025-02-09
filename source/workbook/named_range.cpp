@@ -130,4 +130,9 @@ bool named_range::operator==(const named_range &rhs) const
         && targets_ == rhs.targets_;
 }
 
+bool named_range::operator!=(const named_range &rhs) const
+{
+    return !(*this == rhs);
+}
+
 } // namespace xlnt

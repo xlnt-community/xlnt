@@ -34,6 +34,11 @@ struct conditional_format_impl
             && font_id == rhs.font_id;
     }
 
+    bool operator!=(const conditional_format_impl& rhs) const
+    {
+        return !(*this == rhs);
+    }
+
 	range_reference target_range;
 
 	std::size_t priority = 0;

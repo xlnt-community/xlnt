@@ -166,6 +166,8 @@ public:
 
     bool operator==(const variant &rhs) const;
 
+    bool operator!=(const variant &rhs) const;
+
 private:
     type type_;
     std::vector<variant> vector_value_;

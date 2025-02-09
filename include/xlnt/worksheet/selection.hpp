@@ -170,6 +170,15 @@ public:
             && pane_ == rhs.pane_;
     }
 
+    // <summary>
+    /// Returns true if this selection is different than rhs based on its active cell,
+    /// sqref, and pane.
+    /// </summary>
+    bool operator!=(const selection &rhs) const
+    {
+        return !(*this == rhs);
+    }
+
 private:
     /// <summary>
     /// The last selected cell in the selection

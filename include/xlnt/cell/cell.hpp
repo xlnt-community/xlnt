@@ -665,6 +665,16 @@ XLNT_API bool operator==(std::nullptr_t, const cell &cell);
 XLNT_API bool operator==(const cell &cell, std::nullptr_t);
 
 /// <summary>
+/// Returns true if this cell is initialized.
+/// </summary>
+XLNT_API bool operator!=(std::nullptr_t, const cell &cell);
+
+/// <summary>
+/// Returns true if this cell is initialized.
+/// </summary>
+XLNT_API bool operator!=(const cell &cell, std::nullptr_t);
+
+/// <summary>
 /// Convenience function for writing cell to an ostream.
 /// Uses cell::to_string() internally.
 /// </summary>

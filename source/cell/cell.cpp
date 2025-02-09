@@ -778,6 +778,16 @@ bool operator==(const cell &cell, std::nullptr_t)
     return nullptr == cell;
 }
 
+bool operator!=(std::nullptr_t, const cell &cell)
+{
+    return cell.data_type() != cell::type::empty;
+}
+
+bool operator!=(const cell &cell, std::nullptr_t)
+{
+    return nullptr != cell;
+}
+
 std::ostream &operator<<(std::ostream &stream, const xlnt::cell &cell)
 {
     return stream << cell.to_string();

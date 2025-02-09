@@ -170,6 +170,11 @@ public:
     /// </summary>
     bool operator==(const uri &other) const;
 
+    /// <summary>
+    /// Returns true if this URI is different to other.
+    /// </summary>
+    bool operator!=(const uri &other) const;
+
 private:
     /// <summary>
     /// True if this URI is absolute.

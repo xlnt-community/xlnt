@@ -47,6 +47,11 @@ struct style_impl
             && quote_prefix_ == rhs.quote_prefix_;
     }
 
+    bool operator!=(const style_impl& rhs) const
+    {
+        return !(*this == rhs);
+    }
+
 	std::string name;
 	std::size_t formatting_record_id = 0;
 

@@ -146,6 +146,11 @@ bool variant::operator==(const variant &rhs) const
     return false;
 }
 
+bool variant::operator!=(const variant &rhs) const
+{
+    return !(*this == rhs);
+}
+
 bool variant::is(type t) const
 {
     return type_ == t;

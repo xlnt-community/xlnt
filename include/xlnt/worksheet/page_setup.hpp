@@ -200,6 +200,8 @@ public:
 
     bool operator==(const page_setup &rhs) const;
 
+    bool operator!=(const page_setup &rhs) const;
+
 private:
     /// <summary>
     /// Relationship Id

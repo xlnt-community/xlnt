@@ -126,6 +126,11 @@ struct worksheet_impl
             && extension_list_ == rhs.extension_list_;
     }
 
+    bool operator!=(const worksheet_impl& rhs) const
+    {
+        return !(*this == rhs);
+    }
+
     std::size_t id_ = 0;
     std::string title_;
 
