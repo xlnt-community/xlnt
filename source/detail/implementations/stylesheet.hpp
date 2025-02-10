@@ -548,7 +548,7 @@ struct stylesheet
 
     bool operator==(const stylesheet& rhs) const
     {
-        // no equality on parent as there is only 1 stylesheet per borkbook hence would always be false
+        // no equality on parent as there is only 1 stylesheet per workbook hence would always be false
         return garbage_collection_enabled == rhs.garbage_collection_enabled
             && known_fonts_enabled == rhs.known_fonts_enabled
             && conditional_format_impls == rhs.conditional_format_impls

@@ -24,6 +24,7 @@
 // @author: see AUTHORS file
 
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 
 #include <xlnt/cell/cell.hpp>
@@ -350,14 +351,26 @@ cell_reference cell::reference() const
     return {d_->column_, d_->row_};
 }
 
+bool cell::compare(const cell &other, bool compare_by_reference) const
+{
+    if (compare_by_reference)
+    {
+        return d_ == other.d_;
+    }
+    else
+    {
+        return *d_ == *other.d_;
+    }
+}
+
 bool cell::operator==(const cell &comparand) const
 {
-    return *d_ == *comparand.d_;
+    return compare(comparand, true);
 }
 
 bool cell::operator!=(const cell &comparand) const
 {
-    return *d_ != *comparand.d_;
+    return !(*this == comparand);
 }
 
 cell &cell::operator=(const cell &rhs) = default;

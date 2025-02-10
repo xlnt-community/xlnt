@@ -958,17 +958,17 @@ void worksheet::move_cells(std::uint32_t min_index, std::uint32_t amount, row_or
 
 bool worksheet::operator==(const worksheet &other) const
 {
-    return compare(other, true);
+    return compare(other, comparison::same_worksheet);
 }
 
-bool worksheet::compare(const worksheet &other, bool reference) const
+bool worksheet::compare(const worksheet &other, comparison comparison_mode) const
 {
-    if (reference)
+    if (comparison_mode == comparison::same_worksheet)
     {
         return d_ == other.d_;
     }
 
-    if (d_->parent_ != other.d_->parent_) return false;
+    if (comparison_mode == comparison::similar_worksheet_in_workbook && d_->parent_ != other.d_->parent_) return false;
 
     for (auto &cell : d_->cell_map_)
     {
@@ -1001,6 +1001,11 @@ bool worksheet::compare(const worksheet &other, bool reference) const
     }
 
     return false;
+}
+
+bool worksheet::compare(const worksheet &other, bool compare_by_reference) const
+{
+    return compare(other, compare_by_reference ? comparison::same_worksheet : comparison::similar_worksheet);
 }
 
 bool worksheet::operator!=(const worksheet &other) const

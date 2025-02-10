@@ -76,6 +76,16 @@ class XLNT_API worksheet
 {
 public:
     /// <summary>
+    /// The comparison mode used to specify how to compare worksheets.
+    /// </summary>
+    enum class comparison
+    {
+        same_worksheet, // must be exactly the same worksheet (in the same workbook)
+        similar_worksheet_in_workbook, // can be a similar worksheet in the same workbook
+        similar_worksheet, // can be a similar worksheet (regardless of the workbook)
+    };
+
+    /// <summary>
     /// Iterate over a non-const worksheet with an iterator of this type.
     /// </summary>
     using iterator = range_iterator;
@@ -508,10 +518,15 @@ public:
     const class cell operator[](const cell_reference &reference) const;
 
     /// <summary>
-    /// Returns true if this worksheet is equal to other. If reference is true, the comparison
+    /// Returns true if this worksheet is equal to other, as specified by the comparison_mode.
+    /// </summary>
+    bool compare(const worksheet &other, comparison comparison_mode) const;
+
+    /// <summary>
+    /// Returns true if this worksheet is equal to other. If compare_by_reference is true, the comparison
     /// will only check that both worksheets point to the same sheet in the same workbook.
     /// </summary>
-    bool compare(const worksheet &other, bool reference) const;
+    bool compare(const worksheet &other, bool compare_by_reference) const;
 
     // page
 

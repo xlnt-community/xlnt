@@ -607,6 +607,14 @@ public:
     /// </summary>
     double height() const;
 
+    // comparisons
+
+    /// <summary>
+    /// Returns true if this cell is equal to other. If compare_by_reference is true, the comparison
+    /// will only check that both cells point to the same internal cell.
+    /// </summary>
+    bool compare(const cell &other, bool compare_by_reference) const;
+
     // operators
 
     /// <summary>
