@@ -544,7 +544,7 @@ struct stylesheet
 		return xlnt::conditional_format(&impl);
 	}
 
-    workbook *parent = nullptr;
+    std::weak_ptr<workbook_impl> parent;
 
     bool operator==(const stylesheet& rhs) const
     {

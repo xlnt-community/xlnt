@@ -389,7 +389,7 @@ void workbook::arch_id_flags(const std::size_t flags)
 
 workbook workbook::empty()
 {
-    auto impl = new detail::workbook_impl();
+    auto impl = std::shared_ptr<detail::workbook_impl>(new detail::workbook_impl());
     workbook wb(impl);
 
     wb.register_package_part(relationship_type::office_document);
@@ -455,7 +455,7 @@ workbook workbook::empty()
 
     wb.d_->stylesheet_ = detail::stylesheet();
     auto &stylesheet = wb.d_->stylesheet_.get();
-    stylesheet.parent = &wb;
+    stylesheet.parent = wb.d_;
 
     auto default_border = border()
                               .side(border_side::bottom, border::border_property())
@@ -557,16 +557,22 @@ workbook::workbook(std::istream &data, std::u8string_view password)
 }
 #endif
 
-workbook::workbook(detail::workbook_impl *impl)
+workbook::workbook(std::shared_ptr<detail::workbook_impl> impl)
     : d_(impl)
 {
     if (impl != nullptr)
     {
         if (d_->stylesheet_.is_set())
         {
-            d_->stylesheet_.get().parent = this;
+            d_->stylesheet_.get().parent = d_;
         }
     }
+}
+
+workbook::workbook(std::weak_ptr<detail::workbook_impl> impl)
+    : workbook(impl.lock())
+{
+
 }
 
 void workbook::register_package_part(relationship_type type)
@@ -835,7 +841,7 @@ worksheet workbook::create_sheet()
 
 worksheet workbook::copy_sheet(worksheet to_copy)
 {
-    if (to_copy.d_->parent_ != this) throw invalid_parameter();
+    if (to_copy.d_->parent_.lock() != d_) throw invalid_parameter();
 
     detail::worksheet_impl impl(*to_copy.d_);
     auto new_sheet = create_sheet();
@@ -1338,9 +1344,21 @@ void workbook::clear()
     d_->stylesheet_.clear();
 }
 
+bool workbook::compare(const workbook &other, bool compare_by_reference) const
+{
+    if (compare_by_reference)
+    {
+        return d_ == other.d_;
+    }
+    else
+    {
+        return *d_ == *other.d_;
+    }
+}
+
 bool workbook::operator==(const workbook &rhs) const
 {
-    return *d_ == *rhs.d_;
+    return compare(rhs, true);
 }
 
 bool workbook::operator!=(const workbook &rhs) const
@@ -1364,7 +1382,7 @@ void workbook::swap(workbook &right)
 
         if (left.d_->stylesheet_.is_set())
         {
-            left.d_->stylesheet_.get().parent = &left;
+            left.d_->stylesheet_.get().parent = left.d_;
         }
     }
 
@@ -1377,7 +1395,7 @@ void workbook::swap(workbook &right)
 
         if (right.d_->stylesheet_.is_set())
         {
-            right.d_->stylesheet_.get().parent = &right;
+            right.d_->stylesheet_.get().parent = right.d_;
         }
     }
 }
@@ -1385,7 +1403,7 @@ void workbook::swap(workbook &right)
 workbook &workbook::operator=(workbook other)
 {
     swap(other);
-    d_->stylesheet_.get().parent = this;
+    d_->stylesheet_.get().parent = d_;
 
     return *this;
 }
@@ -1399,14 +1417,30 @@ workbook::workbook(workbook &&other)
 workbook::workbook(const workbook &other)
     : workbook()
 {
-    *d_.get() = *other.d_.get();
+    *this = other.clone(false);
+}
 
-    for (auto ws : *this)
+workbook workbook::clone(bool deep_copy) const
+{
+    workbook wb;
+
+    if (deep_copy)
     {
-        ws.parent(*this);
+        *wb.d_ = *d_;
+    }
+    else
+    {
+        wb.d_ = d_;
     }
 
-    d_->stylesheet_.get().parent = this;
+    for (auto ws : wb)
+    {
+        ws.parent(wb);
+    }
+
+    wb.d_->stylesheet_.get().parent = wb.d_;
+
+    return wb;
 }
 
 workbook::~workbook() = default;

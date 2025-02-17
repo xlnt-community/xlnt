@@ -23,6 +23,7 @@
 // @author: see AUTHORS file
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include <xlnt/cell/cell_type.hpp>
@@ -67,10 +68,8 @@ struct cell_impl
 
 inline bool operator==(const cell_impl &lhs, const cell_impl &rhs)
 {
-    // not comparing parent
+    // not comparing parent, row, column
     return lhs.type_ == rhs.type_
-        && lhs.column_ == rhs.column_
-        && lhs.row_ == rhs.row_
         && lhs.is_merged_ == rhs.is_merged_
         && lhs.phonetics_visible_ == rhs.phonetics_visible_
         && lhs.value_text_ == rhs.value_text_

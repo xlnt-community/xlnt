@@ -536,12 +536,12 @@ const worksheet cell::worksheet() const
     return xlnt::worksheet(d_->parent_);
 }
 
-workbook &cell::workbook()
+workbook cell::workbook()
 {
     return worksheet().workbook();
 }
 
-const workbook &cell::workbook() const
+const workbook cell::workbook() const
 {
     return worksheet().workbook();
 }

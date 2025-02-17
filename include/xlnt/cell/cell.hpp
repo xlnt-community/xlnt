@@ -543,12 +543,12 @@ public:
     /// <summary>
     /// Returns the workbook of the worksheet that owns this cell.
     /// </summary>
-    class workbook &workbook();
+    class workbook workbook();
 
     /// <summary>
     /// Returns the workbook of the worksheet that owns this cell.
     /// </summary>
-    const class workbook &workbook() const;
+    const class workbook workbook() const;
 
     /// <summary>
     /// Returns the base date of the parent workbook.

@@ -440,9 +440,13 @@ public:
     {
         xlnt::workbook wb, wb2;
         xlnt_assert(wb == wb);
+        xlnt_assert(wb.compare(wb, true));
+        xlnt_assert(wb.compare(wb, false));
         xlnt_assert(!(wb != wb));
-        xlnt_assert(wb == wb2);
-        xlnt_assert(!(wb != wb2));
+        xlnt_assert(!(wb == wb2));
+        xlnt_assert(wb != wb2);
+        xlnt_assert(!wb.compare(wb2, true));
+        xlnt_assert(wb.compare(wb2, false));
 
         const auto &wb_const = wb;
         //TODO these aren't tests...
@@ -471,25 +475,25 @@ public:
         xlnt::workbook wb_path(file);
         // ctor from ifstream
         std::ifstream file_reader(file.string(), std::ios::binary);
-        xlnt_assert_equals(wb_path, xlnt::workbook(file_reader));
+        xlnt_assert(wb_path.compare(xlnt::workbook(file_reader), false));
         // load with string
         xlnt::workbook wb_load1;
         xlnt_assert_differs(wb_path, wb_load1);
         wb_load1.load(file.string());
-        xlnt_assert_equals(wb_path, wb_load1);
+        xlnt_assert(wb_path.compare(wb_load1, false));
         // load with wstring
         xlnt::workbook wb_load2;
         wb_load2.load(file.string());
-        xlnt_assert_equals(wb_path, wb_load2);
+        xlnt_assert(wb_path.compare(wb_load2, false));
         // load with path
         xlnt::workbook wb_load3;
         wb_load3.load(file);
-        xlnt_assert_equals(wb_path, wb_load3);
+        xlnt_assert(wb_path.compare(wb_load3, false));
         // load with istream
         xlnt::workbook wb_load4;
         std::ifstream file_reader2(file.string(), std::ios::binary);
         wb_load4.load(file_reader2);
-        xlnt_assert_equals(wb_path, wb_load4);
+        xlnt_assert(wb_path.compare(wb_load4, false));
         // load with vector
         std::ifstream file_reader3(file.string(), std::ios::binary);
         file_reader3.unsetf(std::ios::skipws);
@@ -497,7 +501,7 @@ public:
             std::istream_iterator<uint8_t>());
         xlnt::workbook wb_load5;
         wb_load5.load(data);
-        xlnt_assert_equals(wb_path, wb_load5);
+        xlnt_assert(wb_path.compare(wb_load5, false));
     }
 
     void test_load_file_encrypted()
@@ -514,25 +518,25 @@ public:
         xlnt::workbook wb_path(file, password);
         // ctor from ifstream
         std::ifstream file_reader(file.string(), std::ios::binary);
-        xlnt_assert_equals(wb_path, xlnt::workbook(file_reader, password));
+        xlnt_assert(wb_path.compare(xlnt::workbook(file_reader, password), false));
         // load with string
         xlnt::workbook wb_load1;
         xlnt_assert_differs(wb_path, wb_load1);
         wb_load1.load(file_as_string, password);
-        xlnt_assert_equals(wb_path, wb_load1);
+        xlnt_assert(wb_path.compare(wb_load1, false));
         // load with wstring
         xlnt::workbook wb_load2;
         wb_load2.load(file_as_string, password);
-        xlnt_assert_equals(wb_path, wb_load2);
+        xlnt_assert(wb_path.compare(wb_load2, false));
         // load with path
         xlnt::workbook wb_load3;
         wb_load3.load(file, password);
-        xlnt_assert_equals(wb_path, wb_load3);
+        xlnt_assert(wb_path.compare(wb_load3, false));
         // load with istream
         xlnt::workbook wb_load4;
         std::ifstream file_reader2(file.string(), std::ios::binary);
         wb_load4.load(file_reader2, password);
-        xlnt_assert_equals(wb_path, wb_load4);
+        xlnt_assert(wb_path.compare(wb_load4, false));
         // load with vector
         std::ifstream file_reader3(file.string(), std::ios::binary);
         file_reader3.unsetf(std::ios::skipws);
@@ -540,7 +544,7 @@ public:
             std::istream_iterator<uint8_t>());
         xlnt::workbook wb_load5;
         wb_load5.load(data, password);
-        xlnt_assert_equals(wb_path, wb_load5);
+        xlnt_assert(wb_path.compare(wb_load5, false));
     }
 
     void test_Issue279()

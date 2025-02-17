@@ -76,16 +76,6 @@ class XLNT_API worksheet
 {
 public:
     /// <summary>
-    /// The comparison mode used to specify how to compare worksheets.
-    /// </summary>
-    enum class comparison
-    {
-        same_worksheet, // must be exactly the same worksheet (in the same workbook)
-        similar_worksheet_in_workbook, // can be a similar worksheet in the same workbook
-        similar_worksheet, // can be a similar worksheet (regardless of the workbook)
-    };
-
-    /// <summary>
     /// Iterate over a non-const worksheet with an iterator of this type.
     /// </summary>
     using iterator = range_iterator;
@@ -116,14 +106,14 @@ public:
     worksheet(const worksheet &rhs);
 
     /// <summary>
-    /// Returns a reference to the workbook this worksheet is owned by.
+    /// Returns the workbook this worksheet is owned by.
     /// </summary>
-    class workbook &workbook();
+    class workbook workbook();
 
     /// <summary>
-    /// Returns a reference to the workbook this worksheet is owned by.
+    /// Returns the workbook this worksheet is owned by.
     /// </summary>
-    const class workbook &workbook() const;
+    const class workbook workbook() const;
 
     /// <summary>
     /// Deletes data held in the worksheet that does not affect the internal data or display.
@@ -516,11 +506,6 @@ public:
     /// Convenience method for worksheet::cell method.
     /// </summary>
     const class cell operator[](const cell_reference &reference) const;
-
-    /// <summary>
-    /// Returns true if this worksheet is equal to other, as specified by the comparison_mode.
-    /// </summary>
-    bool compare(const worksheet &other, comparison comparison_mode) const;
 
     /// <summary>
     /// Returns true if this worksheet is equal to other. If compare_by_reference is true, the comparison
