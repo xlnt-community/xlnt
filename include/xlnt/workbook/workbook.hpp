@@ -940,6 +940,7 @@ public:
     /// <summary>
     /// Set the contents of this workbook to be equal to those of "other".
     /// Other is passed as value to allow for copy-swap idiom.
+    /// Creates a shallow copy by default, copying the workbook's internal pointers.
     /// </summary>
     workbook &operator=(workbook other);
 
