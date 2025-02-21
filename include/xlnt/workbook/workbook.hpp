@@ -97,6 +97,15 @@ class XLNT_API workbook
 {
 public:
     /// <summary>
+    /// The method for cloning workbooks.
+    /// </summary>
+    enum class clone_method
+    {
+        deep_copy,
+        shallow_copy
+    };
+
+    /// <summary>
     /// typedef for the iterator used for iterating through this workbook
     /// (non-const) in a range-based for loop.
     /// </summary>
@@ -177,7 +186,7 @@ public:
 
     /// <summary>
     /// Copy constructor. Constructs this workbook from existing workbook, other.
-    /// Creates a shallow copy by default, copying the workbook's internal pointers.
+    /// Creates a shallow copy, copying the workbook's internal pointers.
     /// </summary>
     workbook(const workbook &other);
 
@@ -192,7 +201,7 @@ public:
     /// Creates a clone of this workbook. A shallow copy will copy the workbook's internal pointers,
     /// while a deep copy will copy all the internal structures and create a full clone of the workbook.
     /// </summary>
-    workbook clone(bool deep_copy) const;
+    workbook clone(clone_method method) const;
 
     // Worksheets
 
@@ -939,10 +948,9 @@ public:
 
     /// <summary>
     /// Set the contents of this workbook to be equal to those of "other".
-    /// Other is passed as value to allow for copy-swap idiom.
-    /// Creates a shallow copy by default, copying the workbook's internal pointers.
+    /// Creates a shallow copy, copying the workbook's internal pointers.
     /// </summary>
-    workbook &operator=(workbook other);
+    workbook &operator=(const workbook &other);
 
     /// <summary>
     /// Return the worksheet with a title of "name".

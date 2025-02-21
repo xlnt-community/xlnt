@@ -1400,10 +1400,10 @@ void workbook::swap(workbook &right)
     }
 }
 
-workbook &workbook::operator=(workbook other)
+workbook &workbook::operator=(const workbook &other)
 {
-    swap(other);
-    d_->stylesheet_.get().parent = d_;
+    d_ = other.d_;
+    d_->stylesheet_.get().parent = other.d_;
 
     return *this;
 }
@@ -1417,28 +1417,36 @@ workbook::workbook(workbook &&other)
 workbook::workbook(const workbook &other)
     : workbook()
 {
-    *this = other.clone(false);
+    *this = other.clone(clone_method::shallow_copy);
 }
 
-workbook workbook::clone(bool deep_copy) const
+workbook workbook::clone(clone_method method) const
 {
     workbook wb;
 
-    if (deep_copy)
+    switch (method)
+    {
+    case clone_method::deep_copy:
     {
         *wb.d_ = *d_;
+
+        for (auto ws : wb)
+        {
+            ws.parent(wb);
+        }
+
+        wb.d_->stylesheet_.get().parent = wb.d_;
+
+        break;
     }
-    else
+    case clone_method::shallow_copy:
     {
         wb.d_ = d_;
+        break;
     }
-
-    for (auto ws : wb)
-    {
-        ws.parent(wb);
+    default:
+        throw xlnt::exception("clone method not supported");
     }
-
-    wb.d_->stylesheet_.get().parent = wb.d_;
 
     return wb;
 }

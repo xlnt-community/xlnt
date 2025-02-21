@@ -376,10 +376,10 @@ public:
             // Test clone function.
             xlnt::workbook wb1;
             wb1.create_sheet().title("NEW1");
-            xlnt::workbook wb2_shallow_copy = wb1.clone(false);
+            xlnt::workbook wb2_shallow_copy = wb1.clone(xlnt::workbook::clone_method::shallow_copy);
             wb1.sheet_by_title("NEW1").title("NEW_CHANGED");
             xlnt_assert_throws_nothing(wb2_shallow_copy.sheet_by_title("NEW_CHANGED"));
-            xlnt::workbook wb3_deep_copy = wb2_shallow_copy.clone(true);
+            xlnt::workbook wb3_deep_copy = wb2_shallow_copy.clone(xlnt::workbook::clone_method::deep_copy);
             wb3_deep_copy.sheet_by_title("NEW_CHANGED").title("NEW_CHANGED_AGAIN");
             xlnt_assert_throws(wb2_shallow_copy.sheet_by_title("NEW_CHANGED_AGAIN"), xlnt::key_not_found);
             xlnt_assert_throws(wb1.sheet_by_title("NEW_CHANGED_AGAIN"), xlnt::key_not_found);
