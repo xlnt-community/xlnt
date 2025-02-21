@@ -231,6 +231,14 @@ public:
             && top_left_cell_ == rhs.top_left_cell_;
     }
 
+    /// <summary>
+    /// Returns the negation of the equality operator.
+    /// </summary>
+    bool operator!=(const sheet_view &rhs) const
+    {
+        return !(*this == rhs);
+    }
+
 private:
     /// <summary>
     /// The id

@@ -118,6 +118,11 @@ struct workbook_impl
             && extensions_ == other.extensions_;
     }
 
+    bool operator!=(const workbook_impl &other) const
+    {
+        return !(*this == other);
+    }
+
     optional<std::size_t> active_sheet_index_;
 
     std::list<worksheet_impl> worksheets_;
@@ -161,6 +166,11 @@ struct workbook_impl
                 && last_edited == rhs.last_edited
                 && lowest_edited == rhs.lowest_edited
                 && rup_build == rhs.rup_build;
+        }
+
+        bool operator!=(const file_version_t& rhs) const
+        {
+            return !(*this == rhs);
         }
     };
 

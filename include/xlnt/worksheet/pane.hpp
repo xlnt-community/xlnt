@@ -95,6 +95,14 @@ struct XLNT_API pane
             && y_split == rhs.y_split
             && x_split == rhs.x_split;
     }
+
+    /// <summary>
+    /// Returns the negation of the equality operator.
+    /// </summary>
+    bool operator!=(const pane &rhs) const
+    {
+        return !(*this == rhs);
+    }
 };
 
 } // namespace xlnt

@@ -72,6 +72,11 @@ struct XLNT_API time
     bool operator==(const time &comparand) const;
 
     /// <summary>
+    /// Returns true if this time is different than comparand.
+    /// </summary>
+    bool operator!=(const time &comparand) const;
+
+    /// <summary>
     /// The hour
     /// </summary>
     int hour = 0;

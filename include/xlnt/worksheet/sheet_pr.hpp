@@ -92,4 +92,9 @@ inline bool operator==(const sheet_pr &lhs, const sheet_pr &rhs)
         && lhs.filter_mode == rhs.filter_mode
         && lhs.enable_format_condition_calculation == rhs.enable_format_condition_calculation;
 }
+
+inline bool operator!=(const sheet_pr &lhs, const sheet_pr &rhs)
+{
+    return !(lhs == rhs);
+}
 } // namespace xlnt

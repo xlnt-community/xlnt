@@ -309,4 +309,9 @@ bool header_footer::operator==(const header_footer &rhs) const
         && first_footers_ == rhs.first_footers_;
 }
 
+bool header_footer::operator!=(const header_footer &rhs) const
+{
+    return !(*this == rhs);
+}
+
 } // namespace xlnt

@@ -24,8 +24,6 @@
 
 #pragma once
 
-#include <vector>
-
 #include <detail/cryptography/sha.hpp>
 
 namespace xlnt {

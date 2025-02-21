@@ -30,7 +30,6 @@
 #include <cstdint>
 #include <functional>
 #include <string>
-#include <tuple>
 #include <utility>
 
 namespace xlnt {

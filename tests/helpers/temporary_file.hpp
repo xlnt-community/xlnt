@@ -1,6 +1,5 @@
 #pragma once
 
-#include <array>
 #include <cstdio>
 #include <string>
 
@@ -14,7 +13,7 @@ static std::string create_temporary_filename()
     return "temp.xlsx";
 }
 
-} // namespace 
+} // namespace
 
 class temporary_file
 {

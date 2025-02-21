@@ -146,6 +146,8 @@ public:
 
     bool operator==(const phonetic_pr &rhs) const;
 
+    bool operator!=(const phonetic_pr &rhs) const;
+
 private:
     /// <summary>
     /// zero based index into style sheet font record.

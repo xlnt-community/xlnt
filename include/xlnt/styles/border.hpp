@@ -25,9 +25,6 @@
 
 #pragma once
 
-#include <cstddef>
-#include <functional>
-#include <unordered_map>
 #include <vector>
 
 #include <xlnt/xlnt_config.hpp>

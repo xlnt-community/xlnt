@@ -143,9 +143,9 @@ public:
 
 private:
     std::size_t offset_ = 0;
-    const std::vector<T> *vector_;
-    const T *data_;
-    const std::size_t size_;
+    const std::vector<T> *vector_ = nullptr;
+    const T *data_ = nullptr;
+    const std::size_t size_ = 0;
 };
 
 template<typename T>
@@ -281,7 +281,7 @@ public:
     }
 
 private:
-    std::vector<T> *data_;
+    std::vector<T> *data_ = nullptr;
     std::size_t offset_ = 0;
 };
 

@@ -23,7 +23,7 @@
 // @author: see AUTHORS file
 #pragma once
 
-#include <cstddef>
+#include <memory>
 #include <string>
 
 #include <xlnt/cell/cell_type.hpp>
@@ -34,7 +34,6 @@
 #include <xlnt/utils/optional.hpp>
 #include <detail/implementations/format_impl.hpp>
 #include <detail/implementations/hyperlink_impl.hpp>
-//#include "../numeric_utils.hpp"
 
 namespace xlnt {
 namespace detail {
@@ -43,24 +42,18 @@ struct worksheet_impl;
 
 struct cell_impl
 {
-    cell_impl();
-    cell_impl(const cell_impl &other) = default;
-    cell_impl(cell_impl &&other) = default;
-    cell_impl &operator=(const cell_impl &other) = default;
-    cell_impl &operator=(cell_impl &&other) = default;
+    cell_type type_ = cell_type::empty;
 
-    cell_type type_;
+    worksheet_impl *parent_ = nullptr;
 
-    worksheet_impl *parent_;
+    column_t column_ = 1;
+    row_t row_ = 1;
 
-    column_t column_;
-    row_t row_;
-
-    bool is_merged_;
-    bool phonetics_visible_;
+    bool is_merged_ = false;
+    bool phonetics_visible_ = false;
 
     rich_text value_text_;
-    double value_numeric_;
+    double value_numeric_ = 0.0;
 
     optional<std::string> formula_;
     optional<hyperlink_impl> hyperlink_;
@@ -75,10 +68,8 @@ struct cell_impl
 
 inline bool operator==(const cell_impl &lhs, const cell_impl &rhs)
 {
-    // not comparing parent
+    // not comparing parent, row, column
     return lhs.type_ == rhs.type_
-        && lhs.column_ == rhs.column_
-        && lhs.row_ == rhs.row_
         && lhs.is_merged_ == rhs.is_merged_
         && lhs.phonetics_visible_ == rhs.phonetics_visible_
         && lhs.value_text_ == rhs.value_text_
@@ -87,6 +78,11 @@ inline bool operator==(const cell_impl &lhs, const cell_impl &rhs)
         && lhs.hyperlink_ == rhs.hyperlink_
         && (lhs.format_.is_set() == rhs.format_.is_set() && (!lhs.format_.is_set() || *lhs.format_.get() == *rhs.format_.get()))
         && (lhs.comment_.is_set() == rhs.comment_.is_set() && (!lhs.comment_.is_set() || *lhs.comment_.get() == *rhs.comment_.get()));
+}
+
+inline bool operator!=(const cell_impl &lhs, const cell_impl &rhs)
+{
+    return !(lhs == rhs);
 }
 
 } // namespace detail

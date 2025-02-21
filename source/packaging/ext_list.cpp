@@ -137,4 +137,9 @@ bool ext_list::operator==(const ext_list &rhs) const
     return extensions_ == rhs.extensions_;
 }
 
+bool ext_list::operator!=(const ext_list &rhs) const
+{
+    return !(*this == rhs);
+}
+
 } // namespace xlnt

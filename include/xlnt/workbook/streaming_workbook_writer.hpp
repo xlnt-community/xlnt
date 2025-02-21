@@ -24,8 +24,8 @@
 // @author: see AUTHORS file
 #pragma once
 
-#include <cstddef>
-#include <iterator>
+#include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -39,6 +39,8 @@ namespace xlnt {
 
 class cell;
 class cell_reference;
+class path;
+class workbook;
 class worksheet;
 
 namespace detail {

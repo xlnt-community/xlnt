@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <cstdint>
 #include <string>
 #include <unordered_map>
 
@@ -311,6 +310,8 @@ public:
     rich_text even_footer(location where) const;
 
     bool operator==(const header_footer &rhs) const;
+
+    bool operator!=(const header_footer &rhs) const;
 
 private:
     bool align_with_margins_ = false;

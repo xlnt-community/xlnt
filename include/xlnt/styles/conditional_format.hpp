@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <cstdint>
 #include <string>
 
 #include <xlnt/xlnt_config.hpp>
@@ -57,6 +56,11 @@ public:
     bool operator==(const condition &rhs) const
     {
         return text_comparand_ == rhs.text_comparand_;
+    }
+
+    bool operator!=(const condition &rhs) const
+    {
+        return !(*this == rhs);
     }
 
 private:
@@ -165,7 +169,7 @@ private:
     /// <summary>
     ///
     /// </summary>
-    detail::conditional_format_impl *d_;
+    detail::conditional_format_impl *d_ = nullptr;
 };
 
 } // namespace xlnt

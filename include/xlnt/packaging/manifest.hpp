@@ -175,6 +175,8 @@ public:
 
     bool operator==(const manifest &other) const;
 
+    bool operator!=(const manifest &other) const;
+
 private:
     /// <summary>
     /// Returns the lowest rId for the given part that hasn't already been registered.

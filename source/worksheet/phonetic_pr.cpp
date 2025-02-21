@@ -159,4 +159,9 @@ bool phonetic_pr::operator==(const phonetic_pr &rhs) const
         && alignment_ == rhs.alignment_;
 }
 
+bool phonetic_pr::operator!=(const phonetic_pr &rhs) const
+{
+    return !(*this == rhs);
+}
+
 } // namespace xlnt

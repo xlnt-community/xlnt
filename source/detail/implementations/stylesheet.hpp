@@ -24,6 +24,7 @@
 // @author: see AUTHORS file
 #pragma once
 
+#include <algorithm>
 #include <list>
 #include <string>
 #include <vector>
@@ -543,11 +544,11 @@ struct stylesheet
 		return xlnt::conditional_format(&impl);
 	}
 
-    workbook *parent;
+    std::weak_ptr<workbook_impl> parent;
 
     bool operator==(const stylesheet& rhs) const
     {
-        // no equality on parent as there is only 1 stylesheet per borkbook hence would always be false
+        // no equality on parent as there is only 1 stylesheet per workbook hence would always be false
         return garbage_collection_enabled == rhs.garbage_collection_enabled
             && known_fonts_enabled == rhs.known_fonts_enabled
             && conditional_format_impls == rhs.conditional_format_impls
@@ -562,6 +563,11 @@ struct stylesheet
             && number_formats == rhs.number_formats
             && protections == rhs.protections
             && colors == rhs.colors;
+    }
+
+    bool operator!=(const stylesheet& rhs) const
+    {
+        return !(*this == rhs);
     }
 
     bool garbage_collection_enabled = true;

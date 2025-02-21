@@ -25,7 +25,10 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include <xlnt/xlnt_config.hpp>
+#include <xlnt/utils/optional.hpp>
 
 namespace xlnt {
 
@@ -71,6 +74,11 @@ inline bool operator==(const column_properties &lhs, const column_properties &rh
         && lhs.style == rhs.style
         && lhs.best_fit == rhs.best_fit
         && lhs.hidden == rhs.hidden;
+}
+
+inline bool operator!=(const column_properties &lhs, const column_properties &rhs)
+{
+    return !(lhs == rhs);
 }
 
 } // namespace xlnt

@@ -22,12 +22,7 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <algorithm>
-#include <array>
 #include <cstring>
-#include <iomanip>
-#include <sstream>
-#include <string>
 
 #include <detail/cryptography/sha.hpp>
 

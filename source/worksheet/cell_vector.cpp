@@ -22,8 +22,6 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <algorithm> // std::all_of
-
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/worksheet/cell_iterator.hpp>
 #include <xlnt/worksheet/cell_vector.hpp>

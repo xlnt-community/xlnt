@@ -61,67 +61,56 @@ variant::variant(const datetime &value)
 {
 }
 
-variant::variant(const std::initializer_list<int> &value)
-    : type_(type::vector)
+template<typename T>
+void variant::construct_vector_internal(const T &vec)
 {
-    for (const auto &v : value)
+    vector_value_.reserve(vec.size());
+    for (const auto &v : vec)
     {
         vector_value_.emplace_back(v);
     }
+}
+
+variant::variant(const std::initializer_list<int> &value)
+    : type_(type::vector)
+{
+    construct_vector_internal(value);
 }
 
 variant::variant(const std::vector<int> &value)
     : type_(type::vector)
 {
-    for (const auto &v : value)
-    {
-        vector_value_.emplace_back(v);
-    }
+    construct_vector_internal(value);
 }
 
 variant::variant(const std::initializer_list<const char *> &value)
     : type_(type::vector)
 {
-    for (const auto &v : value)
-    {
-        vector_value_.emplace_back(v);
-    }
+    construct_vector_internal(value);
 }
 
 variant::variant(const std::vector<const char *> &value)
     : type_(type::vector)
 {
-    for (const auto &v : value)
-    {
-        vector_value_.emplace_back(v);
-    }
+    construct_vector_internal(value);
 }
 
 variant::variant(const std::initializer_list<std::string> &value)
     : type_(type::vector)
 {
-    for (const auto &v : value)
-    {
-        vector_value_.emplace_back(v);
-    }
+    construct_vector_internal(value);
 }
 
 variant::variant(const std::vector<std::string> &value)
     : type_(type::vector)
 {
-    for (const auto &v : value)
-    {
-        vector_value_.emplace_back(v);
-    }
+    construct_vector_internal(value);
 }
 
 variant::variant(const std::vector<variant> &value)
     : type_(type::vector)
 {
-    for (const auto &v : value)
-    {
-        vector_value_.emplace_back(v);
-    }
+    construct_vector_internal(value);
 }
 
 bool variant::operator==(const variant &rhs) const
@@ -146,39 +135,81 @@ bool variant::operator==(const variant &rhs) const
     return false;
 }
 
+bool variant::operator!=(const variant &rhs) const
+{
+    return !(*this == rhs);
+}
+
 bool variant::is(type t) const
 {
     return type_ == t;
 }
 
 template <>
-XLNT_API std::string variant::get() const
+std::string variant::get() const
 {
     return lpstr_value_;
 }
 
 template <>
-XLNT_API std::vector<variant> variant::get() const
-{
-    return vector_value_;
-}
-
-template <>
-XLNT_API bool variant::get() const
+bool variant::get() const
 {
     return i4_value_ != 0;
 }
 
 template <>
-XLNT_API std::int32_t variant::get() const
+std::int32_t variant::get() const
 {
     return i4_value_;
 }
 
 template <>
-XLNT_API datetime variant::get() const
+datetime variant::get() const
 {
     return datetime::from_iso_string(lpstr_value_);
+}
+
+template <>
+std::vector<variant> variant::get() const
+{
+    return vector_value_;
+}
+
+template<typename T>
+std::vector<T> variant::get_vector_internal() const
+{
+    // According to the specification, "Vector contents shall be of uniform type"
+    std::vector<T> vec;
+    vec.reserve(vector_value_.size());
+    for (const variant &var : vector_value_)
+    {
+        vec.emplace_back(var.get<T>());
+    }
+    return vec;
+}
+
+template <>
+std::vector<bool> variant::get() const
+{
+    return get_vector_internal<bool>();
+}
+
+template <>
+std::vector<std::int32_t> variant::get() const
+{
+    return get_vector_internal<std::int32_t>();
+}
+
+template <>
+std::vector<std::string> variant::get() const
+{
+    return get_vector_internal<std::string>();
+}
+
+template <>
+std::vector<datetime> variant::get() const
+{
+    return get_vector_internal<datetime>();
 }
 
 variant::type variant::value_type() const

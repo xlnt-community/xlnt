@@ -116,4 +116,9 @@ inline bool operator==(const workbook_view &lhs, const workbook_view &rhs)
         && lhs.visible == rhs.visible;
 }
 
+inline bool operator!=(const workbook_view &lhs, const workbook_view &rhs)
+{
+    return !(lhs == rhs);
+}
+
 } // namespace xlnt

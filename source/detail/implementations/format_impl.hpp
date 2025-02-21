@@ -27,9 +27,9 @@ struct stylesheet;
 
 struct format_impl
 {
-	stylesheet *parent;
+	stylesheet *parent = nullptr;
 
-	std::size_t id;
+	std::size_t id = 0;
 
 	optional<std::size_t> alignment_id;
 	optional<std::size_t> border_id;
@@ -52,10 +52,10 @@ struct format_impl
 
     std::size_t references = 0;
 
-    XLNT_API_INTERNAL friend bool operator==(const format_impl &left, const format_impl &right)
+    friend bool operator==(const format_impl &left, const format_impl &right)
     {
-        return left.parent == right.parent
-            && left.alignment_id == right.alignment_id
+        // not comparing parent
+        return left.alignment_id == right.alignment_id
             && left.alignment_applied == right.alignment_applied
             && left.border_id == right.border_id
             && left.border_applied == right.border_applied

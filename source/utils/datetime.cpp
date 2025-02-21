@@ -67,6 +67,11 @@ bool datetime::operator==(const datetime &comparand) const
         && _is_null == comparand._is_null;
 }
 
+bool datetime::operator!=(const datetime &comparand) const
+{
+    return !(*this == comparand);
+}
+
 double datetime::to_number(calendar base_date) const
 {
     if (_is_null)

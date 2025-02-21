@@ -100,4 +100,9 @@ bool page_margins::operator==(const page_margins &rhs) const
         && detail::float_equals(footer_, rhs.footer_);
 }
 
+bool page_margins::operator!=(const page_margins &rhs) const
+{
+    return !(*this == rhs);
+}
+
 } // namespace xlnt

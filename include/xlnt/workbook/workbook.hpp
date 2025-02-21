@@ -84,6 +84,7 @@ namespace detail {
 
 struct stylesheet;
 struct workbook_impl;
+struct worksheet_impl;
 class xlsx_consumer;
 class xlsx_producer;
 
@@ -95,6 +96,15 @@ class xlsx_producer;
 class XLNT_API workbook
 {
 public:
+    /// <summary>
+    /// The method for cloning workbooks.
+    /// </summary>
+    enum class clone_method
+    {
+        deep_copy,
+        shallow_copy
+    };
+
     /// <summary>
     /// typedef for the iterator used for iterating through this workbook
     /// (non-const) in a range-based for loop.
@@ -176,6 +186,7 @@ public:
 
     /// <summary>
     /// Copy constructor. Constructs this workbook from existing workbook, other.
+    /// Creates a shallow copy, copying the workbook's internal pointers.
     /// </summary>
     workbook(const workbook &other);
 
@@ -185,6 +196,12 @@ public:
     /// after this is executed.
     /// </summary>
     ~workbook();
+
+    /// <summary>
+    /// Creates a clone of this workbook. A shallow copy will copy the workbook's internal pointers,
+    /// while a deep copy will copy all the internal structures and create a full clone of the workbook.
+    /// </summary>
+    workbook clone(clone_method method) const;
 
     // Worksheets
 
@@ -921,13 +938,19 @@ public:
     /// </summary>
     void calculation_properties(const class calculation_properties &props);
 
+    /// <summary>
+    /// Returns true if this workbook is equal to other. If compare_by_reference is true, the comparison
+    /// will only check that both workbook instances point to the same internal workbook.
+    /// </summary>
+    bool compare(const workbook &other, bool compare_by_reference) const;
+
     // Operators
 
     /// <summary>
     /// Set the contents of this workbook to be equal to those of "other".
-    /// Other is passed as value to allow for copy-swap idiom.
+    /// Creates a shallow copy, copying the workbook's internal pointers.
     /// </summary>
-    workbook &operator=(workbook other);
+    workbook &operator=(const workbook &other);
 
     /// <summary>
     /// Return the worksheet with a title of "name".
@@ -956,12 +979,19 @@ private:
     friend class worksheet;
     friend class detail::xlsx_consumer;
     friend class detail::xlsx_producer;
+    friend struct detail::worksheet_impl;
 
     /// <summary>
     /// Private constructor. Constructs a workbook from an implementation pointer.
     /// Used by static constructor to resolve circular construction dependency.
     /// </summary>
-    workbook(detail::workbook_impl *impl);
+    workbook(std::shared_ptr<detail::workbook_impl> impl);
+
+    /// <summary>
+    /// Private constructor. Constructs a workbook from an implementation pointer.
+    /// Used by static constructor to resolve circular construction dependency.
+    /// </summary>
+    workbook(std::weak_ptr<detail::workbook_impl> impl);
 
     /// <summary>
     /// load the encrpyted xlsx file at path
@@ -1103,7 +1133,7 @@ private:
     /// <summary>
     /// An opaque pointer to a structure that holds all of the data relating to this workbook.
     /// </summary>
-    std::unique_ptr<detail::workbook_impl> d_;
+    std::shared_ptr<detail::workbook_impl> d_;
 };
 
 } // namespace xlnt

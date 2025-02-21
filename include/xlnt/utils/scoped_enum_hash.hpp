@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include <utility> // for std::hash
+#include <functional> // for std::hash
 
 namespace xlnt {
 

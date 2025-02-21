@@ -24,7 +24,7 @@
 // @author: see AUTHORS file
 #pragma once
 
-#include <functional>
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <string>

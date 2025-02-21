@@ -25,7 +25,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <limits>
 
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/cell/cell_reference.hpp>
@@ -190,14 +189,14 @@ page_setup worksheet::page_setup() const
     return d_->page_setup_.get();
 }
 
-workbook &worksheet::workbook()
+workbook worksheet::workbook()
 {
-    return *d_->parent_;
+    return d_->parent_;
 }
 
-const workbook &worksheet::workbook() const
+const workbook worksheet::workbook() const
 {
-    return *d_->parent_;
+    return d_->parent_;
 }
 
 void worksheet::garbage_collect()
@@ -962,46 +961,16 @@ bool worksheet::operator==(const worksheet &other) const
     return compare(other, true);
 }
 
-bool worksheet::compare(const worksheet &other, bool reference) const
+bool worksheet::compare(const worksheet &other, bool compare_by_reference) const
 {
-    if (reference)
+    if (compare_by_reference)
     {
         return d_ == other.d_;
     }
-
-    if (d_->parent_ != other.d_->parent_) return false;
-
-    for (auto &cell : d_->cell_map_)
+    else
     {
-        if (other.d_->cell_map_.find(cell.first) == other.d_->cell_map_.end())
-        {
-            return false;
-        }
-
-        xlnt::cell this_cell(&cell.second);
-        xlnt::cell other_cell(&other.d_->cell_map_[cell.first]);
-
-        if (this_cell.data_type() != other_cell.data_type())
-        {
-            return false;
-        }
-
-        if (this_cell.data_type() == xlnt::cell::type::number
-            && !detail::float_equals(this_cell.value<double>(), other_cell.value<double>()))
-        {
-            return false;
-        }
+        return *d_ == *other.d_;
     }
-
-    // todo: missing some comparisons
-
-    if (d_->auto_filter_ == other.d_->auto_filter_ && d_->views_ == other.d_->views_
-        && d_->merged_cells_ == other.d_->merged_cells_)
-    {
-        return true;
-    }
-
-    return false;
 }
 
 bool worksheet::operator!=(const worksheet &other) const
@@ -1312,7 +1281,7 @@ void worksheet::garbage_collect_formulae()
 
 void worksheet::parent(xlnt::workbook &wb)
 {
-    d_->parent_ = &wb;
+    d_->parent_ = wb.d_;
 }
 
 conditional_format worksheet::conditional_format(const range_reference &ref, const condition &when)
@@ -1328,7 +1297,8 @@ path worksheet::path() const
 
 relationship worksheet::referring_relationship() const
 {
-    auto &manifest = workbook().manifest();
+    auto wb = workbook();
+    auto &manifest = wb.manifest();
     auto wb_rel = manifest.relationship(xlnt::path("/"),
         relationship_type::office_document);
     auto ws_rel = manifest.relationship(wb_rel.target().path(),

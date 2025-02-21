@@ -37,11 +37,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 #include <array>
 #include <cassert>
 #include <cstring>
-#include <fstream>
-#include <iomanip>
 #include <iostream>
 #include <iterator> // for std::back_inserter
-#include <stdexcept>
 #include <string>
 #include <miniz.h>
 

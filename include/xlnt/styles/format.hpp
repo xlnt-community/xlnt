@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include <cstddef>
 #include <string>
 
 #include <xlnt/xlnt_config.hpp>
@@ -230,7 +229,7 @@ private:
     /// <summary>
     /// The internal implementation of this format
     /// </summary>
-    detail::format_impl *d_;
+    detail::format_impl *d_ = nullptr;
 };
 
 } // namespace xlnt

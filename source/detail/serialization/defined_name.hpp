@@ -26,6 +26,8 @@
 
 #include <string>
 
+#include <xlnt/utils/optional.hpp>
+
 namespace xlnt {
 namespace detail {
 

@@ -249,9 +249,9 @@ private:
 
     std::unique_ptr<detail::cell_impl> streaming_cell_;
 
-    detail::cell_impl *current_cell_;
+    detail::cell_impl *current_cell_ = nullptr;
 
-    detail::worksheet_impl *current_worksheet_;
+    detail::worksheet_impl *current_worksheet_ = nullptr;
 };
 
 } // namespace detail

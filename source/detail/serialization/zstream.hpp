@@ -35,12 +35,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 
 #pragma once
 
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <unordered_map>
 #include <vector>
 
 #include <xlnt/xlnt_config.hpp>
+#include <detail/xlnt_config_impl.hpp>
 #include <xlnt/utils/path.hpp>
 
 namespace xlnt {

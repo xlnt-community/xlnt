@@ -170,6 +170,14 @@ public:
             && pane_ == rhs.pane_;
     }
 
+    // <summary>
+    /// Returns the negation of the equality operator.
+    /// </summary>
+    bool operator!=(const selection &rhs) const
+    {
+        return !(*this == rhs);
+    }
+
 private:
     /// <summary>
     /// The last selected cell in the selection

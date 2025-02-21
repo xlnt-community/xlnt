@@ -39,6 +39,11 @@ public:
     {
         return true;
     }
+
+    bool operator!=(const theme &other) const
+    {
+        return !(*this == other);
+    }
 };
 
 } // namespace xlnt
