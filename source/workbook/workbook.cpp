@@ -1368,66 +1368,16 @@ bool workbook::operator!=(const workbook &rhs) const
 
 void workbook::swap(workbook &right)
 {
-    auto &left = *this;
-
-    using std::swap;
-    swap(left.d_, right.d_);
-
-    if (left.d_ != nullptr)
-    {
-        for (auto ws : left)
-        {
-            ws.parent(left);
-        }
-
-        if (left.d_->stylesheet_.is_set())
-        {
-            left.d_->stylesheet_.get().parent = left.d_;
-        }
-    }
-
-    if (right.d_ != nullptr)
-    {
-        for (auto ws : right)
-        {
-            ws.parent(right);
-        }
-
-        if (right.d_->stylesheet_.is_set())
-        {
-            right.d_->stylesheet_.get().parent = right.d_;
-        }
-    }
-}
-
-workbook &workbook::operator=(const workbook &other)
-{
-    d_ = other.d_;
-    d_->stylesheet_.get().parent = other.d_;
-
-    return *this;
-}
-
-workbook::workbook(workbook &&other)
-    : workbook(nullptr)
-{
-    swap(other);
-}
-
-workbook::workbook(const workbook &other)
-    : workbook()
-{
-    *this = other.clone(clone_method::shallow_copy);
+    std::swap(d_, right.d_);
 }
 
 workbook workbook::clone(clone_method method) const
 {
-    workbook wb;
-
     switch (method)
     {
     case clone_method::deep_copy:
     {
+        workbook wb;
         *wb.d_ = *d_;
 
         for (auto ws : wb)
@@ -1437,21 +1387,16 @@ workbook workbook::clone(clone_method method) const
 
         wb.d_->stylesheet_.get().parent = wb.d_;
 
-        break;
+        return wb;
     }
     case clone_method::shallow_copy:
     {
-        wb.d_ = d_;
-        break;
+        return workbook(d_);
     }
     default:
-        throw xlnt::exception("clone method not supported");
+        throw xlnt::invalid_parameter("clone method not supported");
     }
-
-    return wb;
 }
-
-workbook::~workbook() = default;
 
 bool workbook::has_theme() const
 {

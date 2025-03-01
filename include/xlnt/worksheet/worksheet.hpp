@@ -509,7 +509,8 @@ public:
 
     /// <summary>
     /// Returns true if this worksheet is equal to other. If compare_by_reference is true, the comparison
-    /// will only check that both worksheets point to the same sheet in the same workbook.
+    /// will only check that both worksheets point to the same sheet in the same workbook. Otherwise,
+    /// if compare_by_reference is false, all worksheet properties except for the id and title are compared.
     /// </summary>
     bool compare(const worksheet &other, bool compare_by_reference) const;
 

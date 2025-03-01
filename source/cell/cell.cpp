@@ -793,7 +793,7 @@ bool operator==(const cell &cell, std::nullptr_t)
 
 bool operator!=(std::nullptr_t, const cell &cell)
 {
-    return cell.data_type() != cell::type::empty;
+    return !(nullptr == cell);
 }
 
 bool operator!=(const cell &cell, std::nullptr_t)

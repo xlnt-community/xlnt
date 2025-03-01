@@ -182,20 +182,20 @@ public:
     /// <summary>
     /// Move constructor. Constructs a workbook from existing workbook, other.
     /// </summary>
-    workbook(workbook &&other);
+    workbook(workbook &&other) = default;
 
     /// <summary>
     /// Copy constructor. Constructs this workbook from existing workbook, other.
     /// Creates a shallow copy, copying the workbook's internal pointers.
     /// </summary>
-    workbook(const workbook &other);
+    workbook(const workbook &other) = default;
 
     /// <summary>
     /// Destroys this workbook, deallocating all internal storage space. Any pimpl
     /// wrapper classes (e.g. cell) pointing into this workbook will be invalid
     /// after this is executed.
     /// </summary>
-    ~workbook();
+    ~workbook() = default;
 
     /// <summary>
     /// Creates a clone of this workbook. A shallow copy will copy the workbook's internal pointers,
@@ -940,7 +940,8 @@ public:
 
     /// <summary>
     /// Returns true if this workbook is equal to other. If compare_by_reference is true, the comparison
-    /// will only check that both workbook instances point to the same internal workbook.
+    /// will only check that both workbook instances point to the same internal workbook. Otherwise,
+    /// if compare_by_reference is false, all workbook properties except for the abs_path are compared.
     /// </summary>
     bool compare(const workbook &other, bool compare_by_reference) const;
 
@@ -950,7 +951,13 @@ public:
     /// Set the contents of this workbook to be equal to those of "other".
     /// Creates a shallow copy, copying the workbook's internal pointers.
     /// </summary>
-    workbook &operator=(const workbook &other);
+    workbook &operator=(const workbook &other) = default;
+
+    /// <summary>
+    /// Set the contents of this workbook to be equal to those of "other"
+    /// by consuming (moving) the "other" instance.
+    /// </summary>
+    workbook &operator=(workbook &&other) = default;
 
     /// <summary>
     /// Return the worksheet with a title of "name".

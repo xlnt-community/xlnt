@@ -63,7 +63,9 @@ public:
         register_test(test_get_named_range);
         register_test(test_remove_named_range);
         register_test(test_post_increment_iterator);
-        register_test(test_copy);
+        register_test(test_clone);
+        register_test(test_copy_constructor);
+        register_test(test_copy_assignment_operator);
         register_test(test_copy_iterator);
         register_test(test_manifest);
         register_test(test_memory);
@@ -370,41 +372,38 @@ public:
         xlnt_assert_equals(const_iter, wb_const.end());
     }
 
-    void test_copy()
+    void test_clone()
     {
-        {
-            // Test clone function.
-            xlnt::workbook wb1;
-            wb1.create_sheet().title("NEW1");
-            xlnt::workbook wb2_shallow_copy = wb1.clone(xlnt::workbook::clone_method::shallow_copy);
-            wb1.sheet_by_title("NEW1").title("NEW_CHANGED");
-            xlnt_assert_throws_nothing(wb2_shallow_copy.sheet_by_title("NEW_CHANGED"));
-            xlnt::workbook wb3_deep_copy = wb2_shallow_copy.clone(xlnt::workbook::clone_method::deep_copy);
-            wb3_deep_copy.sheet_by_title("NEW_CHANGED").title("NEW_CHANGED_AGAIN");
-            xlnt_assert_throws(wb2_shallow_copy.sheet_by_title("NEW_CHANGED_AGAIN"), xlnt::key_not_found);
-            xlnt_assert_throws(wb1.sheet_by_title("NEW_CHANGED_AGAIN"), xlnt::key_not_found);
-        }
+        xlnt::workbook wb1;
+        wb1.create_sheet().title("NEW1");
+        xlnt::workbook wb2_shallow_copy = wb1.clone(xlnt::workbook::clone_method::shallow_copy);
+        wb1.sheet_by_title("NEW1").title("NEW_CHANGED");
+        xlnt_assert_throws_nothing(wb2_shallow_copy.sheet_by_title("NEW_CHANGED"));
+        xlnt::workbook wb3_deep_copy = wb2_shallow_copy.clone(xlnt::workbook::clone_method::deep_copy);
+        wb3_deep_copy.sheet_by_title("NEW_CHANGED").title("NEW_CHANGED_AGAIN");
+        xlnt_assert_throws(wb2_shallow_copy.sheet_by_title("NEW_CHANGED_AGAIN"), xlnt::key_not_found);
+        xlnt_assert_throws(wb1.sheet_by_title("NEW_CHANGED_AGAIN"), xlnt::key_not_found);
+    }
 
-        {
-            // Test copy constructor.
-            xlnt::workbook wb1;
-            wb1.create_sheet().title("NEW1");
-            xlnt::workbook wb2_copy = wb1;
-            wb1.sheet_by_title("NEW1").title("NEW_CHANGED");
-            // Ensure shallow copy.
-            xlnt_assert_throws_nothing(wb2_copy.sheet_by_title("NEW_CHANGED"));
-        }
+    void test_copy_constructor()
+    {
+        xlnt::workbook wb1;
+        wb1.create_sheet().title("NEW1");
+        xlnt::workbook wb2_copy(wb1);
+        wb1.sheet_by_title("NEW1").title("NEW_CHANGED");
+        // Ensure shallow copy.
+        xlnt_assert_throws_nothing(wb2_copy.sheet_by_title("NEW_CHANGED"));
+    }
 
-        {
-            // Test copy assignment operator.
-            xlnt::workbook wb1;
-            wb1.create_sheet().title("NEW1");
-            xlnt::workbook wb2_copy;
-            wb2_copy = wb1;
-            wb1.sheet_by_title("NEW1").title("NEW_CHANGED");
-            // Ensure shallow copy.
-            xlnt_assert_throws_nothing(wb2_copy.sheet_by_title("NEW_CHANGED"));
-        }
+    void test_copy_assignment_operator()
+    {
+        xlnt::workbook wb1;
+        wb1.create_sheet().title("NEW1");
+        xlnt::workbook wb2_copy;
+        wb2_copy = wb1;
+        wb1.sheet_by_title("NEW1").title("NEW_CHANGED");
+        // Ensure shallow copy.
+        xlnt_assert_throws_nothing(wb2_copy.sheet_by_title("NEW_CHANGED"));
     }
 
     void test_copy_iterator()

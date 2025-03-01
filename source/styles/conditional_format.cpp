@@ -75,7 +75,7 @@ conditional_format::conditional_format(detail::conditional_format_impl *d)
 
 bool conditional_format::operator==(const conditional_format &other) const
 {
-    return *d_ == *other.d_;
+    return d_ == other.d_;
 }
 
 bool conditional_format::operator!=(const conditional_format &other) const

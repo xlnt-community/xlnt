@@ -94,6 +94,7 @@ struct workbook_impl
 
     bool operator==(const workbook_impl &other) const
     {
+        // not comparing abs_path_
         return active_sheet_index_ == other.active_sheet_index_
             && worksheets_ == other.worksheets_
             && shared_strings_ids_ == other.shared_strings_ids_
@@ -113,7 +114,6 @@ struct workbook_impl
             && code_name_ == other.code_name_
             && file_version_ == other.file_version_
             && calculation_properties_ == other.calculation_properties_
-            && abs_path_ == other.abs_path_
             && arch_id_flags_ == other.arch_id_flags_
             && extensions_ == other.extensions_;
     }

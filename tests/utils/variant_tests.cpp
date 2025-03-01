@@ -33,7 +33,9 @@ public:
     {
         register_test(test_null);
         register_test(test_int32);
+        register_test(test_int32_vector);
         register_test(test_string);
+        register_test(test_string_vector);
     }
 
     void test_null()
@@ -52,6 +54,17 @@ public:
         xlnt_assert_equals(10, var_int.get<std::int32_t>());
     }
 
+    void test_int32_vector()
+    {
+        std::vector<std::int32_t> vec {10, 20, 30, 40};
+        xlnt::variant var_int_vec(vec);
+        xlnt_assert_equals(var_int_vec.value_type(), xlnt::variant::type::vector);
+        xlnt_assert(var_int_vec.is(xlnt::variant::type::vector));
+        std::vector<std::int32_t> vec_returned;
+        xlnt_assert_throws_nothing(vec_returned = var_int_vec.get<std::vector<std::int32_t>>());
+        xlnt_assert_equals(vec, vec_returned);
+    }
+
     void test_string()
     {
         xlnt::variant var_str1("test1");
@@ -65,6 +78,17 @@ public:
         xlnt_assert(var_str2.is(xlnt::variant::type::lpstr));
         xlnt_assert_throws_nothing(var_str2.get<std::string>());
         xlnt_assert_equals("test2", var_str2.get<std::string>());
+    }
+
+    void test_string_vector()
+    {
+        std::vector<std::string> vec {"test1", "test2", "test3", "test4"};
+        xlnt::variant var_str1_vec(vec);
+        xlnt_assert_equals(var_str1_vec.value_type(), xlnt::variant::type::vector);
+        xlnt_assert(var_str1_vec.is(xlnt::variant::type::vector));
+        std::vector<std::string> vec_returned;
+        xlnt_assert_throws_nothing(vec_returned = var_str1_vec.get<std::vector<std::string>>());
+        xlnt_assert_equals(vec, vec_returned);
     }
 };
 static variant_test_suite x;
