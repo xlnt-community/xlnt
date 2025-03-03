@@ -1001,6 +1001,11 @@ private:
     workbook(std::weak_ptr<detail::workbook_impl> impl);
 
     /// <summary>
+    /// Internal function to set the impl.
+    /// </summary>
+    void set_impl(std::shared_ptr<detail::workbook_impl> impl);
+
+    /// <summary>
     /// load the encrpyted xlsx file at path
     /// </summary>
     template <typename T>

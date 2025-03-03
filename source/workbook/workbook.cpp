@@ -558,21 +558,28 @@ workbook::workbook(std::istream &data, std::u8string_view password)
 #endif
 
 workbook::workbook(std::shared_ptr<detail::workbook_impl> impl)
-    : d_(impl)
 {
-    if (impl != nullptr)
-    {
-        if (d_->stylesheet_.is_set())
-        {
-            d_->stylesheet_.get().parent = d_;
-        }
-    }
+    set_impl(impl);
 }
 
 workbook::workbook(std::weak_ptr<detail::workbook_impl> impl)
-    : workbook(impl.lock())
 {
+    set_impl(impl.lock());
+}
 
+void workbook::set_impl(std::shared_ptr<detail::workbook_impl> impl)
+{
+    if (impl == nullptr)
+    {
+        throw xlnt::invalid_parameter("invalid workbook pointer");
+    }
+
+    d_ = impl;
+
+    if (d_->stylesheet_.is_set())
+    {
+        d_->stylesheet_.get().parent = d_;
+    }
 }
 
 void workbook::register_package_part(relationship_type type)
