@@ -389,8 +389,7 @@ void workbook::arch_id_flags(const std::size_t flags)
 
 workbook workbook::empty()
 {
-    auto impl = std::shared_ptr<detail::workbook_impl>(new detail::workbook_impl());
-    workbook wb(impl);
+    workbook wb(std::shared_ptr<detail::workbook_impl>(new detail::workbook_impl()));
 
     wb.register_package_part(relationship_type::office_document);
 
@@ -559,7 +558,7 @@ workbook::workbook(std::istream &data, std::u8string_view password)
 
 workbook::workbook(std::shared_ptr<detail::workbook_impl> impl)
 {
-    set_impl(impl);
+    set_impl(std::move(impl));
 }
 
 workbook::workbook(std::weak_ptr<detail::workbook_impl> impl)
@@ -574,12 +573,7 @@ void workbook::set_impl(std::shared_ptr<detail::workbook_impl> impl)
         throw xlnt::invalid_parameter("invalid workbook pointer");
     }
 
-    d_ = impl;
-
-    if (d_->stylesheet_.is_set())
-    {
-        d_->stylesheet_.get().parent = d_;
-    }
+    d_ = std::move(impl);
 }
 
 void workbook::register_package_part(relationship_type type)
