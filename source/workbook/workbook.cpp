@@ -389,7 +389,7 @@ void workbook::arch_id_flags(const std::size_t flags)
 
 workbook workbook::empty()
 {
-    workbook wb(std::shared_ptr<detail::workbook_impl>(new detail::workbook_impl()));
+    workbook wb(std::make_shared<detail::workbook_impl>());
 
     wb.register_package_part(relationship_type::office_document);
 
