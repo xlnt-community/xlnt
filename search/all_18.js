@@ -20,6 +20,6 @@ var searchData=
   ['_7erange_5fiterator',['~range_iterator',['../classxlnt_1_1range__iterator.html#a34d5944ff07e2e0828eba123f591b752',1,'xlnt::range_iterator']]],
   ['_7eunhandled_5fswitch_5fcase',['~unhandled_switch_case',['../classxlnt_1_1unhandled__switch__case.html#a8831a4ff49e817e14798ad13192444f3',1,'xlnt::unhandled_switch_case']]],
   ['_7eunsupported',['~unsupported',['../classxlnt_1_1unsupported.html#a852820acc296d3276475dcc38e6c4560',1,'xlnt::unsupported']]],
-  ['_7eworkbook',['~workbook',['../classxlnt_1_1workbook.html#a12ddbfa450b8bc3dc3d7b049f39d57e9',1,'xlnt::workbook']]],
+  ['_7eworkbook',['~workbook',['../classxlnt_1_1workbook.html#a818d87ede30c3f0b179234b1b7009d33',1,'xlnt::workbook']]],
   ['_7eworksheet_5fiterator',['~worksheet_iterator',['../classxlnt_1_1worksheet__iterator.html#a6c9371bdf947cfd81ffae21083f669f7',1,'xlnt::worksheet_iterator']]]
 ];

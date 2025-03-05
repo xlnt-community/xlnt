@@ -80,6 +80,11 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
+<tr class="memitem:a08e9341f70e326cadb563c8432d33d33"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a08e9341f70e326cadb563c8432d33d33">clone_method</a> { <b>deep_copy</b>, 
+<b>shallow_copy</b>
+ }<tr class="memdesc:a08e9341f70e326cadb563c8432d33d33"><td class="mdescLeft">&#160;</td><td class="mdescRight">The method for cloning workbooks.  <a href="classxlnt_1_1workbook.html#a08e9341f70e326cadb563c8432d33d33">More...</a><br /></td></tr>
+</td></tr>
+<tr class="separator:a08e9341f70e326cadb563c8432d33d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2f1be96b599bc45f067d70609821312"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#ae2f1be96b599bc45f067d70609821312">iterator</a> = <a class="el" href="classxlnt_1_1worksheet__iterator.html">worksheet_iterator</a></td></tr>
 <tr class="memdesc:ae2f1be96b599bc45f067d70609821312"><td class="mdescLeft">&#160;</td><td class="mdescRight">typedef for the iterator used for iterating through this workbook (non-const) in a range-based for loop.  <a href="#ae2f1be96b599bc45f067d70609821312">More...</a><br /></td></tr>
 <tr class="separator:ae2f1be96b599bc45f067d70609821312"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -110,15 +115,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0523e9012cb4917e76038ea3da432b43"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a0523e9012cb4917e76038ea3da432b43">workbook</a> (std::istream &amp;data, const std::string &amp;password)</td></tr>
 <tr class="memdesc:a0523e9012cb4917e76038ea3da432b43"><td class="mdescLeft">&#160;</td><td class="mdescRight">construct the workbook from any data stream where the data is the binary form of an encrypted workbook  <a href="#a0523e9012cb4917e76038ea3da432b43">More...</a><br /></td></tr>
 <tr class="separator:a0523e9012cb4917e76038ea3da432b43"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63732bb538e5cbcaac6ec014a445d5eb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a63732bb538e5cbcaac6ec014a445d5eb">workbook</a> (<a class="el" href="classxlnt_1_1workbook.html">workbook</a> &amp;&amp;other)</td></tr>
-<tr class="memdesc:a63732bb538e5cbcaac6ec014a445d5eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move constructor. Constructs a workbook from existing workbook, other.  <a href="#a63732bb538e5cbcaac6ec014a445d5eb">More...</a><br /></td></tr>
-<tr class="separator:a63732bb538e5cbcaac6ec014a445d5eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa43405161ce26b7e171cc05b8461835c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#aa43405161ce26b7e171cc05b8461835c">workbook</a> (const <a class="el" href="classxlnt_1_1workbook.html">workbook</a> &amp;other)</td></tr>
-<tr class="memdesc:aa43405161ce26b7e171cc05b8461835c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor. Constructs this workbook from existing workbook, other.  <a href="#aa43405161ce26b7e171cc05b8461835c">More...</a><br /></td></tr>
-<tr class="separator:aa43405161ce26b7e171cc05b8461835c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12ddbfa450b8bc3dc3d7b049f39d57e9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a12ddbfa450b8bc3dc3d7b049f39d57e9">~workbook</a> ()</td></tr>
-<tr class="memdesc:a12ddbfa450b8bc3dc3d7b049f39d57e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys this workbook, deallocating all internal storage space. Any pimpl wrapper classes (e.g. cell) pointing into this workbook will be invalid after this is executed.  <a href="#a12ddbfa450b8bc3dc3d7b049f39d57e9">More...</a><br /></td></tr>
-<tr class="separator:a12ddbfa450b8bc3dc3d7b049f39d57e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42a6549cd6530e617ee48e1289658732"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a42a6549cd6530e617ee48e1289658732">workbook</a> (<a class="el" href="classxlnt_1_1workbook.html">workbook</a> &amp;&amp;other)=default</td></tr>
+<tr class="memdesc:a42a6549cd6530e617ee48e1289658732"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move constructor. Constructs a workbook from existing workbook, other.  <a href="#a42a6549cd6530e617ee48e1289658732">More...</a><br /></td></tr>
+<tr class="separator:a42a6549cd6530e617ee48e1289658732"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1494b88647450ea17ed2ab2fea285531"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a1494b88647450ea17ed2ab2fea285531">workbook</a> (const <a class="el" href="classxlnt_1_1workbook.html">workbook</a> &amp;other)=default</td></tr>
+<tr class="memdesc:a1494b88647450ea17ed2ab2fea285531"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor. Constructs this workbook from existing workbook, other. Creates a shallow copy, copying the workbook's internal pointers.  <a href="#a1494b88647450ea17ed2ab2fea285531">More...</a><br /></td></tr>
+<tr class="separator:a1494b88647450ea17ed2ab2fea285531"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a818d87ede30c3f0b179234b1b7009d33"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a818d87ede30c3f0b179234b1b7009d33">~workbook</a> ()=default</td></tr>
+<tr class="memdesc:a818d87ede30c3f0b179234b1b7009d33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys this workbook, deallocating all internal storage space. Any pimpl wrapper classes (e.g. cell) pointing into this workbook will be invalid after this is executed.  <a href="#a818d87ede30c3f0b179234b1b7009d33">More...</a><br /></td></tr>
+<tr class="separator:a818d87ede30c3f0b179234b1b7009d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d25450cd7cc8c9efe8498a56fb0eefa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1workbook.html">workbook</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a3d25450cd7cc8c9efe8498a56fb0eefa">clone</a> (<a class="el" href="classxlnt_1_1workbook.html#a08e9341f70e326cadb563c8432d33d33">clone_method</a> method) const</td></tr>
+<tr class="memdesc:a3d25450cd7cc8c9efe8498a56fb0eefa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a clone of this workbook. A shallow copy will copy the workbook's internal pointers, while a deep copy will copy all the internal structures and create a full clone of the workbook.  <a href="#a3d25450cd7cc8c9efe8498a56fb0eefa">More...</a><br /></td></tr>
+<tr class="separator:a3d25450cd7cc8c9efe8498a56fb0eefa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ef148f73657168a019d85193af7adc1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1worksheet.html">worksheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a9ef148f73657168a019d85193af7adc1">create_sheet</a> ()</td></tr>
 <tr class="memdesc:a9ef148f73657168a019d85193af7adc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates and returns a sheet after the last sheet in this workbook.  <a href="#a9ef148f73657168a019d85193af7adc1">More...</a><br /></td></tr>
 <tr class="separator:a9ef148f73657168a019d85193af7adc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -446,9 +454,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae798e6baa0054c88086aa75e3d6a385e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#ae798e6baa0054c88086aa75e3d6a385e">calculation_properties</a> (const class <a class="el" href="classxlnt_1_1calculation__properties.html">calculation_properties</a> &amp;props)</td></tr>
 <tr class="memdesc:ae798e6baa0054c88086aa75e3d6a385e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the calculation properties of this workbook to props.  <a href="#ae798e6baa0054c88086aa75e3d6a385e">More...</a><br /></td></tr>
 <tr class="separator:ae798e6baa0054c88086aa75e3d6a385e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ba686110b4462b06aabb9c71deaaa6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1workbook.html">workbook</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a3ba686110b4462b06aabb9c71deaaa6d">operator=</a> (<a class="el" href="classxlnt_1_1workbook.html">workbook</a> other)</td></tr>
-<tr class="memdesc:a3ba686110b4462b06aabb9c71deaaa6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the contents of this workbook to be equal to those of "other". Other is passed as value to allow for copy-swap idiom.  <a href="#a3ba686110b4462b06aabb9c71deaaa6d">More...</a><br /></td></tr>
-<tr class="separator:a3ba686110b4462b06aabb9c71deaaa6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d527e1b133c4eb001e2a5c6bf162ab9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a7d527e1b133c4eb001e2a5c6bf162ab9">compare</a> (const <a class="el" href="classxlnt_1_1workbook.html">workbook</a> &amp;other, bool compare_by_reference) const</td></tr>
+<tr class="memdesc:a7d527e1b133c4eb001e2a5c6bf162ab9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this workbook is equal to other. If compare_by_reference is true, the comparison will only check that both workbook instances point to the same internal workbook. Otherwise, if compare_by_reference is false, all workbook properties except for the abs_path are compared.  <a href="#a7d527e1b133c4eb001e2a5c6bf162ab9">More...</a><br /></td></tr>
+<tr class="separator:a7d527e1b133c4eb001e2a5c6bf162ab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48823c50a52b798fdf3fe9cd7a9b9233"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1workbook.html">workbook</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a48823c50a52b798fdf3fe9cd7a9b9233">operator=</a> (const <a class="el" href="classxlnt_1_1workbook.html">workbook</a> &amp;other)=default</td></tr>
+<tr class="memdesc:a48823c50a52b798fdf3fe9cd7a9b9233"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the contents of this workbook to be equal to those of "other". Creates a shallow copy, copying the workbook's internal pointers.  <a href="#a48823c50a52b798fdf3fe9cd7a9b9233">More...</a><br /></td></tr>
+<tr class="separator:a48823c50a52b798fdf3fe9cd7a9b9233"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c73bf7fbf0b4e7d57173d7da950fb15"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1workbook.html">workbook</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a6c73bf7fbf0b4e7d57173d7da950fb15">operator=</a> (<a class="el" href="classxlnt_1_1workbook.html">workbook</a> &amp;&amp;other)=default</td></tr>
+<tr class="memdesc:a6c73bf7fbf0b4e7d57173d7da950fb15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the contents of this workbook to be equal to those of "other" by consuming (moving) the "other" instance.  <a href="#a6c73bf7fbf0b4e7d57173d7da950fb15">More...</a><br /></td></tr>
+<tr class="separator:a6c73bf7fbf0b4e7d57173d7da950fb15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab268cb437640f05acdb5d9e0e73b231e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1worksheet.html">worksheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#ab268cb437640f05acdb5d9e0e73b231e">operator[]</a> (const std::string &amp;name)</td></tr>
 <tr class="memdesc:ab268cb437640f05acdb5d9e0e73b231e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the worksheet with a title of "name".  <a href="#ab268cb437640f05acdb5d9e0e73b231e">More...</a><br /></td></tr>
 <tr class="separator:ab268cb437640f05acdb5d9e0e73b231e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -482,6 +496,9 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
 <tr class="memitem:aeaa1b2a5f3d37ddb4b8ca1ebaab144f3"><td class="memItemLeft" align="right" valign="top"><a id="aeaa1b2a5f3d37ddb4b8ca1ebaab144f3"></a>
 class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_producer</b></td></tr>
 <tr class="separator:aeaa1b2a5f3d37ddb4b8ca1ebaab144f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab21e1cff902f040e386548e8cc0d794d"><td class="memItemLeft" align="right" valign="top"><a id="ab21e1cff902f040e386548e8cc0d794d"></a>
+struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::worksheet_impl</b></td></tr>
+<tr class="separator:ab21e1cff902f040e386548e8cc0d794d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>workbook is the container for all other parts of the document. </p>
@@ -547,6 +564,31 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 </div><div class="memdoc">
 
 <p>typedef for the iterator used for iterating through this workbook (non-const) in a range-based for loop in reverse order using std::make_reverse_iterator. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a08e9341f70e326cadb563c8432d33d33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08e9341f70e326cadb563c8432d33d33">&#9670;&nbsp;</a></span>clone_method</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="classxlnt_1_1workbook.html#a08e9341f70e326cadb563c8432d33d33">xlnt::workbook::clone_method</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The method for cloning workbooks. </p>
 
 </div>
 </div>
@@ -670,11 +712,14 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 
 </div>
 </div>
-<a id="a63732bb538e5cbcaac6ec014a445d5eb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a63732bb538e5cbcaac6ec014a445d5eb">&#9670;&nbsp;</a></span>workbook() <span class="overload">[6/7]</span></h2>
+<a id="a42a6549cd6530e617ee48e1289658732"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42a6549cd6530e617ee48e1289658732">&#9670;&nbsp;</a></span>workbook() <span class="overload">[6/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">xlnt::workbook::workbook </td>
@@ -684,17 +729,25 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Move constructor. Constructs a workbook from existing workbook, other. </p>
 
 </div>
 </div>
-<a id="aa43405161ce26b7e171cc05b8461835c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa43405161ce26b7e171cc05b8461835c">&#9670;&nbsp;</a></span>workbook() <span class="overload">[7/7]</span></h2>
+<a id="a1494b88647450ea17ed2ab2fea285531"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1494b88647450ea17ed2ab2fea285531">&#9670;&nbsp;</a></span>workbook() <span class="overload">[7/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">xlnt::workbook::workbook </td>
@@ -704,17 +757,25 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Copy constructor. Constructs this workbook from existing workbook, other. </p>
+<p>Copy constructor. Constructs this workbook from existing workbook, other. Creates a shallow copy, copying the workbook's internal pointers. </p>
 
 </div>
 </div>
-<a id="a12ddbfa450b8bc3dc3d7b049f39d57e9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a12ddbfa450b8bc3dc3d7b049f39d57e9">&#9670;&nbsp;</a></span>~workbook()</h2>
+<a id="a818d87ede30c3f0b179234b1b7009d33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a818d87ede30c3f0b179234b1b7009d33">&#9670;&nbsp;</a></span>~workbook()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">xlnt::workbook::~workbook </td>
@@ -723,6 +784,11 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Destroys this workbook, deallocating all internal storage space. Any pimpl wrapper classes (e.g. cell) pointing into this workbook will be invalid after this is executed. </p>
@@ -1108,6 +1174,26 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 
 </div>
 </div>
+<a id="a3d25450cd7cc8c9efe8498a56fb0eefa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d25450cd7cc8c9efe8498a56fb0eefa">&#9670;&nbsp;</a></span>clone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classxlnt_1_1workbook.html">workbook</a> xlnt::workbook::clone </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classxlnt_1_1workbook.html#a08e9341f70e326cadb563c8432d33d33">clone_method</a>&#160;</td>
+          <td class="paramname"><em>method</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a clone of this workbook. A shallow copy will copy the workbook's internal pointers, while a deep copy will copy all the internal structures and create a full clone of the workbook. </p>
+
+</div>
+</div>
 <a id="a987a232ba82f37044a056f178e2ad69b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a987a232ba82f37044a056f178e2ad69b">&#9670;&nbsp;</a></span>code_name() <span class="overload">[1/2]</span></h2>
 
@@ -1144,6 +1230,36 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 </div><div class="memdoc">
 
 <p>Sets the code name of this workbook to code_name. </p>
+
+</div>
+</div>
+<a id="a7d527e1b133c4eb001e2a5c6bf162ab9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d527e1b133c4eb001e2a5c6bf162ab9">&#9670;&nbsp;</a></span>compare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::workbook::compare </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classxlnt_1_1workbook.html">workbook</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>compare_by_reference</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if this workbook is equal to other. If compare_by_reference is true, the comparison will only check that both workbook instances point to the same internal workbook. Otherwise, if compare_by_reference is false, all workbook properties except for the abs_path are compared. </p>
 
 </div>
 </div>
@@ -2395,23 +2511,59 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 
 </div>
 </div>
-<a id="a3ba686110b4462b06aabb9c71deaaa6d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3ba686110b4462b06aabb9c71deaaa6d">&#9670;&nbsp;</a></span>operator=()</h2>
+<a id="a48823c50a52b798fdf3fe9cd7a9b9233"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48823c50a52b798fdf3fe9cd7a9b9233">&#9670;&nbsp;</a></span>operator=() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="classxlnt_1_1workbook.html">workbook</a>&amp; xlnt::workbook::operator= </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classxlnt_1_1workbook.html">workbook</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classxlnt_1_1workbook.html">workbook</a> &amp;&#160;</td>
           <td class="paramname"><em>other</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Set the contents of this workbook to be equal to those of "other". Other is passed as value to allow for copy-swap idiom. </p>
+<p>Set the contents of this workbook to be equal to those of "other". Creates a shallow copy, copying the workbook's internal pointers. </p>
+
+</div>
+</div>
+<a id="a6c73bf7fbf0b4e7d57173d7da950fb15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c73bf7fbf0b4e7d57173d7da950fb15">&#9670;&nbsp;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classxlnt_1_1workbook.html">workbook</a>&amp; xlnt::workbook::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classxlnt_1_1workbook.html">workbook</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the contents of this workbook to be equal to those of "other" by consuming (moving) the "other" instance. </p>
 
 </div>
 </div>
@@ -2970,28 +3122,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 
 </div>
 </div>
-<a id="a5d8db56d21b0ded166acd3094c307ab9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d8db56d21b0ded166acd3094c307ab9">&#9670;&nbsp;</a></span>style() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">class <a class="el" href="classxlnt_1_1style.html">style</a> xlnt::workbook::style </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns the named style with the given name. </p>
-
-</div>
-</div>
 <a id="a06fa5c7db2fde59a04b2f5d4c9770571"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a06fa5c7db2fde59a04b2f5d4c9770571">&#9670;&nbsp;</a></span>style() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a06fa5c7db2fde59a04b2f5d4c9770571">&#9670;&nbsp;</a></span>style() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3002,6 +3134,26 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
           <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the named style with the given name. </p>
+
+</div>
+</div>
+<a id="a5d8db56d21b0ded166acd3094c307ab9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d8db56d21b0ded166acd3094c307ab9">&#9670;&nbsp;</a></span>style() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">class <a class="el" href="classxlnt_1_1style.html">style</a> xlnt::workbook::style </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">

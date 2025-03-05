@@ -100,6 +100,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a69f8f5359eb14282cf9c9a8de4f51d14"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a69f8f5359eb14282cf9c9a8de4f51d14">operator==</a> (const <a class="el" href="structxlnt_1_1datetime.html">datetime</a> &amp;comparand) const</td></tr>
 <tr class="memdesc:a69f8f5359eb14282cf9c9a8de4f51d14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this datetime is equivalent to comparand.  <a href="#a69f8f5359eb14282cf9c9a8de4f51d14">More...</a><br /></td></tr>
 <tr class="separator:a69f8f5359eb14282cf9c9a8de4f51d14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06d3e4ff865aff21f3160d249c9fe0b4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a06d3e4ff865aff21f3160d249c9fe0b4">operator!=</a> (const <a class="el" href="structxlnt_1_1datetime.html">datetime</a> &amp;comparand) const</td></tr>
+<tr class="memdesc:a06d3e4ff865aff21f3160d249c9fe0b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this datetime is different than comparand.  <a href="#a06d3e4ff865aff21f3160d249c9fe0b4">More...</a><br /></td></tr>
+<tr class="separator:a06d3e4ff865aff21f3160d249c9fe0b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a216dce8193c1221127293960592665b6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1datetime.html#a216dce8193c1221127293960592665b6">weekday</a> () const</td></tr>
 <tr class="memdesc:a216dce8193c1221127293960592665b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates and returns the day of the week that this date represents in the range 0 to 6 where 0 represents Sunday. Returns -1 if the weekday could not be determined.  <a href="#a216dce8193c1221127293960592665b6">More...</a><br /></td></tr>
 <tr class="separator:a216dce8193c1221127293960592665b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -538,6 +541,26 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the current date and time according to the system time. If the current date could not be determined, the date will be in an empty state (<a class="el" href="structxlnt_1_1datetime.html#afbabf267eaa52c7ef211159e5cc0ead6" title="Returns whether the date is in an empty/invalid state. ">is_null()</a> will return true). </p>
+
+</div>
+</div>
+<a id="a06d3e4ff865aff21f3160d249c9fe0b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06d3e4ff865aff21f3160d249c9fe0b4">&#9670;&nbsp;</a></span>operator!=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::datetime::operator!= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structxlnt_1_1datetime.html">datetime</a> &amp;&#160;</td>
+          <td class="paramname"><em>comparand</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if this datetime is different than comparand. </p>
 
 </div>
 </div>

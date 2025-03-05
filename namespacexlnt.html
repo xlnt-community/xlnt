@@ -647,6 +647,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a7802113e587a86dcfc4bdc0ccd404ab3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacexlnt.html#a7802113e587a86dcfc4bdc0ccd404ab3">operator==</a> (const <a class="el" href="classxlnt_1_1cell.html">cell</a> &amp;<a class="el" href="classxlnt_1_1cell.html">cell</a>, std::nullptr_t)</td></tr>
 <tr class="memdesc:a7802113e587a86dcfc4bdc0ccd404ab3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this cell is uninitialized.  <a href="#a7802113e587a86dcfc4bdc0ccd404ab3">More...</a><br /></td></tr>
 <tr class="separator:a7802113e587a86dcfc4bdc0ccd404ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d1fbcbe612a1ff549c54184f7977973"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacexlnt.html#a5d1fbcbe612a1ff549c54184f7977973">operator!=</a> (std::nullptr_t, const <a class="el" href="classxlnt_1_1cell.html">cell</a> &amp;<a class="el" href="classxlnt_1_1cell.html">cell</a>)</td></tr>
+<tr class="memdesc:a5d1fbcbe612a1ff549c54184f7977973"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this cell is initialized.  <a href="#a5d1fbcbe612a1ff549c54184f7977973">More...</a><br /></td></tr>
+<tr class="separator:a5d1fbcbe612a1ff549c54184f7977973"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f3d36d1a5a3a06beece77cb24284e82"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacexlnt.html#a3f3d36d1a5a3a06beece77cb24284e82">operator!=</a> (const <a class="el" href="classxlnt_1_1cell.html">cell</a> &amp;<a class="el" href="classxlnt_1_1cell.html">cell</a>, std::nullptr_t)</td></tr>
+<tr class="memdesc:a3f3d36d1a5a3a06beece77cb24284e82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this cell is initialized.  <a href="#a3f3d36d1a5a3a06beece77cb24284e82">More...</a><br /></td></tr>
+<tr class="separator:a3f3d36d1a5a3a06beece77cb24284e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e4e46ec30f0fd1b4c9ec8d671328511"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacexlnt.html#a0e4e46ec30f0fd1b4c9ec8d671328511">operator&lt;&lt;</a> (std::ostream &amp;stream, const <a class="el" href="classxlnt_1_1cell.html">xlnt::cell</a> &amp;<a class="el" href="classxlnt_1_1cell.html">cell</a>)</td></tr>
 <tr class="memdesc:a0e4e46ec30f0fd1b4c9ec8d671328511"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function for writing cell to an ostream. Uses <a class="el" href="classxlnt_1_1cell.html#a7a51abb90f9e716f242512a9f53cf09a" title="Returns a string representing the value of this cell. If the data type is not a string, it will be converted according to the number format. ">cell::to_string()</a> internally.  <a href="#a0e4e46ec30f0fd1b4c9ec8d671328511">More...</a><br /></td></tr>
 <tr class="separator:a0e4e46ec30f0fd1b4c9ec8d671328511"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -657,18 +663,33 @@ template&lt;&gt; </td></tr>
 <tr class="memitem:a65c4210b114358a6ccfcdb89537f0d5a"><td class="memItemLeft" align="right" valign="top"><a id="a65c4210b114358a6ccfcdb89537f0d5a"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="structxlnt_1_1ext__list_1_1ext.html">ext_list::ext</a> &amp;lhs, const <a class="el" href="structxlnt_1_1ext__list_1_1ext.html">ext_list::ext</a> &amp;rhs)</td></tr>
 <tr class="separator:a65c4210b114358a6ccfcdb89537f0d5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a084e07c4e782e63e577a2e4583327d"><td class="memItemLeft" align="right" valign="top"><a id="a5a084e07c4e782e63e577a2e4583327d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="structxlnt_1_1ext__list_1_1ext.html">ext_list::ext</a> &amp;lhs, const <a class="el" href="structxlnt_1_1ext__list_1_1ext.html">ext_list::ext</a> &amp;rhs)</td></tr>
+<tr class="separator:a5a084e07c4e782e63e577a2e4583327d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b9126cda8582b08af4bc56649da73c2"><td class="memItemLeft" align="right" valign="top"><a id="a7b9126cda8582b08af4bc56649da73c2"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classxlnt_1_1calculation__properties.html">calculation_properties</a> &amp;lhs, const <a class="el" href="classxlnt_1_1calculation__properties.html">calculation_properties</a> &amp;rhs)</td></tr>
 <tr class="separator:a7b9126cda8582b08af4bc56649da73c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d83367a50a610914dcd41e2c824b4ca"><td class="memItemLeft" align="right" valign="top"><a id="a3d83367a50a610914dcd41e2c824b4ca"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="classxlnt_1_1calculation__properties.html">calculation_properties</a> &amp;lhs, const <a class="el" href="classxlnt_1_1calculation__properties.html">calculation_properties</a> &amp;rhs)</td></tr>
+<tr class="separator:a3d83367a50a610914dcd41e2c824b4ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affb2440325ffde78da1573704a2e5464"><td class="memItemLeft" align="right" valign="top"><a id="affb2440325ffde78da1573704a2e5464"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classxlnt_1_1workbook__view.html">workbook_view</a> &amp;lhs, const <a class="el" href="classxlnt_1_1workbook__view.html">workbook_view</a> &amp;rhs)</td></tr>
 <tr class="separator:affb2440325ffde78da1573704a2e5464"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1aeb16512ed2ca61d5b5364200dad6a8"><td class="memItemLeft" align="right" valign="top"><a id="a1aeb16512ed2ca61d5b5364200dad6a8"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="classxlnt_1_1workbook__view.html">workbook_view</a> &amp;lhs, const <a class="el" href="classxlnt_1_1workbook__view.html">workbook_view</a> &amp;rhs)</td></tr>
+<tr class="separator:a1aeb16512ed2ca61d5b5364200dad6a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b842e584ae4c71e0a38a963b8197958"><td class="memItemLeft" align="right" valign="top"><a id="a2b842e584ae4c71e0a38a963b8197958"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classxlnt_1_1column__properties.html">column_properties</a> &amp;lhs, const <a class="el" href="classxlnt_1_1column__properties.html">column_properties</a> &amp;rhs)</td></tr>
 <tr class="separator:a2b842e584ae4c71e0a38a963b8197958"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad306d102a82c8c664cbcc5ca832518c0"><td class="memItemLeft" align="right" valign="top"><a id="ad306d102a82c8c664cbcc5ca832518c0"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="classxlnt_1_1column__properties.html">column_properties</a> &amp;lhs, const <a class="el" href="classxlnt_1_1column__properties.html">column_properties</a> &amp;rhs)</td></tr>
+<tr class="separator:ad306d102a82c8c664cbcc5ca832518c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acdaaf06ed7df2cf86601ac4e1c4b4402"><td class="memItemLeft" align="right" valign="top"><a id="acdaaf06ed7df2cf86601ac4e1c4b4402"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="structxlnt_1_1print__options.html">print_options</a> &amp;lhs, const <a class="el" href="structxlnt_1_1print__options.html">print_options</a> &amp;rhs)</td></tr>
 <tr class="separator:acdaaf06ed7df2cf86601ac4e1c4b4402"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a974a9f4138c4e8689d8bb64c4afb0d"><td class="memItemLeft" align="right" valign="top"><a id="a6a974a9f4138c4e8689d8bb64c4afb0d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="structxlnt_1_1print__options.html">print_options</a> &amp;lhs, const <a class="el" href="structxlnt_1_1print__options.html">print_options</a> &amp;rhs)</td></tr>
+<tr class="separator:a6a974a9f4138c4e8689d8bb64c4afb0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac145b532f66d67e24aef6ae1139fe568"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacexlnt.html#ac145b532f66d67e24aef6ae1139fe568">operator==</a> (const std::string &amp;reference_string, const <a class="el" href="classxlnt_1_1range__reference.html">range_reference</a> &amp;ref)</td></tr>
 <tr class="memdesc:ac145b532f66d67e24aef6ae1139fe568"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the string representation of the range is equivalent to ref.  <a href="#ac145b532f66d67e24aef6ae1139fe568">More...</a><br /></td></tr>
 <tr class="separator:ac145b532f66d67e24aef6ae1139fe568"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -684,12 +705,21 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const
 <tr class="memitem:a952330fed611130a362aa8446d010314"><td class="memItemLeft" align="right" valign="top"><a id="a952330fed611130a362aa8446d010314"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classxlnt_1_1row__properties.html">row_properties</a> &amp;lhs, const <a class="el" href="classxlnt_1_1row__properties.html">row_properties</a> &amp;rhs)</td></tr>
 <tr class="separator:a952330fed611130a362aa8446d010314"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a217e0af4f9f4f222aa2a04b9359cc586"><td class="memItemLeft" align="right" valign="top"><a id="a217e0af4f9f4f222aa2a04b9359cc586"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="classxlnt_1_1row__properties.html">row_properties</a> &amp;lhs, const <a class="el" href="classxlnt_1_1row__properties.html">row_properties</a> &amp;rhs)</td></tr>
+<tr class="separator:a217e0af4f9f4f222aa2a04b9359cc586"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96bd5f3d5578fdcac8a60d1c096792f4"><td class="memItemLeft" align="right" valign="top"><a id="a96bd5f3d5578fdcac8a60d1c096792f4"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classxlnt_1_1sheet__format__properties.html">sheet_format_properties</a> &amp;lhs, const <a class="el" href="classxlnt_1_1sheet__format__properties.html">sheet_format_properties</a> &amp;rhs)</td></tr>
 <tr class="separator:a96bd5f3d5578fdcac8a60d1c096792f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7a679572b63bcd0f86ff97913254233"><td class="memItemLeft" align="right" valign="top"><a id="ab7a679572b63bcd0f86ff97913254233"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="classxlnt_1_1sheet__format__properties.html">sheet_format_properties</a> &amp;lhs, const <a class="el" href="classxlnt_1_1sheet__format__properties.html">sheet_format_properties</a> &amp;rhs)</td></tr>
+<tr class="separator:ab7a679572b63bcd0f86ff97913254233"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62c97b6b6850a20033805905884e80a1"><td class="memItemLeft" align="right" valign="top"><a id="a62c97b6b6850a20033805905884e80a1"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="structxlnt_1_1sheet__pr.html">sheet_pr</a> &amp;lhs, const <a class="el" href="structxlnt_1_1sheet__pr.html">sheet_pr</a> &amp;rhs)</td></tr>
 <tr class="separator:a62c97b6b6850a20033805905884e80a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add81992212852b8e4e9d773c4946c524"><td class="memItemLeft" align="right" valign="top"><a id="add81992212852b8e4e9d773c4946c524"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="structxlnt_1_1sheet__pr.html">sheet_pr</a> &amp;lhs, const <a class="el" href="structxlnt_1_1sheet__pr.html">sheet_pr</a> &amp;rhs)</td></tr>
+<tr class="separator:add81992212852b8e4e9d773c4946c524"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Enumerates the possible types a cell can be determined by it's current value. </p>
@@ -1289,7 +1319,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const
 </div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a2148ce62721952a2b26ce9791d1856b7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2148ce62721952a2b26ce9791d1856b7">&#9670;&nbsp;</a></span>operator!=() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2148ce62721952a2b26ce9791d1856b7">&#9670;&nbsp;</a></span>operator!=() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1319,7 +1349,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const
 </div>
 </div>
 <a id="a8b2af276e87c8480ac1d6e562bed88ba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8b2af276e87c8480ac1d6e562bed88ba">&#9670;&nbsp;</a></span>operator!=() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b2af276e87c8480ac1d6e562bed88ba">&#9670;&nbsp;</a></span>operator!=() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1345,6 +1375,66 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const
 </div><div class="memdoc">
 
 <p>Returns true if the string representation of the range is not equivalent to ref. </p>
+
+</div>
+</div>
+<a id="a5d1fbcbe612a1ff549c54184f7977973"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d1fbcbe612a1ff549c54184f7977973">&#9670;&nbsp;</a></span>operator!=() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::operator!= </td>
+          <td>(</td>
+          <td class="paramtype">std::nullptr_t&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classxlnt_1_1cell.html">cell</a> &amp;&#160;</td>
+          <td class="paramname"><em>cell</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if this cell is initialized. </p>
+
+</div>
+</div>
+<a id="a3f3d36d1a5a3a06beece77cb24284e82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f3d36d1a5a3a06beece77cb24284e82">&#9670;&nbsp;</a></span>operator!=() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::operator!= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classxlnt_1_1cell.html">cell</a> &amp;&#160;</td>
+          <td class="paramname"><em>cell</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::nullptr_t&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if this cell is initialized. </p>
 
 </div>
 </div>
