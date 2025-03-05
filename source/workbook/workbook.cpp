@@ -389,8 +389,7 @@ void workbook::arch_id_flags(const std::size_t flags)
 
 workbook workbook::empty()
 {
-    auto impl = new detail::workbook_impl();
-    workbook wb(impl);
+    workbook wb(std::make_shared<detail::workbook_impl>());
 
     wb.register_package_part(relationship_type::office_document);
 
@@ -455,7 +454,7 @@ workbook workbook::empty()
 
     wb.d_->stylesheet_ = detail::stylesheet();
     auto &stylesheet = wb.d_->stylesheet_.get();
-    stylesheet.parent = &wb;
+    stylesheet.parent = wb.d_;
 
     auto default_border = border()
                               .side(border_side::bottom, border::border_property())
@@ -557,16 +556,24 @@ workbook::workbook(std::istream &data, std::u8string_view password)
 }
 #endif
 
-workbook::workbook(detail::workbook_impl *impl)
-    : d_(impl)
+workbook::workbook(std::shared_ptr<detail::workbook_impl> impl)
 {
-    if (impl != nullptr)
+    set_impl(std::move(impl));
+}
+
+workbook::workbook(std::weak_ptr<detail::workbook_impl> impl)
+{
+    set_impl(impl.lock());
+}
+
+void workbook::set_impl(std::shared_ptr<detail::workbook_impl> impl)
+{
+    if (impl == nullptr)
     {
-        if (d_->stylesheet_.is_set())
-        {
-            d_->stylesheet_.get().parent = this;
-        }
+        throw xlnt::invalid_parameter("invalid workbook pointer");
     }
+
+    d_ = std::move(impl);
 }
 
 void workbook::register_package_part(relationship_type type)
@@ -835,7 +842,7 @@ worksheet workbook::create_sheet()
 
 worksheet workbook::copy_sheet(worksheet to_copy)
 {
-    if (to_copy.d_->parent_ != this) throw invalid_parameter();
+    if (to_copy.d_->parent_.lock() != d_) throw invalid_parameter();
 
     detail::worksheet_impl impl(*to_copy.d_);
     auto new_sheet = create_sheet();
@@ -1338,9 +1345,21 @@ void workbook::clear()
     d_->stylesheet_.clear();
 }
 
+bool workbook::compare(const workbook &other, bool compare_by_reference) const
+{
+    if (compare_by_reference)
+    {
+        return d_ == other.d_;
+    }
+    else
+    {
+        return *d_ == *other.d_;
+    }
+}
+
 bool workbook::operator==(const workbook &rhs) const
 {
-    return *d_ == *rhs.d_;
+    return compare(rhs, true);
 }
 
 bool workbook::operator!=(const workbook &rhs) const
@@ -1350,66 +1369,35 @@ bool workbook::operator!=(const workbook &rhs) const
 
 void workbook::swap(workbook &right)
 {
-    auto &left = *this;
+    std::swap(d_, right.d_);
+}
 
-    using std::swap;
-    swap(left.d_, right.d_);
-
-    if (left.d_ != nullptr)
+workbook workbook::clone(clone_method method) const
+{
+    switch (method)
     {
-        for (auto ws : left)
+    case clone_method::deep_copy:
+    {
+        workbook wb;
+        *wb.d_ = *d_;
+
+        for (auto ws : wb)
         {
-            ws.parent(left);
+            ws.parent(wb);
         }
 
-        if (left.d_->stylesheet_.is_set())
-        {
-            left.d_->stylesheet_.get().parent = &left;
-        }
+        wb.d_->stylesheet_.get().parent = wb.d_;
+
+        return wb;
     }
-
-    if (right.d_ != nullptr)
+    case clone_method::shallow_copy:
     {
-        for (auto ws : right)
-        {
-            ws.parent(right);
-        }
-
-        if (right.d_->stylesheet_.is_set())
-        {
-            right.d_->stylesheet_.get().parent = &right;
-        }
+        return workbook(d_);
+    }
+    default:
+        throw xlnt::invalid_parameter("clone method not supported");
     }
 }
-
-workbook &workbook::operator=(workbook other)
-{
-    swap(other);
-    d_->stylesheet_.get().parent = this;
-
-    return *this;
-}
-
-workbook::workbook(workbook &&other)
-    : workbook(nullptr)
-{
-    swap(other);
-}
-
-workbook::workbook(const workbook &other)
-    : workbook()
-{
-    *d_.get() = *other.d_.get();
-
-    for (auto ws : *this)
-    {
-        ws.parent(*this);
-    }
-
-    d_->stylesheet_.get().parent = this;
-}
-
-workbook::~workbook() = default;
 
 bool workbook::has_theme() const
 {

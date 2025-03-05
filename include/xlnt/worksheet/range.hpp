@@ -26,9 +26,7 @@
 
 #include <functional>
 #include <iterator>
-#include <memory>
 #include <string>
-#include <vector>
 
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/styles/alignment.hpp>

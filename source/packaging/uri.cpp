@@ -26,4 +26,9 @@ bool uri::operator==(const uri &other) const
     return to_string() == other.to_string();
 }
 
+bool uri::operator!=(const uri &other) const
+{
+    return !(*this == other);
+}
+
 } // namespace xlnt

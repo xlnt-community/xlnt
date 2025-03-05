@@ -79,6 +79,8 @@ public:
 
     bool operator==(const named_range &rhs) const;
 
+    bool operator!=(const named_range &rhs) const;
+
 private:
     /// <summary>
     /// The name of this named range.

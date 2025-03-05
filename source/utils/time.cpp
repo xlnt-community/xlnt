@@ -80,6 +80,11 @@ bool time::operator==(const time &comparand) const
         && microsecond == comparand.microsecond;
 }
 
+bool time::operator!=(const time &comparand) const
+{
+    return !(*this == comparand);
+}
+
 time::time(const std::string &time_string)
 {
     bool ok = true;

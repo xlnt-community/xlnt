@@ -26,9 +26,7 @@
 #pragma once
 
 #include <iterator>
-#include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include <xlnt/xlnt_config.hpp>
@@ -108,14 +106,14 @@ public:
     worksheet(const worksheet &rhs);
 
     /// <summary>
-    /// Returns a reference to the workbook this worksheet is owned by.
+    /// Returns the workbook this worksheet is owned by.
     /// </summary>
-    class workbook &workbook();
+    class workbook workbook();
 
     /// <summary>
-    /// Returns a reference to the workbook this worksheet is owned by.
+    /// Returns the workbook this worksheet is owned by.
     /// </summary>
-    const class workbook &workbook() const;
+    const class workbook workbook() const;
 
     /// <summary>
     /// Deletes data held in the worksheet that does not affect the internal data or display.
@@ -510,10 +508,11 @@ public:
     const class cell operator[](const cell_reference &reference) const;
 
     /// <summary>
-    /// Returns true if this worksheet is equal to other. If reference is true, the comparison
-    /// will only check that both worksheets point to the same sheet in the same workbook.
+    /// Returns true if this worksheet is equal to other. If compare_by_reference is true, the comparison
+    /// will only check that both worksheets point to the same sheet in the same workbook. Otherwise,
+    /// if compare_by_reference is false, all worksheet properties except for the id and title are compared.
     /// </summary>
-    bool compare(const worksheet &other, bool reference) const;
+    bool compare(const worksheet &other, bool compare_by_reference) const;
 
     // page
 
@@ -841,7 +840,7 @@ private:
     /// <summary>
     /// The pointer to this sheet's implementation.
     /// </summary>
-    detail::worksheet_impl *d_;
+    detail::worksheet_impl *d_ = nullptr;
 };
 
 } // namespace xlnt

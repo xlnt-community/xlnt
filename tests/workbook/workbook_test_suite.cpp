@@ -27,6 +27,7 @@
 
 #include <xlnt/xlnt.hpp>
 #include <detail/serialization/open_stream.hpp>
+#include <xlnt/utils/exceptions.hpp>
 #include <helpers/temporary_file.hpp>
 #include <helpers/test_suite.hpp>
 
@@ -62,6 +63,9 @@ public:
         register_test(test_get_named_range);
         register_test(test_remove_named_range);
         register_test(test_post_increment_iterator);
+        register_test(test_clone);
+        register_test(test_copy_constructor);
+        register_test(test_copy_assignment_operator);
         register_test(test_copy_iterator);
         register_test(test_manifest);
         register_test(test_memory);
@@ -69,6 +73,7 @@ public:
         register_test(test_comparison);
         register_test(test_id_gen);
         register_test(test_load_file);
+        register_test(test_load_file_encrypted);
         register_test(test_Issue279);
         register_test(test_Issue353);
         register_test(test_Issue494);
@@ -367,6 +372,40 @@ public:
         xlnt_assert_equals(const_iter, wb_const.end());
     }
 
+    void test_clone()
+    {
+        xlnt::workbook wb1;
+        wb1.create_sheet().title("NEW1");
+        xlnt::workbook wb2_shallow_copy = wb1.clone(xlnt::workbook::clone_method::shallow_copy);
+        wb1.sheet_by_title("NEW1").title("NEW_CHANGED");
+        xlnt_assert_throws_nothing(wb2_shallow_copy.sheet_by_title("NEW_CHANGED"));
+        xlnt::workbook wb3_deep_copy = wb2_shallow_copy.clone(xlnt::workbook::clone_method::deep_copy);
+        wb3_deep_copy.sheet_by_title("NEW_CHANGED").title("NEW_CHANGED_AGAIN");
+        xlnt_assert_throws(wb2_shallow_copy.sheet_by_title("NEW_CHANGED_AGAIN"), xlnt::key_not_found);
+        xlnt_assert_throws(wb1.sheet_by_title("NEW_CHANGED_AGAIN"), xlnt::key_not_found);
+    }
+
+    void test_copy_constructor()
+    {
+        xlnt::workbook wb1;
+        wb1.create_sheet().title("NEW1");
+        xlnt::workbook wb2_copy(wb1);
+        wb1.sheet_by_title("NEW1").title("NEW_CHANGED");
+        // Ensure shallow copy.
+        xlnt_assert_throws_nothing(wb2_copy.sheet_by_title("NEW_CHANGED"));
+    }
+
+    void test_copy_assignment_operator()
+    {
+        xlnt::workbook wb1;
+        wb1.create_sheet().title("NEW1");
+        xlnt::workbook wb2_copy;
+        wb2_copy = wb1;
+        wb1.sheet_by_title("NEW1").title("NEW_CHANGED");
+        // Ensure shallow copy.
+        xlnt_assert_throws_nothing(wb2_copy.sheet_by_title("NEW_CHANGED"));
+    }
+
     void test_copy_iterator()
     {
         xlnt::workbook wb;
@@ -439,9 +478,13 @@ public:
     {
         xlnt::workbook wb, wb2;
         xlnt_assert(wb == wb);
+        xlnt_assert(wb.compare(wb, true));
+        xlnt_assert(wb.compare(wb, false));
         xlnt_assert(!(wb != wb));
         xlnt_assert(!(wb == wb2));
         xlnt_assert(wb != wb2);
+        xlnt_assert(!wb.compare(wb2, true));
+        xlnt_assert(wb.compare(wb2, false));
 
         const auto &wb_const = wb;
         //TODO these aren't tests...
@@ -470,25 +513,25 @@ public:
         xlnt::workbook wb_path(file);
         // ctor from ifstream
         std::ifstream file_reader(file.string(), std::ios::binary);
-        xlnt_assert_equals(wb_path, xlnt::workbook(file_reader));
+        xlnt_assert(wb_path.compare(xlnt::workbook(file_reader), false));
         // load with string
         xlnt::workbook wb_load1;
         xlnt_assert_differs(wb_path, wb_load1);
         wb_load1.load(file.string());
-        xlnt_assert_equals(wb_path, wb_load1);
+        xlnt_assert(wb_path.compare(wb_load1, false));
         // load with wstring
         xlnt::workbook wb_load2;
         wb_load2.load(file.string());
-        xlnt_assert_equals(wb_path, wb_load2);
+        xlnt_assert(wb_path.compare(wb_load2, false));
         // load with path
         xlnt::workbook wb_load3;
         wb_load3.load(file);
-        xlnt_assert_equals(wb_path, wb_load3);
+        xlnt_assert(wb_path.compare(wb_load3, false));
         // load with istream
         xlnt::workbook wb_load4;
         std::ifstream file_reader2(file.string(), std::ios::binary);
         wb_load4.load(file_reader2);
-        xlnt_assert_equals(wb_path, wb_load4);
+        xlnt_assert(wb_path.compare(wb_load4, false));
         // load with vector
         std::ifstream file_reader3(file.string(), std::ios::binary);
         file_reader3.unsetf(std::ios::skipws);
@@ -496,7 +539,50 @@ public:
             std::istream_iterator<uint8_t>());
         xlnt::workbook wb_load5;
         wb_load5.load(data);
-        xlnt_assert_equals(wb_path, wb_load5);
+        xlnt_assert(wb_path.compare(wb_load5, false));
+    }
+
+    void test_load_file_encrypted()
+    {
+        const auto password = u8"\u043F\u0430\u0440\u043E\u043B\u044C"; // u8"пароль"
+        xlnt::path file = path_helper::test_file("6_encrypted_libre.xlsx");
+#ifdef __cpp_lib_char8_t
+        // The reinterpret_cast is ugly as hell, but I'm not sure if duplicating
+        // the path_helper and xlnt::path functionality is worth it...
+        std::u8string file_as_string = reinterpret_cast<const char8_t *>(file.string().c_str());
+#else
+        std::string file_as_string = file.string();
+#endif
+        xlnt::workbook wb_path(file, password);
+        // ctor from ifstream
+        std::ifstream file_reader(file.string(), std::ios::binary);
+        xlnt_assert(wb_path.compare(xlnt::workbook(file_reader, password), false));
+        // load with string
+        xlnt::workbook wb_load1;
+        xlnt_assert_differs(wb_path, wb_load1);
+        wb_load1.load(file_as_string, password);
+        xlnt_assert(wb_path.compare(wb_load1, false));
+        // load with wstring
+        xlnt::workbook wb_load2;
+        wb_load2.load(file_as_string, password);
+        xlnt_assert(wb_path.compare(wb_load2, false));
+        // load with path
+        xlnt::workbook wb_load3;
+        wb_load3.load(file, password);
+        xlnt_assert(wb_path.compare(wb_load3, false));
+        // load with istream
+        xlnt::workbook wb_load4;
+        std::ifstream file_reader2(file.string(), std::ios::binary);
+        wb_load4.load(file_reader2, password);
+        xlnt_assert(wb_path.compare(wb_load4, false));
+        // load with vector
+        std::ifstream file_reader3(file.string(), std::ios::binary);
+        file_reader3.unsetf(std::ios::skipws);
+        std::vector<uint8_t> data(std::istream_iterator<uint8_t>{file_reader3},
+            std::istream_iterator<uint8_t>());
+        xlnt::workbook wb_load5;
+        wb_load5.load(data, password);
+        xlnt_assert(wb_path.compare(wb_load5, false));
     }
 
     void test_Issue279()

@@ -22,8 +22,9 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
+#include <algorithm>
+
 #include <detail/header_footer/header_footer_code.hpp>
-//#include <detail/numeric_utils.hpp>
 
 namespace xlnt {
 namespace detail {

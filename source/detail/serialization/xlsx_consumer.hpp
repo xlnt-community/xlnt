@@ -425,7 +425,7 @@ private:
 	/// scope and then calling a read_*() method which uses xlsx_consumer::parser()
 	/// to access the object.
 	/// </summary>
-	xml::parser *parser_;
+	xml::parser *parser_ = nullptr;
 
     std::vector<xml::qname> stack_;
 
@@ -438,7 +438,7 @@ private:
     std::unordered_map<int, std::string> shared_formulae_;
     std::unordered_map<std::string, std::string> array_formulae_;
 
-    detail::worksheet_impl *current_worksheet_;
+    detail::worksheet_impl *current_worksheet_ = nullptr;
 
     std::vector<defined_name> defined_names_;
 };

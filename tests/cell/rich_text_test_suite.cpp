@@ -23,8 +23,6 @@
 // @author: see AUTHORS file
 
 #include <ctime>
-#include <iostream>
-#include <sstream>
 
 #include <helpers/test_suite.hpp>
 

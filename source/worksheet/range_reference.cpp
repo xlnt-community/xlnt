@@ -117,7 +117,7 @@ bool range_reference::operator==(const range_reference &comparand) const
 
 bool range_reference::operator!=(const range_reference &comparand) const
 {
-    return comparand.top_left_ != top_left_ || comparand.bottom_right_ != bottom_right_;
+    return !(*this == comparand);
 }
 
 cell_reference range_reference::top_left() const
@@ -168,22 +168,22 @@ bool range_reference::operator!=(const char *reference_string) const
     return *this != std::string(reference_string);
 }
 
-XLNT_API bool operator==(const std::string &reference_string, const range_reference &ref)
+bool operator==(const std::string &reference_string, const range_reference &ref)
 {
     return ref == reference_string;
 }
 
-XLNT_API bool operator==(const char *reference_string, const range_reference &ref)
+bool operator==(const char *reference_string, const range_reference &ref)
 {
     return ref == reference_string;
 }
 
-XLNT_API bool operator!=(const std::string &reference_string, const range_reference &ref)
+bool operator!=(const std::string &reference_string, const range_reference &ref)
 {
     return ref != reference_string;
 }
 
-XLNT_API bool operator!=(const char *reference_string, const range_reference &ref)
+bool operator!=(const char *reference_string, const range_reference &ref)
 {
     return ref != reference_string;
 }

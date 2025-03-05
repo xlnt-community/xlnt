@@ -65,4 +65,9 @@ inline bool operator==(const print_options &lhs, const print_options &rhs)
         && lhs.print_headings == rhs.print_headings
         && lhs.vertical_centered == rhs.vertical_centered;
 }
+
+inline bool operator!=(const print_options &lhs, const print_options &rhs)
+{
+    return !(lhs == rhs);
+}
 } // namespace xlnt

@@ -24,6 +24,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include <xlnt/xlnt_config.hpp>
 
 namespace xlnt {
@@ -51,6 +53,11 @@ inline bool operator==(const calculation_properties &lhs, const calculation_prop
 {
     return lhs.calc_id == rhs.calc_id
         && lhs.concurrent_calc == rhs.concurrent_calc;
+}
+
+inline bool operator!=(const calculation_properties &lhs, const calculation_properties &rhs)
+{
+    return !(lhs == rhs);
 }
 
 } // namespace xlnt

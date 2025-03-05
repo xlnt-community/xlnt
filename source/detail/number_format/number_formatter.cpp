@@ -25,7 +25,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cmath>
-#include <limits>
+#include <unordered_map>
 
 #include <xlnt/utils/exceptions.hpp>
 #include <detail/default_case.hpp>

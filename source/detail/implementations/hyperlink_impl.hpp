@@ -48,5 +48,10 @@ inline bool operator==(const hyperlink_impl &lhs, const hyperlink_impl &rhs)
         && lhs.display == rhs.display;
 }
 
+inline bool operator!=(const hyperlink_impl &lhs, const hyperlink_impl &rhs)
+{
+    return !(lhs == rhs);
+}
+
 } // namespace detail
 } // namespace xlnt

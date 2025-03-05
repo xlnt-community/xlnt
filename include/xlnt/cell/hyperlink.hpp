@@ -65,7 +65,7 @@ public:
 private:
     friend class cell;
     hyperlink(detail::hyperlink_impl *d);
-    detail::hyperlink_impl *d_;
+    detail::hyperlink_impl *d_ = nullptr;
 };
 
 } // namespace xlnt

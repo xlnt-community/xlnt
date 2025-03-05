@@ -42,6 +42,7 @@
 #include <xlnt/worksheet/print_options.hpp>
 #include <xlnt/worksheet/sheet_pr.hpp>
 #include <detail/implementations/cell_impl.hpp>
+#include <detail/implementations/workbook_impl.hpp>
 
 namespace xlnt {
 
@@ -52,7 +53,7 @@ namespace detail {
 struct worksheet_impl
 {
     worksheet_impl(workbook *parent_workbook, std::size_t id, const std::string &title)
-        : parent_(parent_workbook),
+        : parent_(parent_workbook->d_),
           id_(id),
           title_(title)
     {
@@ -96,13 +97,12 @@ struct worksheet_impl
         }
     }
 
-    workbook *parent_;
+    std::weak_ptr<workbook_impl> parent_;
 
     bool operator==(const worksheet_impl& rhs) const
     {
-        return id_ == rhs.id_
-            && title_ == rhs.title_
-            && format_properties_ == rhs.format_properties_
+        // not comparing parent, id, title (title must be unique)
+        return format_properties_ == rhs.format_properties_
             && column_properties_ == rhs.column_properties_
             && row_properties_ == rhs.row_properties_
             && cell_map_ == rhs.cell_map_
@@ -125,7 +125,12 @@ struct worksheet_impl
             && extension_list_ == rhs.extension_list_;
     }
 
-    std::size_t id_;
+    bool operator!=(const worksheet_impl& rhs) const
+    {
+        return !(*this == rhs);
+    }
+
+    std::size_t id_ = 0;
     std::string title_;
 
     sheet_format_properties format_properties_;

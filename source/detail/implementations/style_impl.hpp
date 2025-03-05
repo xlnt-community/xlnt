@@ -20,10 +20,11 @@ struct stylesheet;
 
 struct style_impl
 {
-	stylesheet *parent;
+	stylesheet *parent = nullptr;
 
     bool operator==(const style_impl& rhs) const
     {
+        // not comparing parent
         return name == rhs.name
             && formatting_record_id == rhs.formatting_record_id
             && custom_builtin == rhs.custom_builtin
@@ -46,11 +47,16 @@ struct style_impl
             && quote_prefix_ == rhs.quote_prefix_;
     }
 
-	std::string name;
-	std::size_t formatting_record_id;
+    bool operator!=(const style_impl& rhs) const
+    {
+        return !(*this == rhs);
+    }
 
-	bool custom_builtin;
-	bool hidden_style;
+	std::string name;
+	std::size_t formatting_record_id = 0;
+
+	bool custom_builtin = false;
+	bool hidden_style = false;
 
 	optional<std::size_t> builtin_id;
 	optional<std::size_t> outline_style;

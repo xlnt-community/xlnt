@@ -19,8 +19,8 @@ struct worksheet_impl;
 
 struct conditional_format_impl
 {
-	stylesheet *parent;
-    worksheet_impl *target_sheet;
+	stylesheet *parent = nullptr;
+    worksheet_impl *target_sheet = nullptr;
 
     bool operator==(const conditional_format_impl& rhs) const
     {
@@ -34,10 +34,15 @@ struct conditional_format_impl
             && font_id == rhs.font_id;
     }
 
+    bool operator!=(const conditional_format_impl& rhs) const
+    {
+        return !(*this == rhs);
+    }
+
 	range_reference target_range;
 
-	std::size_t priority;
-	std::size_t differential_format_id;
+	std::size_t priority = 0;
+	std::size_t differential_format_id = 0;
 
 	condition when;
 

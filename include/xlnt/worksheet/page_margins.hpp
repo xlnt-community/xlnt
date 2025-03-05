@@ -102,6 +102,8 @@ public:
 
     bool operator==(const page_margins &rhs) const;
 
+    bool operator!=(const page_margins &rhs) const;
+
 private:
     /// <summary>
     /// The top margin

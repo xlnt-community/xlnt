@@ -23,7 +23,6 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <algorithm>
 #include <cctype>
 #include <unordered_map>
 #include <vector>

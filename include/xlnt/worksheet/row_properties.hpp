@@ -25,7 +25,10 @@
 
 #pragma once
 
+#include <string>
+
 #include <xlnt/xlnt_config.hpp>
+#include <xlnt/utils/optional.hpp>
 
 namespace xlnt {
 
@@ -82,6 +85,11 @@ inline bool operator==(const row_properties &lhs, const row_properties &rhs)
         && lhs.custom_format == rhs.custom_format
         && lhs.style == rhs.style
         && lhs.spans == rhs.spans;
+}
+
+inline bool operator!=(const row_properties &lhs, const row_properties &rhs)
+{
+    return !(lhs == rhs);
 }
 
 } // namespace xlnt
