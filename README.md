@@ -8,11 +8,12 @@
 [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://opensource.org/licenses/MIT)
 
 ## Introduction
-xlnt is a modern C++ library for manipulating spreadsheets in memory and reading/writing them from/to XLSX files as described in [ECMA 376 5th edition](https://ecma-international.org/publications-and-standards/standards/ecma-376/). The first public release of xlnt version 1.0 was on May 10th, 2017. Current work is focused on increasing compatibility, improving performance, and brainstorming future development goals. For a high-level summary of what you can do with this library, see [the feature list](https://xlnt-community.gitbook.io/xlnt/introduction/features). Contributions are welcome in the form of pull requests or discussions on [the repository's Issues page](https://github.com/xlnt-community/xlnt/issues).
+xlnt is a modern C++ library (requiring c++11 or above) for manipulating spreadsheets in memory and reading/writing them from/to XLSX files as described in [ECMA 376 5th edition](https://ecma-international.org/publications-and-standards/standards/ecma-376/). The first public release of xlnt version 1.0 was on May 10th, 2017. Current work is focused on increasing compatibility, improving performance, and brainstorming future development goals. For a high-level summary of what you can do with this library, see [the feature list](https://xlnt-community.gitbook.io/xlnt/introduction/features). Contributions are welcome in the form of pull requests or discussions on [the repository's Issues page](https://github.com/xlnt-community/xlnt/issues).
 
 ## About this fork
 This repo is a community effort to continue the development of xlnt, after the [original repo of tfussel](https://github.com/tfussell/xlnt) has been unmaintained for many years (see [Issue #748](https://github.com/tfussell/xlnt/issues/748)).
-Feel free to participate in this community effort by submitting issues and PRs to this new community-driven repo.
+The [xlnt community edition](https://github.com/xlnt-community/xlnt) is hosted at GitHub.
+Feel free to participate in this community effort by submitting [issues](https://github.com/xlnt-community/xlnt/issues) and [PRs](https://github.com/xlnt-community/xlnt/pulls) to this new community-driven repo.
 Issues and PRs on the original repo will not be transferred in bulk to this repo, but you may consider creating a similar issue or PR against this repo for items of interest to you.
 
 ## Example
@@ -34,20 +35,18 @@ int main()
     wb.save("example.xlsx");
     return 0;
 }
-// compile with -std=c++14 -Ixlnt/include -lxlnt
+// compile with -std=c++11 -Ixlnt/include -lxlnt
 ```
 
-More examples can be found [here](https://xlnt-community.gitbook.io/xlnt/introduction/examples).
+[More examples](https://xlnt-community.gitbook.io/xlnt/introduction/examples) are available.
 
 ## Documentation
 
-Documentation for the current release of xlnt is available [here](https://xlnt-community.gitbook.io/xlnt/).
-
-The latest API reference can be found [here](https://xlnt-community.github.io/xlnt/annotated.html).
+More information is available in the [xlnt documentation](https://xlnt-community.gitbook.io/xlnt/) and in the [xlnt API reference](https://xlnt-community.github.io/xlnt/annotated.html).
 
 ## Building xlnt - From source
 
-You can download and install the latest xlnt version as follows:
+You can download [the xlnt source code](https://github.com/xlnt-community/xlnt) and install the latest xlnt version as follows:
 
     git clone https://github.com/xlnt-community/xlnt.git xlnt --recurse-submodules
     cd xlnt
@@ -57,9 +56,13 @@ You can download and install the latest xlnt version as follows:
     cmake --build . -j 4
     cmake --install .
 
-Full installation instructions can be found [here](https://xlnt-community.gitbook.io/xlnt/introduction/installation#compiling-from-source).
+For more information, see the [full installation instructions](https://xlnt-community.gitbook.io/xlnt/introduction/installation#compiling-from-source).
 
 ## Building xlnt - Using vcpkg
+
+> [!WARNING]
+> The xlnt port in vcpkg is currently out of date, as it still uses the original repo of tfussell. We are in the process of migrating this port to our community edition (see [Issue #33](https://github.com/xlnt-community/xlnt/issues/33) for more information).
+> At this time, we recommend building xlnt from source.
 
 You can download and install xlnt using the [vcpkg](https://github.com/microsoft/vcpkg) dependency manager:
 

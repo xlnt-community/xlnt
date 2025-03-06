@@ -19,6 +19,7 @@
   * [Encryption](advanced/Encryption.md)
   * [Views](advanced/Views.md)
 * [API Reference](https://xlnt-community.github.io/xlnt/annotated.html)
+* [Source code](https://github.com/xlnt-community/xlnt)
 * [Change Log](../CHANGELOG.md)
 * [Contributing](../CONTRIBUTING.md)
 * [License](../LICENSE.md)
