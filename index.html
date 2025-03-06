@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>xlnt: Main Page</title>
+<title>xlnt - community edition: &lt;img height=&quot;100&quot; src=&quot;https://user-images.githubusercontent.com/1735211/29433390-f37fa28e-836c-11e7-8a60-f8df4c30b424.png&quot; alt=&quot;xlnt logo&quot;&gt;&lt;br/&gt;</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">xlnt
+   <div id="projectname">xlnt - community edition
    </div>
   </td>
  </tr>
@@ -59,10 +59,45 @@ $(function() {
 
 <div class="header">
   <div class="headertitle">
-<div class="title">xlnt Documentation</div>  </div>
+<div class="title"><div class="image">
+<img src="https://user-images.githubusercontent.com/1735211/29433390-f37fa28e-836c-11e7-8a60-f8df4c30b424.png" height="100" alt="xlnt logo"/>
+</div>
+<p><br />
+ </div>  </div>
 </div><!--header-->
 <div class="contents">
-</div><!-- contents -->
+<div class="textblock"><p><a href="https://dl.circleci.com/status-badge/redirect/gh/xlnt-community/xlnt/tree/master"></a> <a href="https://coveralls.io/github/xlnt-community/xlnt?branch=master"></a> <a href="https://xlnt-community.gitbook.io/xlnt"></a> <a href="https://xlnt-community.github.io/xlnt/annotated.html"></a> <a href="http://opensource.org/licenses/MIT"></a></p>
+<h2>Introduction</h2>
+<p>xlnt is a modern C++ library (requiring c++11 or above) for manipulating spreadsheets in memory and reading/writing them from/to XLSX files as described in <a href="https://ecma-international.org/publications-and-standards/standards/ecma-376/">ECMA 376 5th edition</a>. The first public release of xlnt version 1.0 was on May 10th, 2017. Current work is focused on increasing compatibility, improving performance, and brainstorming future development goals. For a high-level summary of what you can do with this library, see <a href="https://xlnt-community.gitbook.io/xlnt/introduction/features">the feature list</a>. Contributions are welcome in the form of pull requests or discussions on <a href="https://github.com/xlnt-community/xlnt/issues">the repository's Issues page</a>.</p>
+<h2>About this fork</h2>
+<p>This repo is a community effort to continue the development of xlnt, after the <a href="https://github.com/tfussell/xlnt">original repo of tfussel</a> has been unmaintained for many years (see <a href="https://github.com/tfussell/xlnt/issues/748">Issue #748</a>). The <a href="https://github.com/xlnt-community/xlnt">xlnt community edition</a> is hosted at GitHub. Feel free to participate in this community effort by submitting <a href="https://github.com/xlnt-community/xlnt/issues">issues</a> and <a href="https://github.com/xlnt-community/xlnt/pulls">PRs</a> to this new community-driven repo. Issues and PRs on the original repo will not be transferred in bulk to this repo, but you may consider creating a similar issue or PR against this repo for items of interest to you.</p>
+<h2>Example</h2>
+<p>Including xlnt in your project, creating a new spreadsheet, and saving it as "example.xlsx"</p>
+<div class="fragment"><div class="line">{c++}</div><div class="line">#include &lt;xlnt/xlnt.hpp&gt;</div><div class="line"></div><div class="line">int main()</div><div class="line">{</div><div class="line">    xlnt::workbook wb;</div><div class="line">    xlnt::worksheet ws = wb.active_sheet();</div><div class="line">    ws.cell(&quot;A1&quot;).value(5);</div><div class="line">    ws.cell(&quot;B2&quot;).value(&quot;string data&quot;);</div><div class="line">    ws.cell(&quot;C3&quot;).formula(&quot;=RAND()&quot;);</div><div class="line">    ws.merge_cells(&quot;C3:C4&quot;);</div><div class="line">    ws.freeze_panes(&quot;B2&quot;);</div><div class="line">    wb.save(&quot;example.xlsx&quot;);</div><div class="line">    return 0;</div><div class="line">}</div><div class="line">// compile with -std=c++11 -Ixlnt/include -lxlnt</div></div><!-- fragment --><p><a href="https://xlnt-community.gitbook.io/xlnt/introduction/examples">More examples</a> are available.</p>
+<h2>Documentation</h2>
+<p>More information is available in the <a href="https://xlnt-community.gitbook.io/xlnt/">xlnt documentation</a> and in the <a href="https://xlnt-community.github.io/xlnt/annotated.html">xlnt API reference</a>.</p>
+<h2>Building xlnt - From source</h2>
+<p>You can download <a href="https://github.com/xlnt-community/xlnt">the xlnt source code</a> and install the latest xlnt version as follows: </p><pre class="fragment">git clone https://github.com/xlnt-community/xlnt.git xlnt --recurse-submodules
+cd xlnt
+mkdir build
+cd build
+cmake ..
+cmake --build . -j 4
+cmake --install .
+</pre><p>For more information, see the <a href="https://xlnt-community.gitbook.io/xlnt/introduction/installation#compiling-from-source">full installation instructions</a>.</p>
+<h2>Building xlnt - Using vcpkg</h2>
+<blockquote class="doxtable">
+<p>[!WARNING] The xlnt port in vcpkg is currently out of date, as it still uses the original repo of tfussell. We are in the process of migrating this port to our community edition (see <a href="https://github.com/xlnt-community/xlnt/issues/33">Issue #33</a> for more information). At this time, we recommend building xlnt from source. </p>
+</blockquote>
+<p>You can download and install xlnt using the <a href="https://github.com/microsoft/vcpkg">vcpkg</a> dependency manager: </p><pre class="fragment">git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg
+./bootstrap-vcpkg.sh
+./vcpkg integrate install
+./vcpkg install xlnt
+</pre><p>The xlnt port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please <a href="https://github.com/microsoft/vcpkg">create an issue or pull request</a> on the vcpkg repository.</p>
+<h2>License</h2>
+<p>xlnt is released to the public for free under the terms of the MIT License. See https://github.com/xlnt-community/xlnt/blob/master/LICENSE.md "LICENSE.md" for the full text of the license and the licenses of xlnt's third-party dependencies. https://github.com/xlnt-community/xlnt/blob/master/LICENSE.md "LICENSE.md" should be distributed alongside any assemblies that use xlnt in source or compiled form. </p>
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
