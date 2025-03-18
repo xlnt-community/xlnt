@@ -46,52 +46,7 @@ format format::clone(clone_method method) const
     switch (method)
     {
     case clone_method::deep_copy:
-    {
-        format format(std::make_shared<detail::format_impl>(*d_));
-        /*format.d_->references = 0;
-
-        optional<std::size_t> alignment_id;
-        optional<std::size_t> border_id;
-        optional<std::size_t> fill_id;
-        optional<std::size_t> font_id;
-        optional<std::size_t> number_format_id;
-        optional<std::size_t> protection_id;
-
-        if (format.d_->alignment_id.is_set())
-        {
-            xlnt::alignment alignment = format.alignment();
-            alignment.;
-        }
-
-        if (format.d_->border_id.is_set())
-        {
-            format.border();
-        }
-
-        if (format.d_->fill_id.is_set())
-        {
-            format.fill();
-        }
-
-        if (format.d_->font_id.is_set())
-        {
-            format.font();
-        }
-
-        if (format.d_->number_format_id.is_set())
-        {
-            xlnt::number_format number_format = format.number_format();
-            number_format.id(std::numeric_limits<decltype(format.d_->number_format_id)::value_type>::max());
-            format.number_format(number_format, format.d_->number_format_applied);
-        }
-
-        if (format.d_->protection_id.is_set())
-        {
-            format.protection();
-            }*/
-
-        return format;
-    }
+        return format(std::make_shared<detail::format_impl>(*d_));
     case clone_method::shallow_copy:
         return format(d_);
     default:
