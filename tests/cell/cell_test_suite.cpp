@@ -44,6 +44,8 @@
 #include <xlnt/workbook/workbook.hpp>
 #include <xlnt/worksheet/range.hpp>
 #include <xlnt/worksheet/worksheet.hpp>
+#include <xlnt/cell/cell_reference.hpp>
+#include <xlnt/types.hpp>
 
 class cell_test_suite : public test_suite
 {
@@ -85,6 +87,9 @@ public:
         register_test(test_comment);
         register_test(test_copy_and_compare);
         register_test(test_cell_phonetic_properties);
+        register_test(test_ensure_correct_lifetime);
+        register_test(test_clone);
+        register_test(test_compare);
     }
 
 private:
@@ -860,6 +865,74 @@ private:
         xlnt_assert_equals(cell1.phonetics_visible(), true);
         cell1.show_phonetics(false);
         xlnt_assert_equals(cell1.phonetics_visible(), false);
+    }
+
+    void test_ensure_correct_lifetime()
+    {
+        // Use a pointer to extend the lifetime outside the scope below.
+        std::unique_ptr<xlnt::cell> cell11_ptr;
+        std::unique_ptr<xlnt::cell> cell12_ptr;
+
+        {
+            xlnt::workbook wb;
+            xlnt::worksheet ws = wb.create_sheet();
+            ws.title("Title1");
+            xlnt::cell cell11 = ws.cell(1, 1);
+            cell11.value(3.14);
+            xlnt::cell cell12 = ws.cell(1, 2);
+            cell12.value("Text1");
+            // Create a shallow copy.
+            cell11_ptr = std::unique_ptr<xlnt::cell>(new xlnt::cell(cell11));
+            cell12_ptr = std::unique_ptr<xlnt::cell>(new xlnt::cell(cell12));
+            xlnt_assert_throws_nothing(cell11.worksheet());
+            xlnt_assert_throws_nothing(cell11.workbook());
+            xlnt_assert_throws_nothing(cell12.worksheet());
+            xlnt_assert_throws_nothing(cell12.workbook());
+        }
+
+        xlnt_assert_equals(cell11_ptr->value<double>(), 3.14);
+        // TODO: strings are a bit more complicated due to the shared string table,
+        // which is currently owned by the worksheet.
+        //xlnt_assert_equals(cell12_ptr->value<std::string>(), "Text1");
+        xlnt_assert_throws(cell11_ptr->workbook(), xlnt::invalid_attribute);
+        xlnt_assert_throws(cell11_ptr->worksheet(), xlnt::invalid_attribute);
+        xlnt_assert_throws(cell12_ptr->workbook(), xlnt::invalid_attribute);
+        xlnt_assert_throws(cell12_ptr->worksheet(), xlnt::invalid_attribute);
+    }
+
+    void test_clone()
+    {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        xlnt::cell cell11 = ws.cell(1, 1);
+        cell11.value(1.0);
+        xlnt::cell cell11_shallow_copy = cell11.clone(xlnt::clone_method::shallow_copy);
+        xlnt_assert_equals(cell11_shallow_copy.value<double>(), 1.0);
+        cell11.value(2.0);
+        xlnt_assert_equals(cell11_shallow_copy.value<double>(), 2.0);
+        xlnt::cell cell11_deep_copy = cell11.clone(xlnt::clone_method::deep_copy);
+        cell11.value(3.0);
+        xlnt_assert_equals(cell11_deep_copy.value<double>(), 2.0);
+    }
+
+    void test_compare()
+    {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        xlnt::cell cell11 = ws.cell(1, 1);
+        cell11.value(1.0);
+        xlnt::cell cell11_simple_copy = cell11;
+        xlnt_assert_equals(cell11, cell11_simple_copy);
+        xlnt_assert(cell11.compare(cell11_simple_copy, true));
+        xlnt_assert(cell11.compare(cell11_simple_copy, false));
+        xlnt::cell cell11_shallow_copy = cell11.clone(xlnt::clone_method::shallow_copy);
+        xlnt_assert_equals(cell11, cell11_shallow_copy);
+        xlnt_assert(cell11.compare(cell11_shallow_copy, true));
+        xlnt_assert(cell11.compare(cell11_shallow_copy, false));
+        xlnt::cell cell11_deep_copy = cell11.clone(xlnt::clone_method::deep_copy);
+        xlnt_assert_differs(cell11, cell11_deep_copy);
+        xlnt_assert(!cell11.compare(cell11_deep_copy, true));
+        xlnt_assert(cell11.compare(cell11_deep_copy, false));
     }
 };
 

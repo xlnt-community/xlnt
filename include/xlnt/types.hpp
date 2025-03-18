@@ -1,4 +1,3 @@
-// Copyright (c) 2018-2022 Thomas Fussell
 // Copyright (c) 2024-2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,35 +23,16 @@
 
 #pragma once
 
-#include <string>
-
-#include <xlnt/packaging/relationship.hpp>
-#include <xlnt/utils/optional.hpp>
-
 namespace xlnt {
-namespace detail {
 
-// [serialised]
-struct hyperlink_impl
+/// <summary>
+/// The method for cloning XLNT classes. Useful for classes
+/// that respect the XLNT memory model, which do shallow copies by default.
+/// </summary>
+enum class clone_method
 {
-    xlnt::relationship relationship;
-    xlnt::optional<std::string> location;
-    xlnt::optional<std::string> tooltip;
-    xlnt::optional<std::string> display;
+    deep_copy,
+    shallow_copy
 };
 
-inline bool operator==(const hyperlink_impl &lhs, const hyperlink_impl &rhs)
-{
-    return lhs.relationship == rhs.relationship
-        && lhs.location == rhs.location
-        && lhs.tooltip == rhs.tooltip
-        && lhs.display == rhs.display;
-}
-
-inline bool operator!=(const hyperlink_impl &lhs, const hyperlink_impl &rhs)
-{
-    return !(lhs == rhs);
-}
-
-} // namespace detail
 } // namespace xlnt

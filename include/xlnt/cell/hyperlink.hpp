@@ -25,6 +25,8 @@
 #pragma once
 
 #include <xlnt/xlnt_config.hpp>
+#include <xlnt/types.hpp>
+#include <memory>
 #include <string>
 
 namespace xlnt {
@@ -43,6 +45,34 @@ class relationship;
 class XLNT_API hyperlink
 {
 public:
+    /// <summary>
+    /// The method for cloning hyperlinks.
+    /// </summary>
+    using clone_method = xlnt::clone_method;
+
+    /// <summary>
+    /// Creates a clone of this hyperlink. A shallow copy will copy the hyperlink's internal pointers,
+    /// while a deep copy will copy all the internal structures and create a full clone of the hyperlink.
+    /// </summary>
+    hyperlink clone(clone_method method) const;
+
+    /// <summary>
+    /// Returns true if this hyperlink is equal to other. If compare_by_reference is true, the comparison
+    /// will only check that both hyperlinks point to the same internal hyperlink. Otherwise,
+    /// if compare_by_reference is false, all hyperlink properties are compared.
+    /// </summary>
+    bool compare(const hyperlink &other, bool compare_by_reference) const;
+
+    /// <summary>
+    /// Returns true if this hyperlink is the same hyperlink as comparand (compared by reference).
+    /// </summary>
+    bool operator==(const hyperlink &comparand) const;
+
+    /// <summary>
+    /// Returns false if this hyperlink is the same hyperlink as comparand (compared by reference).
+    /// </summary>
+    bool operator!=(const hyperlink &comparand) const;
+
     bool external() const;
     class relationship relationship() const;
     // external target
@@ -64,8 +94,8 @@ public:
 
 private:
     friend class cell;
-    hyperlink(detail::hyperlink_impl *d);
-    detail::hyperlink_impl *d_ = nullptr;
+    hyperlink(std::shared_ptr<detail::hyperlink_impl> d);
+    std::shared_ptr<detail::hyperlink_impl> d_;
 };
 
 } // namespace xlnt

@@ -433,12 +433,12 @@ private:
 
     bool streaming_ = false;
 
-    std::unique_ptr<detail::cell_impl> streaming_cell_;
+    std::shared_ptr<detail::cell_impl> streaming_cell_;
 
     std::unordered_map<int, std::string> shared_formulae_;
     std::unordered_map<std::string, std::string> array_formulae_;
 
-    detail::worksheet_impl *current_worksheet_ = nullptr;
+    std::shared_ptr<detail::worksheet_impl> current_worksheet_;
 
     std::vector<defined_name> defined_names_;
 };

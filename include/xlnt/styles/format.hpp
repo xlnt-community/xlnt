@@ -24,9 +24,12 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
+#include <xlnt/utils/optional.hpp>
 #include <xlnt/xlnt_config.hpp>
+#include <xlnt/types.hpp>
 
 namespace xlnt {
 
@@ -38,9 +41,6 @@ class font;
 class number_format;
 class protection;
 class style;
-
-template <typename T>
-class optional;
 
 namespace detail {
 
@@ -57,6 +57,34 @@ class xlsx_consumer;
 class XLNT_API format
 {
 public:
+    /// <summary>
+    /// The method for cloning formats.
+    /// </summary>
+    using clone_method = xlnt::clone_method;
+
+    /// <summary>
+    /// Creates a clone of this format. A shallow copy will copy the format's internal pointers,
+    /// while a deep copy will copy all the internal structures and create a full clone of the format.
+    /// </summary>
+    format clone(clone_method method) const;
+
+    /// <summary>
+    /// Returns true if this format is equal to other. If compare_by_reference is true, the comparison
+    /// will only check that both formats point to the same internal format. Otherwise,
+    /// if compare_by_reference is false, all format properties are compared.
+    /// </summary>
+    bool compare(const format &other, bool compare_by_reference) const;
+
+    /// <summary>
+    /// Returns true if this format is equivalent to other.
+    /// </summary>
+    bool operator==(const format &other) const;
+
+    /// <summary>
+    /// Returns true if this format is not equivalent to other.
+    /// </summary>
+    bool operator!=(const format &other) const;
+
     /// <summary>
     /// Returns the alignment of this format.
     /// </summary>
@@ -222,14 +250,20 @@ private:
     friend class cell;
 
     /// <summary>
+    /// Returns a shared_ptr to the parent which is checked for validity.
+    /// If the pointer is invalid, an xlnt::invald_attribute exception is thrown.
+    /// </summary>
+    std::shared_ptr<detail::stylesheet> get_parent_checked() const;
+
+    /// <summary>
     /// Constructs a format from an impl pointer.
     /// </summary>
-    format(detail::format_impl *d);
+    format(std::shared_ptr<detail::format_impl> d);
 
     /// <summary>
     /// The internal implementation of this format
     /// </summary>
-    detail::format_impl *d_ = nullptr;
+    std::shared_ptr<detail::format_impl> d_;
 };
 
 } // namespace xlnt

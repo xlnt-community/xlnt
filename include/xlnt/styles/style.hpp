@@ -25,10 +25,12 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/utils/optional.hpp>
+#include <xlnt/types.hpp>
 
 namespace xlnt {
 
@@ -56,14 +58,20 @@ class XLNT_API style
 {
 public:
     /// <summary>
+    /// The method for cloning styles.
+    /// </summary>
+    using clone_method = xlnt::clone_method;
+
+    /// <summary>
     /// Delete zero-argument constructor
     /// </summary>
     style() = delete;
 
     /// <summary>
-    /// Default copy constructor. Constructs a style using the same PIMPL as other.
+    /// Creates a clone of this style. A shallow copy will copy the style's internal pointers,
+    /// while a deep copy will copy all the internal structures and create a full clone of the style.
     /// </summary>
-    style(const style &other) = default;
+    style clone(clone_method method) const;
 
     /// <summary>
     /// Returns the name of this style.
@@ -234,6 +242,13 @@ public:
     void quote_prefix(bool quote);
 
     /// <summary>
+    /// Returns true if this style is equal to other. If compare_by_reference is true, the comparison
+    /// will only check that both styles point to the same internal style. Otherwise,
+    /// if compare_by_reference is false, all style properties are compared.
+    /// </summary>
+    bool compare(const style &other, bool compare_by_reference) const;
+
+    /// <summary>
     /// Returns true if this style is equivalent to other.
     /// </summary>
     bool operator==(const style &other) const;
@@ -248,14 +263,20 @@ private:
     friend class detail::xlsx_consumer;
 
     /// <summary>
+    /// Returns a shared_ptr to the parent which is checked for validity.
+    /// If the pointer is invalid, an xlnt::invald_attribute exception is thrown.
+    /// </summary>
+    std::shared_ptr<detail::stylesheet> get_parent_checked() const;
+
+    /// <summary>
     /// Constructs a style from an impl pointer.
     /// </summary>
-    style(detail::style_impl *d);
+    style(std::shared_ptr<detail::style_impl> d);
 
     /// <summary>
     /// The internal implementation of this style
     /// </summary>
-    detail::style_impl *d_ = nullptr;
+    std::shared_ptr<detail::style_impl> d_;
 };
 
 } // namespace xlnt

@@ -441,7 +441,7 @@ void xlsx_consumer::open(std::istream &source)
 
 cell xlsx_consumer::read_cell()
 {
-    return cell(streaming_cell_.get());
+    return cell(streaming_cell_);
 }
 
 void xlsx_consumer::read_worksheet(const std::string &rel_id)
@@ -530,7 +530,7 @@ std::string xlsx_consumer::read_worksheet_begin(const std::string &rel_id)
 {
     if (streaming_ && streaming_cell_ == nullptr)
     {
-        streaming_cell_.reset(new detail::cell_impl());
+        streaming_cell_ = std::make_shared<detail::cell_impl>();
     }
 
     array_formulae_.clear();
@@ -866,58 +866,58 @@ void xlsx_consumer::read_worksheet_sheetdata()
     {
         current_worksheet_->row_properties_.emplace(row.second, std::move(row.first));
     }
-    auto impl = detail::cell_impl();
+
     for (Cell &cell : ws_data.parsed_cells)
     {
-        impl.parent_ = current_worksheet_;
-        impl.column_ = cell.ref.column;
-        impl.row_ = cell.ref.row;
-        detail::cell_impl *ws_cell_impl = &current_worksheet_->cell_map_.emplace(cell_reference(impl.column_, impl.row_), std::move(impl)).first->second;
+        auto &impl = current_worksheet_->cell_map_.emplace(cell_reference(cell.ref.column, cell.ref.row), std::make_shared<detail::cell_impl>()).first->second;
+        impl->parent_ = current_worksheet_;
+        impl->column_ = cell.ref.column;
+        impl->row_ = cell.ref.row;
         if (cell.style_index != -1)
         {
-            ws_cell_impl->format_ = target_.format(static_cast<size_t>(cell.style_index)).d_;
+            impl->format_ = target_.format(static_cast<size_t>(cell.style_index)).d_;
         }
         if (cell.cell_metadata_idx != -1)
         {
         }
-        ws_cell_impl->phonetics_visible_ = cell.is_phonetic;
+        impl->phonetics_visible_ = cell.is_phonetic;
         if (!cell.formula_string.empty())
         {
-            ws_cell_impl->formula_ = cell.formula_string[0] == '=' ? cell.formula_string.substr(1) : std::move(cell.formula_string);
+            impl->formula_ = cell.formula_string[0] == '=' ? cell.formula_string.substr(1) : std::move(cell.formula_string);
         }
         if (!cell.value.empty())
         {
-            ws_cell_impl->type_ = cell.type;
+            impl->type_ = cell.type;
             switch (cell.type)
             {
             case cell::type::boolean: {
-                ws_cell_impl->value_numeric_ = is_true(cell.value) ? 1.0 : 0.0;
+                impl->value_numeric_ = is_true(cell.value) ? 1.0 : 0.0;
                 break;
             }
             case cell::type::empty:
             case cell::type::number:
             case cell::type::date: {
-                ws_cell_impl->value_numeric_ = xlnt::detail::deserialise(cell.value);
+                impl->value_numeric_ = xlnt::detail::deserialise(cell.value);
                 break;
             }
             case cell::type::shared_string: {
                 long long value = -1;
                 if (xlnt::detail::parse(cell.value, value) == std::errc())
                 {
-                    ws_cell_impl->value_numeric_ = static_cast<double>(value);
+                    impl->value_numeric_ = static_cast<double>(value);
                 }
                 break;
             }
             case cell::type::inline_string: {
-                ws_cell_impl->value_text_ = std::move(cell.value);
+                impl->value_text_ = std::move(cell.value);
                 break;
             }
             case cell::type::formula_string: {
-                ws_cell_impl->value_text_ = std::move(cell.value);
+                impl->value_text_ = std::move(cell.value);
                 break;
             }
             case cell::type::error: {
-                ws_cell_impl->value_text_.plain_text(cell.value, false);
+                impl->value_text_.plain_text(cell.value, false);
                 break;
             }
             }
@@ -1040,23 +1040,23 @@ worksheet xlsx_consumer::read_worksheet_end(const std::string &rel_id)
                 }
                 else if (parser().attribute_present("location"))
                 {
-                    auto hyperlink = hyperlink_impl();
+                    auto hyperlink = std::make_shared<hyperlink_impl>();
 
                     auto location = parser().attribute("location");
-                    hyperlink.relationship = relationship("", relationship_type::hyperlink,
+                    hyperlink->relationship = relationship("", relationship_type::hyperlink,
                         uri(""), uri(location), target_mode::internal);
 
                     if (parser().attribute_present("display"))
                     {
-                        hyperlink.display = parser().attribute("display");
+                        hyperlink->display = parser().attribute("display");
                     }
 
                     if (parser().attribute_present("tooltip"))
                     {
-                        hyperlink.tooltip = parser().attribute("tooltip");
+                        hyperlink->tooltip = parser().attribute("tooltip");
                     }
 
-                    cell.d_->hyperlink_ = hyperlink;
+                    cell.d_->hyperlink_ = std::move(hyperlink);
                 }
 
                 expect_end_element(qn("spreadsheetml", "hyperlink"));
@@ -1414,7 +1414,7 @@ bool xlsx_consumer::has_cell()
         {
             // End of sheet. Mark it by setting streaming_cell_ to nullptr, so we never get here again.
             expect_end_element(qn("spreadsheetml", "sheetData"));
-            streaming_cell_.reset(nullptr);
+            streaming_cell_.reset();
             break;
         }
 
@@ -1469,8 +1469,8 @@ bool xlsx_consumer::has_cell()
     expect_start_element(qn("spreadsheetml", "c"), xml::content::complex);
 
     assert(streaming_);
-    streaming_cell_.reset(new detail::cell_impl()); // Clean cell state - otherwise it might contain information from the previously streamed cell.
-    auto cell = xlnt::cell(streaming_cell_.get());
+    *streaming_cell_ = detail::cell_impl(); // Clean cell state - otherwise it might contain information from the previously streamed cell.
+    auto cell = xlnt::cell(streaming_cell_);
     auto reference = cell_reference(parser().attribute("r"));
     cell.d_->parent_ = current_worksheet_;
     cell.d_->column_ = reference.column_index();
@@ -2262,12 +2262,13 @@ void xlsx_consumer::read_office_document(const std::string &content_type) // CT_
 
         auto insertion_iter = target_.d_->worksheets_.begin();
         while (insertion_iter != target_.d_->worksheets_.end()
-            && sheet_title_index_map_[insertion_iter->title_] < index)
+            && sheet_title_index_map_[(*insertion_iter)->title_] < index)
         {
             ++insertion_iter;
         }
 
-        current_worksheet_ = &*target_.d_->worksheets_.emplace(insertion_iter, &target_, id, title);
+        current_worksheet_ = std::make_shared<worksheet_impl>(&target_, id, title);
+        target_.d_->worksheets_.emplace(insertion_iter, current_worksheet_);
 
         if (!streaming_)
         {
@@ -2351,8 +2352,16 @@ void xlsx_consumer::read_shared_workbook_user_data()
 
 void xlsx_consumer::read_stylesheet()
 {
-    target_.impl().stylesheet_ = detail::stylesheet();
-    auto &stylesheet = target_.impl().stylesheet_.get();
+    if (target_.impl().stylesheet_ == nullptr)
+    {
+        target_.impl().stylesheet_ = std::make_shared<detail::stylesheet>();
+    }
+    else
+    {
+        *target_.impl().stylesheet_ = detail::stylesheet();
+    }
+
+    auto &stylesheet = *target_.impl().stylesheet_;
 
     expect_start_element(qn("spreadsheetml", "styleSheet"), xml::content::complex);
     skip_attributes({qn("mc", "Ignorable")});
@@ -3057,14 +3066,15 @@ void xlsx_consumer::read_stylesheet()
     }
 
     std::size_t record_index = 0;
+    stylesheet.format_impls.reserve(format_records.size());
 
     for (const auto &record : format_records)
     {
-        stylesheet.format_impls.push_back(format_impl());
-        auto &new_format = stylesheet.format_impls.back();
+        stylesheet.format_impls.emplace_back(std::make_shared<format_impl>());
+        auto &new_format = *stylesheet.format_impls.back();
 
         new_format.id = record_index++;
-        new_format.parent = &stylesheet;
+        new_format.parent = target_.impl().stylesheet_;
 
         ++new_format.references;
 

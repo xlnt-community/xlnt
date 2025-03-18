@@ -35,6 +35,7 @@
 
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/internal/features.hpp>
+#include <xlnt/types.hpp>
 
 #if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
   #include <string_view>
@@ -99,11 +100,7 @@ public:
     /// <summary>
     /// The method for cloning workbooks.
     /// </summary>
-    enum class clone_method
-    {
-        deep_copy,
-        shallow_copy
-    };
+    using clone_method = xlnt::clone_method;
 
     /// <summary>
     /// typedef for the iterator used for iterating through this workbook
@@ -191,9 +188,7 @@ public:
     workbook(const workbook &other) = default;
 
     /// <summary>
-    /// Destroys this workbook, deallocating all internal storage space. Any pimpl
-    /// wrapper classes (e.g. cell) pointing into this workbook will be invalid
-    /// after this is executed.
+    /// Destroys this workbook, deallocating all internal storage space.
     /// </summary>
     ~workbook() = default;
 

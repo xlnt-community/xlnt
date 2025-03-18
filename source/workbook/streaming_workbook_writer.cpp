@@ -101,9 +101,7 @@ void streaming_workbook_writer::open(std::ostream &stream)
     workbook_.reset(new workbook());
     producer_.reset(new detail::xlsx_producer(*workbook_));
     producer_->open(stream);
-    producer_->current_worksheet_ = new detail::worksheet_impl(workbook_.get(), 1, "Sheet1");
-    producer_->current_cell_ = new detail::cell_impl();
-    producer_->current_cell_->parent_ = producer_->current_worksheet_;
+    producer_->current_worksheet_ = std::make_shared<detail::worksheet_impl>(workbook_.get(), 1, "Sheet1");
 }
 
 } // namespace xlnt

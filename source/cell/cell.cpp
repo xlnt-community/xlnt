@@ -191,9 +191,26 @@ std::string cell::check_string(const std::string &to_check)
     return s;
 }
 
-cell::cell(detail::cell_impl *d)
-    : d_(d)
+cell::cell(std::shared_ptr<detail::cell_impl> d)
+    : d_(std::move(d))
 {
+    if (d_ == nullptr)
+    {
+        throw xlnt::invalid_attribute("xlnt::cell: invalid cell_impl pointer");
+    }
+}
+
+cell cell::clone(clone_method method) const
+{
+    switch (method)
+    {
+    case clone_method::deep_copy:
+        return cell(std::make_shared<detail::cell_impl>(*d_));
+    case clone_method::shallow_copy:
+        return cell(d_);
+    default:
+        throw xlnt::invalid_parameter("clone method not supported");
+    }
 }
 
 bool cell::garbage_collectible() const
@@ -373,11 +390,9 @@ bool cell::operator!=(const cell &comparand) const
     return !(*this == comparand);
 }
 
-cell &cell::operator=(const cell &rhs) = default;
-
 hyperlink cell::hyperlink() const
 {
-    return xlnt::hyperlink(&d_->hyperlink_.get());
+    return xlnt::hyperlink(d_->hyperlink_.get());
 }
 
 void cell::hyperlink(const std::string &url, const std::string &display)
@@ -390,7 +405,14 @@ void cell::hyperlink(const std::string &url, const std::string &display)
     auto ws = worksheet();
     auto &manifest = ws.workbook().manifest();
 
-    d_->hyperlink_ = detail::hyperlink_impl();
+    if (d_->hyperlink_.is_set())
+    {
+        *d_->hyperlink_.get() = detail::hyperlink_impl();
+    }
+    else
+    {
+        d_->hyperlink_.set(std::make_shared<detail::hyperlink_impl>());
+    }
 
     // check for existing relationships
     auto relationships = manifest.relationships(ws.path(), relationship_type::hyperlink);
@@ -398,7 +420,7 @@ void cell::hyperlink(const std::string &url, const std::string &display)
         [&url](xlnt::relationship rel) { return rel.target().path().string() == url; });
     if (relation != relationships.end())
     {
-        d_->hyperlink_.get().relationship = *relation;
+        d_->hyperlink_.get()->relationship = *relation;
     }
     else
     { // register a new relationship
@@ -408,16 +430,16 @@ void cell::hyperlink(const std::string &url, const std::string &display)
             uri(url),
             target_mode::external);
         // TODO: make manifest::register_relationship return the created relationship instead of rel id
-        d_->hyperlink_.get().relationship = manifest.relationship(ws.path(), rel_id);
+        d_->hyperlink_.get()->relationship = manifest.relationship(ws.path(), rel_id);
     }
     // if a value is already present, the display string is ignored
     if (has_value())
     {
-        d_->hyperlink_.get().display.set(to_string());
+        d_->hyperlink_.get()->display.set(to_string());
     }
     else
     {
-        d_->hyperlink_.get().display.set(display.empty() ? url : display);
+        d_->hyperlink_.get()->display.set(display.empty() ? url : display);
         value(hyperlink().display());
     }
 }
@@ -427,17 +449,25 @@ void cell::hyperlink(xlnt::cell target, const std::string &display)
     // TODO: should this computed value be a method on a cell?
     const auto cell_address = target.worksheet().title() + "!" + target.reference().to_string();
 
-    d_->hyperlink_ = detail::hyperlink_impl();
-    d_->hyperlink_.get().relationship = xlnt::relationship("", relationship_type::hyperlink,
+    if (d_->hyperlink_.is_set())
+    {
+        *d_->hyperlink_.get() = detail::hyperlink_impl();
+    }
+    else
+    {
+        d_->hyperlink_.set(std::make_shared<detail::hyperlink_impl>());
+    }
+
+    d_->hyperlink_.get()->relationship = xlnt::relationship("", relationship_type::hyperlink,
         uri(""), uri(cell_address), target_mode::internal);
     // if a value is already present, the display string is ignored
     if (has_value())
     {
-        d_->hyperlink_.get().display.set(to_string());
+        d_->hyperlink_.get()->display.set(to_string());
     }
     else
     {
-        d_->hyperlink_.get().display.set(display.empty() ? cell_address : display);
+        d_->hyperlink_.get()->display.set(display.empty() ? cell_address : display);
         value(hyperlink().display());
     }
 }
@@ -447,18 +477,26 @@ void cell::hyperlink(xlnt::range target, const std::string &display)
     // TODO: should this computed value be a method on a cell?
     const auto range_address = target.target_worksheet().title() + "!" + target.reference().to_string();
 
-    d_->hyperlink_ = detail::hyperlink_impl();
-    d_->hyperlink_.get().relationship = xlnt::relationship("", relationship_type::hyperlink,
+    if (d_->hyperlink_.is_set())
+    {
+        *d_->hyperlink_.get() = detail::hyperlink_impl();
+    }
+    else
+    {
+        d_->hyperlink_.set(std::make_shared<detail::hyperlink_impl>());
+    }
+
+    d_->hyperlink_.get()->relationship = xlnt::relationship("", relationship_type::hyperlink,
         uri(""), uri(range_address), target_mode::internal);
 
     // if a value is already present, the display string is ignored
     if (has_value())
     {
-        d_->hyperlink_.get().display.set(to_string());
+        d_->hyperlink_.get()->display.set(to_string());
     }
     else
     {
-        d_->hyperlink_.get().display.set(display.empty() ? range_address : display);
+        d_->hyperlink_.get()->display.set(display.empty() ? range_address : display);
         value(hyperlink().display());
     }
 }
@@ -923,17 +961,29 @@ format cell::modifiable_format()
 {
     if (!d_->format_.is_set())
     {
-        throw invalid_attribute();
+        throw invalid_attribute("cell has no format");
     }
 
     return xlnt::format(d_->format_.get());
+}
+
+std::shared_ptr<detail::worksheet_impl> cell::get_parent_checked() const
+{
+    auto ptr = d_->parent_.lock();
+
+    if (ptr == nullptr)
+    {
+        throw xlnt::invalid_attribute("xlnt::cell: invalid worksheet pointer");
+    }
+
+    return ptr;
 }
 
 const format cell::format() const
 {
     if (!d_->format_.is_set())
     {
-        throw invalid_attribute();
+        throw invalid_attribute("cell has no format");
     }
 
     return xlnt::format(d_->format_.get());
@@ -985,7 +1035,6 @@ void cell::clear_comment()
 {
     if (has_comment())
     {
-        d_->parent_->comments_.erase(reference().to_string());
         d_->comment_.clear();
     }
 }
@@ -1018,8 +1067,7 @@ void cell::comment(const class comment &new_comment)
     }
     else
     {
-        d_->parent_->comments_[reference().to_string()] = new_comment;
-        d_->comment_.set(&d_->parent_->comments_[reference().to_string()]);
+        d_->comment_.set(std::make_shared<xlnt::comment>(new_comment));
     }
 
     // offset comment 5 pixels down and 5 pixels right of the top right corner of the cell

@@ -25,7 +25,7 @@
 #pragma once
 
 #include <algorithm>
-#include <list>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -44,43 +44,91 @@
 namespace xlnt {
 namespace detail {
 
-struct stylesheet
+struct stylesheet : public std::enable_shared_from_this<stylesheet>
 {
+    stylesheet() = default;
+    ~stylesheet() = default;
+    stylesheet(stylesheet &&other) noexcept = default;
+    stylesheet &operator=(stylesheet &&other) noexcept = default;
+
+    stylesheet(const stylesheet &other)
+        : std::enable_shared_from_this<stylesheet>(other)
+    {
+        *this = other;
+    }
+
+    stylesheet &operator=(const stylesheet &other)
+    {
+        parent = other.parent;
+
+        format_impls.clear();
+        format_impls.reserve(other.format_impls.size());
+        for (const auto &format : other.format_impls)
+        {
+            format_impls.emplace_back(std::make_shared<format_impl>(*format));
+        }
+
+        style_impls.clear();
+        style_impls.reserve(other.style_impls.size());
+        for (const auto &style_pair : other.style_impls)
+        {
+            style_impls.emplace(style_pair.first, std::make_shared<style_impl>(*style_pair.second));
+        }
+
+        conditional_format_impls.clear();
+        conditional_format_impls.reserve(other.conditional_format_impls.size());
+        for (const auto &conditional_format : other.conditional_format_impls)
+        {
+            conditional_format_impls.emplace_back(std::make_shared<conditional_format_impl>(*conditional_format));
+        }
+
+        garbage_collection_enabled = other.garbage_collection_enabled;
+        known_fonts_enabled = other.known_fonts_enabled;
+        style_names = other.style_names;
+        default_slicer_style = other.default_slicer_style;
+        alignments = other.alignments;
+        borders = other.borders;
+        fills = other.fills;
+        fonts = other.fonts;
+        number_formats = other.number_formats;
+        protections = other.protections;
+        colors = other.colors;
+
+        return *this;
+    }
+
     class format create_format(bool default_format)
     {
-		format_impls.push_back(format_impl());
+		format_impls.emplace_back(std::make_shared<format_impl>());
 		auto &impl = format_impls.back();
 
-		impl.parent = this;
-		impl.id = format_impls.size() - 1;
+		impl->parent = shared_from_this();
+		impl->id = format_impls.size() - 1;
 
-        impl.references = default_format ? 1 : 0;
+        impl->references = default_format ? 1 : 0;
 
-        return xlnt::format(&impl);
+        return xlnt::format(impl);
     }
 
     class xlnt::format format(std::size_t index)
     {
-        auto iter = format_impls.begin();
-        std::advance(iter, static_cast<std::list<format_impl>::difference_type>(index));
-
-        return xlnt::format(&*iter);
+        return xlnt::format(format_impls.at(index));
     }
 
     class style create_style(const std::string &name)
     {
-        auto &impl = style_impls.emplace(name, style_impl()).first->second;
+        auto &impl = style_impls.emplace(name, std::make_shared<style_impl>()).first->second;
 
-		impl.parent = this;
-        impl.name = name;
+		impl->parent = shared_from_this();
+        impl->name = name;
 
-        impl.border_id = 0;
-        impl.fill_id = 0;
-        impl.font_id = 0;
-        impl.number_format_id = 0;
+        impl->border_id = 0;
+        impl->fill_id = 0;
+        impl->font_id = 0;
+        impl->number_format_id = 0;
 
         style_names.push_back(name);
-        return xlnt::style(&impl);
+        return xlnt::style(impl);
     }
 
 	class style create_builtin_style(const std::size_t builtin_id)
@@ -151,7 +199,7 @@ struct stylesheet
     class style style(const std::string &name)
 	{
         if (!has_style(name)) throw key_not_found();
-        return xlnt::style(&style_impls[name]);
+        return xlnt::style(style_impls[name]);
 	}
 
 	bool has_style(const std::string &name)
@@ -221,7 +269,7 @@ struct stylesheet
         {
             auto &impl = *format_iter;
 
-            if (impl.references != 0)
+            if (impl->references != 0)
             {
                 ++format_iter;
             }
@@ -245,42 +293,42 @@ struct stylesheet
 
         for (auto &impl : format_impls)
         {
-            impl.id = new_id++;
+            impl->id = new_id++;
 
-            if (impl.alignment_id.is_set())
+            if (impl->alignment_id.is_set())
             {
-                alignment_reference_counts[impl.alignment_id.get()]++;
+                alignment_reference_counts[impl->alignment_id.get()]++;
             }
 
-            if (impl.border_id.is_set())
+            if (impl->border_id.is_set())
             {
-                border_reference_counts[impl.border_id.get()]++;
+                border_reference_counts[impl->border_id.get()]++;
             }
 
-            if (impl.fill_id.is_set())
+            if (impl->fill_id.is_set())
             {
-                fill_reference_counts[impl.fill_id.get()]++;
+                fill_reference_counts[impl->fill_id.get()]++;
             }
 
-            if (impl.font_id.is_set())
+            if (impl->font_id.is_set())
             {
-                font_reference_counts[impl.font_id.get()]++;
+                font_reference_counts[impl->font_id.get()]++;
             }
 
-            if (impl.number_format_id.is_set())
+            if (impl->number_format_id.is_set())
             {
-                number_format_reference_counts[impl.number_format_id.get()]++;
+                number_format_reference_counts[impl->number_format_id.get()]++;
             }
 
-            if (impl.protection_id.is_set())
+            if (impl->protection_id.is_set())
             {
-                protection_reference_counts[impl.protection_id.get()]++;
+                protection_reference_counts[impl->protection_id.get()]++;
             }
         }
 
         for (auto &name_impl_pair : style_impls)
         {
-            auto &impl = name_impl_pair.second;
+            auto &impl = *name_impl_pair.second;
 
             if (impl.alignment_id.is_set())
             {
@@ -321,35 +369,35 @@ struct stylesheet
 
         for (auto &impl : format_impls)
         {
-            if (impl.alignment_id.is_set())
+            if (impl->alignment_id.is_set())
             {
-                impl.alignment_id = alignment_id_map[impl.alignment_id.get()];
+                impl->alignment_id = alignment_id_map[impl->alignment_id.get()];
             }
 
-            if (impl.border_id.is_set())
+            if (impl->border_id.is_set())
             {
-                impl.border_id = border_id_map[impl.border_id.get()];
+                impl->border_id = border_id_map[impl->border_id.get()];
             }
 
-            if (impl.fill_id.is_set())
+            if (impl->fill_id.is_set())
             {
-                impl.fill_id = fill_id_map[impl.fill_id.get()];
+                impl->fill_id = fill_id_map[impl->fill_id.get()];
             }
 
-            if (impl.font_id.is_set())
+            if (impl->font_id.is_set())
             {
-                impl.font_id = font_id_map[impl.font_id.get()];
+                impl->font_id = font_id_map[impl->font_id.get()];
             }
 
-            if (impl.protection_id.is_set())
+            if (impl->protection_id.is_set())
             {
-                impl.protection_id = protection_id_map[impl.protection_id.get()];
+                impl->protection_id = protection_id_map[impl->protection_id.get()];
             }
         }
 
         for (auto &name_impl : style_impls)
         {
-            auto &impl = name_impl.second;
+            auto &impl = *name_impl.second;
 
             if (impl.alignment_id.is_set())
             {
@@ -378,38 +426,37 @@ struct stylesheet
         }
     }
 
-    format_impl *find_or_create(format_impl &pattern)
+    std::shared_ptr<format_impl> find_or_create(format_impl &pattern)
     {
         pattern.references = 0;
         std::size_t id = 0;
         auto iter = format_impls.begin();
-        while (iter != format_impls.end() && !(*iter == pattern))
+        while (iter != format_impls.end() && **iter != pattern)
         {
             ++id;
             ++iter;
         }
         if (iter == format_impls.end())
         {
-            iter = format_impls.emplace(format_impls.end(), pattern);
+            iter = format_impls.emplace(format_impls.end(), std::make_shared<format_impl>(pattern));
         }
-        auto &result = *iter;
+        auto result = *iter;
 
-        result.parent = this;
-        result.id = id;
-        result.references++;
+        result->parent = shared_from_this();
+        result->id = id;
+        result->references++;
 
         if (id != pattern.id)
         {
-            iter = format_impls.begin();
-            std::advance(iter, static_cast<std::list<format_impl>::difference_type>(pattern.id));
-            iter->references -= iter->references > 0 ? 1 : 0;
+            auto &references = format_impls.at(pattern.id)->references;
+            references -= references > 0 ? 1 : 0;
             garbage_collect();
         }
 
-        return &result;
+        return result;
     }
 
-    format_impl *find_or_create_with(format_impl *pattern, const std::string &style_name)
+    std::shared_ptr<format_impl> find_or_create_with(format_impl *pattern, const std::string &style_name)
     {
         format_impl new_format = *pattern;
         new_format.style = style_name;
@@ -420,7 +467,7 @@ struct stylesheet
         return find_or_create(new_format);
     }
 
-    format_impl *find_or_create_with(format_impl *pattern, const alignment &new_alignment, optional<bool> applied)
+    std::shared_ptr<format_impl> find_or_create_with(format_impl *pattern, const alignment &new_alignment, optional<bool> applied)
     {
         format_impl new_format = *pattern;
         new_format.alignment_id = find_or_add(alignments, new_alignment);
@@ -432,7 +479,7 @@ struct stylesheet
         return find_or_create(new_format);
     }
 
-    format_impl *find_or_create_with(format_impl *pattern, const border &new_border, optional<bool> applied)
+    std::shared_ptr<format_impl> find_or_create_with(format_impl *pattern, const border &new_border, optional<bool> applied)
     {
         format_impl new_format = *pattern;
         new_format.border_id = find_or_add(borders, new_border);
@@ -444,7 +491,7 @@ struct stylesheet
         return find_or_create(new_format);
     }
 
-    format_impl *find_or_create_with(format_impl *pattern, const fill &new_fill, optional<bool> applied)
+    std::shared_ptr<format_impl> find_or_create_with(format_impl *pattern, const fill &new_fill, optional<bool> applied)
     {
         format_impl new_format = *pattern;
         new_format.fill_id = find_or_add(fills, new_fill);
@@ -456,7 +503,7 @@ struct stylesheet
         return find_or_create(new_format);
     }
 
-    format_impl *find_or_create_with(format_impl *pattern, const font &new_font, optional<bool> applied)
+    std::shared_ptr<format_impl> find_or_create_with(format_impl *pattern, const font &new_font, optional<bool> applied)
     {
         format_impl new_format = *pattern;
         new_format.font_id = find_or_add(fonts, new_font);
@@ -468,7 +515,7 @@ struct stylesheet
         return find_or_create(new_format);
     }
 
-    format_impl *find_or_create_with(format_impl *pattern, const number_format &new_number_format, optional<bool> applied)
+    std::shared_ptr<format_impl> find_or_create_with(format_impl *pattern, const number_format &new_number_format, optional<bool> applied)
     {
         format_impl new_format = *pattern;
         if (new_number_format.has_id() && new_number_format.id() < 164)
@@ -494,7 +541,7 @@ struct stylesheet
         return find_or_create(new_format);
     }
 
-    format_impl *find_or_create_with(format_impl *pattern, const protection &new_protection, optional<bool> applied)
+    std::shared_ptr<format_impl> find_or_create_with(format_impl *pattern, const protection &new_protection, optional<bool> applied)
     {
         format_impl new_format = *pattern;
         new_format.protection_id = find_or_add(protections, new_protection);
@@ -530,30 +577,74 @@ struct stylesheet
         colors.clear();
     }
 
-	conditional_format add_conditional_format_rule(worksheet_impl *ws, const range_reference &ref, const condition &when)
+	conditional_format add_conditional_format_rule(const std::shared_ptr<worksheet_impl> &ws, const range_reference &ref, const condition &when)
 	{
-		conditional_format_impls.push_back(conditional_format_impl());
+		conditional_format_impls.emplace_back(std::make_shared<conditional_format_impl>());
 
 		auto &impl = conditional_format_impls.back();
-		impl.when = when;
-		impl.parent = this;
-		impl.target_sheet = ws;
-		impl.target_range = ref;
-		impl.differential_format_id = conditional_format_impls.size() - 1;
+		impl->when = when;
+		impl->parent = shared_from_this();
+		impl->target_sheet = ws;
+		impl->target_range = ref;
+		impl->differential_format_id = conditional_format_impls.size() - 1;
 
-		return xlnt::conditional_format(&impl);
+		return xlnt::conditional_format(impl);
 	}
-
-    std::weak_ptr<workbook_impl> parent;
 
     bool operator==(const stylesheet& rhs) const
     {
         // no equality on parent as there is only 1 stylesheet per workbook hence would always be false
+        if (format_impls.size() != rhs.format_impls.size())
+        {
+            return false;
+        }
+        else
+        {
+            auto it_this = format_impls.begin();
+            auto it_other = rhs.format_impls.begin();
+
+            for (; it_this != format_impls.end() && it_other != rhs.format_impls.end(); ++it_this, ++it_other)
+            {
+                if (**it_this != **it_other)
+                {
+                    return false;
+                }
+            }
+        }
+
+        if (conditional_format_impls.size() != rhs.conditional_format_impls.size())
+        {
+            return false;
+        }
+        else
+        {
+            auto it_this = conditional_format_impls.begin();
+            auto it_other = rhs.conditional_format_impls.begin();
+
+            for (; it_this != conditional_format_impls.end() && it_other != rhs.conditional_format_impls.end(); ++it_this, ++it_other)
+            {
+                if (**it_this != **it_other)
+                {
+                    return false;
+                }
+            }
+        }
+
+        for (const auto &style_pair : style_impls)
+        {
+            auto it = rhs.style_impls.find(style_pair.first);
+            if (it == rhs.style_impls.end())
+            {
+                return false;
+            }
+            else if (*style_pair.second != *it->second)
+            {
+                return false;
+            }
+        }
+
         return garbage_collection_enabled == rhs.garbage_collection_enabled
             && known_fonts_enabled == rhs.known_fonts_enabled
-            && conditional_format_impls == rhs.conditional_format_impls
-            && format_impls == rhs.format_impls
-            && style_impls == rhs.style_impls
             && style_names == rhs.style_names
             && default_slicer_style == rhs.default_slicer_style
             && alignments == rhs.alignments
@@ -570,12 +661,14 @@ struct stylesheet
         return !(*this == rhs);
     }
 
+    std::weak_ptr<workbook_impl> parent;
+
     bool garbage_collection_enabled = true;
     bool known_fonts_enabled = false;
 
-	std::list<conditional_format_impl> conditional_format_impls;
-    std::list<format_impl> format_impls;
-    std::unordered_map<std::string, style_impl> style_impls;
+	std::vector<std::shared_ptr<conditional_format_impl>> conditional_format_impls;
+    std::vector<std::shared_ptr<format_impl>> format_impls;
+    std::unordered_map<std::string, std::shared_ptr<style_impl>> style_impls;
     std::vector<std::string> style_names;
     optional<std::string> default_slicer_style;
 

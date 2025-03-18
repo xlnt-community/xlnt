@@ -33,8 +33,6 @@ exception::exception(const std::string &message)
     this->message(message);
 }
 
-exception::~exception() = default;
-
 void exception::message(const std::string &message)
 {
     message_ = message;

@@ -170,7 +170,7 @@ const_range_iterator::const_range_iterator(const worksheet &ws, const cell_refer
 
 bool const_range_iterator::operator==(const const_range_iterator &other) const
 {
-    return ws_ == other.ws_
+    return ws_.lock() == other.ws_.lock()
         && cursor_ == other.cursor_
         && order_ == other.order_
         && skip_null_ == other.skip_null_;
