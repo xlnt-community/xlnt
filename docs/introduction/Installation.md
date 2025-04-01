@@ -1,10 +1,13 @@
 # Getting xlnt
 
+The most up to date and stable version can be obtained by building xlnt from source (using the master branch).
+
 ## Binaries
 
-Provided binaries (v1.5.0) are rather old, it may be better to build from source at least until new binaries are available.
-
 ### Arch
+
+> [!WARNING]
+> Provided binary (v1.5.0) is rather old, it may be better to build from source or use vcpkg.
 
 xlnt can be [found](https://aur.archlinux.org/packages/xlnt/) on the AUR.
 
