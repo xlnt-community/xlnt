@@ -70,6 +70,9 @@ class optional
     }
 
 public:
+
+    using value_type = T;
+
     /// <summary>
     /// Default contructor. is_set() will be false initially.
     /// </summary>

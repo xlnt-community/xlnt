@@ -29,9 +29,48 @@
 
 namespace xlnt {
 
-hyperlink::hyperlink(detail::hyperlink_impl *d)
-    : d_(d)
+hyperlink::hyperlink(std::shared_ptr<detail::hyperlink_impl> d)
+    : d_(std::move(d))
 {
+    if (d_ == nullptr)
+    {
+        throw xlnt::invalid_attribute("xlnt::hyperlink: invalid hyperlink_impl pointer");
+    }
+}
+
+hyperlink hyperlink::clone(clone_method method) const
+{
+    switch (method)
+    {
+    case clone_method::deep_copy:
+        return hyperlink(std::make_shared<detail::hyperlink_impl>(*d_));
+    case clone_method::shallow_copy:
+        return hyperlink(d_);
+    default:
+        throw xlnt::invalid_parameter("clone method not supported");
+    }
+}
+
+bool hyperlink::compare(const hyperlink &other, bool compare_by_reference) const
+{
+    if (compare_by_reference)
+    {
+        return d_ == other.d_;
+    }
+    else
+    {
+        return *d_ == *other.d_;
+    }
+}
+
+bool hyperlink::operator==(const hyperlink &comparand) const
+{
+    return compare(comparand, true);
+}
+
+bool hyperlink::operator!=(const hyperlink &comparand) const
+{
+    return !(*this == comparand);
 }
 
 relationship hyperlink::relationship() const

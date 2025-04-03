@@ -26,6 +26,7 @@
 #pragma once
 
 #include <iterator>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -35,6 +36,7 @@
 #include <xlnt/worksheet/page_margins.hpp>
 #include <xlnt/worksheet/page_setup.hpp>
 #include <xlnt/worksheet/sheet_view.hpp>
+#include <xlnt/types.hpp>
 
 namespace xlnt {
 
@@ -64,6 +66,7 @@ namespace detail {
 class xlsx_consumer;
 class xlsx_producer;
 
+struct workbook_impl;
 struct worksheet_impl;
 
 } // namespace detail
@@ -75,6 +78,11 @@ struct worksheet_impl;
 class XLNT_API worksheet
 {
 public:
+    /// <summary>
+    /// The method for cloning worksheets.
+    /// </summary>
+    using clone_method = xlnt::clone_method;
+
     /// <summary>
     /// Iterate over a non-const worksheet with an iterator of this type.
     /// </summary>
@@ -98,12 +106,28 @@ public:
     /// <summary>
     /// Construct a null worksheet. No methods should be called on such a worksheet.
     /// </summary>
-    worksheet();
+    worksheet() = default;
+
+    /// <summary>
+    /// Destructs a worksheet.
+    /// </summary>
+    ~worksheet() = default;
 
     /// <summary>
     /// Copy constructor. This worksheet will point to the same memory as rhs's worksheet.
     /// </summary>
-    worksheet(const worksheet &rhs);
+    worksheet(const worksheet &rhs) = default;
+
+    /// <summary>
+    /// Move constructor. Constructs a worksheet from existing worksheet, other.
+    /// </summary>
+    worksheet(worksheet &&other) noexcept = default;
+
+    /// <summary>
+    /// Creates a clone of this worksheet. A shallow copy will copy the worksheet's internal pointers,
+    /// while a deep copy will copy all the internal structures and create a full clone of the worksheet.
+    /// </summary>
+    worksheet clone(clone_method method) const;
 
     /// <summary>
     /// Returns the workbook this worksheet is owned by.
@@ -495,7 +519,12 @@ public:
     /// <summary>
     /// Sets the internal pointer of this worksheet object to point to other.
     /// </summary>
-    void operator=(const worksheet &other);
+    worksheet &operator=(const worksheet &other) = default;
+
+    /// <summary>
+    /// Sets the internal pointer of this worksheet object to point to other.
+    /// </summary>
+    worksheet &operator=(worksheet &&other) noexcept = default;
 
     /// <summary>
     /// Convenience method for worksheet::cell method.
@@ -809,7 +838,7 @@ private:
     /// <summary>
     /// Constructs a worksheet impl wrapper from d.
     /// </summary>
-    worksheet(detail::worksheet_impl *d);
+    worksheet(std::shared_ptr<detail::worksheet_impl> d);
 
     /// <summary>
     /// Creates a comments part in the manifest as a relationship target of this sheet.
@@ -840,7 +869,12 @@ private:
     /// <summary>
     /// The pointer to this sheet's implementation.
     /// </summary>
-    detail::worksheet_impl *d_ = nullptr;
+    std::shared_ptr<detail::worksheet_impl> d_;
+
+    /// <summary>
+    /// A pointer to the parent, ensuring it lives as long as its child (this instance) lives.
+    /// </summary>
+    std::shared_ptr<detail::workbook_impl> parent_;
 };
 
 } // namespace xlnt

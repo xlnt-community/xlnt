@@ -32,6 +32,8 @@ public:
     style_test_suite()
     {
         register_test(test_all);
+        register_test(test_clone);
+        register_test(test_compare);
     }
 
     void test_all()
@@ -61,6 +63,40 @@ public:
         xlnt_assert(!copy_style.quote_prefix());
         copy_style.quote_prefix(true);
         xlnt_assert(copy_style.quote_prefix());
+    }
+
+    void test_clone()
+    {
+        xlnt::workbook wb;
+        xlnt::style style = wb.create_style("test_style");
+        style.border(xlnt::border().side(xlnt::border_side::bottom, xlnt::border::border_property().color(xlnt::color::red())));
+        xlnt::style style_simple_copy = style;
+        style.border(xlnt::border().side(xlnt::border_side::bottom, xlnt::border::border_property().color(xlnt::color::green())));
+        xlnt_assert_equals(style_simple_copy.border().side(xlnt::border_side::bottom).get().color().get(), xlnt::color::green());
+        xlnt::style style_shallow_copy = style.clone(xlnt::clone_method::shallow_copy);
+        style.border(xlnt::border().side(xlnt::border_side::bottom, xlnt::border::border_property().color(xlnt::color::blue())));
+        xlnt_assert_equals(style_shallow_copy.border().side(xlnt::border_side::bottom).get().color().get(), xlnt::color::blue());
+        xlnt::style style_deep_copy = style.clone(xlnt::clone_method::deep_copy);
+        style.border(xlnt::border().side(xlnt::border_side::bottom, xlnt::border::border_property().color(xlnt::color::darkred())));
+        xlnt_assert_equals(style_deep_copy.border().side(xlnt::border_side::bottom).get().color().get(), xlnt::color::blue());
+    }
+
+    void test_compare()
+    {
+        xlnt::workbook wb;
+        xlnt::style style = wb.create_style("test_style");
+        xlnt::style style_simple_copy = style;
+        xlnt_assert_equals(style, style_simple_copy);
+        xlnt_assert(style.compare(style_simple_copy, true));
+        xlnt_assert(style.compare(style_simple_copy, false));
+        xlnt::style style_shallow_copy = style.clone(xlnt::clone_method::shallow_copy);
+        xlnt_assert_equals(style, style_shallow_copy);
+        xlnt_assert(style.compare(style_shallow_copy, true));
+        xlnt_assert(style.compare(style_shallow_copy, false));
+        xlnt::style style_deep_copy = style.clone(xlnt::clone_method::deep_copy);
+        xlnt_assert_differs(style, style_deep_copy);
+        xlnt_assert(!style.compare(style_deep_copy, true));
+        xlnt_assert(style.compare(style_deep_copy, false));
     }
 };
 static style_test_suite x;

@@ -23,13 +23,13 @@
 // @author: see AUTHORS file
 #pragma once
 
-#include <list>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include <detail/implementations/stylesheet.hpp>
 #include <detail/implementations/worksheet_impl.hpp>
+#include <detail/xlnt_config_impl.hpp>
 #include <xlnt/packaging/ext_list.hpp>
 #include <xlnt/packaging/manifest.hpp>
 #include <xlnt/utils/datetime.hpp>
@@ -46,77 +46,17 @@ namespace detail {
 
 struct worksheet_impl;
 
-struct workbook_impl
+struct XLNT_API_INTERNAL workbook_impl
 {
-    workbook_impl() : base_date_(calendar::windows_1900)
-    {
-    }
+    workbook_impl() = default;
+    ~workbook_impl() = default;
+    workbook_impl(workbook_impl &&other) noexcept = default;
+    workbook_impl &operator=(workbook_impl &&other) noexcept = default;
 
-    workbook_impl(const workbook_impl &other)
-        : active_sheet_index_(other.active_sheet_index_),
-          worksheets_(other.worksheets_),
-          shared_strings_ids_(other.shared_strings_ids_),
-          shared_strings_values_(other.shared_strings_values_),
-          stylesheet_(other.stylesheet_),
-          manifest_(other.manifest_),
-          theme_(other.theme_),
-          core_properties_(other.core_properties_),
-          extended_properties_(other.extended_properties_),
-          custom_properties_(other.custom_properties_),
-          view_(other.view_),
-          code_name_(other.code_name_),
-          file_version_(other.file_version_)
-    {
-    }
+    workbook_impl(const workbook_impl &other);
+    workbook_impl &operator=(const workbook_impl &other);
 
-    workbook_impl &operator=(const workbook_impl &other)
-    {
-        active_sheet_index_ = other.active_sheet_index_;
-        worksheets_.clear();
-        std::copy(other.worksheets_.begin(), other.worksheets_.end(), back_inserter(worksheets_));
-        shared_strings_ids_ = other.shared_strings_ids_;
-        shared_strings_values_ = other.shared_strings_values_;
-        theme_ = other.theme_;
-        manifest_ = other.manifest_;
-
-        sheet_title_rel_id_map_ = other.sheet_title_rel_id_map_;
-        sheet_hidden_ = other.sheet_hidden_;
-        view_ = other.view_;
-        code_name_ = other.code_name_;
-        file_version_ = other.file_version_;
-
-        core_properties_ = other.core_properties_;
-        extended_properties_ = other.extended_properties_;
-        custom_properties_ = other.custom_properties_;
-
-        return *this;
-    }
-
-    bool operator==(const workbook_impl &other) const
-    {
-        // not comparing abs_path_
-        return active_sheet_index_ == other.active_sheet_index_
-            && worksheets_ == other.worksheets_
-            && shared_strings_ids_ == other.shared_strings_ids_
-            && stylesheet_ == other.stylesheet_
-            && base_date_ == other.base_date_
-            && title_ == other.title_
-            && manifest_ == other.manifest_
-            && theme_ == other.theme_
-            && images_ == other.images_
-            && binaries_ == other.binaries_
-            && core_properties_ == other.core_properties_
-            && extended_properties_ == other.extended_properties_
-            && custom_properties_ == other.custom_properties_
-            && sheet_title_rel_id_map_ == other.sheet_title_rel_id_map_
-            && sheet_hidden_ == other.sheet_hidden_
-            && view_ == other.view_
-            && code_name_ == other.code_name_
-            && file_version_ == other.file_version_
-            && calculation_properties_ == other.calculation_properties_
-            && arch_id_flags_ == other.arch_id_flags_
-            && extensions_ == other.extensions_;
-    }
+    bool operator==(const workbook_impl &other) const;
 
     bool operator!=(const workbook_impl &other) const
     {
@@ -125,13 +65,13 @@ struct workbook_impl
 
     optional<std::size_t> active_sheet_index_;
 
-    std::list<worksheet_impl> worksheets_;
+    std::vector<std::shared_ptr<worksheet_impl>> worksheets_;
     std::unordered_map<rich_text, std::size_t, rich_text_hash> shared_strings_ids_;
     std::vector<rich_text> shared_strings_values_;
 
-    optional<stylesheet> stylesheet_;
+    std::shared_ptr<stylesheet> stylesheet_;
 
-    calendar base_date_;
+    calendar base_date_ = calendar::windows_1900;
     optional<std::string> title_;
 
     manifest manifest_;

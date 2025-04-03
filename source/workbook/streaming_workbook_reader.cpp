@@ -98,9 +98,9 @@ void streaming_workbook_reader::begin_worksheet(const std::string &title)
 
     for (auto &impl : workbook_->impl().worksheets_)
     {
-        if (impl.title_ == title)
+        if (impl->title_ == title)
         {
-            consumer_->current_worksheet_ = &impl;
+            consumer_->current_worksheet_ = impl;
         }
     }
 

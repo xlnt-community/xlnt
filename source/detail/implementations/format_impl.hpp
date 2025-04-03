@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 
 #include <detail/xlnt_config_impl.hpp>
 
@@ -27,7 +28,7 @@ struct stylesheet;
 
 struct format_impl
 {
-	stylesheet *parent = nullptr;
+	std::weak_ptr<stylesheet> parent;
 
 	std::size_t id = 0;
 
@@ -70,6 +71,11 @@ struct format_impl
             && left.pivot_button_ == right.pivot_button_
             && left.quote_prefix_ == right.quote_prefix_
             && left.style == right.style;
+    }
+
+    friend bool operator!=(const format_impl &left, const format_impl &right)
+    {
+        return !(left == right);
     }
 };
 

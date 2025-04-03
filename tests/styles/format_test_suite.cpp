@@ -1,4 +1,3 @@
-// Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2024-2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,61 +21,31 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <xlnt/styles/conditional_format.hpp>
+#include <xlnt/styles/format.hpp>
 #include <helpers/test_suite.hpp>
 #include <xlnt/xlnt.hpp>
 
-class conditional_format_test_suite : public test_suite
+class format_test_suite : public test_suite
 {
 public:
-    conditional_format_test_suite()
+    format_test_suite()
     {
-        register_test(test_all);
         register_test(test_clone);
         register_test(test_compare);
-    }
-
-    void test_all()
-    {
-        xlnt::workbook wb;
-        auto ws = wb.active_sheet();
-        auto format = ws.conditional_format(xlnt::range_reference("A1:A10"), xlnt::condition::text_contains("test"));
-        xlnt_assert(!format.has_border());
-        xlnt_assert(!format.has_fill());
-        xlnt_assert(!format.has_font());
-        // set border
-        auto border = xlnt::border().diagonal(xlnt::diagonal_direction::both);
-        format.border(border);
-        xlnt_assert(format.has_border());
-        xlnt_assert_equals(format.border(), border);
-        // set fill
-        auto fill = xlnt::fill(xlnt::gradient_fill().type(xlnt::gradient_fill_type::path));
-        format.fill(fill);
-        xlnt_assert(format.has_fill());
-        xlnt_assert_equals(format.fill(), fill);
-        // set font
-        auto font = xlnt::font().color(xlnt::color::darkblue());
-        format.font(font);
-        xlnt_assert(format.has_font());
-        xlnt_assert_equals(format.font(), font);
-        // copy ctor
-        auto format_copy(format);
-        xlnt_assert_equals(format, format_copy);
     }
 
     void test_clone()
     {
         xlnt::workbook wb;
-        xlnt::worksheet ws = wb.active_sheet();
-        xlnt::conditional_format format = ws.conditional_format(xlnt::range_reference("A1:A10"), xlnt::condition::text_contains("test"));
+        xlnt::format format = wb.create_format("test_format");
         format.border(xlnt::border().side(xlnt::border_side::bottom, xlnt::border::border_property().color(xlnt::color::red())));
-        xlnt::conditional_format format_simple_copy = format;
+        xlnt::format format_simple_copy = format;
         format.border(xlnt::border().side(xlnt::border_side::bottom, xlnt::border::border_property().color(xlnt::color::green())));
         xlnt_assert_equals(format_simple_copy.border().side(xlnt::border_side::bottom).get().color().get(), xlnt::color::green());
-        xlnt::conditional_format format_shallow_copy = format.clone(xlnt::clone_method::shallow_copy);
+        xlnt::format format_shallow_copy = format.clone(xlnt::clone_method::shallow_copy);
         format.border(xlnt::border().side(xlnt::border_side::bottom, xlnt::border::border_property().color(xlnt::color::blue())));
         xlnt_assert_equals(format_shallow_copy.border().side(xlnt::border_side::bottom).get().color().get(), xlnt::color::blue());
-        xlnt::conditional_format format_deep_copy = format.clone(xlnt::clone_method::deep_copy);
+        xlnt::format format_deep_copy = format.clone(xlnt::clone_method::deep_copy);
         format.border(xlnt::border().side(xlnt::border_side::bottom, xlnt::border::border_property().color(xlnt::color::darkred())));
         xlnt_assert_equals(format_deep_copy.border().side(xlnt::border_side::bottom).get().color().get(), xlnt::color::blue());
     }
@@ -84,20 +53,20 @@ public:
     void test_compare()
     {
         xlnt::workbook wb;
-        xlnt::worksheet ws = wb.active_sheet();
-        xlnt::conditional_format format = ws.conditional_format(xlnt::range_reference("A1:A10"), xlnt::condition::text_contains("test"));
-        xlnt::conditional_format format_simple_copy = format;
+        xlnt::format format = wb.create_format("test_format");
+        xlnt::format format_simple_copy = format;
         xlnt_assert_equals(format, format_simple_copy);
         xlnt_assert(format.compare(format_simple_copy, true));
         xlnt_assert(format.compare(format_simple_copy, false));
-        xlnt::conditional_format format_shallow_copy = format.clone(xlnt::clone_method::shallow_copy);
+        xlnt::format format_shallow_copy = format.clone(xlnt::clone_method::shallow_copy);
         xlnt_assert_equals(format, format_shallow_copy);
         xlnt_assert(format.compare(format_shallow_copy, true));
         xlnt_assert(format.compare(format_shallow_copy, false));
-        xlnt::conditional_format format_deep_copy = format.clone(xlnt::clone_method::deep_copy);
+        xlnt::format format_deep_copy = format.clone(xlnt::clone_method::deep_copy);
         xlnt_assert_differs(format, format_deep_copy);
         xlnt_assert(!format.compare(format_deep_copy, true));
         xlnt_assert(format.compare(format_deep_copy, false));
     }
 };
-static conditional_format_test_suite x;
+
+static format_test_suite x;

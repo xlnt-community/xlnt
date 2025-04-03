@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 #include <string>
 
 #include <xlnt/utils/optional.hpp>
@@ -20,7 +21,7 @@ struct stylesheet;
 
 struct style_impl
 {
-	stylesheet *parent = nullptr;
+	std::weak_ptr<stylesheet> parent;
 
     bool operator==(const style_impl& rhs) const
     {

@@ -247,11 +247,7 @@ private:
 
     bool streaming_ = false;
 
-    std::unique_ptr<detail::cell_impl> streaming_cell_;
-
-    detail::cell_impl *current_cell_ = nullptr;
-
-    detail::worksheet_impl *current_worksheet_ = nullptr;
+    std::shared_ptr<detail::worksheet_impl> current_worksheet_;
 };
 
 } // namespace detail

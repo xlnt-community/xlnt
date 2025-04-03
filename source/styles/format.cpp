@@ -32,9 +32,55 @@
 
 namespace xlnt {
 
-format::format(detail::format_impl *d)
-    : d_(d)
+format::format(std::shared_ptr<detail::format_impl> d)
+    : d_(std::move(d))
 {
+    if (d_ == nullptr)
+    {
+        throw xlnt::invalid_attribute("xlnt::format: invalid format_impl pointer");
+    }
+
+    parent_ = d_->parent.lock();
+
+    if (parent_ == nullptr)
+    {
+        throw xlnt::invalid_attribute("xlnt::format: invalid stylesheet pointer");
+    }
+}
+
+format format::clone(clone_method method) const
+{
+    switch (method)
+    {
+    case clone_method::deep_copy:
+        return format(std::make_shared<detail::format_impl>(*d_));
+    case clone_method::shallow_copy:
+        return format(d_);
+    default:
+        throw xlnt::invalid_parameter("clone method not supported");
+    }
+}
+
+bool format::compare(const format &other, bool compare_by_reference) const
+{
+    if (compare_by_reference)
+    {
+        return d_ == other.d_;
+    }
+    else
+    {
+        return *d_ == *other.d_;
+    }
+}
+
+bool format::operator==(const format &other) const
+{
+    return compare(other, true);
+}
+
+bool format::operator!=(const format &other) const
+{
+    return !(*this == other);
 }
 
 void format::clear_style()
@@ -44,7 +90,7 @@ void format::clear_style()
 
 format format::style(const xlnt::style &new_style)
 {
-    d_ = d_->parent->find_or_create_with(d_, new_style.name());
+    d_ = parent_->find_or_create_with(d_.get(), new_style.name());
     return format(d_);
 }
 
@@ -66,7 +112,7 @@ style format::style()
         throw invalid_attribute();
     }
 
-    return d_->parent->style(d_->style.get());
+    return parent_->style(d_->style.get());
 }
 
 const style format::style() const
@@ -76,50 +122,50 @@ const style format::style() const
         throw invalid_attribute();
     }
 
-    return d_->parent->style(d_->style.get());
+    return parent_->style(d_->style.get());
 }
 
 xlnt::alignment format::alignment() const
 {
-    return d_->parent->alignments.at(d_->alignment_id.get());
+    return parent_->alignments.at(d_->alignment_id.get());
 }
 
 format format::alignment(const xlnt::alignment &new_alignment, optional<bool> applied)
 {
-    d_ = d_->parent->find_or_create_with(d_, new_alignment, applied);
+    d_ = parent_->find_or_create_with(d_.get(), new_alignment, applied);
     return format(d_);
 }
 
 xlnt::border format::border() const
 {
-    return d_->parent->borders.at(d_->border_id.get());
+    return parent_->borders.at(d_->border_id.get());
 }
 
 format format::border(const xlnt::border &new_border, optional<bool> applied)
 {
-    d_ = d_->parent->find_or_create_with(d_, new_border, applied);
+    d_ = parent_->find_or_create_with(d_.get(), new_border, applied);
     return format(d_);
 }
 
 xlnt::fill format::fill() const
 {
-    return d_->parent->fills.at(d_->fill_id.get());
+    return parent_->fills.at(d_->fill_id.get());
 }
 
 format format::fill(const xlnt::fill &new_fill, optional<bool> applied)
 {
-    d_ = d_->parent->find_or_create_with(d_, new_fill, applied);
+    d_ = parent_->find_or_create_with(d_.get(), new_fill, applied);
     return format(d_);
 }
 
 xlnt::font format::font() const
 {
-    return d_->parent->fonts.at(d_->font_id.get());
+    return parent_->fonts.at(d_->font_id.get());
 }
 
 format format::font(const xlnt::font &new_font, optional<bool> applied)
 {
-    d_ = d_->parent->find_or_create_with(d_, new_font, applied);
+    d_ = parent_->find_or_create_with(d_.get(), new_font, applied);
     return format(d_);
 }
 
@@ -134,13 +180,13 @@ xlnt::number_format format::number_format() const
             return number_format::from_builtin_id(number_format_id);
         }
 
-        const auto it = std::find_if(d_->parent->number_formats.begin(),
-                                     d_->parent->number_formats.end(),
+        const auto it = std::find_if(parent_->number_formats.begin(),
+                                     parent_->number_formats.end(),
                                      [number_format_id](const xlnt::number_format &nf)
                                      {
                                          return nf.id() == number_format_id;
                                      });
-        if (it != d_->parent->number_formats.end())
+        if (it != parent_->number_formats.end())
         {
             return *it;
         }
@@ -151,18 +197,18 @@ xlnt::number_format format::number_format() const
 
 format format::number_format(const xlnt::number_format &new_number_format, optional<bool> applied)
 {
-    d_ = d_->parent->find_or_create_with(d_, new_number_format, applied);
+    d_ = parent_->find_or_create_with(d_.get(), new_number_format, applied);
     return format(d_);
 }
 
 xlnt::protection format::protection() const
 {
-    return d_->parent->protections.at(d_->protection_id.get());
+    return parent_->protections.at(d_->protection_id.get());
 }
 
 format format::protection(const xlnt::protection &new_protection, optional<bool> applied)
 {
-    d_ = d_->parent->find_or_create_with(d_, new_protection, applied);
+    d_ = parent_->find_or_create_with(d_.get(), new_protection, applied);
     return format(d_);
 }
 

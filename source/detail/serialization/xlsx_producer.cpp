@@ -84,9 +84,7 @@ namespace detail {
 
 xlsx_producer::xlsx_producer(const workbook &target)
     : source_(target),
-      current_part_stream_(nullptr),
-      current_cell_(nullptr),
-      current_worksheet_(nullptr)
+      current_part_stream_(nullptr)
 {
 }
 
@@ -110,10 +108,12 @@ void xlsx_producer::open(std::ostream &destination)
 
 cell xlsx_producer::add_cell(const cell_reference &ref)
 {
-    current_cell_->column_ = ref.column();
-    current_cell_->row_ = ref.row();
+    auto impl = std::make_shared<detail::cell_impl>();
+    impl->parent_ = current_worksheet_;
+    impl->column_ = ref.column();
+    impl->row_ = ref.row();
 
-    return cell(current_cell_);
+    return cell(std::move(impl));
 }
 
 worksheet xlsx_producer::add_worksheet(const std::string &title)
@@ -1010,7 +1010,7 @@ void xlsx_producer::write_shared_string_table(const relationship & /*rel*/)
             while (current_cell.column() <= dimension.bottom_right().column())
             {
                 auto c_iter = ws.d_->cell_map_.find(current_cell);
-                if (c_iter != ws.d_->cell_map_.end() && c_iter->second.type_ == cell_type::shared_string)
+                if (c_iter != ws.d_->cell_map_.end() && c_iter->second->type_ == cell_type::shared_string)
                 {
                     ++string_count;
                 }
@@ -1272,7 +1272,7 @@ void xlsx_producer::write_styles(const relationship & /*rel*/)
     write_start_element(xmlns, "styleSheet");
     write_namespace(xmlns, "");
 
-    const auto &stylesheet = source_.impl().stylesheet_.get();
+    const auto &stylesheet = *source_.impl().stylesheet_;
 
     auto using_namespace = [&stylesheet](const std::string &ns) {
         if (ns == "x14ac")
@@ -1398,7 +1398,7 @@ void xlsx_producer::write_styles(const relationship & /*rel*/)
 
         for (const auto &current_style_name : stylesheet.style_names)
         {
-            const auto &current_style_impl = stylesheet.style_impls.at(current_style_name);
+            const auto &current_style_impl = *stylesheet.style_impls.at(current_style_name);
 
             write_start_element(xmlns, "xf");
 
@@ -1538,84 +1538,84 @@ void xlsx_producer::write_styles(const relationship & /*rel*/)
     {
         write_start_element(xmlns, "xf");
 
-        if (current_format_impl.number_format_id.is_set())
+        if (current_format_impl->number_format_id.is_set())
         {
-            write_attribute("numFmtId", current_format_impl.number_format_id.get());
+            write_attribute("numFmtId", current_format_impl->number_format_id.get());
         }
 
-        if (current_format_impl.font_id.is_set())
+        if (current_format_impl->font_id.is_set())
         {
-            write_attribute("fontId", current_format_impl.font_id.get());
+            write_attribute("fontId", current_format_impl->font_id.get());
         }
 
-        if (current_format_impl.fill_id.is_set())
+        if (current_format_impl->fill_id.is_set())
         {
-            write_attribute("fillId", current_format_impl.fill_id.get());
+            write_attribute("fillId", current_format_impl->fill_id.get());
         }
 
-        if (current_format_impl.border_id.is_set())
+        if (current_format_impl->border_id.is_set())
         {
-            write_attribute("borderId", current_format_impl.border_id.get());
+            write_attribute("borderId", current_format_impl->border_id.get());
         }
 
-        if (current_format_impl.style.is_set())
+        if (current_format_impl->style.is_set())
         {
-            write_attribute("xfId", stylesheet.style_index(current_format_impl.style.get()));
+            write_attribute("xfId", stylesheet.style_index(current_format_impl->style.get()));
         }
 
-        if (current_format_impl.number_format_id.is_set()
-            && current_format_impl.number_format_applied.is_set())
+        if (current_format_impl->number_format_id.is_set()
+            && current_format_impl->number_format_applied.is_set())
         {
             write_attribute("applyNumberFormat",
-                write_bool(current_format_impl.number_format_applied.get()));
+                write_bool(current_format_impl->number_format_applied.get()));
         }
 
-        if (current_format_impl.fill_id.is_set()
-            && current_format_impl.fill_applied.is_set())
+        if (current_format_impl->fill_id.is_set()
+            && current_format_impl->fill_applied.is_set())
         {
             write_attribute("applyFill",
-                write_bool(current_format_impl.fill_applied.get()));
+                write_bool(current_format_impl->fill_applied.get()));
         }
 
-        if (current_format_impl.font_id.is_set()
-            && current_format_impl.font_applied.is_set())
+        if (current_format_impl->font_id.is_set()
+            && current_format_impl->font_applied.is_set())
         {
             write_attribute("applyFont",
-                write_bool(current_format_impl.font_applied.get()));
+                write_bool(current_format_impl->font_applied.get()));
         }
 
-        if (current_format_impl.border_id.is_set()
-            && current_format_impl.border_applied.is_set())
+        if (current_format_impl->border_id.is_set()
+            && current_format_impl->border_applied.is_set())
         {
             write_attribute("applyBorder",
-                write_bool(current_format_impl.border_applied.get()));
+                write_bool(current_format_impl->border_applied.get()));
         }
 
-        if (current_format_impl.alignment_applied.is_set())
+        if (current_format_impl->alignment_applied.is_set())
         {
             write_attribute("applyAlignment",
-                write_bool(current_format_impl.alignment_applied.get()));
+                write_bool(current_format_impl->alignment_applied.get()));
         }
 
-        if (current_format_impl.protection_applied.is_set())
+        if (current_format_impl->protection_applied.is_set())
         {
             write_attribute("applyProtection",
-                write_bool(current_format_impl.protection_applied.get()));
+                write_bool(current_format_impl->protection_applied.get()));
         }
 
-        if (current_format_impl.pivot_button_)
+        if (current_format_impl->pivot_button_)
         {
             write_attribute("pivotButton", write_bool(true));
         }
 
-        if (current_format_impl.quote_prefix_)
+        if (current_format_impl->quote_prefix_)
         {
             write_attribute("quotePrefix", write_bool(true));
         }
 
-        if (current_format_impl.alignment_id.is_set())
+        if (current_format_impl->alignment_id.is_set())
         {
-            const auto &current_alignment = stylesheet.alignments[current_format_impl.alignment_id.get()];
+            const auto &current_alignment = stylesheet.alignments[current_format_impl->alignment_id.get()];
 
             write_start_element(xmlns, "alignment");
 
@@ -1652,9 +1652,9 @@ void xlsx_producer::write_styles(const relationship & /*rel*/)
             write_end_element(xmlns, "alignment");
         }
 
-        if (current_format_impl.protection_id.is_set())
+        if (current_format_impl->protection_id.is_set())
         {
-            const auto &current_protection = stylesheet.protections[current_format_impl.protection_id.get()];
+            const auto &current_protection = stylesheet.protections[current_format_impl->protection_id.get()];
 
             write_start_element(xmlns, "protection");
             write_attribute("locked", write_bool(current_protection.locked()));
@@ -1676,7 +1676,7 @@ void xlsx_producer::write_styles(const relationship & /*rel*/)
 
         for (auto &current_style_name : stylesheet.style_names)
         {
-            const auto &current_style = stylesheet.style_impls.at(current_style_name);
+            const auto &current_style = *stylesheet.style_impls.at(current_style_name);
 
             write_start_element(xmlns, "cellStyle");
 
@@ -1712,21 +1712,21 @@ void xlsx_producer::write_styles(const relationship & /*rel*/)
     {
         write_start_element(xmlns, "dxf");
 
-        if (rule.border_id.is_set())
+        if (rule->border_id.is_set())
         {
-            const auto &current_border = stylesheet.borders.at(rule.border_id.get());
+            const auto &current_border = stylesheet.borders.at(rule->border_id.get());
             write_border(current_border);
         }
 
-        if (rule.fill_id.is_set())
+        if (rule->fill_id.is_set())
         {
-            const auto &current_fill = stylesheet.fills.at(rule.fill_id.get());
+            const auto &current_fill = stylesheet.fills.at(rule->fill_id.get());
             write_fill(current_fill);
         }
 
-        if (rule.font_id.is_set())
+        if (rule->font_id.is_set())
         {
-            const auto &current_font = stylesheet.fonts.at(rule.font_id.get());
+            const auto &current_font = stylesheet.fonts.at(rule->font_id.get());
             write_font(current_font);
         }
 
@@ -2581,13 +2581,13 @@ void xlsx_producer::write_worksheet(const relationship &rel)
                 {
                     continue;
                 }
-                if (cell->second.is_garbage_collectible())
+                if (cell->second->is_garbage_collectible())
                 {
                     continue;
                 }
 
-                first_block_column = std::min(first_block_column, cell->second.column_);
-                last_block_column = std::max(last_block_column, cell->second.column_);
+                first_block_column = std::min(first_block_column, cell->second->column_);
+                last_block_column = std::max(last_block_column, cell->second->column_);
 
                 if (row == check_row)
                 {
@@ -2792,23 +2792,23 @@ void xlsx_producer::write_worksheet(const relationship &rel)
         write_end_element(xmlns, "mergeCells");
     }
 
-    if (source_.impl().stylesheet_.is_set())
+    if (source_.impl().stylesheet_ != nullptr)
     {
-        const auto &stylesheet = source_.impl().stylesheet_.get();
+        const auto &stylesheet = *source_.impl().stylesheet_;
         const auto &cf_impls = stylesheet.conditional_format_impls;
 
         std::unordered_map<std::string, std::vector<const conditional_format_impl *>> range_map;
 
         for (auto &cf : cf_impls)
         {
-            if (cf.target_sheet != ws.d_) continue;
+            if (cf->target_sheet.lock() != ws.d_) continue;
 
-            if (range_map.find(cf.target_range.to_string()) == range_map.end())
+            if (range_map.find(cf->target_range.to_string()) == range_map.end())
             {
-                range_map[cf.target_range.to_string()] = {};
+                range_map[cf->target_range.to_string()] = {};
             }
 
-            range_map[cf.target_range.to_string()].push_back(&cf);
+            range_map[cf->target_range.to_string()].push_back(cf.get());
         }
 
         for (const auto &range_rules_pair : range_map)

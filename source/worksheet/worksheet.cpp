@@ -63,19 +63,33 @@ int points_to_pixels(double points, double dpi)
 
 namespace xlnt {
 
-worksheet::worksheet()
-    : d_(nullptr)
+worksheet::worksheet(std::shared_ptr<detail::worksheet_impl> d)
+    : d_(std::move(d))
 {
+    if (d_ == nullptr)
+    {
+        throw xlnt::invalid_attribute("xlnt::worksheet: invalid worksheet pointer");
+    }
+
+    parent_ = d_->parent_.lock();
+
+    if (parent_ == nullptr)
+    {
+        throw xlnt::invalid_attribute("xlnt::worksheet: invalid workbook pointer");
+    }
 }
 
-worksheet::worksheet(detail::worksheet_impl *d)
-    : d_(d)
+worksheet worksheet::clone(clone_method method) const
 {
-}
-
-worksheet::worksheet(const worksheet &rhs)
-    : d_(rhs.d_)
-{
+    switch (method)
+    {
+    case clone_method::deep_copy:
+        return worksheet(d_->clone());
+    case clone_method::shallow_copy:
+        return worksheet(d_);
+    default:
+        throw xlnt::invalid_parameter("clone method not supported");
+    }
 }
 
 bool worksheet::has_frozen_panes() const
@@ -191,12 +205,12 @@ page_setup worksheet::page_setup() const
 
 workbook worksheet::workbook()
 {
-    return d_->parent_;
+    return parent_;
 }
 
 const workbook worksheet::workbook() const
 {
-    return d_->parent_;
+    return parent_;
 }
 
 void worksheet::garbage_collect()
@@ -205,7 +219,7 @@ void worksheet::garbage_collect()
 
     while (cell_iter != d_->cell_map_.end())
     {
-        if (xlnt::cell(&cell_iter->second).garbage_collectible())
+        if (xlnt::cell(cell_iter->second).garbage_collectible())
         {
             cell_iter = d_->cell_map_.erase(cell_iter);
         }
@@ -385,19 +399,19 @@ cell worksheet::cell(const cell_reference &reference)
     auto match = d_->cell_map_.find(reference);
     if (match == d_->cell_map_.end())
     {
-        auto impl = detail::cell_impl();
-        impl.parent_ = d_;
-        impl.column_ = reference.column_index();
-        impl.row_ = reference.row();
+        auto impl = std::make_shared<detail::cell_impl>();
+        impl->parent_ = d_;
+        impl->column_ = reference.column_index();
+        impl->row_ = reference.row();
 
-        match = d_->cell_map_.emplace(reference, impl).first;
+        match = d_->cell_map_.emplace(reference, std::move(impl)).first;
     }
-    return xlnt::cell(&match->second);
+    return xlnt::cell(match->second);
 }
 
 const cell worksheet::cell(const cell_reference &reference) const
 {
-    return xlnt::cell(&d_->cell_map_.at(reference));
+    return xlnt::cell(d_->cell_map_.at(reference));
 }
 
 cell worksheet::cell(xlnt::column_t column, row_t row)
@@ -616,11 +630,11 @@ range_reference worksheet::calculate_dimension(bool skip_null, bool skip_row_pro
     for (auto &c : d_->cell_map_)
     {
         if(skip_null){
-            min_col = std::min(min_col, c.second.column_);
-            min_row = std::min(min_row, c.second.row_);
+            min_col = std::min(min_col, c.second->column_);
+            min_row = std::min(min_row, c.second->row_);
         }
-        max_col = std::max(max_col, c.second.column_);
-        max_row = std::max(max_row, c.second.row_);
+        max_col = std::max(max_col, c.second->column_);
+        max_row = std::max(max_row, c.second->row_);
     }
     return range_reference(min_col, min_row, max_col, max_row);
 }
@@ -816,7 +830,7 @@ void worksheet::move_cells(std::uint32_t min_index, std::uint32_t amount, row_or
         throw xlnt::exception("Cannot move cells as they would be outside the maximum bounds of the spreadsheet");
     }
 
-    std::vector<detail::cell_impl> cells_to_move;
+    std::vector<std::shared_ptr<detail::cell_impl>> cells_to_move;
 
     auto cell_iter = d_->cell_map_.cbegin();
     while (cell_iter != d_->cell_map_.cend())
@@ -839,14 +853,14 @@ void worksheet::move_cells(std::uint32_t min_index, std::uint32_t amount, row_or
             auto cell = cell_iter->second;
             if (row_or_col == row_or_col_t::row)
             {
-                cell.row_ = reverse ? cell.row_ - amount : cell.row_ + amount;
+                cell->row_ = reverse ? cell->row_ - amount : cell->row_ + amount;
             }
             else if (row_or_col == row_or_col_t::column)
             {
-                cell.column_ = reverse ? cell.column_.index - amount : cell.column_.index + amount;
+                cell->column_ = reverse ? cell->column_.index - amount : cell->column_.index + amount;
             }
 
-            cells_to_move.push_back(cell);
+            cells_to_move.emplace_back(std::move(cell));
             cell_iter = d_->cell_map_.erase(cell_iter);
         }
         else if (reverse && current_index >= min_index - amount) // delete destination cells
@@ -861,7 +875,7 @@ void worksheet::move_cells(std::uint32_t min_index, std::uint32_t amount, row_or
 
     for (auto &cell : cells_to_move)
     {
-        d_->cell_map_[cell_reference(cell.column_, cell.row_)] = cell;
+        d_->cell_map_[cell_reference(cell->column_, cell->row_)] = std::move(cell);
     }
 
     if (row_or_col == row_or_col_t::row)
@@ -986,11 +1000,6 @@ bool worksheet::operator==(std::nullptr_t) const
 bool worksheet::operator!=(std::nullptr_t) const
 {
     return d_ != nullptr;
-}
-
-void worksheet::operator=(const worksheet &other)
-{
-    d_ = other.d_;
 }
 
 const cell worksheet::operator[](const cell_reference &ref) const
@@ -1281,12 +1290,13 @@ void worksheet::garbage_collect_formulae()
 
 void worksheet::parent(xlnt::workbook &wb)
 {
+    parent_ = wb.d_;
     d_->parent_ = wb.d_;
 }
 
 conditional_format worksheet::conditional_format(const range_reference &ref, const condition &when)
 {
-    return workbook().d_->stylesheet_.get().add_conditional_format_rule(d_, ref, when);
+    return workbook().d_->stylesheet_->add_conditional_format_rule(d_, ref, when);
 }
 
 path worksheet::path() const

@@ -40,8 +40,6 @@ range::range(class worksheet ws, const range_reference &reference, major_order o
 {
 }
 
-range::~range() = default;
-
 void range::clear_cells()
 {
     if (ref_.top_left().column() == ws_.lowest_column()

@@ -30,6 +30,7 @@
 #include <xlnt/worksheet/range.hpp>
 #include <xlnt/worksheet/row_properties.hpp>
 #include <xlnt/worksheet/worksheet.hpp>
+#include <xlnt/types.hpp>
 #include <helpers/test_suite.hpp>
 
 class worksheet_test_suite : public test_suite
@@ -110,6 +111,9 @@ public:
         register_test(test_insert_too_many);
         register_test(test_insert_delete_moves_merges);
         register_test(test_hidden_sheet);
+        register_test(test_ensure_correct_lifetime);
+        register_test(test_clone);
+        register_test(test_compare);
         register_test(test_xlsm_read_write);
         register_test(test_issue_484);
         register_test(test_issue_5_empty_bottom_rows);
@@ -1613,6 +1617,59 @@ public:
         xlnt::workbook wb;
         wb.load(path_helper::test_file("16_hidden_sheet.xlsx"));
         xlnt_assert_equals(wb.sheet_hidden_by_index(1), true);
+    }
+
+    void test_ensure_correct_lifetime()
+    {
+        // Use a pointer to extend the lifetime outside the scope below.
+        std::unique_ptr<xlnt::worksheet> worksheet;
+
+        {
+            xlnt::workbook wb;
+            xlnt::worksheet ws = wb.create_sheet();
+            ws.title("Title1");
+            // Create a shallow copy.
+            worksheet = std::unique_ptr<xlnt::worksheet>(new xlnt::worksheet(ws));
+            xlnt_assert_throws_nothing(ws.workbook());
+        }
+
+        xlnt_assert_equals(worksheet->title(), "Title1");
+        xlnt_assert_throws_nothing(worksheet->workbook());
+    }
+
+    void test_clone()
+    {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        ws.title("NEW1");
+        xlnt::worksheet ws_simple_copy = ws;
+        xlnt_assert_equals(ws.title(), "NEW1");
+        xlnt::worksheet ws_shallow_copy = ws.clone(xlnt::clone_method::shallow_copy);
+        xlnt_assert_equals(ws_shallow_copy.title(), "NEW1");
+        ws.title("NEW2");
+        xlnt_assert_equals(ws_shallow_copy.title(), "NEW2");
+        xlnt::worksheet ws_deep_copy = ws.clone(xlnt::clone_method::deep_copy);
+        ws.title("NEW3");
+        xlnt_assert_equals(ws_deep_copy.title(), "NEW2");
+    }
+
+    void test_compare()
+    {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        ws.title("NEW1");
+        xlnt::worksheet ws_simple_copy = ws;
+        xlnt_assert_equals(ws, ws_simple_copy);
+        xlnt_assert(ws.compare(ws_simple_copy, true));
+        xlnt_assert(ws.compare(ws_simple_copy, false));
+        xlnt::worksheet ws_shallow_copy = ws.clone(xlnt::clone_method::shallow_copy);
+        xlnt_assert_equals(ws, ws_shallow_copy);
+        xlnt_assert(ws.compare(ws_shallow_copy, true));
+        xlnt_assert(ws.compare(ws_shallow_copy, false));
+        xlnt::worksheet ws_deep_copy = ws.clone(xlnt::clone_method::deep_copy);
+        xlnt_assert_differs(ws, ws_deep_copy);
+        xlnt_assert(!ws.compare(ws_deep_copy, true));
+        xlnt_assert(ws.compare(ws_deep_copy, false));
     }
 
     void test_xlsm_read_write()
