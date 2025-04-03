@@ -565,23 +565,12 @@ workbook::workbook(std::istream &data, std::u8string_view password)
 #endif
 
 workbook::workbook(std::shared_ptr<detail::workbook_impl> impl)
+    : d_(std::move(impl))
 {
-    set_impl(std::move(impl));
-}
-
-workbook::workbook(std::weak_ptr<detail::workbook_impl> impl)
-{
-    set_impl(impl.lock());
-}
-
-void workbook::set_impl(std::shared_ptr<detail::workbook_impl> impl)
-{
-    if (impl == nullptr)
+    if (d_ == nullptr)
     {
         throw xlnt::invalid_attribute("xlnt::workbook: invalid workbook pointer");
     }
-
-    d_ = std::move(impl);
 }
 
 void workbook::register_package_part(relationship_type type)
@@ -837,7 +826,7 @@ worksheet workbook::create_sheet()
 
 worksheet workbook::copy_sheet(worksheet to_copy)
 {
-    if (to_copy.d_->parent_.lock() != d_) throw invalid_parameter();
+    if (to_copy.parent_ != d_) throw invalid_parameter();
 
     auto impl = to_copy.d_->clone();
     auto new_sheet = create_sheet();

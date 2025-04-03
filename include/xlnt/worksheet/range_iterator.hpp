@@ -258,7 +258,7 @@ private:
     /// <summary>
     /// The implementation of the worksheet this iterator points to
     /// </summary>
-    std::weak_ptr<detail::worksheet_impl> ws_;
+    worksheet ws_;
 
     /// <summary>
     /// The first cell in the current row or column this iterator points to

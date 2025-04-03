@@ -64,23 +64,19 @@ int points_to_pixels(double points, double dpi)
 namespace xlnt {
 
 worksheet::worksheet(std::shared_ptr<detail::worksheet_impl> d)
+    : d_(std::move(d))
 {
-    set_impl(std::move(d));
-}
-
-worksheet::worksheet(std::weak_ptr<detail::worksheet_impl> d)
-{
-    set_impl(d.lock());
-}
-
-void worksheet::set_impl(std::shared_ptr<detail::worksheet_impl> impl)
-{
-    if (impl == nullptr)
+    if (d_ == nullptr)
     {
         throw xlnt::invalid_attribute("xlnt::worksheet: invalid worksheet pointer");
     }
 
-    d_ = std::move(impl);
+    parent_ = d_->parent_.lock();
+
+    if (parent_ == nullptr)
+    {
+        throw xlnt::invalid_attribute("xlnt::worksheet: invalid workbook pointer");
+    }
 }
 
 worksheet worksheet::clone(clone_method method) const
@@ -209,12 +205,12 @@ page_setup worksheet::page_setup() const
 
 workbook worksheet::workbook()
 {
-    return d_->parent_;
+    return parent_;
 }
 
 const workbook worksheet::workbook() const
 {
-    return d_->parent_;
+    return parent_;
 }
 
 void worksheet::garbage_collect()
@@ -1294,6 +1290,7 @@ void worksheet::garbage_collect_formulae()
 
 void worksheet::parent(xlnt::workbook &wb)
 {
+    parent_ = wb.d_;
     d_->parent_ = wb.d_;
 }
 

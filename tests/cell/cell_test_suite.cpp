@@ -891,13 +891,11 @@ private:
         }
 
         xlnt_assert_equals(cell11_ptr->value<double>(), 3.14);
-        // TODO: strings are a bit more complicated due to the shared string table,
-        // which is currently owned by the worksheet.
-        //xlnt_assert_equals(cell12_ptr->value<std::string>(), "Text1");
-        xlnt_assert_throws(cell11_ptr->workbook(), xlnt::invalid_attribute);
-        xlnt_assert_throws(cell11_ptr->worksheet(), xlnt::invalid_attribute);
-        xlnt_assert_throws(cell12_ptr->workbook(), xlnt::invalid_attribute);
-        xlnt_assert_throws(cell12_ptr->worksheet(), xlnt::invalid_attribute);
+        xlnt_assert_equals(cell12_ptr->value<std::string>(), "Text1");
+        xlnt_assert_throws_nothing(cell11_ptr->workbook());
+        xlnt_assert_throws_nothing(cell11_ptr->worksheet());
+        xlnt_assert_throws_nothing(cell12_ptr->workbook());
+        xlnt_assert_throws_nothing(cell12_ptr->worksheet());
     }
 
     void test_clone()

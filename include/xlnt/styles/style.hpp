@@ -263,12 +263,6 @@ private:
     friend class detail::xlsx_consumer;
 
     /// <summary>
-    /// Returns a shared_ptr to the parent which is checked for validity.
-    /// If the pointer is invalid, an xlnt::invald_attribute exception is thrown.
-    /// </summary>
-    std::shared_ptr<detail::stylesheet> get_parent_checked() const;
-
-    /// <summary>
     /// Constructs a style from an impl pointer.
     /// </summary>
     style(std::shared_ptr<detail::style_impl> d);
@@ -277,6 +271,11 @@ private:
     /// The internal implementation of this style
     /// </summary>
     std::shared_ptr<detail::style_impl> d_;
+
+    /// <summary>
+    /// A pointer to the parent, ensuring it lives as long as its child (this instance) lives.
+    /// </summary>
+    std::shared_ptr<detail::stylesheet> parent_;
 };
 
 } // namespace xlnt

@@ -39,6 +39,13 @@ format::format(std::shared_ptr<detail::format_impl> d)
     {
         throw xlnt::invalid_attribute("xlnt::format: invalid format_impl pointer");
     }
+
+    parent_ = d_->parent.lock();
+
+    if (parent_ == nullptr)
+    {
+        throw xlnt::invalid_attribute("xlnt::format: invalid stylesheet pointer");
+    }
 }
 
 format format::clone(clone_method method) const
@@ -83,7 +90,7 @@ void format::clear_style()
 
 format format::style(const xlnt::style &new_style)
 {
-    d_ = get_parent_checked()->find_or_create_with(d_.get(), new_style.name());
+    d_ = parent_->find_or_create_with(d_.get(), new_style.name());
     return format(d_);
 }
 
@@ -105,7 +112,7 @@ style format::style()
         throw invalid_attribute();
     }
 
-    return get_parent_checked()->style(d_->style.get());
+    return parent_->style(d_->style.get());
 }
 
 const style format::style() const
@@ -115,50 +122,50 @@ const style format::style() const
         throw invalid_attribute();
     }
 
-    return get_parent_checked()->style(d_->style.get());
+    return parent_->style(d_->style.get());
 }
 
 xlnt::alignment format::alignment() const
 {
-    return get_parent_checked()->alignments.at(d_->alignment_id.get());
+    return parent_->alignments.at(d_->alignment_id.get());
 }
 
 format format::alignment(const xlnt::alignment &new_alignment, optional<bool> applied)
 {
-    d_ = get_parent_checked()->find_or_create_with(d_.get(), new_alignment, applied);
+    d_ = parent_->find_or_create_with(d_.get(), new_alignment, applied);
     return format(d_);
 }
 
 xlnt::border format::border() const
 {
-    return get_parent_checked()->borders.at(d_->border_id.get());
+    return parent_->borders.at(d_->border_id.get());
 }
 
 format format::border(const xlnt::border &new_border, optional<bool> applied)
 {
-    d_ = get_parent_checked()->find_or_create_with(d_.get(), new_border, applied);
+    d_ = parent_->find_or_create_with(d_.get(), new_border, applied);
     return format(d_);
 }
 
 xlnt::fill format::fill() const
 {
-    return get_parent_checked()->fills.at(d_->fill_id.get());
+    return parent_->fills.at(d_->fill_id.get());
 }
 
 format format::fill(const xlnt::fill &new_fill, optional<bool> applied)
 {
-    d_ = get_parent_checked()->find_or_create_with(d_.get(), new_fill, applied);
+    d_ = parent_->find_or_create_with(d_.get(), new_fill, applied);
     return format(d_);
 }
 
 xlnt::font format::font() const
 {
-    return get_parent_checked()->fonts.at(d_->font_id.get());
+    return parent_->fonts.at(d_->font_id.get());
 }
 
 format format::font(const xlnt::font &new_font, optional<bool> applied)
 {
-    d_ = get_parent_checked()->find_or_create_with(d_.get(), new_font, applied);
+    d_ = parent_->find_or_create_with(d_.get(), new_font, applied);
     return format(d_);
 }
 
@@ -173,14 +180,13 @@ xlnt::number_format format::number_format() const
             return number_format::from_builtin_id(number_format_id);
         }
 
-        auto parent = get_parent_checked();
-        const auto it = std::find_if(parent->number_formats.begin(),
-                                     parent->number_formats.end(),
+        const auto it = std::find_if(parent_->number_formats.begin(),
+                                     parent_->number_formats.end(),
                                      [number_format_id](const xlnt::number_format &nf)
                                      {
                                          return nf.id() == number_format_id;
                                      });
-        if (it != parent->number_formats.end())
+        if (it != parent_->number_formats.end())
         {
             return *it;
         }
@@ -191,18 +197,18 @@ xlnt::number_format format::number_format() const
 
 format format::number_format(const xlnt::number_format &new_number_format, optional<bool> applied)
 {
-    d_ = get_parent_checked()->find_or_create_with(d_.get(), new_number_format, applied);
+    d_ = parent_->find_or_create_with(d_.get(), new_number_format, applied);
     return format(d_);
 }
 
 xlnt::protection format::protection() const
 {
-    return get_parent_checked()->protections.at(d_->protection_id.get());
+    return parent_->protections.at(d_->protection_id.get());
 }
 
 format format::protection(const xlnt::protection &new_protection, optional<bool> applied)
 {
-    d_ = get_parent_checked()->find_or_create_with(d_.get(), new_protection, applied);
+    d_ = parent_->find_or_create_with(d_.get(), new_protection, applied);
     return format(d_);
 }
 
@@ -266,18 +272,6 @@ bool format::quote_prefix() const
 void format::quote_prefix(bool quote)
 {
     d_->quote_prefix_ = quote;
-}
-
-std::shared_ptr<detail::stylesheet> format::get_parent_checked() const
-{
-    auto ptr = d_->parent.lock();
-
-    if (ptr == nullptr)
-    {
-        throw xlnt::invalid_attribute("xlnt::format: invalid stylesheet pointer");
-    }
-
-    return ptr;
 }
 
 } // namespace xlnt

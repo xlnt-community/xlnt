@@ -1470,9 +1470,9 @@ bool xlsx_consumer::has_cell()
 
     assert(streaming_);
     *streaming_cell_ = detail::cell_impl(); // Clean cell state - otherwise it might contain information from the previously streamed cell.
+    streaming_cell_->parent_ = current_worksheet_;
     auto cell = xlnt::cell(streaming_cell_);
     auto reference = cell_reference(parser().attribute("r"));
-    cell.d_->parent_ = current_worksheet_;
     cell.d_->column_ = reference.column_index();
     cell.d_->row_ = reference.row();
 

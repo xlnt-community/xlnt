@@ -198,6 +198,8 @@ cell::cell(std::shared_ptr<detail::cell_impl> d)
     {
         throw xlnt::invalid_attribute("xlnt::cell: invalid cell_impl pointer");
     }
+
+    parent_ = d_->parent_.lock();
 }
 
 cell cell::clone(clone_method method) const
@@ -566,12 +568,12 @@ cell cell::offset(int column, int row)
 
 worksheet cell::worksheet()
 {
-    return xlnt::worksheet(d_->parent_);
+    return parent_;
 }
 
 const worksheet cell::worksheet() const
 {
-    return xlnt::worksheet(d_->parent_);
+    return parent_;
 }
 
 workbook cell::workbook()
@@ -965,18 +967,6 @@ format cell::modifiable_format()
     }
 
     return xlnt::format(d_->format_.get());
-}
-
-std::shared_ptr<detail::worksheet_impl> cell::get_parent_checked() const
-{
-    auto ptr = d_->parent_.lock();
-
-    if (ptr == nullptr)
-    {
-        throw xlnt::invalid_attribute("xlnt::cell: invalid worksheet pointer");
-    }
-
-    return ptr;
 }
 
 const format cell::format() const

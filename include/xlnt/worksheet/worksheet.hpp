@@ -66,6 +66,7 @@ namespace detail {
 class xlsx_consumer;
 class xlsx_producer;
 
+struct workbook_impl;
 struct worksheet_impl;
 
 } // namespace detail
@@ -120,7 +121,7 @@ public:
     /// <summary>
     /// Move constructor. Constructs a worksheet from existing worksheet, other.
     /// </summary>
-    worksheet(worksheet &&other) = default;
+    worksheet(worksheet &&other) noexcept = default;
 
     /// <summary>
     /// Creates a clone of this worksheet. A shallow copy will copy the worksheet's internal pointers,
@@ -523,7 +524,7 @@ public:
     /// <summary>
     /// Sets the internal pointer of this worksheet object to point to other.
     /// </summary>
-    worksheet &operator=(worksheet &&other) = default;
+    worksheet &operator=(worksheet &&other) noexcept = default;
 
     /// <summary>
     /// Convenience method for worksheet::cell method.
@@ -840,16 +841,6 @@ private:
     worksheet(std::shared_ptr<detail::worksheet_impl> d);
 
     /// <summary>
-    /// Constructs a worksheet impl wrapper from d.
-    /// </summary>
-    worksheet(std::weak_ptr<detail::worksheet_impl> d);
-
-    /// <summary>
-    /// Internal function to set the impl.
-    /// </summary>
-    void set_impl(std::shared_ptr<detail::worksheet_impl> impl);
-
-    /// <summary>
     /// Creates a comments part in the manifest as a relationship target of this sheet.
     /// </summary>
     void register_comments_in_manifest();
@@ -879,6 +870,11 @@ private:
     /// The pointer to this sheet's implementation.
     /// </summary>
     std::shared_ptr<detail::worksheet_impl> d_;
+
+    /// <summary>
+    /// A pointer to the parent, ensuring it lives as long as its child (this instance) lives.
+    /// </summary>
+    std::shared_ptr<detail::workbook_impl> parent_;
 };
 
 } // namespace xlnt

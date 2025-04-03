@@ -1634,7 +1634,7 @@ public:
         }
 
         xlnt_assert_equals(worksheet->title(), "Title1");
-        xlnt_assert_throws(worksheet->workbook(), xlnt::invalid_attribute);
+        xlnt_assert_throws_nothing(worksheet->workbook());
     }
 
     void test_clone()

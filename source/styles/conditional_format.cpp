@@ -75,6 +75,13 @@ conditional_format::conditional_format(std::shared_ptr<detail::conditional_forma
     {
         throw xlnt::invalid_attribute("xlnt::conditional_format: invalid conditional_format_impl pointer");
     }
+
+    parent_ = d_->parent.lock();
+
+    if (parent_ == nullptr)
+    {
+        throw xlnt::invalid_attribute("xlnt::conditional_format: invalid stylesheet pointer");
+    }
 }
 
 conditional_format conditional_format::clone(clone_method method) const
@@ -119,13 +126,12 @@ bool conditional_format::has_border() const
 
 xlnt::border conditional_format::border() const
 {
-    return get_parent_checked()->borders.at(d_->border_id.get());
+    return parent_->borders.at(d_->border_id.get());
 }
 
 conditional_format conditional_format::border(const xlnt::border &new_border)
 {
-    auto parent = get_parent_checked();
-    d_->border_id = parent->find_or_add(parent->borders, new_border);
+    d_->border_id = parent_->find_or_add(parent_->borders, new_border);
     return *this;
 }
 
@@ -136,13 +142,12 @@ bool conditional_format::has_fill() const
 
 xlnt::fill conditional_format::fill() const
 {
-    return get_parent_checked()->fills.at(d_->fill_id.get());
+    return parent_->fills.at(d_->fill_id.get());
 }
 
 conditional_format conditional_format::fill(const xlnt::fill &new_fill)
 {
-    auto parent = get_parent_checked();
-    d_->fill_id = parent->find_or_add(parent->fills, new_fill);
+    d_->fill_id = parent_->find_or_add(parent_->fills, new_fill);
     return *this;
 }
 
@@ -153,26 +158,13 @@ bool conditional_format::has_font() const
 
 xlnt::font conditional_format::font() const
 {
-    return get_parent_checked()->fonts.at(d_->font_id.get());
+    return parent_->fonts.at(d_->font_id.get());
 }
 
 conditional_format conditional_format::font(const xlnt::font &new_font)
 {
-    auto parent = get_parent_checked();
-    d_->font_id = parent->find_or_add(parent->fonts, new_font);
+    d_->font_id = parent_->find_or_add(parent_->fonts, new_font);
     return *this;
-}
-
-std::shared_ptr<detail::stylesheet> conditional_format::get_parent_checked() const
-{
-    auto ptr = d_->parent.lock();
-
-    if (ptr == nullptr)
-    {
-        throw xlnt::invalid_attribute("xlnt::conditional_format: invalid stylesheet pointer");
-    }
-
-    return ptr;
 }
 
 } // namespace xlnt

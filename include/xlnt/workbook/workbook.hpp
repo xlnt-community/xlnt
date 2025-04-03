@@ -990,17 +990,6 @@ private:
     workbook(std::shared_ptr<detail::workbook_impl> impl);
 
     /// <summary>
-    /// Private constructor. Constructs a workbook from an implementation pointer.
-    /// Used by static constructor to resolve circular construction dependency.
-    /// </summary>
-    workbook(std::weak_ptr<detail::workbook_impl> impl);
-
-    /// <summary>
-    /// Internal function to set the impl.
-    /// </summary>
-    void set_impl(std::shared_ptr<detail::workbook_impl> impl);
-
-    /// <summary>
     /// load the encrpyted xlsx file at path
     /// </summary>
     template <typename T>

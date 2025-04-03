@@ -34,6 +34,7 @@
 #include <xlnt/cell/index_types.hpp>
 #include <xlnt/cell/rich_text.hpp>
 #include <xlnt/types.hpp>
+#include <xlnt/worksheet/worksheet.hpp>
 
 namespace xlnt {
 
@@ -657,12 +658,6 @@ private:
     class format modifiable_format();
 
     /// <summary>
-    /// Returns a shared_ptr to the parent which is checked for validity.
-    /// If the pointer is invalid, an xlnt::invald_attribute exception is thrown.
-    /// </summary>
-    std::shared_ptr<detail::worksheet_impl> get_parent_checked() const;
-
-    /// <summary>
     /// Private constructor to create a cell from its implementation.
     /// </summary>
     cell(std::shared_ptr<detail::cell_impl> d);
@@ -671,6 +666,12 @@ private:
     /// A pointer to this cell's implementation.
     /// </summary>
     std::shared_ptr<detail::cell_impl> d_;
+
+    /// <summary>
+    /// Remember the parent worksheet AND (internally) its parent workbook,
+    /// ensuring both live as long as its child (this instance) lives.
+    /// </summary>
+    xlnt::worksheet parent_;
 };
 
 /// <summary>
