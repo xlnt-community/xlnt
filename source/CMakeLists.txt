@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1...3.31)
-project(xlnt VERSION 1.6.0)
+project(xlnt VERSION 1.6.1)
 
 set(CMAKE_CXX_STANDARD ${XLNT_CXX_LANG})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
