@@ -872,7 +872,7 @@ worksheet workbook::copy_sheet(worksheet to_copy, std::size_t index)
     return sheet_by_index(index);
 }
 
-std::size_t workbook::index(worksheet ws)
+std::size_t workbook::index(worksheet ws) const
 {
     auto match = std::find(begin(), end(), ws);
 
