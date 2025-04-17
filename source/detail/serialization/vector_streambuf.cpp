@@ -24,6 +24,7 @@
 
 #include <xlnt/utils/exceptions.hpp>
 #include <detail/serialization/vector_streambuf.hpp>
+#include <algorithm>
 
 namespace xlnt {
 namespace detail {
