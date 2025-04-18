@@ -884,6 +884,40 @@ std::size_t workbook::index(worksheet ws) const
     return static_cast<std::size_t>(std::distance(begin(), match));
 }
 
+bool workbook::index(worksheet worksheet, std::size_t newIndex)
+{
+    if(newIndex >= sheet_count())
+        return false;
+
+    try
+    {
+        auto sourceIndex    = this->index(worksheet);
+        auto targetIndex    = newIndex;
+        auto sourcePosition = d_->worksheets_.begin();
+        auto targetPosition = d_->worksheets_.begin();
+        size_t currentIndex = 0;
+
+        for(auto i = d_->worksheets_.begin(); i != d_->worksheets_.end(); i++)
+        {
+            if(currentIndex == sourceIndex)
+                sourcePosition = i;
+
+            if(currentIndex == targetIndex)
+                targetPosition = i;
+
+            currentIndex++;
+        }
+
+        d_->worksheets_.splice(targetPosition, d_->worksheets_, sourcePosition);
+    }
+    catch(...)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 void workbook::create_named_range(const std::string &name, worksheet range_owner, const std::string &reference_string)
 {
     create_named_range(name, range_owner, range_reference(reference_string));
