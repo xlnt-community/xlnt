@@ -138,12 +138,21 @@ jobs:
       skip-internal-tests:
         default: "OFF"
         type: string
+      cmake-generator:
+        default: "Visual Studio 16 2019"
+        type: string
     steps:
       - checkout
       - run: git submodule update --init --recursive
       - run: choco install cmake -y
       - run: echo 'export PATH="$PATH:/c/Program Files/CMake/bin"' >> "$BASH_ENV"
-      - run: cmake -G "Visual Studio 16 2019" -D CMAKE_GENERATOR_PLATFORM=x64 -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
+      - when:
+          condition:
+            equal: ["Visual Studio 15 2017", << parameters.cmake-generator >>]
+          steps:
+            - run: choco install visualstudio2017buildtools -y
+            - run: choco install visualstudio2017-workload-vctools -y
+      - run: cmake -G "<< parameters.cmake-generator >>" -D CMAKE_GENERATOR_PLATFORM=x64 -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
       - run: cmake --build . -j4 --config << parameters.build-type >>
       - when:
           condition:
@@ -288,6 +297,19 @@ workflows:
               - { static: "ON", skip-internal-tests: "ON", build-type: Debug }
               - { static: "ON", skip-internal-tests: "ON", build-type: Release }
           samples: "ON"
+          requires:
+            - tests-gcc7-cmake3.2-all # prevent building windows in case of gcc failures, as windows builds are more expensive
+          filters:
+            branches:
+              ignore: gh-pages
+
+      - build-msvc:
+          name: tests-samples-msvc2017
+          build-type: Release
+          static: "ON"
+          skip-internal-tests: "ON"
+          samples: "ON"
+          cmake-generator: "Visual Studio 15 2017"
           requires:
             - tests-gcc7-cmake3.2-all # prevent building windows in case of gcc failures, as windows builds are more expensive
           filters:
