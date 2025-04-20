@@ -21,6 +21,9 @@ jobs:
       benchmarks:
         default: "OFF"
         type: string
+      benchmark-run-count:
+        default: 10
+        type: integer
       micro-benchmarks:
         default: "OFF"
         type: string
@@ -71,7 +74,7 @@ jobs:
           steps:
             - run: ./benchmarks/benchmark-styles
             - run: ./benchmarks/benchmark-writer
-            - run: ./benchmarks/benchmark-spreadsheet-load
+            - run: ./benchmarks/benchmark-spreadsheet-load << parameters.benchmark-run-count >>
       - when:
           condition:
             equal: ["ON", << parameters.micro-benchmarks >>]
@@ -82,10 +85,36 @@ jobs:
             equal: ["ON", << parameters.coverage >>]
           steps:
             - run: apt-get update -y
-            - run: apt-get install -y --no-install-recommends lcov
-            - run: lcov --directory . --capture --output-file coverage.info --base-directory . --no-external
-            - run: lcov --extract coverage.info "$PWD/include/*" "$PWD/source/*" --output-file coverage.info
+            - run: apt-get install -y --no-install-recommends perl libcapture-tiny-perl libdatetime-perl libtimedate-perl libjson-perl libperlio-gzip-perl libjson-xs-perl
+            - run: git clone https://github.com/linux-test-project/lcov.git --depth 1 --branch v2.3.1
+            - run: cd lcov && make -j2 install
+            - run: lcov --directory . --capture --output-file coverage.info --base-directory . --no-external --include "$PWD/include/*" --include "$PWD/source/*" --branch-coverage --rc no_exception_branch=1 -j 2
             - run: curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz && ./coveralls report coverage.info
+            - run: curl -sL https://raw.githubusercontent.com/xlnt-community/xlnt-coverage/refs/heads/gh-pages/`git rev-parse master`/coverage.info > coverage_master.info
+            - run: lcov/scripts/gitdiff -b . master HEAD > diff.txt
+            - run: genhtml -j 2 -p $PWD --output-directory coverage/differential --baseline-file coverage_master.info --diff-file diff.txt --branch-coverage --ignore-errors inconsistent --header-title "differential code coverage report with master" -- coverage.info
+            - run: genhtml -j 2 -p $PWD --output-directory coverage/review --baseline-file coverage_master.info --diff-file diff.txt --branch-coverage --ignore-errors inconsistent --header-title "review summary" --flat --select-script lcov/scripts/select.pm --select-script --tla --select-script UNC,UIC,LBC -- coverage.info
+            - run: mv coverage.info coverage/
+            - persist_to_workspace:
+                root: .
+                paths: coverage
+
+  coverage-deploy:
+    docker:
+      - image: node:8.10.0
+    resource_class: small
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run: npm install -g --silent gh-pages@2.0.1
+      - run: git config user.email "<>"
+      - run: git config user.name "circleci"
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:VmE7CvosRKmkFPk2phSGqDr412LRvV1i4t9Oequ6KuI"
+      - run: gh-pages --message "Update coverage" --dist coverage --dest `git rev-parse HEAD` --repo git@github.com:xlnt-community/xlnt-coverage.git
+      - run: .circleci/post_coverage_comment.sh
 
   docs-build:
     docker:
@@ -357,6 +386,14 @@ workflows:
           samples: "ON"
           benchmarks: "ON"
           coverage: "ON"
+          benchmark-run-count: 1
+          filters:
+            branches:
+              ignore: gh-pages
+
+      - coverage-deploy:
+          requires:
+            - samples-benchmarks-coverage-gcc
           filters:
             branches:
               ignore: gh-pages
