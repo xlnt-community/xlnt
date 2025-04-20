@@ -1,0 +1,15 @@
+version: 2.1
+
+jobs:
+  post-coverage-comment:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - checkout
+      - run: .circleci/post_coverage_comment.sh
+
+workflows:
+  setup:
+    jobs:
+      - post-coverage-comment

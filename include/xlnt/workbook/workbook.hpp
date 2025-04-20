@@ -220,6 +220,8 @@ public:
     /// </summary>
     worksheet create_sheet_with_rel(const std::string &title, const relationship &rel);
 
+    int test();
+
     /// <summary>
     /// Creates and returns a new sheet after the last sheet initializing it
     /// with all of the data from the provided worksheet.

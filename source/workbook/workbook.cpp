@@ -1282,9 +1282,16 @@ worksheet workbook::create_sheet_with_rel(const std::string &title, const relati
     return worksheet(&d_->worksheets_.back());
 }
 
+int workbook::test()
+{
+  int y = 1;
+  ++y;
+  return y;
+}
+
 workbook::iterator workbook::begin()
 {
-    return iterator(*this, 0);
+  return iterator(*this, 0);
 }
 
 workbook::iterator workbook::end()
