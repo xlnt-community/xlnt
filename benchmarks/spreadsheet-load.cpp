@@ -48,15 +48,11 @@ void run_save_test(const xlnt::path &file, int runs = 10)
 }
 } // namespace
 
-int main(int argc, char * argv[])
+int main()
 {
-    int runs = 10;
-    if (argc > 1)
-        runs = std::stoi(argv[1]);
+    run_load_test(path_helper::benchmark_file("large.xlsx"));
+    run_load_test(path_helper::benchmark_file("very_large.xlsx"));
 
-    run_load_test(path_helper::benchmark_file("large.xlsx"), runs);
-    run_load_test(path_helper::benchmark_file("very_large.xlsx"), runs);
-
-    run_save_test(path_helper::benchmark_file("large.xlsx"), runs);
-    run_save_test(path_helper::benchmark_file("very_large.xlsx"), runs);
+    run_save_test(path_helper::benchmark_file("large.xlsx"));
+    run_save_test(path_helper::benchmark_file("very_large.xlsx"));
 }

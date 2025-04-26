@@ -21,9 +21,6 @@ jobs:
       benchmarks:
         default: "OFF"
         type: string
-      benchmark-run-count:
-        default: 10
-        type: integer
       micro-benchmarks:
         default: "OFF"
         type: string
@@ -74,7 +71,7 @@ jobs:
           steps:
             - run: ./benchmarks/benchmark-styles
             - run: ./benchmarks/benchmark-writer
-            - run: ./benchmarks/benchmark-spreadsheet-load << parameters.benchmark-run-count >>
+            - run: ./benchmarks/benchmark-spreadsheet-load
       - when:
           condition:
             equal: ["ON", << parameters.micro-benchmarks >>]
