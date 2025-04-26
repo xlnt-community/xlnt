@@ -77,6 +77,7 @@ public:
         register_test(test_Issue279);
         register_test(test_Issue353);
         register_test(test_Issue494);
+        register_test(test_style);
     }
 
     void test_active_sheet()
@@ -629,6 +630,14 @@ public:
         auto ws = wb.active_sheet();
         xlnt_assert_equals(ws.cell(2, 1).to_string(), "V1.00");
         xlnt_assert_equals(ws.cell(2, 2).to_string(), "V1.00");
+    }
+
+    void test_style()
+    {
+        xlnt::workbook wb;
+        xlnt_assert_equals(wb.has_style("my_custom_style"), false);
+        wb.create_style("my_custom_style");
+        xlnt_assert_equals(wb.has_style("my_custom_style"), true);
     }
 };
 static workbook_test_suite x;
