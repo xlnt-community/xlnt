@@ -377,23 +377,18 @@ workflows:
     when: HAS_COVERALLS
     jobs:
       - build-gcc:
-          name: samples-benchmarks-coverage-gcc
+          name: coverage-gcc
           image: PLACEHOLDER_IMAGE(gcc_cmake_latest)
           cxx-ver: "23"
-          warnings-as-errors: "ON"
           build-type: Debug
-          static: "ON"
-          samples: "ON"
-          benchmarks: "ON"
           coverage: "ON"
-          benchmark-run-count: 1
           filters:
             branches:
               ignore: gh-pages
 
       - coverage-deploy:
           requires:
-            - samples-benchmarks-coverage-gcc
+            - coverage-gcc
           filters:
             branches:
               ignore: gh-pages

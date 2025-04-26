@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-PR_NUMBER_OVERIDE=$1
+PR_NUMBER_OVERRIDE=$1
 
 post_coverage_comment ()
 {
@@ -21,8 +21,8 @@ main ()
 {
   COMMIT_SHA=`git rev-parse HEAD`
 
-  if [ -n "${PR_NUMBER_OVERIDE}" ]; then
-    post_coverage_comment ${PR_NUMBER_OVERIDE} ${COMMIT_SHA}
+  if [ -n "${PR_NUMBER_OVERRIDE}" ]; then
+    post_coverage_comment ${PR_NUMBER_OVERRIDE} ${COMMIT_SHA}
   elif [ -n "${CIRCLE_PR_NUMBER}" ]; then
     post_coverage_comment ${CIRCLE_PR_NUMBER} ${COMMIT_SHA}
   elif [[ $"${CIRCLE_PULL_REQUEST}" =~ https://github.com/xlnt-community/xlnt/pull/([0-9]+)$ ]]; then
