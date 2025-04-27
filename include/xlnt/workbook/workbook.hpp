@@ -292,7 +292,7 @@ public:
     /// <summary>
     /// Returns the index of the given worksheet. The worksheet must be owned by this workbook.
     /// </summary>
-    std::size_t index(worksheet worksheet);
+    std::size_t index(worksheet worksheet) const;
 
     // remove worksheets
 
