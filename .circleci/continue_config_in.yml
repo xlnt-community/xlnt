@@ -86,9 +86,17 @@ jobs:
             - run: git clone https://github.com/linux-test-project/lcov.git --depth 1 --branch v2.3.1
             - run: cd lcov && make -j2 install
             - run: lcov --directory . --capture --output-file coverage.info --base-directory . --no-external --include "$PWD/include/*" --include "$PWD/source/*" --branch-coverage --rc no_exception_branch=1 -j 2
-            - run: curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz && ./coveralls report coverage.info
-            - run: curl -sL https://raw.githubusercontent.com/xlnt-community/xlnt-coverage/refs/heads/gh-pages/`git rev-parse master`/coverage.info > coverage_master.info
-            - run: lcov/scripts/gitdiff -b . master HEAD > diff.txt
+            - run: curl -sfL https://coveralls.io/coveralls-linux.tar.gz | tar -xz && ./coveralls report coverage.info
+            - run:
+                name: Determine base branch
+                command: |
+                  if [ "`git branch --show-current`" = "master" ]; then
+                    echo "export BASE_BRANCH=master^" >> "$BASH_ENV";
+                  else
+                    echo "export BASE_BRANCH=master" >> "$BASH_ENV";
+                  fi
+            - run: curl -sfL https://raw.githubusercontent.com/xlnt-community/xlnt-coverage/refs/heads/gh-pages/`git rev-parse $BASE_BRANCH`/coverage.info > coverage_master.info
+            - run: lcov/scripts/gitdiff -b . $BASE_BRANCH HEAD > diff.txt
             - run: genhtml -j 2 -p $PWD --output-directory coverage/differential --baseline-file coverage_master.info --diff-file diff.txt --branch-coverage --ignore-errors inconsistent --header-title "differential code coverage report with master" -- coverage.info
             - run: genhtml -j 2 -p $PWD --output-directory coverage/review --baseline-file coverage_master.info --diff-file diff.txt --branch-coverage --ignore-errors inconsistent --header-title "review summary" --flat --select-script lcov/scripts/select.pm --select-script --tla --select-script UNC,UIC,LBC -- coverage.info
             - run: mv coverage.info coverage/
