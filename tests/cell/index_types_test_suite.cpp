@@ -35,6 +35,7 @@ public:
         register_test(test_bad_string_numbers);
         register_test(test_bad_index_zero);
         register_test(test_column_operators);
+        register_test(test_column_z);
     }
 
     void test_bad_string_empty()
@@ -98,6 +99,11 @@ public:
         xlnt_assert(!(3 >= c2));
         xlnt_assert(3 <= c1);
         xlnt_assert(!(4 <= c1));
+    }
+
+    void test_column_z()
+    {
+        xlnt_assert_equals(xlnt::column_t::column_string_from_index(26), "Z");
     }
 };
 

@@ -56,13 +56,23 @@ public:
 
     void test_int32_vector()
     {
-        std::vector<std::int32_t> vec {10, 20, 30, 40};
+        test_vector({10, 20, 30, 40, std::numeric_limits<std::int32_t>::min(), std::numeric_limits<std::int32_t>::max()});
+    }
+
+    template<typename T>
+    void test_vector(const std::initializer_list<T>& list)
+    {
+        std::vector<T> vec(list);
         xlnt::variant var_int_vec(vec);
         xlnt_assert_equals(var_int_vec.value_type(), xlnt::variant::type::vector);
         xlnt_assert(var_int_vec.is(xlnt::variant::type::vector));
-        std::vector<std::int32_t> vec_returned;
-        xlnt_assert_throws_nothing(vec_returned = var_int_vec.get<std::vector<std::int32_t>>());
+        std::vector<T> vec_returned;
+        xlnt_assert_throws_nothing(vec_returned = var_int_vec.get<std::vector<T>>());
         xlnt_assert_equals(vec, vec_returned);
+
+        xlnt::variant var_int_list(list);
+        xlnt_assert_equals(var_int_list, var_int_vec);
+        xlnt_assert_equals(var_int_list.get<std::vector<T>>(), vec);
     }
 
     void test_string()
@@ -82,13 +92,7 @@ public:
 
     void test_string_vector()
     {
-        std::vector<std::string> vec {"test1", "test2", "test3", "test4"};
-        xlnt::variant var_str1_vec(vec);
-        xlnt_assert_equals(var_str1_vec.value_type(), xlnt::variant::type::vector);
-        xlnt_assert(var_str1_vec.is(xlnt::variant::type::vector));
-        std::vector<std::string> vec_returned;
-        xlnt_assert_throws_nothing(vec_returned = var_str1_vec.get<std::vector<std::string>>());
-        xlnt_assert_equals(vec, vec_returned);
+        test_vector<std::string>({"test1", "test2", "test3", "test4"});
     }
 };
 static variant_test_suite x;
