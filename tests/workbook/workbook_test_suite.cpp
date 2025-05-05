@@ -653,7 +653,7 @@ public:
         auto movingSheet = testWorkbook.sheet_by_index(3);
 
         // move sheet to the beginning
-        int newIndex = 0;
+        size_t newIndex = 0;
         xlnt_assert_throws_nothing(testWorkbook.move_sheet(movingSheet, newIndex));
         xlnt_assert_equals(testWorkbook.index(movingSheet), newIndex);
 
