@@ -663,7 +663,7 @@ public:
         xlnt_assert_equals(testWorkbook.index(movingSheet), newIndex);
 
         // move sheet to the end
-        newIndex = 4;
+        newIndex = testWorkbook.sheet_count() - 1;
         xlnt_assert_throws_nothing(testWorkbook.move_sheet(movingSheet, newIndex));
         xlnt_assert_equals(testWorkbook.index(movingSheet), newIndex);
 
