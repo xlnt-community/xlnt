@@ -912,7 +912,7 @@ void workbook::move_sheet(worksheet worksheet, std::size_t newIndex)
         throw invalid_parameter();
 
     if(sourceIndex < newIndex)
-        targetPosition++;
+        ++targetPosition;
 
     d_->worksheets_.splice(targetPosition, d_->worksheets_, sourcePosition);
 }
