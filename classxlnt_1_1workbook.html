@@ -175,6 +175,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a045013c23d2469b2b7bd4d21b1c841da"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a045013c23d2469b2b7bd4d21b1c841da">index</a> (<a class="el" href="classxlnt_1_1worksheet.html">worksheet</a> <a class="el" href="classxlnt_1_1worksheet.html">worksheet</a>) const</td></tr>
 <tr class="memdesc:a045013c23d2469b2b7bd4d21b1c841da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the index of the given worksheet. The worksheet must be owned by this workbook.  <a href="#a045013c23d2469b2b7bd4d21b1c841da">More...</a><br /></td></tr>
 <tr class="separator:a045013c23d2469b2b7bd4d21b1c841da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a670e477ba6dc46a3e625f44fe4834f9d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a670e477ba6dc46a3e625f44fe4834f9d">move_sheet</a> (<a class="el" href="classxlnt_1_1worksheet.html">worksheet</a> <a class="el" href="classxlnt_1_1worksheet.html">worksheet</a>, std::size_t newIndex)</td></tr>
+<tr class="memdesc:a670e477ba6dc46a3e625f44fe4834f9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves a sheet to a new position defined. The worksheet must be owned by this workbook.  <a href="#a670e477ba6dc46a3e625f44fe4834f9d">More...</a><br /></td></tr>
+<tr class="separator:a670e477ba6dc46a3e625f44fe4834f9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2471d1ef981a728d5a302c2de8a08da3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a2471d1ef981a728d5a302c2de8a08da3">remove_sheet</a> (<a class="el" href="classxlnt_1_1worksheet.html">worksheet</a> <a class="el" href="classxlnt_1_1worksheet.html">worksheet</a>)</td></tr>
 <tr class="memdesc:a2471d1ef981a728d5a302c2de8a08da3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the given worksheet from this workbook.  <a href="#a2471d1ef981a728d5a302c2de8a08da3">More...</a><br /></td></tr>
 <tr class="separator:a2471d1ef981a728d5a302c2de8a08da3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2452,6 +2455,36 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::worksheet_i
 
 </div>
 </div>
+<a id="a670e477ba6dc46a3e625f44fe4834f9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a670e477ba6dc46a3e625f44fe4834f9d">&#9670;&nbsp;</a></span>move_sheet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void xlnt::workbook::move_sheet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classxlnt_1_1worksheet.html">worksheet</a>&#160;</td>
+          <td class="paramname"><em>worksheet</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>newIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Moves a sheet to a new position defined. The worksheet must be owned by this workbook. </p>
+
+</div>
+</div>
 <a id="abe7154e5e490cc6008e83160e5df03f7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abe7154e5e490cc6008e83160e5df03f7">&#9670;&nbsp;</a></span>named_range()</h2>
 
@@ -3122,28 +3155,8 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::worksheet_i
 
 </div>
 </div>
-<a id="a06fa5c7db2fde59a04b2f5d4c9770571"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a06fa5c7db2fde59a04b2f5d4c9770571">&#9670;&nbsp;</a></span>style() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const class <a class="el" href="classxlnt_1_1style.html">style</a> xlnt::workbook::style </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns the named style with the given name. </p>
-
-</div>
-</div>
 <a id="a5d8db56d21b0ded166acd3094c307ab9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d8db56d21b0ded166acd3094c307ab9">&#9670;&nbsp;</a></span>style() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d8db56d21b0ded166acd3094c307ab9">&#9670;&nbsp;</a></span>style() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3154,6 +3167,26 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::worksheet_i
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the named style with the given name. </p>
+
+</div>
+</div>
+<a id="a06fa5c7db2fde59a04b2f5d4c9770571"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06fa5c7db2fde59a04b2f5d4c9770571">&#9670;&nbsp;</a></span>style() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const class <a class="el" href="classxlnt_1_1style.html">style</a> xlnt::workbook::style </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">

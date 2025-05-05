@@ -14,5 +14,6 @@ var searchData=
   ['minimized',['minimized',['../classxlnt_1_1workbook__view.html#a6ca56eb05092b86f8462d8ede8d0611f',1,'xlnt::workbook_view']]],
   ['minute',['minute',['../structxlnt_1_1datetime.html#ae22d74ce838a8c0b7f519aa1956279c1',1,'xlnt::datetime::minute()'],['../structxlnt_1_1time.html#ad6fe4644a42f276c76be6039cc1ad6fe',1,'xlnt::time::minute()']]],
   ['minutes',['minutes',['../structxlnt_1_1timedelta.html#ac953d66375705898dad0d2b1441b3da1',1,'xlnt::timedelta']]],
-  ['month',['month',['../structxlnt_1_1date.html#a1c0f92250ac76a5fa5425a629b0a19ce',1,'xlnt::date::month()'],['../structxlnt_1_1datetime.html#a8ba8fd2c9e5982dd48b0e2456d74c43d',1,'xlnt::datetime::month()']]]
+  ['month',['month',['../structxlnt_1_1date.html#a1c0f92250ac76a5fa5425a629b0a19ce',1,'xlnt::date::month()'],['../structxlnt_1_1datetime.html#a8ba8fd2c9e5982dd48b0e2456d74c43d',1,'xlnt::datetime::month()']]],
+  ['move_5fsheet',['move_sheet',['../classxlnt_1_1workbook.html#a670e477ba6dc46a3e625f44fe4834f9d',1,'xlnt::workbook']]]
 ];
