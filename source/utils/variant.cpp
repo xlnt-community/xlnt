@@ -71,7 +71,7 @@ void variant::construct_vector_internal(const T &vec)
     }
 }
 
-variant::variant(const std::initializer_list<int> &value)
+variant::variant(const std::initializer_list<std::int32_t> &value)
     : type_(type::vector)
 {
     construct_vector_internal(value);
