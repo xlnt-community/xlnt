@@ -8,6 +8,7 @@ node_modules/
 *.opensdf
 *.vcxproj.user
 *.o
+*.txt.user
 #*#
 *~
 .DS_Store

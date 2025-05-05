@@ -78,6 +78,7 @@ public:
         register_test(test_Issue353);
         register_test(test_Issue494);
         register_test(test_style);
+        register_test(test_sheet_moving)
     }
 
     void test_active_sheet()
@@ -638,6 +639,43 @@ public:
         xlnt_assert_equals(wb.has_style("my_custom_style"), false);
         wb.create_style("my_custom_style");
         xlnt_assert_equals(wb.has_style("my_custom_style"), true);
+    }
+
+    void test_sheet_moving()
+    {
+        xlnt::workbook testWorkbook;
+        testWorkbook.create_sheet();
+        testWorkbook.create_sheet();
+        testWorkbook.create_sheet();
+        testWorkbook.create_sheet();
+        testWorkbook.create_sheet();
+
+        auto movingSheet = testWorkbook.sheet_by_index(3);
+
+        // move sheet to the beginning
+        size_t newIndex = 0;
+        xlnt_assert_throws_nothing(testWorkbook.move_sheet(movingSheet, newIndex));
+        xlnt_assert_equals(testWorkbook.index(movingSheet), newIndex);
+
+        // move sheet to the middle
+        newIndex = 2;
+        xlnt_assert_throws_nothing(testWorkbook.move_sheet(movingSheet, newIndex));
+        xlnt_assert_equals(testWorkbook.index(movingSheet), newIndex);
+
+        // move sheet to the end
+        newIndex = testWorkbook.sheet_count() - 1;
+        xlnt_assert_throws_nothing(testWorkbook.move_sheet(movingSheet, newIndex));
+        xlnt_assert_equals(testWorkbook.index(movingSheet), newIndex);
+
+        // try to move to incorrect position
+        newIndex = testWorkbook.sheet_count() + 100;
+        xlnt_assert_throws(testWorkbook.move_sheet(movingSheet, newIndex), xlnt::invalid_parameter);
+
+        // try to move a sheet belonging to another workbook inside test workbook
+        newIndex = 2;
+        xlnt::workbook externalWorkbook;
+        auto exterbalSheet = externalWorkbook.sheet_by_index(0);
+        xlnt_assert_throws(testWorkbook.move_sheet(exterbalSheet, newIndex), xlnt::invalid_parameter);
     }
 };
 static workbook_test_suite x;
