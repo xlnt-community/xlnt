@@ -884,38 +884,37 @@ std::size_t workbook::index(worksheet ws) const
     return static_cast<std::size_t>(std::distance(begin(), match));
 }
 
-bool workbook::index(worksheet worksheet, std::size_t newIndex)
+void workbook::move_sheet(worksheet worksheet, std::size_t newIndex)
 {
     if(newIndex >= sheet_count())
-        return false;
+        throw invalid_parameter();
 
-    try
+    auto sourcePosition = d_->worksheets_.end();
+    auto targetPosition = d_->worksheets_.begin();
+    size_t currentIndex = 0;
+    size_t sourceIndex  = sheet_count();
+
+    for(auto iter = d_->worksheets_.begin(); iter != d_->worksheets_.end(); ++iter)
     {
-        auto sourceIndex    = this->index(worksheet);
-        auto targetIndex    = newIndex;
-        auto sourcePosition = d_->worksheets_.begin();
-        auto targetPosition = d_->worksheets_.begin();
-        size_t currentIndex = 0;
-
-        for(auto i = d_->worksheets_.begin(); i != d_->worksheets_.end(); i++)
+        if(worksheet.d_ == (&*iter))
         {
-            if(currentIndex == sourceIndex)
-                sourcePosition = i;
-
-            if(currentIndex == targetIndex)
-                targetPosition = i;
-
-            currentIndex++;
+            sourcePosition = iter;
+            sourceIndex    = currentIndex;
         }
 
-        d_->worksheets_.splice(targetPosition, d_->worksheets_, sourcePosition);
-    }
-    catch(...)
-    {
-        return false;
+        if(currentIndex == newIndex)
+            targetPosition = iter;
+
+        ++currentIndex;
     }
 
-    return true;
+    if(sourcePosition == d_->worksheets_.end())
+        throw invalid_parameter();
+
+    if(sourceIndex < newIndex)
+        targetPosition++;
+
+    d_->worksheets_.splice(targetPosition, d_->worksheets_, sourcePosition);
 }
 
 void workbook::create_named_range(const std::string &name, worksheet range_owner, const std::string &reference_string)
