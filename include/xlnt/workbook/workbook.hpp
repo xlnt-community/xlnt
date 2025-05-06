@@ -294,6 +294,11 @@ public:
     /// </summary>
     std::size_t index(worksheet worksheet) const;
 
+    /// <summary>
+    /// Moves a sheet to a new position defined. The worksheet must be owned by this workbook.
+    /// </summary>
+    void move_sheet(worksheet worksheet, std::size_t newIndex);
+
     // remove worksheets
 
     /// <summary>
