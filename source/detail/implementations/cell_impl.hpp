@@ -42,9 +42,49 @@ struct worksheet_impl;
 
 struct cell_impl
 {
+    cell_impl() = default;
+    ~cell_impl() = default;
+    cell_impl(cell_impl &&other) noexcept = default;
+    cell_impl &operator=(cell_impl &&other) noexcept = default;
+
+    cell_impl(const cell_impl &other)
+    {
+        *this = other;
+    }
+
+    cell_impl &operator=(const cell_impl &other)
+    {
+        type_ = other.type_;
+        parent_ = other.parent_;
+        column_ = other.column_;
+        row_ = other.row_;
+        is_merged_ = other.is_merged_;
+        phonetics_visible_ = other.phonetics_visible_;
+        value_text_ = other.value_text_;
+        value_numeric_ = other.value_numeric_;
+        formula_ = other.formula_;
+        format_ = other.format_;
+        comment_ = other.comment_;
+
+        if (!other.hyperlink_.is_set())
+        {
+            hyperlink_.clear();
+        }
+        else if (!hyperlink_.is_set())
+        {
+            hyperlink_.set(std::make_shared<hyperlink_impl>(*other.hyperlink_.get()));
+        }
+        else
+        {
+            *hyperlink_.get() = *other.hyperlink_.get();
+        }
+
+        return *this;
+    }
+
     cell_type type_ = cell_type::empty;
 
-    worksheet_impl *parent_ = nullptr;
+    std::weak_ptr<worksheet_impl> parent_;
 
     column_t column_ = 1;
     row_t row_ = 1;
@@ -56,9 +96,9 @@ struct cell_impl
     double value_numeric_ = 0.0;
 
     optional<std::string> formula_;
-    optional<hyperlink_impl> hyperlink_;
-    optional<format_impl *> format_;
-    optional<comment *> comment_;
+    optional<std::shared_ptr<hyperlink_impl>> hyperlink_;
+    optional<std::shared_ptr<format_impl>> format_;
+    optional<std::shared_ptr<comment>> comment_;
 
     bool is_garbage_collectible() const
     {
@@ -75,7 +115,7 @@ inline bool operator==(const cell_impl &lhs, const cell_impl &rhs)
         && lhs.value_text_ == rhs.value_text_
         && float_equals(lhs.value_numeric_, rhs.value_numeric_)
         && lhs.formula_ == rhs.formula_
-        && lhs.hyperlink_ == rhs.hyperlink_
+        && (lhs.hyperlink_.is_set() == rhs.hyperlink_.is_set() && (!lhs.hyperlink_.is_set() || *lhs.hyperlink_.get() == *rhs.hyperlink_.get()))
         && (lhs.format_.is_set() == rhs.format_.is_set() && (!lhs.format_.is_set() || *lhs.format_.get() == *rhs.format_.get()))
         && (lhs.comment_.is_set() == rhs.comment_.is_set() && (!lhs.comment_.is_set() || *lhs.comment_.get() == *rhs.comment_.get()));
 }

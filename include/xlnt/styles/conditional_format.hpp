@@ -25,10 +25,12 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/utils/optional.hpp>
+#include <xlnt/types.hpp>
 
 namespace xlnt {
 
@@ -91,14 +93,20 @@ class XLNT_API conditional_format
 {
 public:
     /// <summary>
+    /// The method for cloning conditional_formats.
+    /// </summary>
+    using clone_method = xlnt::clone_method;
+
+    /// <summary>
     /// Delete zero-argument constructor
     /// </summary>
     conditional_format() = delete;
 
     /// <summary>
-    /// Default copy constructor. Constructs a format using the same PIMPL as other.
+    /// Creates a clone of this conditional_format. A shallow copy will copy the conditional_format's internal pointers,
+    /// while a deep copy will copy all the internal structures and create a full clone of the conditional_format.
     /// </summary>
-    conditional_format(const conditional_format &other) = default;
+    conditional_format clone(clone_method method) const;
 
     // Formatting (xf) components
 
@@ -148,6 +156,13 @@ public:
     conditional_format font(const xlnt::font &new_font);
 
     /// <summary>
+    /// Returns true if this conditional_format is equal to other. If compare_by_reference is true, the comparison
+    /// will only check that both conditional_formats point to the same internal conditional_format. Otherwise,
+    /// if compare_by_reference is false, all conditional_format properties are compared.
+    /// </summary>
+    bool compare(const conditional_format &other, bool compare_by_reference) const;
+
+    /// <summary>
     /// Returns true if this format is equivalent to other.
     /// </summary>
     bool operator==(const conditional_format &other) const;
@@ -164,12 +179,17 @@ private:
     /// <summary>
     ///
     /// </summary>
-    conditional_format(detail::conditional_format_impl *d);
+    conditional_format(std::shared_ptr<detail::conditional_format_impl> d);
 
     /// <summary>
     ///
     /// </summary>
-    detail::conditional_format_impl *d_ = nullptr;
+    std::shared_ptr<detail::conditional_format_impl> d_;
+
+    /// <summary>
+    /// A pointer to the parent, ensuring it lives as long as its child (this instance) lives.
+    /// </summary>
+    std::shared_ptr<detail::stylesheet> parent_;
 };
 
 } // namespace xlnt

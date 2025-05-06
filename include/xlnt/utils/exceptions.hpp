@@ -52,7 +52,7 @@ public:
     /// <summary>
     /// Destructor
     /// </summary>
-    ~exception() override;
+    ~exception() override = default;
 
     /// <summary>
     /// Sets the message after the xlnt::exception is constructed. This can show

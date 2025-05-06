@@ -74,6 +74,7 @@ public:
         register_test(test_id_gen);
         register_test(test_load_file);
         register_test(test_load_file_encrypted);
+        register_test(test_ensure_correct_lifetime);
         register_test(test_Issue279);
         register_test(test_Issue353);
         register_test(test_Issue494);
@@ -585,6 +586,21 @@ public:
         xlnt::workbook wb_load5;
         wb_load5.load(data, password);
         xlnt_assert(wb_path.compare(wb_load5, false));
+    }
+
+    void test_ensure_correct_lifetime()
+    {
+        // Use a pointer to extend the lifetime outside the scope below.
+        std::unique_ptr<xlnt::workbook> workbook;
+
+        {
+            xlnt::workbook wb;
+            wb.title("Title1");
+            // Create a shallow copy.
+            workbook = std::unique_ptr<xlnt::workbook>(new xlnt::workbook(wb));
+        }
+
+        xlnt_assert_equals(workbook->title(), "Title1");
     }
 
     void test_Issue279()

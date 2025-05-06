@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 
 #include <xlnt/styles/conditional_format.hpp>
 #include <xlnt/utils/optional.hpp>
@@ -19,8 +20,8 @@ struct worksheet_impl;
 
 struct conditional_format_impl
 {
-	stylesheet *parent = nullptr;
-    worksheet_impl *target_sheet = nullptr;
+	std::weak_ptr<stylesheet> parent;
+    std::weak_ptr<worksheet_impl> target_sheet;
 
     bool operator==(const conditional_format_impl& rhs) const
     {

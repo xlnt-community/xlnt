@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -32,6 +33,8 @@
 #include <xlnt/cell/cell_type.hpp>
 #include <xlnt/cell/index_types.hpp>
 #include <xlnt/cell/rich_text.hpp>
+#include <xlnt/types.hpp>
+#include <xlnt/worksheet/worksheet.hpp>
 
 namespace xlnt {
 
@@ -67,6 +70,8 @@ class xlsx_consumer;
 class xlsx_producer;
 
 struct cell_impl;
+struct format_impl;
+struct worksheet_impl;
 
 } // namespace detail
 
@@ -84,6 +89,11 @@ class XLNT_API cell
 {
 public:
     /// <summary>
+    /// The method for cloning cells.
+    /// </summary>
+    using clone_method = xlnt::clone_method;
+
+    /// <summary>
     /// Alias xlnt::cell_type to xlnt::cell::type since it looks nicer.
     /// </summary>
     using type = cell_type;
@@ -94,9 +104,15 @@ public:
     static const std::unordered_map<std::string, int> &error_codes();
 
     /// <summary>
-    /// Default copy constructor.
+    /// Delete the default zero-argument constructor.
     /// </summary>
-    cell(const cell &) = default;
+    cell() = delete;
+
+    /// <summary>
+    /// Creates a clone of this cell. A shallow copy will copy the cell's internal pointers,
+    /// while a deep copy will copy all the internal structures and create a full clone of the cell.
+    /// </summary>
+    cell clone(clone_method method) const;
 
     // value
 
@@ -619,18 +635,12 @@ public:
     // operators
 
     /// <summary>
-    /// Makes this cell interally point to rhs.
-    /// The cell data originally pointed to by this cell will be unchanged.
-    /// </summary>
-    cell &operator=(const cell &rhs);
-
-    /// <summary>
-    /// Returns true if this cell the same cell as comparand (compared by reference).
+    /// Returns true if this cell is the same cell as comparand (compared by reference).
     /// </summary>
     bool operator==(const cell &comparand) const;
 
     /// <summary>
-    /// Returns false if this cell the same cell as comparand (compared by reference).
+    /// Returns false if this cell is the same cell as comparand (compared by reference).
     /// </summary>
     bool operator!=(const cell &comparand) const;
 
@@ -648,19 +658,20 @@ private:
     class format modifiable_format();
 
     /// <summary>
-    /// Delete the default zero-argument constructor.
-    /// </summary>
-    cell() = delete;
-
-    /// <summary>
     /// Private constructor to create a cell from its implementation.
     /// </summary>
-    cell(detail::cell_impl *d);
+    cell(std::shared_ptr<detail::cell_impl> d);
 
     /// <summary>
     /// A pointer to this cell's implementation.
     /// </summary>
-    detail::cell_impl *d_ = nullptr;
+    std::shared_ptr<detail::cell_impl> d_;
+
+    /// <summary>
+    /// Remember the parent worksheet AND (internally) its parent workbook,
+    /// ensuring both live as long as its child (this instance) lives.
+    /// </summary>
+    xlnt::worksheet parent_;
 };
 
 /// <summary>

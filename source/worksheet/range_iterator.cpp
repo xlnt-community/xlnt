@@ -158,7 +158,7 @@ const_range_iterator::const_range_iterator(const worksheet &ws, const cell_refer
     const range_reference &bounds, major_order order, bool skip_null)
     : skip_null_(skip_null),
       order_(order),
-      ws_(ws.d_),
+      ws_(ws),
       cursor_(cursor),
       bounds_(bounds)
 {

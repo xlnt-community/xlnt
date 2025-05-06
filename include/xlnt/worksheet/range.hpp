@@ -82,7 +82,7 @@ public:
     /// <summary>
     /// Desctructor
     /// </summary>
-    ~range();
+    ~range() = default;
 
     /// <summary>
     /// Default copy constructor.

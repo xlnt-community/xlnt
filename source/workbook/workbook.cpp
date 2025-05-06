@@ -452,8 +452,16 @@ workbook workbook::empty()
 
     wb.theme(xlnt::theme());
 
-    wb.d_->stylesheet_ = detail::stylesheet();
-    auto &stylesheet = wb.d_->stylesheet_.get();
+    if (wb.d_->stylesheet_ == nullptr)
+    {
+        wb.d_->stylesheet_ = std::make_shared<detail::stylesheet>();
+    }
+    else
+    {
+        *wb.d_->stylesheet_ = detail::stylesheet();
+    }
+
+    auto &stylesheet = *wb.d_->stylesheet_;
     stylesheet.parent = wb.d_;
 
     auto default_border = border()
@@ -462,7 +470,7 @@ workbook workbook::empty()
                               .side(border_side::start, border::border_property())
                               .side(border_side::end, border::border_property())
                               .side(border_side::diagonal, border::border_property());
-    wb.d_->stylesheet_.get().borders.push_back(default_border);
+    wb.d_->stylesheet_->borders.push_back(default_border);
 
     auto default_fill = fill(pattern_fill()
                                  .type(pattern_fill_type::none));
@@ -557,23 +565,12 @@ workbook::workbook(std::istream &data, std::u8string_view password)
 #endif
 
 workbook::workbook(std::shared_ptr<detail::workbook_impl> impl)
+    : d_(std::move(impl))
 {
-    set_impl(std::move(impl));
-}
-
-workbook::workbook(std::weak_ptr<detail::workbook_impl> impl)
-{
-    set_impl(impl.lock());
-}
-
-void workbook::set_impl(std::shared_ptr<detail::workbook_impl> impl)
-{
-    if (impl == nullptr)
+    if (d_ == nullptr)
     {
-        throw xlnt::invalid_parameter("invalid workbook pointer");
+        throw xlnt::invalid_attribute("xlnt::workbook: invalid workbook pointer");
     }
-
-    d_ = std::move(impl);
 }
 
 void workbook::register_package_part(relationship_type type)
@@ -680,9 +677,9 @@ const worksheet workbook::sheet_by_title(const std::string &title) const
 {
     for (auto &impl : d_->worksheets_)
     {
-        if (impl.title_ == title)
+        if (impl->title_ == title)
         {
-            return worksheet(&impl);
+            return worksheet(impl);
         }
     }
 
@@ -693,9 +690,9 @@ worksheet workbook::sheet_by_title(const std::string &title)
 {
     for (auto &impl : d_->worksheets_)
     {
-        if (impl.title_ == title)
+        if (impl->title_ == title)
         {
-            return worksheet(&impl);
+            return worksheet(impl);
         }
     }
 
@@ -709,14 +706,7 @@ worksheet workbook::sheet_by_index(std::size_t index)
         throw invalid_parameter();
     }
 
-    auto iter = d_->worksheets_.begin();
-
-    for (std::size_t i = 0; i < index; ++i)
-    {
-        ++iter;
-    }
-
-    return worksheet(&*iter);
+    return worksheet(d_->worksheets_[index]);
 }
 
 const worksheet workbook::sheet_by_index(std::size_t index) const
@@ -726,22 +716,16 @@ const worksheet workbook::sheet_by_index(std::size_t index) const
         throw invalid_parameter();
     }
 
-    auto iter = d_->worksheets_.begin();
-
-    for (std::size_t i = 0; i < index; ++i, ++iter)
-    {
-    }
-
-    return worksheet(&*iter);
+    return worksheet(d_->worksheets_[index]);
 }
 
 worksheet workbook::sheet_by_id(std::size_t id)
 {
     for (auto &impl : d_->worksheets_)
     {
-        if (impl.id_ == id)
+        if (impl->id_ == id)
         {
-            return worksheet(&impl);
+            return worksheet(impl);
         }
     }
 
@@ -752,9 +736,9 @@ const worksheet workbook::sheet_by_id(std::size_t id) const
 {
     for (auto &impl : d_->worksheets_)
     {
-        if (impl.id_ == id)
+        if (impl->id_ == id)
         {
-            return worksheet(&impl);
+            return worksheet(impl);
         }
     }
 
@@ -768,7 +752,7 @@ bool workbook::sheet_hidden_by_index(std::size_t index) const
         throw invalid_parameter();
     }
 
-    return d_->sheet_hidden_.at(index);
+    return d_->sheet_hidden_[index];
 }
 
 worksheet workbook::active_sheet()
@@ -809,7 +793,7 @@ worksheet workbook::create_sheet()
     {
         sheet_id = std::max(sheet_id, ws.id() + 1);
     }
-    d_->worksheets_.push_back(detail::worksheet_impl(this, sheet_id, title));
+    d_->worksheets_.emplace_back(std::make_shared<detail::worksheet_impl>(this, sheet_id, title));
     // unique sheet file name
     auto workbook_rel = d_->manifest_.relationship(path("/"), relationship_type::office_document);
     auto workbook_files = d_->manifest_.relationships(workbook_rel.target().path());
@@ -837,18 +821,19 @@ worksheet workbook::create_sheet()
     update_sheet_properties();
     reorder_relationships();
 
-    return worksheet(&d_->worksheets_.back());
+    return worksheet(d_->worksheets_.back());
 }
 
 worksheet workbook::copy_sheet(worksheet to_copy)
 {
-    if (to_copy.d_->parent_.lock() != d_) throw invalid_parameter();
+    if (to_copy.parent_ != d_) throw invalid_parameter();
 
-    detail::worksheet_impl impl(*to_copy.d_);
+    auto impl = to_copy.d_->clone();
     auto new_sheet = create_sheet();
-    impl.title_ = new_sheet.title();
-    impl.id_ = new_sheet.id();
-    *new_sheet.d_ = impl;
+    impl->title_ = new_sheet.title();
+    impl->id_ = new_sheet.id();
+    new_sheet.d_ = impl;
+    d_->worksheets_.back() = std::move(impl);
 
     return new_sheet;
 }
@@ -859,14 +844,9 @@ worksheet workbook::copy_sheet(worksheet to_copy, std::size_t index)
 
     if (index != d_->worksheets_.size() - 1)
     {
-        auto iter = d_->worksheets_.begin();
-
-        for (std::size_t i = 0; i < index; ++i, ++iter)
-        {
-        }
-
-        d_->worksheets_.insert(iter, d_->worksheets_.back());
+        auto worksheet = std::move(d_->worksheets_.back());
         d_->worksheets_.pop_back();
+        d_->worksheets_.emplace(d_->worksheets_.begin() + index, std::move(worksheet));
     }
 
     return sheet_by_index(index);
@@ -1251,7 +1231,7 @@ void workbook::load(std::u8string_view filename, std::u8string_view password)
 void workbook::remove_sheet(worksheet ws)
 {
     auto match_iter = std::find_if(d_->worksheets_.begin(), d_->worksheets_.end(),
-        [=](detail::worksheet_impl &comp) { return &comp == ws.d_; });
+        [&ws](const auto &comp) { return comp == ws.d_; });
 
     if (match_iter == d_->worksheets_.end())
     {
@@ -1284,14 +1264,9 @@ worksheet workbook::create_sheet(std::size_t index)
 
     if (index != d_->worksheets_.size() - 1)
     {
-        auto iter = d_->worksheets_.begin();
-
-        for (std::size_t i = 0; i < index; ++i, ++iter)
-        {
-        }
-
-        d_->worksheets_.insert(iter, d_->worksheets_.back());
+        auto worksheet = std::move(d_->worksheets_.back());
         d_->worksheets_.pop_back();
+        d_->worksheets_.emplace(d_->worksheets_.begin() + index, std::move(worksheet));
     }
 
     return sheet_by_index(index);
@@ -1300,7 +1275,7 @@ worksheet workbook::create_sheet(std::size_t index)
 worksheet workbook::create_sheet_with_rel(const std::string &title, const relationship &rel)
 {
     auto sheet_id = d_->worksheets_.size() + 1;
-    d_->worksheets_.push_back(detail::worksheet_impl(this, sheet_id, title));
+    d_->worksheets_.emplace_back(std::make_shared<detail::worksheet_impl>(this, sheet_id, title));
 
     auto workbook_rel = d_->manifest_.relationship(path("/"), relationship_type::office_document);
     auto sheet_absoulute_path = workbook_rel.target().path().parent().append(rel.target().path());
@@ -1312,7 +1287,7 @@ worksheet workbook::create_sheet_with_rel(const std::string &title, const relati
 
     update_sheet_properties();
 
-    return worksheet(&d_->worksheets_.back());
+    return worksheet(d_->worksheets_.back());
 }
 
 workbook::iterator workbook::begin()
@@ -1375,7 +1350,6 @@ worksheet workbook::operator[](std::size_t index)
 void workbook::clear()
 {
     *d_ = detail::workbook_impl();
-    d_->stylesheet_.clear();
 }
 
 bool workbook::compare(const workbook &other, bool compare_by_reference) const
@@ -1411,15 +1385,14 @@ workbook workbook::clone(clone_method method) const
     {
     case clone_method::deep_copy:
     {
-        workbook wb;
-        *wb.d_ = *d_;
+        workbook wb(std::make_shared<detail::workbook_impl>(*d_));
 
         for (auto ws : wb)
         {
             ws.parent(wb);
         }
 
-        wb.d_->stylesheet_.get().parent = wb.d_;
+        wb.d_->stylesheet_->parent = wb.d_;
 
         return wb;
     }
@@ -1466,12 +1439,12 @@ std::vector<named_range> workbook::named_ranges() const
 format workbook::create_format(bool default_format)
 {
     register_workbook_part(relationship_type::stylesheet);
-    return d_->stylesheet_.get().create_format(default_format);
+    return d_->stylesheet_->create_format(default_format);
 }
 
 bool workbook::has_style(const std::string &name) const
 {
-    return d_->stylesheet_.get().has_style(name);
+    return d_->stylesheet_->has_style(name);
 }
 
 void workbook::clear_styles()
@@ -1481,27 +1454,27 @@ void workbook::clear_styles()
 
 void workbook::default_slicer_style(const std::string &value)
 {
-    d_->stylesheet_.get().default_slicer_style = value;
+    d_->stylesheet_->default_slicer_style = value;
 }
 
 std::string workbook::default_slicer_style() const
 {
-    return d_->stylesheet_.get().default_slicer_style.get();
+    return d_->stylesheet_->default_slicer_style.get();
 }
 
 void workbook::enable_known_fonts()
 {
-    d_->stylesheet_.get().known_fonts_enabled = true;
+    d_->stylesheet_->known_fonts_enabled = true;
 }
 
 void workbook::disable_known_fonts()
 {
-    d_->stylesheet_.get().known_fonts_enabled = false;
+    d_->stylesheet_->known_fonts_enabled = false;
 }
 
 bool workbook::known_fonts_enabled() const
 {
-    return d_->stylesheet_.get().known_fonts_enabled;
+    return d_->stylesheet_->known_fonts_enabled;
 }
 
 void workbook::clear_formats()
@@ -1528,12 +1501,12 @@ void workbook::apply_to_cells(std::function<void(cell)> f)
 
 format workbook::format(std::size_t format_index)
 {
-    return d_->stylesheet_.get().format(format_index);
+    return d_->stylesheet_->format(format_index);
 }
 
 const format workbook::format(std::size_t format_index) const
 {
-    return d_->stylesheet_.get().format(format_index);
+    return d_->stylesheet_->format(format_index);
 }
 
 manifest &workbook::manifest()
@@ -1625,22 +1598,22 @@ const std::unordered_map<std::string, std::vector<std::uint8_t>> &workbook::bina
 
 style workbook::create_style(const std::string &name)
 {
-    return d_->stylesheet_.get().create_style(name);
+    return d_->stylesheet_->create_style(name);
 }
 
 style workbook::create_builtin_style(const std::size_t builtin_id)
 {
-    return d_->stylesheet_.get().create_builtin_style(builtin_id);
+    return d_->stylesheet_->create_builtin_style(builtin_id);
 }
 
 style workbook::style(const std::string &name)
 {
-    return d_->stylesheet_.get().style(name);
+    return d_->stylesheet_->style(name);
 }
 
 const style workbook::style(const std::string &name) const
 {
-    return d_->stylesheet_.get().style(name);
+    return d_->stylesheet_->style(name);
 }
 
 calendar workbook::base_date() const

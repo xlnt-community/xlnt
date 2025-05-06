@@ -68,14 +68,50 @@ condition condition::text_does_not_contain(const std::string &text)
     return c;
 }
 
-conditional_format::conditional_format(detail::conditional_format_impl *d)
-    : d_(d)
+conditional_format::conditional_format(std::shared_ptr<detail::conditional_format_impl> d)
+    : d_(std::move(d))
 {
+    if (d_ == nullptr)
+    {
+        throw xlnt::invalid_attribute("xlnt::conditional_format: invalid conditional_format_impl pointer");
+    }
+
+    parent_ = d_->parent.lock();
+
+    if (parent_ == nullptr)
+    {
+        throw xlnt::invalid_attribute("xlnt::conditional_format: invalid stylesheet pointer");
+    }
+}
+
+conditional_format conditional_format::clone(clone_method method) const
+{
+    switch (method)
+    {
+    case clone_method::deep_copy:
+        return conditional_format(std::make_shared<detail::conditional_format_impl>(*d_));
+    case clone_method::shallow_copy:
+        return conditional_format(d_);
+    default:
+        throw xlnt::invalid_parameter("clone method not supported");
+    }
+}
+
+bool conditional_format::compare(const conditional_format &other, bool compare_by_reference) const
+{
+    if (compare_by_reference)
+    {
+        return d_ == other.d_;
+    }
+    else
+    {
+        return *d_ == *other.d_;
+    }
 }
 
 bool conditional_format::operator==(const conditional_format &other) const
 {
-    return d_ == other.d_;
+    return compare(other, true);
 }
 
 bool conditional_format::operator!=(const conditional_format &other) const
@@ -90,12 +126,12 @@ bool conditional_format::has_border() const
 
 xlnt::border conditional_format::border() const
 {
-    return d_->parent->borders.at(d_->border_id.get());
+    return parent_->borders.at(d_->border_id.get());
 }
 
 conditional_format conditional_format::border(const xlnt::border &new_border)
 {
-    d_->border_id = d_->parent->find_or_add(d_->parent->borders, new_border);
+    d_->border_id = parent_->find_or_add(parent_->borders, new_border);
     return *this;
 }
 
@@ -106,12 +142,12 @@ bool conditional_format::has_fill() const
 
 xlnt::fill conditional_format::fill() const
 {
-    return d_->parent->fills.at(d_->fill_id.get());
+    return parent_->fills.at(d_->fill_id.get());
 }
 
 conditional_format conditional_format::fill(const xlnt::fill &new_fill)
 {
-    d_->fill_id = d_->parent->find_or_add(d_->parent->fills, new_fill);
+    d_->fill_id = parent_->find_or_add(parent_->fills, new_fill);
     return *this;
 }
 
@@ -122,12 +158,12 @@ bool conditional_format::has_font() const
 
 xlnt::font conditional_format::font() const
 {
-    return d_->parent->fonts.at(d_->font_id.get());
+    return parent_->fonts.at(d_->font_id.get());
 }
 
 conditional_format conditional_format::font(const xlnt::font &new_font)
 {
-    d_->font_id = d_->parent->find_or_add(d_->parent->fonts, new_font);
+    d_->font_id = parent_->find_or_add(parent_->fonts, new_font);
     return *this;
 }
 
