@@ -204,14 +204,16 @@ public:
     format style(const class style &new_style);
 
     /// <summary>
-    /// Returns the style of this format. If it has no style, an invalid_parameter
-    /// exception will be thrown.
+    /// Returns the style of this format.
+    /// Assumes that the style exists (please call has_style() to check).
+    /// If this format has no style, an invalid_attribute exception will be thrown.
     /// </summary>
     class style style();
 
     /// <summary>
-    /// Returns the style of this format. If it has no style, an invalid_parameters
-    /// exception will be thrown.
+    /// Returns the style of this format.
+    /// Assumes that the style exists (please call has_style() to check).
+    /// If this format has no style, an invalid_attribute exception will be thrown.
     /// </summary>
     const class style style() const;
 

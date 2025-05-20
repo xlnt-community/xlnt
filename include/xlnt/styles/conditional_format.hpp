@@ -108,7 +108,9 @@ public:
     bool has_border() const;
 
     /// <summary>
-    ///
+    /// Returns the border of this conditional format.
+    /// Assumes that this conditional format has a border (please call has_border() to check).
+    /// If this conditional format does not have a border, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class border border() const;
 
@@ -123,7 +125,9 @@ public:
     bool has_fill() const;
 
     /// <summary>
-    ///
+    /// Returns the fill of this conditional format.
+    /// Assumes that this conditional format has a fill (please call has_fill() to check).
+    /// If this conditional format does not have a fill, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class fill fill() const;
 
@@ -138,7 +142,9 @@ public:
     bool has_font() const;
 
     /// <summary>
-    ///
+    /// Returns the font of this conditional format.
+    /// Assumes that this conditional format has a font (please call has_font() to check).
+    /// If this conditional format does not have a font, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class font font() const;
 

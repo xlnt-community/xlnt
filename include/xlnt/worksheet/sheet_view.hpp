@@ -75,6 +75,8 @@ public:
 
     /// <summary>
     /// Returns a reference to this view's pane.
+    /// Assumes that this view has a pane (please call has_pane() to check).
+    /// If this view does not have a pane, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     struct pane &pane()
     {
@@ -83,6 +85,8 @@ public:
 
     /// <summary>
     /// Returns a reference to this view's pane.
+    /// Assumes that this view has a pane (please call has_pane() to check).
+    /// If this view does not have a pane, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     const struct pane &pane() const
     {
@@ -211,6 +215,8 @@ public:
 
     /// <summary>
     /// Returns the top left cell of this view.
+    /// Assumes that this view has a top left (please call has_top_left_cell() to check).
+    /// If this view does not have a top left cell, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     cell_reference top_left_cell() const
     {

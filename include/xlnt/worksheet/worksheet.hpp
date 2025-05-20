@@ -149,6 +149,8 @@ public:
 
     /// <summary>
     /// Returns the top left corner of the region above and to the left of which panes are frozen.
+    /// Assumes that this sheet has frozen panes (please call has_frozen_panes() to check).
+    /// If this sheet does not have frozen panes, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     cell_reference frozen_panes() const;
 
@@ -372,19 +374,23 @@ public:
     bool has_named_range(const std::string &name) const;
 
     /// <summary>
-    /// Returns the named range with the given name. Throws key_not_found
-    /// exception if the named range doesn't exist.
+    /// Returns the named range with the given name.
+    /// Assumes that the named range exists (please call has_named_range() to check).
+    /// Throws key_not_found exception if the named range doesn't exist.
     /// </summary>
     class range named_range(const std::string &name);
 
     /// <summary>
-    /// Returns the named range with the given name. Throws key_not_found
-    /// exception if the named range doesn't exist.
+    /// Returns the named range with the given name.
+    /// Assumes that the named range exists (please call has_named_range() to check).
+    /// Throws key_not_found exception if the named range doesn't exist.
     /// </summary>
     const class range named_range(const std::string &name) const;
 
     /// <summary>
     /// Removes a named range with the given name.
+    /// Assumes that the named range exists (please call has_named_range() to check).
+    /// Throws key_not_found exception if the named range doesn't exist.
     /// </summary>
     void remove_named_range(const std::string &name);
 
@@ -523,6 +529,8 @@ public:
 
     /// <summary>
     /// Returns the page setup for this sheet.
+    /// Assumes that this sheet has a page setup (please call has_page_setup() to check).
+    /// If this sheet does not have a page setup, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     xlnt::page_setup page_setup() const;
 
@@ -538,6 +546,8 @@ public:
 
     /// <summary>
     /// Returns the margins of this sheet.
+    /// Assumes that this sheet has page margins (please call has_page_margins() to check).
+    /// If this sheet has no page margins, an invalid_attribute exception will be thrown.
     /// </summary>
     xlnt::page_margins page_margins() const;
 
@@ -550,6 +560,8 @@ public:
 
     /// <summary>
     /// Returns the current auto-filter of this sheet.
+    /// Assumes that this sheet has an auto-filter (please call has_auto_filter() to check).
+    /// If this sheet has no auto-filter, an invalid_attribute exception will be thrown.
     /// </summary>
     range_reference auto_filter() const;
 
@@ -591,6 +603,8 @@ public:
 
     /// <summary>
     /// Returns the phonetic properties of this sheet.
+    /// Assumes that this sheet has phonetic properties (please call has_phonetic_properties() to check).
+    /// If this sheet has no phonetic properties, an invalid_attribute exception will be thrown.
     /// </summary>
     const phonetic_pr &phonetic_properties() const;
 
@@ -606,6 +620,8 @@ public:
 
     /// <summary>
     /// Returns the header/footer of this sheet.
+    /// Assumes that this sheet has a header/footer (please call has_header_footer() to check).
+    /// If this sheet has no header/footer, an invalid_attribute exception will be thrown.
     /// </summary>
     class header_footer header_footer() const;
 
@@ -696,6 +712,8 @@ public:
 
     /// <summary>
     /// Returns the print area defined for this sheet.
+    /// Assumes that this sheet has a print area (please call has_print_area() to check).
+    /// If this sheet has no print area, an invalid_attribute exception will be thrown.
     /// </summary>
     range_reference print_area() const;
 
@@ -731,6 +749,8 @@ public:
 
     /// <summary>
     /// Returns the active cell on the default worksheet view.
+    /// Assumes that this worksheet has an active cell (please call has_active_cell() to check).
+    /// If this worksheet does not have an active cell, an xlnt::exception will be thrown.
     /// </summary>
     cell_reference active_cell() const;
 

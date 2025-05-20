@@ -386,6 +386,8 @@ public:
 
     /// <summary>
     /// Returns the value of the given core property.
+    /// Assumes that the specified core_property exists (please call has_core_property() to check).
+    /// If the specified core_property does not exist, an xlnt::exception will be thrown.
     /// </summary>
     variant core_property(xlnt::core_property type) const;
 
@@ -407,6 +409,8 @@ public:
 
     /// <summary>
     /// Returns the value of the given extended property.
+    /// Assumes that the specified extended_property exists (please call has_extended_property() to check).
+    /// If the specified extended_property does not exist, an xlnt::exception will be thrown.
     /// </summary>
     variant extended_property(xlnt::extended_property type) const;
 
@@ -428,6 +432,8 @@ public:
 
     /// <summary>
     /// Returns the value of the given custom property.
+    /// Assumes that the specified custom_property exists (please call has_custom_property() to check).
+    /// If the specified custom_property does not exist, an xlnt::exception will be thrown.
     /// </summary>
     variant custom_property(const std::string &property_name) const;
 
@@ -456,6 +462,8 @@ public:
 
     /// <summary>
     /// Returns the title of this workbook.
+    /// Assumes that this workbook has a title (please call has_title() to check).
+    /// If this workbook has no title, an invalid_attribute exception will be thrown.
     /// </summary>
     std::string title() const;
 
@@ -498,11 +506,15 @@ public:
 
     /// <summary>
     /// Returns the named range with the given name.
+    /// Assumes that the specified named_range exists (please call has_named_range() to check).
+    /// If the specified named_range does not exist, an xlnt::key_not_found exception will be thrown.
     /// </summary>
     class range named_range(const std::string &name);
 
     /// <summary>
     /// Deletes the named range with the given name.
+    /// Assumes that the specified named_range exists (please call has_named_range() to check).
+    /// If the specified named_range does not exist, an xlnt::key_not_found exception will be thrown.
     /// </summary>
     void remove_named_range(const std::string &name);
 
@@ -717,6 +729,8 @@ public:
 
     /// <summary>
     /// Returns the view.
+    /// Assumes that the view exists (please call has_view() to check).
+    /// If the view does not exist, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     workbook_view view() const;
 
@@ -734,6 +748,8 @@ public:
 
     /// <summary>
     /// Returns the code name that was set for this workbook.
+    /// Assumes that the code_name exists (please call has_code_name() to check).
+    /// If the code_name does not exist, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     std::string code_name() const;
 
@@ -749,21 +765,29 @@ public:
 
     /// <summary>
     /// Returns the AppName workbook file property.
+    /// Assumes that this workbook has a file version (please call has_file_version() to check).
+    /// If this workbook has no file version, an invalid_attribute exception will be thrown.
     /// </summary>
     std::string app_name() const;
 
     /// <summary>
     /// Returns the LastEdited workbook file property.
+    /// Assumes that this workbook has a file version (please call has_file_version() to check).
+    /// If this workbook has no file version, an invalid_attribute exception will be thrown.
     /// </summary>
     std::size_t last_edited() const;
 
     /// <summary>
     /// Returns the LowestEdited workbook file property.
+    /// Assumes that this workbook has a file version (please call has_file_version() to check).
+    /// If this workbook has no file version, an invalid_attribute exception will be thrown.
     /// </summary>
     std::size_t lowest_edited() const;
 
     /// <summary>
     /// Returns the RupBuild workbook file property.
+    /// Assumes that this workbook has a file version (please call has_file_version() to check).
+    /// If this workbook has no file version, an invalid_attribute exception will be thrown.
     /// </summary>
     std::size_t rup_build() const;
 
@@ -776,6 +800,8 @@ public:
 
     /// <summary>
     /// Returns a const reference to this workbook's theme.
+    /// Assumes that this workbook has a theme (please call has_theme() to check).
+    /// If this workbook has no theme, an invalid_attribute exception will be thrown.
     /// </summary>
     const xlnt::theme &theme() const;
 
@@ -935,6 +961,8 @@ public:
 
     /// <summary>
     /// Returns the calculation properties used in this workbook.
+    /// Assumes that this workbook has calculation properties (please call has_calculation_properties() to check).
+    /// If this workbook has no calculation properties, an invalid_attribute exception will be thrown.
     /// </summary>
     class calculation_properties calculation_properties() const;
 

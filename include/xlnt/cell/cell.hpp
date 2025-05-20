@@ -260,6 +260,8 @@ public:
 
     /// <summary>
     /// Returns the relationship of this cell's hyperlink.
+    /// Assumes that this cell has a hyperlink (please call has_hyperlink() to check).
+    /// If this cell does not have a hyperlink, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class hyperlink hyperlink() const;
 
@@ -336,8 +338,9 @@ public:
     bool has_format() const;
 
     /// <summary>
-    /// Returns the format applied to this cell. If this cell has no
-    /// format, an invalid_attribute exception will be thrown.
+    /// Returns the format applied to this cell.
+    /// Assumes that the format exists (please call has_format() to check).
+    /// If this cell has no format, an invalid_attribute exception will be thrown.
     /// </summary>
     const class format format() const;
 
@@ -428,11 +431,15 @@ public:
 
     /// <summary>
     /// Returns a wrapper pointing to the named style applied to this cell.
+    /// Assumes that the style exists (please call has_style() to check).
+    /// If this cell does not have a style, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class style style();
 
     /// <summary>
     /// Returns a wrapper pointing to the named style applied to this cell.
+    /// Assumes that the style exists (please call has_style() to check).
+    /// If this cell does not have a style, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     const class style style() const;
 
@@ -460,6 +467,8 @@ public:
 
     /// <summary>
     /// Returns the string representation of the formula applied to this cell.
+    /// Assumes that cell view has a formula (please call has_formula() to check).
+    /// If this cell does not have a formula, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     std::string formula() const;
 
@@ -574,6 +583,8 @@ public:
 
     /// <summary>
     /// Gets the comment applied to this cell.
+    /// Assumes that the comment exists (please call has_comment() to check).
+    /// If this cell does not have a comment, an xlnt::exception will be thrown.
     /// </summary>
     class comment comment();
 
@@ -644,6 +655,8 @@ private:
     /// <summary>
     /// Returns a non-const reference to the format of this cell.
     /// This is for internal use only.
+    /// Assumes that this cell has a format (please call has_format() to check).
+    /// If this cell does not have a format, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class format modifiable_format();
 
