@@ -994,7 +994,7 @@ class comment cell::comment()
 {
     if (!has_comment())
     {
-        throw xlnt::exception("cell has no comment");
+        throw xlnt::invalid_attribute("cell has no comment");
     }
 
     return *d_->comment_.get();

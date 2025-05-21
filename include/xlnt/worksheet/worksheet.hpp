@@ -750,7 +750,7 @@ public:
     /// <summary>
     /// Returns the active cell on the default worksheet view.
     /// Assumes that this worksheet has an active cell (please call has_active_cell() to check).
-    /// If this worksheet does not have an active cell, an xlnt::exception will be thrown.
+    /// If this worksheet does not have an active cell, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     cell_reference active_cell() const;
 

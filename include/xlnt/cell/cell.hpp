@@ -584,7 +584,7 @@ public:
     /// <summary>
     /// Gets the comment applied to this cell.
     /// Assumes that the comment exists (please call has_comment() to check).
-    /// If this cell does not have a comment, an xlnt::exception will be thrown.
+    /// If this cell does not have a comment, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class comment comment();
 

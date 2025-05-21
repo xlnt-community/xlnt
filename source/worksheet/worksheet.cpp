@@ -367,14 +367,14 @@ cell_reference worksheet::active_cell() const
 {
     if (!has_view())
     {
-        throw xlnt::exception("Worksheet has no view.");
+        throw xlnt::invalid_attribute("Worksheet has no view.");
     }
 
     auto &primary_view = d_->views_.front();
 
     if (!primary_view.has_selections())
     {
-        throw xlnt::exception("Default worksheet view has no selections.");
+        throw xlnt::invalid_attribute("Default worksheet view has no selections.");
     }
 
     return primary_view.selection(0).active_cell();

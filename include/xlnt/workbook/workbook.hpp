@@ -387,7 +387,7 @@ public:
     /// <summary>
     /// Returns the value of the given core property.
     /// Assumes that the specified core_property exists (please call has_core_property() to check).
-    /// If the specified core_property does not exist, an xlnt::exception will be thrown.
+    /// If the specified core_property does not exist, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     variant core_property(xlnt::core_property type) const;
 
@@ -410,7 +410,7 @@ public:
     /// <summary>
     /// Returns the value of the given extended property.
     /// Assumes that the specified extended_property exists (please call has_extended_property() to check).
-    /// If the specified extended_property does not exist, an xlnt::exception will be thrown.
+    /// If the specified extended_property does not exist, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     variant extended_property(xlnt::extended_property type) const;
 
@@ -433,7 +433,7 @@ public:
     /// <summary>
     /// Returns the value of the given custom property.
     /// Assumes that the specified custom_property exists (please call has_custom_property() to check).
-    /// If the specified custom_property does not exist, an xlnt::exception will be thrown.
+    /// If the specified custom_property does not exist, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     variant custom_property(const std::string &property_name) const;
 
