@@ -75,8 +75,11 @@ public:
     bool has_worksheet(const std::string &name);
 
     /// <summary>
-    /// Beings reading of the next worksheet in the workbook and optionally
-    /// returns its title if the last worksheet has not yet been read.
+    /// Beings reading of the next worksheet in the workbook.
+    /// Assumes that this workbook has a worksheet with
+    /// the given name (please call has_worksheet() to check).
+    /// If this workbook does not have a worksheet with the given name,
+    /// an xlnt::exception will be thrown.
     /// </summary>
     void begin_worksheet(const std::string &name);
 

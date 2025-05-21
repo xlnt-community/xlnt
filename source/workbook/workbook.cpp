@@ -280,7 +280,7 @@ variant workbook::core_property(xlnt::core_property type) const
         }
     }
 
-    throw xlnt::exception("workbook doesn't have core property");
+    throw xlnt::invalid_attribute("workbook doesn't have core property");
 }
 
 void workbook::core_property(xlnt::core_property type, const variant &value)
@@ -335,7 +335,7 @@ variant workbook::extended_property(xlnt::extended_property type) const
         }
     }
 
-    throw xlnt::exception("workbook doesn't have extended property");
+    throw xlnt::invalid_attribute("workbook doesn't have extended property");
 }
 
 bool workbook::has_custom_property(const std::string &property_name) const
@@ -374,7 +374,7 @@ variant workbook::custom_property(const std::string &property_name) const
         }
     }
 
-    throw xlnt::exception("workbook doesn't have custom property");
+    throw xlnt::invalid_attribute("workbook doesn't have custom property");
 }
 
 void workbook::abs_path(const std::string &path)
