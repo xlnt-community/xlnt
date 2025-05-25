@@ -115,6 +115,7 @@ public:
         register_test(test_issue_5_empty_bottom_rows);
         register_test(test_issue_18_defined_name_with_workbook_scope);
         register_test(test_non_contiguous_selection);
+        register_test(test_throw_empty_cell);
     }
 
     void test_new_worksheet()
@@ -1712,6 +1713,14 @@ public:
         xlnt_assert_equals(s.sqrefs()[2], "D4:D5");
         xlnt_assert_equals(s.sqrefs()[3], "E6:F6");
         xlnt_assert_differs(s.sqrefs()[0], "B1");
+    }
+
+    void test_throw_empty_cell()
+    {
+        xlnt::workbook wb;
+        const auto ws = wb.active_sheet();
+
+        xlnt_assert_throws(ws.cell("X10"), xlnt::invalid_parameter);
     }
 };
 

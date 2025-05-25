@@ -397,7 +397,12 @@ cell worksheet::cell(const cell_reference &reference)
 
 const cell worksheet::cell(const cell_reference &reference) const
 {
-    return xlnt::cell(&d_->cell_map_.at(reference));
+    const auto match = d_->cell_map_.find(reference);
+    if (match == d_->cell_map_.end())
+    {
+        throw xlnt::invalid_parameter("Requested cell doesn't exist.");
+    }
+    return xlnt::cell(&match->second);
 }
 
 cell worksheet::cell(xlnt::column_t column, row_t row)
