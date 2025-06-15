@@ -30,6 +30,7 @@
 #include <xlnt/utils/exceptions.hpp>
 #include <helpers/temporary_file.hpp>
 #include <helpers/test_suite.hpp>
+#include <detail/constants.hpp>
 
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/styles/format.hpp>
@@ -77,6 +78,7 @@ public:
         register_test(test_Issue279);
         register_test(test_Issue353);
         register_test(test_Issue494);
+        register_test(test_Issue90);
         register_test(test_style);
         register_test(test_sheet_moving)
     }
@@ -631,6 +633,56 @@ public:
         auto ws = wb.active_sheet();
         xlnt_assert_equals(ws.cell(2, 1).to_string(), "V1.00");
         xlnt_assert_equals(ws.cell(2, 2).to_string(), "V1.00");
+    }
+
+    void test_Issue90()
+    {
+        // Test for Issue #90: Parsing Exception: bad cell coordinates for definedName with Whole-Column Reference
+        // This test verifies that workbooks with definedName entries containing whole-column references
+        // (e.g., $A:$I) can be loaded without throwing exceptions.
+
+        xlnt::workbook wb;
+
+        // This should not throw an exception
+        try {
+            wb.load(path_helper::test_file("issue90_debug_test_file.xlsx"));
+            std::cout << "File loaded successfully!" << std::endl;
+        } catch (const std::exception& e) {
+            std::cout << "Exception caught: " << e.what() << std::endl;
+            throw; // Re-throw to fail the test
+        }
+
+        // Verify that the workbook was loaded successfully
+        xlnt_assert(wb.sheet_count() > 0);
+
+        // Test that we can access the worksheets
+        auto ws = wb.active_sheet();
+        xlnt_assert_throws_nothing(ws.title());
+
+        // Test direct range_reference parsing with whole column references
+        xlnt_assert_throws_nothing(xlnt::range_reference("A:I"));
+        xlnt_assert_throws_nothing(xlnt::range_reference("$A:$I"));
+        xlnt_assert_throws_nothing(xlnt::range_reference("B:E"));
+        xlnt_assert_throws_nothing(xlnt::range_reference("$B:$E"));
+
+        // Test direct range_reference parsing with whole row references
+        xlnt_assert_throws_nothing(xlnt::range_reference("1:5"));
+        xlnt_assert_throws_nothing(xlnt::range_reference("$1:$5"));
+        xlnt_assert_throws_nothing(xlnt::range_reference("10:20"));
+        xlnt_assert_throws_nothing(xlnt::range_reference("$10:$20"));
+
+        // Verify that the parsed ranges have correct properties
+        xlnt::range_reference col_ref("A:C");
+        xlnt_assert_equals(col_ref.top_left().column(), xlnt::column_t("A"));
+        xlnt_assert_equals(col_ref.top_left().row(), 1);
+        xlnt_assert_equals(col_ref.bottom_right().column(), xlnt::column_t("C"));
+        xlnt_assert_equals(col_ref.bottom_right().row(), xlnt::constants::max_row());
+
+        xlnt::range_reference row_ref("2:4");
+        xlnt_assert_equals(row_ref.top_left().column(), xlnt::constants::min_column());
+        xlnt_assert_equals(row_ref.top_left().row(), 2);
+        xlnt_assert_equals(row_ref.bottom_right().column(), xlnt::constants::max_column());
+        xlnt_assert_equals(row_ref.bottom_right().row(), 4);
     }
 
     void test_style()

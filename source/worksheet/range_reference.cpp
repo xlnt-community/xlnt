@@ -24,6 +24,60 @@
 
 #include <xlnt/worksheet/range_reference.hpp>
 
+#include <detail/constants.hpp>
+#include <xlnt/utils/exceptions.hpp>
+
+namespace {
+
+bool is_column_only(const std::string &s)
+{
+    if (s.empty())
+    {
+        return false;
+    }
+
+    size_t start_pos = (s[0] == '$') ? 1 : 0;
+    if (start_pos >= s.length()) // String contains only a "$"
+    {
+        return false;
+    }
+
+    for (size_t i = start_pos; i < s.length(); ++i)
+    {
+        if (!std::isalpha(static_cast<unsigned char>(s[i])))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool is_row_only(const std::string &s)
+{
+    if (s.empty())
+    {
+        return false;
+    }
+
+    size_t start_pos = (s[0] == '$') ? 1 : 0;
+    if (start_pos >= s.length()) // String contains only a "$"
+    {
+        return false;
+    }
+
+    for (size_t i = start_pos; i < s.length(); ++i)
+    {
+        if (!std::isdigit(static_cast<unsigned char>(s[i])))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+}
+
 namespace xlnt {
 
 range_reference range_reference::make_absolute(const xlnt::range_reference &relative)
@@ -47,19 +101,77 @@ range_reference::range_reference(const char *range_string)
 }
 
 range_reference::range_reference(const std::string &range_string)
-    : top_left_("A1"), bottom_right_("A1")
 {
+    // Handle special Excel error references like #REF!
+    if (range_string == "#REF!")
+    {
+        // Create a default invalid range for #REF! references
+        // This allows the workbook to load without throwing an exception
+        top_left_ = cell_reference("A1");
+        bottom_right_ = cell_reference("A1");
+        return;
+    }
+
     auto colon_index = range_string.find(':');
 
-    if (colon_index != std::string::npos)
+    if (colon_index == std::string::npos)
     {
-        top_left_ = cell_reference(range_string.substr(0, colon_index));
-        bottom_right_ = cell_reference(range_string.substr(colon_index + 1));
+        // Single cell reference, e.g., "A1"
+        top_left_ = cell_reference(range_string);
+        bottom_right_ = top_left_;
+        return;
+    }
+
+    std::string start_part = range_string.substr(0, colon_index);
+    std::string end_part = range_string.substr(colon_index + 1);
+
+    // Handle cases where one or both parts are #REF!
+    if (start_part == "#REF!" || end_part == "#REF!")
+    {
+        // Create a default invalid range for #REF! references
+        top_left_ = cell_reference("A1");
+        bottom_right_ = cell_reference("A1");
+        return;
+    }
+
+    if (is_column_only(start_part) && is_column_only(end_part))
+    {
+        // Whole column reference, e.g., "A:C"
+        if (start_part[0] == '$') start_part.erase(0, 1);
+        if (end_part[0] == '$') end_part.erase(0, 1);
+
+        top_left_ = cell_reference(start_part, 1);
+        bottom_right_ = cell_reference(end_part, constants::max_row());
+    }
+    else if (is_row_only(start_part) && is_row_only(end_part))
+    {
+        // Whole row reference, e.g., "1:5"
+        if (start_part[0] == '$') start_part.erase(0, 1);
+        if (end_part[0] == '$') end_part.erase(0, 1);
+
+        try
+        {
+            row_t start_row = static_cast<row_t>(std::stoul(start_part));
+            row_t end_row = static_cast<row_t>(std::stoul(end_part));
+
+            top_left_ = cell_reference(constants::min_column(), start_row);
+            bottom_right_ = cell_reference(constants::max_column(), end_row);
+        }
+        catch (const std::out_of_range &)
+        {
+            std::string error_message = "Row number in range string is out of valid range: " + range_string;
+            throw invalid_parameter(error_message.c_str());
+        }
+        catch (const std::invalid_argument &)
+        {
+            std::string error_message = "Invalid row number format in range string: " + range_string;
+            throw invalid_parameter(error_message.c_str());
+        }
     }
     else
     {
-        top_left_ = cell_reference(range_string);
-        bottom_right_ = cell_reference(range_string);
+        top_left_ = cell_reference(start_part);
+        bottom_right_ = cell_reference(end_part);
     }
 }
 
@@ -84,7 +196,7 @@ range_reference range_reference::make_offset(int column_offset, int row_offset) 
     auto top_left = top_left_.make_offset(column_offset, row_offset);
     auto bottom_right = bottom_right_.make_offset(column_offset, row_offset);
 
-    return top_left, bottom_right; // lol
+    return range_reference(top_left, bottom_right);
 }
 
 std::size_t range_reference::height() const
