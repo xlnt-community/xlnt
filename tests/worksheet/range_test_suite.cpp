@@ -29,6 +29,7 @@
 #include <xlnt/worksheet/header_footer.hpp>
 #include <xlnt/worksheet/range.hpp>
 #include <xlnt/worksheet/worksheet.hpp>
+#include <detail/constants.hpp>
 
 class range_test_suite : public test_suite
 {
@@ -38,6 +39,10 @@ public:
         register_test(test_construction);
         register_test(test_batch_formatting);
         register_test(test_clear_cells);
+        register_test(test_whole_column_reference);
+        register_test(test_whole_row_reference);
+        register_test(test_mixed_reference_formats);
+        register_test(test_ref_error_handling);
     }
 
     void test_construction()
@@ -111,6 +116,106 @@ public:
         auto range = ws.range("B1:C3");
         range.clear_cells();
         xlnt_assert_equals(ws.calculate_dimension(), xlnt::range_reference(1, 1, 1, 3));
+    }
+
+    void test_whole_column_reference()
+    {
+        // Test parsing of whole column references like "A:C" and "$A:$C"
+        xlnt::range_reference ref1("A:C");
+        xlnt_assert_equals(ref1.top_left().column(), xlnt::column_t("A"));
+        xlnt_assert_equals(ref1.top_left().row(), 1);
+        xlnt_assert_equals(ref1.bottom_right().column(), xlnt::column_t("C"));
+        xlnt_assert_equals(ref1.bottom_right().row(), xlnt::constants::max_row());
+
+        xlnt::range_reference ref2("$A:$C");
+        xlnt_assert_equals(ref2.top_left().column(), xlnt::column_t("A"));
+        xlnt_assert_equals(ref2.top_left().row(), 1);
+        xlnt_assert_equals(ref2.bottom_right().column(), xlnt::column_t("C"));
+        xlnt_assert_equals(ref2.bottom_right().row(), xlnt::constants::max_row());
+
+        // Test single column reference
+        xlnt::range_reference ref3("B:B");
+        xlnt_assert_equals(ref3.top_left().column(), xlnt::column_t("B"));
+        xlnt_assert_equals(ref3.top_left().row(), 1);
+        xlnt_assert_equals(ref3.bottom_right().column(), xlnt::column_t("B"));
+        xlnt_assert_equals(ref3.bottom_right().row(), xlnt::constants::max_row());
+
+        // Test with workbook and worksheet
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        auto range = ws.range("A:C");
+        xlnt_assert_equals(range.target_worksheet(), ws);
+    }
+
+    void test_whole_row_reference()
+    {
+        // Test parsing of whole row references like "1:5" and "$1:$5"
+        xlnt::range_reference ref1("1:5");
+        xlnt_assert_equals(ref1.top_left().column(), xlnt::constants::min_column());
+        xlnt_assert_equals(ref1.top_left().row(), 1);
+        xlnt_assert_equals(ref1.bottom_right().column(), xlnt::constants::max_column());
+        xlnt_assert_equals(ref1.bottom_right().row(), 5);
+
+        xlnt::range_reference ref2("$1:$5");
+        xlnt_assert_equals(ref2.top_left().column(), xlnt::constants::min_column());
+        xlnt_assert_equals(ref2.top_left().row(), 1);
+        xlnt_assert_equals(ref2.bottom_right().column(), xlnt::constants::max_column());
+        xlnt_assert_equals(ref2.bottom_right().row(), 5);
+
+        // Test single row reference
+        xlnt::range_reference ref3("3:3");
+        xlnt_assert_equals(ref3.top_left().column(), xlnt::constants::min_column());
+        xlnt_assert_equals(ref3.top_left().row(), 3);
+        xlnt_assert_equals(ref3.bottom_right().column(), xlnt::constants::max_column());
+        xlnt_assert_equals(ref3.bottom_right().row(), 3);
+
+        // Test with workbook and worksheet
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        auto range = ws.range("1:5");
+        xlnt_assert_equals(range.target_worksheet(), ws);
+    }
+
+    void test_mixed_reference_formats()
+    {
+        // Test that normal cell references still work
+        xlnt::range_reference ref1("A1:C5");
+        xlnt_assert_equals(ref1.top_left().column(), xlnt::column_t("A"));
+        xlnt_assert_equals(ref1.top_left().row(), 1);
+        xlnt_assert_equals(ref1.bottom_right().column(), xlnt::column_t("C"));
+        xlnt_assert_equals(ref1.bottom_right().row(), 5);
+
+        // Test single cell reference
+        xlnt::range_reference ref2("B2");
+        xlnt_assert_equals(ref2.top_left().column(), xlnt::column_t("B"));
+        xlnt_assert_equals(ref2.top_left().row(), 2);
+        xlnt_assert_equals(ref2.bottom_right().column(), xlnt::column_t("B"));
+        xlnt_assert_equals(ref2.bottom_right().row(), 2);
+
+        // Test absolute references
+        xlnt::range_reference ref3("$A$1:$C$5");
+        xlnt_assert_equals(ref3.top_left().column(), xlnt::column_t("A"));
+        xlnt_assert_equals(ref3.top_left().row(), 1);
+        xlnt_assert_equals(ref3.bottom_right().column(), xlnt::column_t("C"));
+        xlnt_assert_equals(ref3.bottom_right().row(), 5);
+    }
+
+    void test_ref_error_handling()
+    {
+        // Test handling of #REF! error references
+        // These should not throw exceptions but create valid range objects
+        xlnt_assert_throws_nothing(xlnt::range_reference("#REF!"));
+
+        xlnt::range_reference ref_error("#REF!");
+        xlnt_assert_equals(ref_error.top_left().column(), xlnt::column_t("A"));
+        xlnt_assert_equals(ref_error.top_left().row(), 1);
+        xlnt_assert_equals(ref_error.bottom_right().column(), xlnt::column_t("A"));
+        xlnt_assert_equals(ref_error.bottom_right().row(), 1);
+
+        // Test ranges with #REF! in parts
+        xlnt_assert_throws_nothing(xlnt::range_reference("#REF!:A5"));
+        xlnt_assert_throws_nothing(xlnt::range_reference("A1:#REF!"));
+        xlnt_assert_throws_nothing(xlnt::range_reference("#REF!:#REF!"));
     }
 };
 static range_test_suite x;
