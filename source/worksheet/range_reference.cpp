@@ -102,16 +102,6 @@ range_reference::range_reference(const char *range_string)
 
 range_reference::range_reference(const std::string &range_string)
 {
-    // Handle special Excel error references like #REF!
-    if (range_string == "#REF!")
-    {
-        // Create a default invalid range for #REF! references
-        // This allows the workbook to load without throwing an exception
-        top_left_ = cell_reference("A1");
-        bottom_right_ = cell_reference("A1");
-        return;
-    }
-
     auto colon_index = range_string.find(':');
 
     if (colon_index == std::string::npos)
@@ -124,15 +114,6 @@ range_reference::range_reference(const std::string &range_string)
 
     std::string start_part = range_string.substr(0, colon_index);
     std::string end_part = range_string.substr(colon_index + 1);
-
-    // Handle cases where one or both parts are #REF!
-    if (start_part == "#REF!" || end_part == "#REF!")
-    {
-        // Create a default invalid range for #REF! references
-        top_left_ = cell_reference("A1");
-        bottom_right_ = cell_reference("A1");
-        return;
-    }
 
     if (is_column_only(start_part) && is_column_only(end_part))
     {

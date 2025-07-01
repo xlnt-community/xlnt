@@ -115,6 +115,11 @@ bool is_true(const std::string &bool_string)
 #endif
 }
 
+bool is_valid_reference (const std::string &reference_string)
+{
+    return reference_string != "#REF!";
+}
+
 using style_id_pair = std::pair<xlnt::detail::style_impl, std::size_t>;
 
 /// <summary>
@@ -516,12 +521,20 @@ void read_defined_names(worksheet ws, std::vector<defined_name> defined_names)
         else if (name.name == "_xlnm._FilterDatabase")
         {
             auto i = name.value.find("!");
-            ws.auto_filter(name.value.substr(i + 1));
+            auto ref = name.value.substr(i + 1);
+            if (is_valid_reference(ref))
+            {
+                ws.auto_filter(ref);
+            }
         }
         else if (name.name == "_xlnm.Print_Area")
         {
             auto i = name.value.find("!");
-            ws.print_area(name.value.substr(i + 1));
+            auto ref = name.value.substr(i + 1);
+            if (is_valid_reference(ref))
+            {
+                ws.print_area(ref);
+            }
         }
     }
 }

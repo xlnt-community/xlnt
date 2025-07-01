@@ -644,13 +644,7 @@ public:
         xlnt::workbook wb;
 
         // This should not throw an exception
-        try {
-            wb.load(path_helper::test_file("issue90_debug_test_file.xlsx"));
-            std::cout << "File loaded successfully!" << std::endl;
-        } catch (const std::exception& e) {
-            std::cout << "Exception caught: " << e.what() << std::endl;
-            throw; // Re-throw to fail the test
-        }
+        xlnt_assert_throws_nothing(wb.load(path_helper::test_file("issue90_debug_test_file.xlsx")));
 
         // Verify that the workbook was loaded successfully
         xlnt_assert(wb.sheet_count() > 0);

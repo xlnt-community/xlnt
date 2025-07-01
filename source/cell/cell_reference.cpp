@@ -32,17 +32,6 @@
 #include <detail/constants.hpp>
 #include <detail/serialization/parsers.hpp>
 
-namespace {
-
-// Helper function to check if a string is an Excel error value
-bool is_excel_error(const std::string &s)
-{
-    return s == "#REF!" || s == "#NAME?" || s == "#VALUE!" ||
-           s == "#DIV/0!" || s == "#NUM!" || s == "#N/A" || s == "#NULL!";
-}
-
-} // namespace
-
 namespace xlnt {
 
 std::size_t cell_reference_hash::operator()(const cell_reference &k) const
@@ -55,9 +44,6 @@ cell_reference &cell_reference::make_absolute(bool absolute_column, bool absolut
     column_absolute(absolute_column);
     row_absolute(absolute_row);
 
-    // Update original string to reflect changes
-    original_string_ = to_string();
-
     return *this;
 }
 
@@ -67,20 +53,8 @@ cell_reference::cell_reference()
 }
 
 cell_reference::cell_reference(const std::string &string)
-    : absolute_row_(false), absolute_column_(false), is_error_(false)
+    : absolute_row_(false), absolute_column_(false)
 {
-    original_string_ = string;
-
-    // First check if this is an error reference
-    if (is_excel_error(string))
-    {
-        is_error_ = true;
-        // Set a safe default value (A1), even though it won't be used normally
-        column_ = column_t(1);
-        row_ = 1;
-        return; // Early return, skip further parsing
-    }
-
     // If not an error reference, proceed with normal parsing
     auto split = split_reference(string, absolute_column_, absolute_row_);
     column(split.first);
@@ -93,7 +67,7 @@ cell_reference::cell_reference(const char *reference_string)
 }
 
 cell_reference::cell_reference(column_t column_index, row_t row)
-    : column_(column_index), row_(row), absolute_row_(false), absolute_column_(false), is_error_(false)
+    : column_(column_index), row_(row), absolute_row_(false), absolute_column_(false)
 {
     if (row_ == 0
         || column_ == 0
@@ -102,9 +76,6 @@ cell_reference::cell_reference(column_t column_index, row_t row)
     {
         throw invalid_cell_reference(column_, row_);
     }
-
-    // Construct original_string_ for consistency
-    original_string_ = to_string();
 }
 
 range_reference cell_reference::operator,(const xlnt::cell_reference &other) const
@@ -114,12 +85,6 @@ range_reference cell_reference::operator,(const xlnt::cell_reference &other) con
 
 std::string cell_reference::to_string() const
 {
-    // If this is an error reference, return the original string directly
-    if (is_error_)
-    {
-        return original_string_;
-    }
-
     std::string string_representation;
 
     if (absolute_column_)
@@ -142,11 +107,6 @@ std::string cell_reference::to_string() const
 range_reference cell_reference::to_range() const
 {
     return range_reference(column_, row_, column_, row_);
-}
-
-bool cell_reference::is_error() const
-{
-    return is_error_;
 }
 
 std::pair<std::string, row_t> cell_reference::split_reference(const std::string &reference_string)
@@ -306,14 +266,6 @@ cell_reference cell_reference::make_offset(int column_offset, int row_offset) co
 
 bool cell_reference::operator==(const cell_reference &comparand) const
 {
-    // If either one is an error reference
-    if (is_error_ || comparand.is_error_)
-    {
-        // Only equal if both are error references with the same original string
-        return is_error_ && comparand.is_error_ && original_string_ == comparand.original_string_;
-    }
-
-    // If neither is an error reference, execute original comparison logic
     return comparand.column_ == column_
         && comparand.row_ == row_
         && absolute_column_ == comparand.absolute_column_

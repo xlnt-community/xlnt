@@ -42,7 +42,6 @@ public:
         register_test(test_whole_column_reference);
         register_test(test_whole_row_reference);
         register_test(test_mixed_reference_formats);
-        register_test(test_ref_error_handling);
     }
 
     void test_construction()
@@ -198,24 +197,6 @@ public:
         xlnt_assert_equals(ref3.top_left().row(), 1);
         xlnt_assert_equals(ref3.bottom_right().column(), xlnt::column_t("C"));
         xlnt_assert_equals(ref3.bottom_right().row(), 5);
-    }
-
-    void test_ref_error_handling()
-    {
-        // Test handling of #REF! error references
-        // These should not throw exceptions but create valid range objects
-        xlnt_assert_throws_nothing(xlnt::range_reference("#REF!"));
-
-        xlnt::range_reference ref_error("#REF!");
-        xlnt_assert_equals(ref_error.top_left().column(), xlnt::column_t("A"));
-        xlnt_assert_equals(ref_error.top_left().row(), 1);
-        xlnt_assert_equals(ref_error.bottom_right().column(), xlnt::column_t("A"));
-        xlnt_assert_equals(ref_error.bottom_right().row(), 1);
-
-        // Test ranges with #REF! in parts
-        xlnt_assert_throws_nothing(xlnt::range_reference("#REF!:A5"));
-        xlnt_assert_throws_nothing(xlnt::range_reference("A1:#REF!"));
-        xlnt_assert_throws_nothing(xlnt::range_reference("#REF!:#REF!"));
     }
 };
 static range_test_suite x;

@@ -186,8 +186,6 @@ public:
     /// Returns a 1x1 range_reference containing only this cell_reference.
     /// </summary>
     range_reference to_range() const;
-    
-    bool is_error() const;
 
     // operators
 
@@ -256,9 +254,6 @@ private:
     /// True if the reference's column is absolute. This looks like "$A1" in Excel.
     /// </summary>
     bool absolute_column_;
-    
-    bool is_error_ = false;
-    std::string original_string_;
 };
 
 } // namespace xlnt
