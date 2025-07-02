@@ -48,7 +48,7 @@ cell_reference &cell_reference::make_absolute(bool absolute_column, bool absolut
 }
 
 cell_reference::cell_reference()
-    : cell_reference("A1")
+    : cell_reference(1, 1)
 {
 }
 
@@ -127,7 +127,7 @@ std::pair<std::string, row_t> cell_reference::split_reference(
     if (i < reference_string.length() && reference_string[i] == '$')
     {
         absolute_column = true;
-        i++;
+        ++i;
     }
     else
     {
@@ -138,7 +138,7 @@ std::pair<std::string, row_t> cell_reference::split_reference(
     while (i < reference_string.length() && std::isalpha(static_cast<unsigned char>(reference_string[i])))
     {
         col_str += static_cast<char>(std::toupper(static_cast<unsigned char>(reference_string[i])));
-        i++;
+        ++i;
     }
 
     if (col_str.empty())
@@ -150,7 +150,7 @@ std::pair<std::string, row_t> cell_reference::split_reference(
     if (i < reference_string.length() && reference_string[i] == '$')
     {
         absolute_row = true;
-        i++;
+        ++i;
     }
     else
     {
@@ -161,7 +161,7 @@ std::pair<std::string, row_t> cell_reference::split_reference(
     while (i < reference_string.length() && std::isdigit(static_cast<unsigned char>(reference_string[i])))
     {
         row_str += reference_string[i];
-        i++;
+        ++i;
     }
 
     // 5. Validate format: string must be fully parsed and row part cannot be empty

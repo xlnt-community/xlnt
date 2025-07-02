@@ -26,10 +26,11 @@
 
 #include <detail/constants.hpp>
 #include <xlnt/utils/exceptions.hpp>
+#include <detail/serialization/parsers.hpp>
 
 namespace {
 
-bool is_column_only(const std::string &s)
+bool is_whole_column(const std::string &s)
 {
     if (s.empty())
     {
@@ -53,7 +54,7 @@ bool is_column_only(const std::string &s)
     return true;
 }
 
-bool is_row_only(const std::string &s)
+bool is_whole_row(const std::string &s)
 {
     if (s.empty())
     {
@@ -75,6 +76,16 @@ bool is_row_only(const std::string &s)
     }
 
     return true;
+}
+
+bool extract_absolute (std::string& part)
+{
+    bool absolute = part[0] == '$';
+    if (absolute)
+    {
+        part.erase(0, 1);
+    }
+    return absolute;
 }
 }
 
@@ -115,39 +126,34 @@ range_reference::range_reference(const std::string &range_string)
     std::string start_part = range_string.substr(0, colon_index);
     std::string end_part = range_string.substr(colon_index + 1);
 
-    if (is_column_only(start_part) && is_column_only(end_part))
+    if (is_whole_column(start_part) && is_whole_column(end_part))
     {
         // Whole column reference, e.g., "A:C"
-        if (start_part[0] == '$') start_part.erase(0, 1);
-        if (end_part[0] == '$') end_part.erase(0, 1);
+        bool absoluteStart = extract_absolute(start_part);
+        bool absoluteEnd = extract_absolute(end_part);
 
-        top_left_ = cell_reference(start_part, 1);
-        bottom_right_ = cell_reference(end_part, constants::max_row());
+        top_left_ = cell_reference(start_part, 1).make_absolute(absoluteStart, true);
+        bottom_right_ = cell_reference(end_part, constants::max_row()).make_absolute(absoluteEnd, true);
     }
-    else if (is_row_only(start_part) && is_row_only(end_part))
+    else if (is_whole_row(start_part) && is_whole_row(end_part))
     {
         // Whole row reference, e.g., "1:5"
-        if (start_part[0] == '$') start_part.erase(0, 1);
-        if (end_part[0] == '$') end_part.erase(0, 1);
+        bool absoluteStart = extract_absolute(start_part);
+        bool absoluteEnd = extract_absolute(end_part);
 
-        try
+        row_t start_row;
+        if (detail::parse(start_part, start_row) != std::errc())
         {
-            row_t start_row = static_cast<row_t>(std::stoul(start_part));
-            row_t end_row = static_cast<row_t>(std::stoul(end_part));
+            throw xlnt::invalid_parameter("invalid row number");
+        }
+        row_t end_row;
+        if (detail::parse(end_part, end_row) != std::errc())
+        {
+            throw xlnt::invalid_parameter("invalid row number");
+        }
 
-            top_left_ = cell_reference(constants::min_column(), start_row);
-            bottom_right_ = cell_reference(constants::max_column(), end_row);
-        }
-        catch (const std::out_of_range &)
-        {
-            std::string error_message = "Row number in range string is out of valid range: " + range_string;
-            throw invalid_parameter(error_message.c_str());
-        }
-        catch (const std::invalid_argument &)
-        {
-            std::string error_message = "Invalid row number format in range string: " + range_string;
-            throw invalid_parameter(error_message.c_str());
-        }
+        top_left_ = cell_reference(constants::min_column(), start_row).make_absolute(true, absoluteStart);
+        bottom_right_ = cell_reference(constants::max_column(), end_row).make_absolute(true, absoluteEnd);
     }
     else
     {
@@ -193,6 +199,18 @@ std::size_t range_reference::width() const
 bool range_reference::is_single_cell() const
 {
     return width() == 1 && height() == 1;
+}
+
+bool range_reference::whole_row() const
+{
+    return top_left_.column() == xlnt::constants::min_column() && top_left_.column_absolute()
+        && bottom_right_.column() == xlnt::constants::max_column() && bottom_right_.column_absolute();
+}
+
+bool range_reference::whole_column() const
+{
+    return top_left_.row() == xlnt::constants::min_row() && top_left_.row_absolute()
+        && bottom_right_.row() == xlnt::constants::max_row() && bottom_right_.row_absolute();
 }
 
 std::string range_reference::to_string() const

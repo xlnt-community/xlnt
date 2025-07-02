@@ -76,6 +76,16 @@ public:
     bool is_single_cell() const;
 
     /// <summary>
+    /// Returns true if the range spans the whole row
+    /// </summary>
+    bool whole_row() const;
+
+    /// <summary>
+    /// Returns true if the range spans the whole column
+    /// </summary>
+    bool whole_column() const;
+
+    /// <summary>
     /// Returns the number of columns encompassed by this range.
     /// </summary>
     std::size_t width() const;

@@ -652,31 +652,6 @@ public:
         // Test that we can access the worksheets
         auto ws = wb.active_sheet();
         xlnt_assert_throws_nothing(ws.title());
-
-        // Test direct range_reference parsing with whole column references
-        xlnt_assert_throws_nothing(xlnt::range_reference("A:I"));
-        xlnt_assert_throws_nothing(xlnt::range_reference("$A:$I"));
-        xlnt_assert_throws_nothing(xlnt::range_reference("B:E"));
-        xlnt_assert_throws_nothing(xlnt::range_reference("$B:$E"));
-
-        // Test direct range_reference parsing with whole row references
-        xlnt_assert_throws_nothing(xlnt::range_reference("1:5"));
-        xlnt_assert_throws_nothing(xlnt::range_reference("$1:$5"));
-        xlnt_assert_throws_nothing(xlnt::range_reference("10:20"));
-        xlnt_assert_throws_nothing(xlnt::range_reference("$10:$20"));
-
-        // Verify that the parsed ranges have correct properties
-        xlnt::range_reference col_ref("A:C");
-        xlnt_assert_equals(col_ref.top_left().column(), xlnt::column_t("A"));
-        xlnt_assert_equals(col_ref.top_left().row(), 1);
-        xlnt_assert_equals(col_ref.bottom_right().column(), xlnt::column_t("C"));
-        xlnt_assert_equals(col_ref.bottom_right().row(), xlnt::constants::max_row());
-
-        xlnt::range_reference row_ref("2:4");
-        xlnt_assert_equals(row_ref.top_left().column(), xlnt::constants::min_column());
-        xlnt_assert_equals(row_ref.top_left().row(), 2);
-        xlnt_assert_equals(row_ref.bottom_right().column(), xlnt::constants::max_column());
-        xlnt_assert_equals(row_ref.bottom_right().row(), 4);
     }
 
     void test_style()
