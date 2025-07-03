@@ -42,6 +42,8 @@ public:
         register_test(test_whole_column_reference);
         register_test(test_whole_row_reference);
         register_test(test_mixed_reference_formats);
+        register_test(test_invalid_references);
+        register_test(test_offset);
     }
 
     void test_construction()
@@ -267,6 +269,24 @@ public:
         xlnt_assert_equals(ref3.bottom_right().row(), 5);
         xlnt_assert_equals(ref3.bottom_right().column_absolute(), true);
         xlnt_assert_equals(ref3.bottom_right().row_absolute(), true);
+    }
+
+    void test_invalid_references()
+    {
+        xlnt_assert_throws(xlnt::cell_reference(""), xlnt::invalid_cell_reference);
+
+        xlnt_assert_throws(xlnt::range_reference(""), xlnt::invalid_cell_reference);
+        xlnt_assert_throws(xlnt::range_reference(":"), xlnt::invalid_cell_reference);
+        xlnt_assert_throws(xlnt::range_reference("$:$"), xlnt::invalid_cell_reference);
+        xlnt_assert_throws(xlnt::range_reference("@1:A7"), xlnt::invalid_cell_reference);
+        xlnt_assert_throws(xlnt::range_reference("1:99999999999999999999999999999999999999999999"), xlnt::invalid_cell_reference);
+        xlnt_assert_throws(xlnt::range_reference("11111111111111111111111111111111111111111111:9"), xlnt::invalid_cell_reference);
+    }
+
+    void test_offset()
+    {
+        xlnt_assert_equals(xlnt::range_reference("B3:E10").make_offset(2, 5), xlnt::range_reference("D8:G15"));
+        xlnt_assert_differs(xlnt::range_reference("B3:E10").make_offset(3, 5), xlnt::range_reference("D8:G15"));
     }
 };
 static range_test_suite x;

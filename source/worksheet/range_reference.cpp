@@ -144,12 +144,12 @@ range_reference::range_reference(const std::string &range_string)
         row_t start_row;
         if (detail::parse(start_part, start_row) != std::errc())
         {
-            throw xlnt::invalid_parameter("invalid row number");
+            throw xlnt::invalid_cell_reference(start_part);
         }
         row_t end_row;
         if (detail::parse(end_part, end_row) != std::errc())
         {
-            throw xlnt::invalid_parameter("invalid row number");
+            throw xlnt::invalid_cell_reference(end_part);
         }
 
         top_left_ = cell_reference(constants::min_column(), start_row).make_absolute(true, absoluteStart);
