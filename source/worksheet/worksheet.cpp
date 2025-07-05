@@ -1331,4 +1331,24 @@ bool worksheet::is_empty() const
     return d_->cell_map_.empty();
 }
 
+int worksheet::zoom_scale() const
+{
+    if (!has_view())
+    {
+        return 100;
+    }
+    
+    return view(0).zoom_scale();
+}
+
+void worksheet::zoom_scale(int scale)
+{
+    if (!has_view())
+    {
+        sheet_view sv;
+        add_view(sv);
+    }
+    view(0).zoom_scale(scale);
+}
+
 } // namespace xlnt

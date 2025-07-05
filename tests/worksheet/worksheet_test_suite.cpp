@@ -116,6 +116,8 @@ public:
         register_test(test_issue_18_defined_name_with_workbook_scope);
         register_test(test_non_contiguous_selection);
         register_test(test_throw_empty_cell);
+        register_test(test_zoom_scale);
+        register_test(test_zoom_scale_no_view);
     }
 
     void test_new_worksheet()
@@ -1721,6 +1723,39 @@ public:
         const auto ws = wb.active_sheet();
 
         xlnt_assert_throws(ws.cell("X10"), xlnt::invalid_parameter);
+    }
+
+    void test_zoom_scale()
+    {
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        xlnt_assert_equals(100, ws.zoom_scale());
+
+        ws.zoom_scale(75);
+        xlnt_assert_equals(75, ws.zoom_scale());
+        wb.save("temp_zoom.xlsx");
+
+        xlnt::workbook wb2;
+        wb2.load("temp_zoom.xlsx");
+        auto ws2 = wb2.active_sheet();
+        xlnt_assert_equals(75, ws2.zoom_scale());
+    }
+
+    void test_zoom_scale_no_view()
+    {
+        xlnt::workbook wb;
+
+        auto ws1 = wb.active_sheet();
+        
+        // newly created steets do not have a view
+        auto ws2 = wb.create_sheet();
+        xlnt_assert(!ws2.has_view());
+        
+        xlnt_assert_equals(100, ws2.zoom_scale());
+
+        ws2.zoom_scale(85);
+        xlnt_assert(ws2.has_view());
+        xlnt_assert_equals(85, ws2.zoom_scale());
     }
 };
 

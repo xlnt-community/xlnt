@@ -2404,6 +2404,11 @@ void xlsx_producer::write_worksheet(const relationship &rel)
 
         write_attribute("workbookViewId", view.id());
 
+        if (view.zoom_scale() != 100)
+        {
+            write_attribute("zoomScale", view.zoom_scale());
+        }
+
         if (view.has_pane())
         {
             const auto &current_pane = view.pane();
