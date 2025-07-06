@@ -53,7 +53,6 @@ cell_reference::cell_reference()
 }
 
 cell_reference::cell_reference(const std::string &string)
-    : absolute_row_(false), absolute_column_(false)
 {
     // If not an error reference, proceed with normal parsing
     auto split = split_reference(string, absolute_column_, absolute_row_);
@@ -67,7 +66,7 @@ cell_reference::cell_reference(const char *reference_string)
 }
 
 cell_reference::cell_reference(column_t column_index, row_t row)
-    : column_(column_index), row_(row), absolute_row_(false), absolute_column_(false)
+    : column_(column_index), row_(row)
 {
     if (row_ == 0
         || column_ == 0
@@ -115,7 +114,6 @@ std::pair<std::string, row_t> cell_reference::split_reference(const std::string 
     return split_reference(reference_string, ignore1, ignore2);
 }
 
-// Completely rewritten split_reference function with improved robustness
 std::pair<std::string, row_t> cell_reference::split_reference(
     const std::string &reference_string, bool &absolute_column, bool &absolute_row)
 {

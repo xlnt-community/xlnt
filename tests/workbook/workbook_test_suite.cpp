@@ -643,13 +643,10 @@ public:
 
         xlnt::workbook wb;
 
-        // This should not throw an exception
         xlnt_assert_throws_nothing(wb.load(path_helper::test_file("issue90_debug_test_file.xlsx")));
 
-        // Verify that the workbook was loaded successfully
         xlnt_assert(wb.sheet_count() > 0);
 
-        // Test that we can access the worksheets
         auto ws = wb.active_sheet();
         xlnt_assert_throws_nothing(ws.title());
     }
