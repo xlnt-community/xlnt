@@ -798,6 +798,16 @@ public:
     /// </summary>
     bool is_empty() const;
 
+    /// <summary>
+    /// Get the zoom scale (percent) of the default sheetView. Defaults to 100 if unset.
+    /// </summary>
+    int zoom_scale() const;
+
+    /// <summary>
+    /// Set the zoom scale (percent) on the default sheetView.
+    /// </summary>
+    void zoom_scale(int scale);
+
 private:
     friend class cell;
     friend class const_range_iterator;

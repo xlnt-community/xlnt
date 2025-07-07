@@ -218,6 +218,22 @@ public:
     }
 
     /// <summary>
+    /// Sets the zoom scale (percentage) for this view.
+    /// </summary>
+    void zoom_scale(int scale)
+    {
+        zoom_scale_ = scale;
+    }
+
+    /// <summary>
+    /// Returns the zoom scale (percentage).
+    /// </summary>
+    int zoom_scale() const
+    {
+        return zoom_scale_;
+    }
+
+    /// <summary>
     /// Returns true if this view is equal to rhs based on its id, grid lines setting,
     /// default grid color, pane, and selections.
     /// </summary>
@@ -228,7 +244,8 @@ public:
             && default_grid_color_ == rhs.default_grid_color_
             && pane_ == rhs.pane_
             && selections_ == rhs.selections_
-            && top_left_cell_ == rhs.top_left_cell_;
+            && top_left_cell_ == rhs.top_left_cell_
+            && zoom_scale_ == rhs.zoom_scale_;
     }
 
     /// <summary>
@@ -274,6 +291,11 @@ private:
     /// The collection of selections
     /// </summary>
     std::vector<xlnt::selection> selections_;
+
+    /// <summary>
+    /// The zoom scale (percent), e.g. 100
+    /// </summary>
+    int zoom_scale_ = 100;
 };
 
 } // namespace xlnt
