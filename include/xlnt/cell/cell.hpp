@@ -565,7 +565,7 @@ public:
     /// <summary>
     /// Returns true if this cell has a comment applied.
     /// </summary>
-    bool has_comment();
+    bool has_comment() const;
 
     /// <summary>
     /// Deletes the comment applied to this cell if it exists.
@@ -575,7 +575,7 @@ public:
     /// <summary>
     /// Gets the comment applied to this cell.
     /// </summary>
-    class comment comment();
+    class comment comment() const;
 
     /// <summary>
     /// Creates a new comment with the given text and optional author and
