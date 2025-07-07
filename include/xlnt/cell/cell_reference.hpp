@@ -248,12 +248,12 @@ private:
     /// <summary>
     /// True if the reference's row is absolute. This looks like "A$1" in Excel.
     /// </summary>
-    bool absolute_row_;
+    bool absolute_row_ = false;
 
     /// <summary>
     /// True if the reference's column is absolute. This looks like "$A1" in Excel.
     /// </summary>
-    bool absolute_column_;
+    bool absolute_column_ = false;
 };
 
 } // namespace xlnt
