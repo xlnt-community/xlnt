@@ -478,6 +478,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae47a1db59013150b7b5d84a9952061d4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1worksheet.html#ae47a1db59013150b7b5d84a9952061d4">is_empty</a> () const</td></tr>
 <tr class="memdesc:ae47a1db59013150b7b5d84a9952061d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this worksheet is empty. A worksheet is considered empty if it doesn't have any cells.  <a href="#ae47a1db59013150b7b5d84a9952061d4">More...</a><br /></td></tr>
 <tr class="separator:ae47a1db59013150b7b5d84a9952061d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae51a3c15fc6545a105d0cde3afba092e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1worksheet.html#ae51a3c15fc6545a105d0cde3afba092e">zoom_scale</a> () const</td></tr>
+<tr class="memdesc:ae51a3c15fc6545a105d0cde3afba092e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the zoom scale (percent) of the default sheetView. Defaults to 100 if unset.  <a href="#ae51a3c15fc6545a105d0cde3afba092e">More...</a><br /></td></tr>
+<tr class="separator:ae51a3c15fc6545a105d0cde3afba092e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4150b98504a3fe7523011aa2cb818935"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1worksheet.html#a4150b98504a3fe7523011aa2cb818935">zoom_scale</a> (int scale)</td></tr>
+<tr class="memdesc:a4150b98504a3fe7523011aa2cb818935"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the zoom scale (percent) on the default sheetView.  <a href="#a4150b98504a3fe7523011aa2cb818935">More...</a><br /></td></tr>
+<tr class="separator:a4150b98504a3fe7523011aa2cb818935"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -2800,28 +2806,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 
 </div>
 </div>
-<a id="a7a05077e06a64762a55c844922c370a9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7a05077e06a64762a55c844922c370a9">&#9670;&nbsp;</a></span>range() <span class="overload">[1/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const class <a class="el" href="classxlnt_1_1range.html">range</a> xlnt::worksheet::range </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classxlnt_1_1range__reference.html">range_reference</a> &amp;&#160;</td>
-          <td class="paramname"><em>reference</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns the range defined by reference. </p>
-
-</div>
-</div>
 <a id="a1850ab2b0523acba9f9fb72778997016"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1850ab2b0523acba9f9fb72778997016">&#9670;&nbsp;</a></span>range() <span class="overload">[2/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a1850ab2b0523acba9f9fb72778997016">&#9670;&nbsp;</a></span>range() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2837,6 +2823,26 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 </div><div class="memdoc">
 
 <p>Returns the range defined by reference string. If reference string is the name of a previously-defined named range in the sheet, it will be returned. </p>
+
+</div>
+</div>
+<a id="ad558f233b14e0c7ccd351af736e275ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad558f233b14e0c7ccd351af736e275ad">&#9670;&nbsp;</a></span>range() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">class <a class="el" href="classxlnt_1_1range.html">range</a> xlnt::worksheet::range </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classxlnt_1_1range__reference.html">range_reference</a> &amp;&#160;</td>
+          <td class="paramname"><em>reference</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the range defined by reference. </p>
 
 </div>
 </div>
@@ -2860,18 +2866,18 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 
 </div>
 </div>
-<a id="ad558f233b14e0c7ccd351af736e275ad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad558f233b14e0c7ccd351af736e275ad">&#9670;&nbsp;</a></span>range() <span class="overload">[4/4]</span></h2>
+<a id="a7a05077e06a64762a55c844922c370a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a05077e06a64762a55c844922c370a9">&#9670;&nbsp;</a></span>range() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">class <a class="el" href="classxlnt_1_1range.html">range</a> xlnt::worksheet::range </td>
+          <td class="memname">const class <a class="el" href="classxlnt_1_1range.html">range</a> xlnt::worksheet::range </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classxlnt_1_1range__reference.html">range_reference</a> &amp;&#160;</td>
           <td class="paramname"><em>reference</em></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -2999,28 +3005,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 
 </div>
 </div>
-<a id="ae2d408ff3f77855cd283635bcef253a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae2d408ff3f77855cd283635bcef253a0">&#9670;&nbsp;</a></span>rows() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const class <a class="el" href="classxlnt_1_1range.html">range</a> xlnt::worksheet::rows </td>
-          <td>(</td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>skip_null</em> = <code>true</code></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns a range encompassing all cells in this sheet which will be iterated upon in row-major order. If skip_null is true (default), the range does not contain empty rows/columns at its boundaries and empty rows and cells will be skipped during iteration of the range. </p>
-
-</div>
-</div>
 <a id="a8c42924a3007bd35e07d900f1a1aa42f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8c42924a3007bd35e07d900f1a1aa42f">&#9670;&nbsp;</a></span>rows() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c42924a3007bd35e07d900f1a1aa42f">&#9670;&nbsp;</a></span>rows() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3031,6 +3017,26 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>skip_null</em> = <code>true</code></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a range encompassing all cells in this sheet which will be iterated upon in row-major order. If skip_null is true (default), the range does not contain empty rows/columns at its boundaries and empty rows and cells will be skipped during iteration of the range. </p>
+
+</div>
+</div>
+<a id="ae2d408ff3f77855cd283635bcef253a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2d408ff3f77855cd283635bcef253a0">&#9670;&nbsp;</a></span>rows() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const class <a class="el" href="classxlnt_1_1range.html">range</a> xlnt::worksheet::rows </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>skip_null</em> = <code>true</code></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -3231,6 +3237,45 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 </div><div class="memdoc">
 
 <p>Returns the workbook this worksheet is owned by. </p>
+
+</div>
+</div>
+<a id="ae51a3c15fc6545a105d0cde3afba092e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae51a3c15fc6545a105d0cde3afba092e">&#9670;&nbsp;</a></span>zoom_scale() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int xlnt::worksheet::zoom_scale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the zoom scale (percent) of the default sheetView. Defaults to 100 if unset. </p>
+
+</div>
+</div>
+<a id="a4150b98504a3fe7523011aa2cb818935"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4150b98504a3fe7523011aa2cb818935">&#9670;&nbsp;</a></span>zoom_scale() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void xlnt::worksheet::zoom_scale </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the zoom scale (percent) on the default sheetView. </p>
 
 </div>
 </div>
