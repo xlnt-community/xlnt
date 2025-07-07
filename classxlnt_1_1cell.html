@@ -330,15 +330,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acd23530085a7c0bd5f4637a555cd1cbe"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#acd23530085a7c0bd5f4637a555cd1cbe">check_string</a> (const std::string &amp;to_check)</td></tr>
 <tr class="memdesc:acd23530085a7c0bd5f4637a555cd1cbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns to_check after verifying and fixing encoding, size, and illegal characters.  <a href="#acd23530085a7c0bd5f4637a555cd1cbe">More...</a><br /></td></tr>
 <tr class="separator:acd23530085a7c0bd5f4637a555cd1cbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed816bd54ecd903661e455e51611d78e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#aed816bd54ecd903661e455e51611d78e">has_comment</a> ()</td></tr>
-<tr class="memdesc:aed816bd54ecd903661e455e51611d78e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this cell has a comment applied.  <a href="#aed816bd54ecd903661e455e51611d78e">More...</a><br /></td></tr>
-<tr class="separator:aed816bd54ecd903661e455e51611d78e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af721f9e150c02259eae5f61d79921de6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#af721f9e150c02259eae5f61d79921de6">has_comment</a> () const</td></tr>
+<tr class="memdesc:af721f9e150c02259eae5f61d79921de6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this cell has a comment applied.  <a href="#af721f9e150c02259eae5f61d79921de6">More...</a><br /></td></tr>
+<tr class="separator:af721f9e150c02259eae5f61d79921de6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a408755a29c60e1710372d25038278dd4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a408755a29c60e1710372d25038278dd4">clear_comment</a> ()</td></tr>
 <tr class="memdesc:a408755a29c60e1710372d25038278dd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the comment applied to this cell if it exists.  <a href="#a408755a29c60e1710372d25038278dd4">More...</a><br /></td></tr>
 <tr class="separator:a408755a29c60e1710372d25038278dd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a964ca78c47ee0118d25163a378853fb9"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1comment.html">comment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a964ca78c47ee0118d25163a378853fb9">comment</a> ()</td></tr>
-<tr class="memdesc:a964ca78c47ee0118d25163a378853fb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the comment applied to this cell.  <a href="#a964ca78c47ee0118d25163a378853fb9">More...</a><br /></td></tr>
-<tr class="separator:a964ca78c47ee0118d25163a378853fb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ababd120b845a716995721dbd388f41ec"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1comment.html">comment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#ababd120b845a716995721dbd388f41ec">comment</a> () const</td></tr>
+<tr class="memdesc:ababd120b845a716995721dbd388f41ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the comment applied to this cell.  <a href="#ababd120b845a716995721dbd388f41ec">More...</a><br /></td></tr>
+<tr class="separator:ababd120b845a716995721dbd388f41ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a194ed5db9b5c8e2f7d7357248af66b3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a194ed5db9b5c8e2f7d7357248af66b3c">comment</a> (const std::string &amp;text, const std::string &amp;author=&quot;Microsoft Office User&quot;)</td></tr>
 <tr class="memdesc:a194ed5db9b5c8e2f7d7357248af66b3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new comment with the given text and optional author and applies it to the cell.  <a href="#a194ed5db9b5c8e2f7d7357248af66b3c">More...</a><br /></td></tr>
 <tr class="separator:a194ed5db9b5c8e2f7d7357248af66b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -758,8 +758,8 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
 
 </div>
 </div>
-<a id="a964ca78c47ee0118d25163a378853fb9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a964ca78c47ee0118d25163a378853fb9">&#9670;&nbsp;</a></span>comment() <span class="overload">[1/4]</span></h2>
+<a id="ababd120b845a716995721dbd388f41ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ababd120b845a716995721dbd388f41ec">&#9670;&nbsp;</a></span>comment() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -768,7 +768,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
           <td class="memname">class <a class="el" href="classxlnt_1_1comment.html">comment</a> xlnt::cell::comment </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1287,8 +1287,8 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
 
 </div>
 </div>
-<a id="aed816bd54ecd903661e455e51611d78e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aed816bd54ecd903661e455e51611d78e">&#9670;&nbsp;</a></span>has_comment()</h2>
+<a id="af721f9e150c02259eae5f61d79921de6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af721f9e150c02259eae5f61d79921de6">&#9670;&nbsp;</a></span>has_comment()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1297,7 +1297,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
           <td class="memname">bool xlnt::cell::has_comment </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">

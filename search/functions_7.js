@@ -11,7 +11,7 @@ var searchData=
   ['has_5fcode_5fname',['has_code_name',['../classxlnt_1_1workbook.html#aa6a39d1daeb8304ec1bb55b7863f1b11',1,'xlnt::workbook']]],
   ['has_5fcolor',['has_color',['../classxlnt_1_1font.html#acb854f8871df86620cb549a0ee161338',1,'xlnt::font']]],
   ['has_5fcolumn_5fproperties',['has_column_properties',['../classxlnt_1_1worksheet.html#a9cc68476d47cf5fea8761ef67fdefe6e',1,'xlnt::worksheet']]],
-  ['has_5fcomment',['has_comment',['../classxlnt_1_1cell.html#aed816bd54ecd903661e455e51611d78e',1,'xlnt::cell']]],
+  ['has_5fcomment',['has_comment',['../classxlnt_1_1cell.html#af721f9e150c02259eae5f61d79921de6',1,'xlnt::cell']]],
   ['has_5fcore_5fproperty',['has_core_property',['../classxlnt_1_1workbook.html#abc6c82900353834cd14ec131270d3e18',1,'xlnt::workbook']]],
   ['has_5fcustom_5fproperty',['has_custom_property',['../classxlnt_1_1workbook.html#a7fe86dca0cf73068ee222f91c9b6af26',1,'xlnt::workbook']]],
   ['has_5fdefault_5ftype',['has_default_type',['../classxlnt_1_1manifest.html#a56e02d02403b73482a8b9362f9be314e',1,'xlnt::manifest']]],
