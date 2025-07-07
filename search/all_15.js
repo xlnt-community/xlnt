@@ -2,6 +2,8 @@ var searchData=
 [
   ['weekday',['weekday',['../structxlnt_1_1date.html#ab9756120b711701072d93670fd2c0edd',1,'xlnt::date::weekday()'],['../structxlnt_1_1datetime.html#a216dce8193c1221127293960592665b6',1,'xlnt::datetime::weekday()']]],
   ['white',['white',['../classxlnt_1_1color.html#ac68bf3bf32ca5897c910fa1f4886aa39',1,'xlnt::color']]],
+  ['whole_5fcolumn',['whole_column',['../classxlnt_1_1range__reference.html#a25de7c967e8a4a4583584dbc115630d2',1,'xlnt::range_reference']]],
+  ['whole_5frow',['whole_row',['../classxlnt_1_1range__reference.html#a81c9bf27bf7c24294df5b0bed2ad9f0a',1,'xlnt::range_reference']]],
   ['width',['width',['../classxlnt_1_1column__properties.html#afcbf666e636ed7e9b861a3fadd464c68',1,'xlnt::column_properties::width()'],['../classxlnt_1_1cell.html#a00f2362faaf5b400ec531cb21a867f29',1,'xlnt::cell::width()'],['../classxlnt_1_1comment.html#a747873a60f26b9fe8e6bddbdb74d8ea1',1,'xlnt::comment::width()'],['../classxlnt_1_1range__reference.html#a68976f33102e4c28ec6089bc9887ba65',1,'xlnt::range_reference::width()']]],
   ['window_5fheight',['window_height',['../classxlnt_1_1workbook__view.html#a4e0fbc613bbfb39e9d0d5903c6898747',1,'xlnt::workbook_view']]],
   ['window_5fwidth',['window_width',['../classxlnt_1_1workbook__view.html#a76b96ab4edfee529f78169cbc2820bc0',1,'xlnt::workbook_view']]],
