@@ -52,14 +52,26 @@ public:
 
     bool has_display() const;
     void display(const std::string &value);
+
+    /// Returns the displayed text of the hyperlink.
+    /// Assumes that this hyperlink has a displayed text (please call has_display() to check).
+    /// If this hyperlink does not have a displayed text, an xlnt::invalid_attribute exception will be thrown.
     const std::string &display() const;
 
     bool has_tooltip() const;
     void tooltip(const std::string &value);
+
+    /// Returns the tooltip of the hyperlink.
+    /// Assumes that this hyperlink has a tooltip (please call has_tooltip() to check).
+    /// If this hyperlink does not have a tooltip, an xlnt::invalid_attribute exception will be thrown.
     const std::string &tooltip() const;
 
     bool has_location() const;
     void location(const std::string &value);
+
+    /// Returns the location of the hyperlink.
+    /// Assumes that this hyperlink has a location (please call has_location() to check).
+    /// If this hyperlink does not have a location, an xlnt::invalid_attribute exception will be thrown.
     const std::string &location() const;
 
 private:

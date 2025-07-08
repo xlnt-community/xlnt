@@ -258,7 +258,8 @@ public:
     }
 
     /// <summary>
-    /// Gets the value. If no value has been initialized in this object,
+    /// Gets the value. Assumes that the value exists (please call is_set() to check).
+    /// If no value has been initialized in this object,
     /// an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     T &get()
@@ -272,7 +273,8 @@ public:
     }
 
     /// <summary>
-    /// Gets the value. If no value has been initialized in this object,
+    /// Gets the value. Assumes that the value exists (please call is_set() to check).
+    /// If no value has been initialized in this object,
     /// an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     const T &get() const
