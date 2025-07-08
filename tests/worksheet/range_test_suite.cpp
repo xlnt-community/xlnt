@@ -29,6 +29,7 @@
 #include <xlnt/worksheet/header_footer.hpp>
 #include <xlnt/worksheet/range.hpp>
 #include <xlnt/worksheet/worksheet.hpp>
+#include <detail/constants.hpp>
 
 class range_test_suite : public test_suite
 {
@@ -38,6 +39,11 @@ public:
         register_test(test_construction);
         register_test(test_batch_formatting);
         register_test(test_clear_cells);
+        register_test(test_whole_column_reference);
+        register_test(test_whole_row_reference);
+        register_test(test_mixed_reference_formats);
+        register_test(test_invalid_references);
+        register_test(test_offset);
     }
 
     void test_construction()
@@ -111,6 +117,176 @@ public:
         auto range = ws.range("B1:C3");
         range.clear_cells();
         xlnt_assert_equals(ws.calculate_dimension(), xlnt::range_reference(1, 1, 1, 3));
+    }
+
+    void test_whole_column_reference()
+    {
+        xlnt_assert_throws_nothing(xlnt::range_reference("A:I"));
+        xlnt_assert_throws_nothing(xlnt::range_reference("$A:$I"));
+        xlnt_assert_throws_nothing(xlnt::range_reference("B:E"));
+        xlnt_assert_throws_nothing(xlnt::range_reference("$B:$E"));
+
+        // Test parsing of whole column references like "A:C" and "$A:$C"
+        xlnt::range_reference ref1("A:C");
+        xlnt_assert_equals(ref1.top_left().column(), xlnt::column_t("A"));
+        xlnt_assert_equals(ref1.top_left().column_absolute(), false);
+        xlnt_assert_equals(ref1.top_left().row_absolute(), true);
+        xlnt_assert_equals(ref1.bottom_right().column(), xlnt::column_t("C"));
+        xlnt_assert_equals(ref1.bottom_right().column_absolute(), false);
+        xlnt_assert_equals(ref1.bottom_right().row_absolute(), true);
+        xlnt_assert_equals(ref1.whole_column(), true);
+        xlnt_assert_equals(ref1.whole_row(), false);
+
+        // Test parsing absolute columns
+        xlnt::range_reference ref2("$A:$C");
+        xlnt_assert_equals(ref2.top_left().column(), xlnt::column_t("A"));
+        xlnt_assert_equals(ref2.top_left().column_absolute(), true);
+        xlnt_assert_equals(ref2.top_left().row_absolute(), true);
+        xlnt_assert_equals(ref2.bottom_right().column(), xlnt::column_t("C"));
+        xlnt_assert_equals(ref2.bottom_right().column_absolute(), true);
+        xlnt_assert_equals(ref2.bottom_right().row_absolute(), true);
+        xlnt_assert_equals(ref2.whole_column(), true);
+        xlnt_assert_equals(ref2.whole_row(), false);
+
+        // Test single column reference
+        xlnt::range_reference ref3("B:B");
+        xlnt_assert_equals(ref3.top_left().column(), xlnt::column_t("B"));
+        xlnt_assert_equals(ref3.top_left().column_absolute(), false);
+        xlnt_assert_equals(ref3.top_left().row_absolute(), true);
+        xlnt_assert_equals(ref3.bottom_right().column(), xlnt::column_t("B"));
+        xlnt_assert_equals(ref3.bottom_right().column_absolute(), false);
+        xlnt_assert_equals(ref3.bottom_right().row_absolute(), true);
+        xlnt_assert_equals(ref3.whole_column(), true);
+        xlnt_assert_equals(ref3.whole_row(), false);
+
+        // Test parsing mixed absolute columns
+        xlnt::range_reference ref4("A:$C");
+        xlnt_assert_equals(ref4.top_left().column(), xlnt::column_t("A"));
+        xlnt_assert_equals(ref4.top_left().column_absolute(), false);
+        xlnt_assert_equals(ref4.top_left().row_absolute(), true);
+        xlnt_assert_equals(ref4.bottom_right().column(), xlnt::column_t("C"));
+        xlnt_assert_equals(ref4.bottom_right().column_absolute(), true);
+        xlnt_assert_equals(ref4.bottom_right().row_absolute(), true);
+        xlnt_assert_equals(ref4.whole_column(), true);
+        xlnt_assert_equals(ref4.whole_row(), false);
+
+        // Test with workbook and worksheet
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        auto range = ws.range("A:C");
+        xlnt_assert_equals(range.target_worksheet(), ws);
+    }
+
+    void test_whole_row_reference()
+    {
+        xlnt_assert_throws_nothing(xlnt::range_reference("1:5"));
+        xlnt_assert_throws_nothing(xlnt::range_reference("$1:$5"));
+        xlnt_assert_throws_nothing(xlnt::range_reference("10:20"));
+        xlnt_assert_throws_nothing(xlnt::range_reference("$10:$20"));
+
+        // Test parsing of whole row references like "1:5" and "$1:$5"
+        xlnt::range_reference ref1("1:5");
+        xlnt_assert_equals(ref1.top_left().row(), 1);
+        xlnt_assert_equals(ref1.top_left().column_absolute(), true);
+        xlnt_assert_equals(ref1.top_left().row_absolute(), false);
+        xlnt_assert_equals(ref1.bottom_right().row(), 5);
+        xlnt_assert_equals(ref1.bottom_right().column_absolute(), true);
+        xlnt_assert_equals(ref1.bottom_right().row_absolute(), false);
+        xlnt_assert_equals(ref1.whole_column(), false);
+        xlnt_assert_equals(ref1.whole_row(), true);
+
+        // Test parsing absolute rows
+        xlnt::range_reference ref2("$1:$5");
+        xlnt_assert_equals(ref2.top_left().row(), 1);
+        xlnt_assert_equals(ref2.top_left().column_absolute(), true);
+        xlnt_assert_equals(ref2.top_left().row_absolute(), true);
+        xlnt_assert_equals(ref2.bottom_right().row(), 5);
+        xlnt_assert_equals(ref2.bottom_right().column_absolute(), true);
+        xlnt_assert_equals(ref2.bottom_right().row_absolute(), true);
+        xlnt_assert_equals(ref2.whole_column(), false);
+        xlnt_assert_equals(ref2.whole_row(), true);
+
+        // Test single row reference
+        xlnt::range_reference ref3("3:3");
+        xlnt_assert_equals(ref3.top_left().row(), 3);
+        xlnt_assert_equals(ref3.top_left().column_absolute(), true);
+        xlnt_assert_equals(ref3.top_left().row_absolute(), false);
+        xlnt_assert_equals(ref3.bottom_right().row(), 3);
+        xlnt_assert_equals(ref3.bottom_right().column_absolute(), true);
+        xlnt_assert_equals(ref3.bottom_right().row_absolute(), false);
+        xlnt_assert_equals(ref3.whole_column(), false);
+        xlnt_assert_equals(ref3.whole_row(), true);
+
+        // Test parsing mixed absolute rows
+        xlnt::range_reference ref4("1:$5");
+        xlnt_assert_equals(ref4.top_left().row(), 1);
+        xlnt_assert_equals(ref4.top_left().column_absolute(), true);
+        xlnt_assert_equals(ref4.top_left().row_absolute(), false);
+        xlnt_assert_equals(ref4.bottom_right().row(), 5);
+        xlnt_assert_equals(ref4.bottom_right().column_absolute(), true);
+        xlnt_assert_equals(ref4.bottom_right().row_absolute(), true);
+        xlnt_assert_equals(ref4.whole_column(), false);
+        xlnt_assert_equals(ref4.whole_row(), true);
+
+        // Test with workbook and worksheet
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        auto range = ws.range("1:5");
+        xlnt_assert_equals(range.target_worksheet(), ws);
+    }
+
+    void test_mixed_reference_formats()
+    {
+        // Test that normal cell references still work
+        xlnt::range_reference ref1("A1:C5");
+        xlnt_assert_equals(ref1.top_left().column(), xlnt::column_t("A"));
+        xlnt_assert_equals(ref1.top_left().row(), 1);
+        xlnt_assert_equals(ref1.top_left().column_absolute(), false);
+        xlnt_assert_equals(ref1.top_left().row_absolute(), false);
+        xlnt_assert_equals(ref1.bottom_right().column(), xlnt::column_t("C"));
+        xlnt_assert_equals(ref1.bottom_right().row(), 5);
+        xlnt_assert_equals(ref1.bottom_right().column_absolute(), false);
+        xlnt_assert_equals(ref1.bottom_right().row_absolute(), false);
+
+        // Test single cell reference
+        xlnt::range_reference ref2("B2");
+        xlnt_assert_equals(ref2.top_left().column(), xlnt::column_t("B"));
+        xlnt_assert_equals(ref2.top_left().row(), 2);
+        xlnt_assert_equals(ref2.top_left().column_absolute(), false);
+        xlnt_assert_equals(ref2.top_left().row_absolute(), false);
+        xlnt_assert_equals(ref2.bottom_right().column(), xlnt::column_t("B"));
+        xlnt_assert_equals(ref2.bottom_right().row(), 2);
+        xlnt_assert_equals(ref2.bottom_right().column_absolute(), false);
+        xlnt_assert_equals(ref2.bottom_right().row_absolute(), false);
+
+        // Test absolute references
+        xlnt::range_reference ref3("$A$1:$C$5");
+        xlnt_assert_equals(ref3.top_left().column(), xlnt::column_t("A"));
+        xlnt_assert_equals(ref3.top_left().row(), 1);
+        xlnt_assert_equals(ref3.top_left().column_absolute(), true);
+        xlnt_assert_equals(ref3.top_left().row_absolute(), true);
+        xlnt_assert_equals(ref3.bottom_right().column(), xlnt::column_t("C"));
+        xlnt_assert_equals(ref3.bottom_right().row(), 5);
+        xlnt_assert_equals(ref3.bottom_right().column_absolute(), true);
+        xlnt_assert_equals(ref3.bottom_right().row_absolute(), true);
+    }
+
+    void test_invalid_references()
+    {
+        xlnt_assert_throws(xlnt::cell_reference(""), xlnt::invalid_cell_reference);
+
+        xlnt_assert_throws(xlnt::range_reference(""), xlnt::invalid_cell_reference);
+        xlnt_assert_throws(xlnt::range_reference(":"), xlnt::invalid_cell_reference);
+        xlnt_assert_throws(xlnt::range_reference("$:$"), xlnt::invalid_cell_reference);
+        xlnt_assert_throws(xlnt::range_reference("@1:A7"), xlnt::invalid_cell_reference);
+        xlnt_assert_throws(xlnt::range_reference("1:99999999999999999999999999999999999999999999"), xlnt::invalid_cell_reference);
+        xlnt_assert_throws(xlnt::range_reference("11111111111111111111111111111111111111111111:9"), xlnt::invalid_cell_reference);
+    }
+
+    void test_offset()
+    {
+        xlnt_assert_equals(xlnt::range_reference("B3:E10").make_offset(2, 5), xlnt::range_reference("D8:G15"));
+        xlnt_assert_differs(xlnt::range_reference("B3:E10").make_offset(3, 5), xlnt::range_reference("D8:G15"));
     }
 };
 static range_test_suite x;

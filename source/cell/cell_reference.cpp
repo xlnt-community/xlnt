@@ -54,8 +54,8 @@ cell_reference::cell_reference()
 
 cell_reference::cell_reference(const std::string &string)
 {
+    // If not an error reference, proceed with normal parsing
     auto split = split_reference(string, absolute_column_, absolute_row_);
-
     column(split.first);
     row(split.second);
 }
@@ -66,7 +66,7 @@ cell_reference::cell_reference(const char *reference_string)
 }
 
 cell_reference::cell_reference(column_t column_index, row_t row)
-    : column_(column_index), row_(row), absolute_row_(false), absolute_column_(false)
+    : column_(column_index), row_(row)
 {
     if (row_ == 0
         || column_ == 0
@@ -117,82 +117,65 @@ std::pair<std::string, row_t> cell_reference::split_reference(const std::string 
 std::pair<std::string, row_t> cell_reference::split_reference(
     const std::string &reference_string, bool &absolute_column, bool &absolute_row)
 {
-    absolute_column = false;
-    absolute_row = false;
+    std::string col_str;
+    std::string row_str;
+    size_t i = 0;
 
-    // Convert a coordinate string like 'B12' to a tuple ('B', 12)
-    bool column_part = true;
-
-    std::string column_string;
-
-    for (auto character : reference_string)
-    {
-        auto upper = static_cast<char>(std::toupper(static_cast<std::uint8_t>(character)));
-
-        if (std::isalpha(character))
-        {
-            if (column_part)
-            {
-                column_string.append(1, upper);
-            }
-            else
-            {
-                throw invalid_cell_reference(reference_string);
-            }
-        }
-        else if (character == '$')
-        {
-            if (column_part)
-            {
-                if (column_string.empty())
-                {
-                    column_string.append(1, upper);
-                }
-                else
-                {
-                    column_part = false;
-                }
-            }
-        }
-        else
-        {
-            if (column_part)
-            {
-                column_part = false;
-            }
-            else if (!std::isdigit(character))
-            {
-                throw invalid_cell_reference(reference_string);
-            }
-        }
-    }
-
-    std::string row_string = reference_string.substr(column_string.length());
-
-    if (row_string.length() == 0)
-    {
-        throw invalid_cell_reference(reference_string);
-    }
-
-    if (column_string[0] == '$')
+    // 1. Check for column absolute reference '$'
+    if (i < reference_string.length() && reference_string[i] == '$')
     {
         absolute_column = true;
-        column_string = column_string.substr(1);
+        ++i;
     }
-
-    if (row_string[0] == '$')
+    else
     {
-        absolute_row = true;
-        row_string = row_string.substr(1);
+        absolute_column = false;
     }
 
-    xlnt::row_t row = 0;
-    if (detail::parse(row_string, row) != std::errc())
+    // 2. Extract all letters as column name
+    while (i < reference_string.length() && std::isalpha(static_cast<unsigned char>(reference_string[i])))
+    {
+        col_str += static_cast<char>(std::toupper(static_cast<unsigned char>(reference_string[i])));
+        ++i;
+    }
+
+    if (col_str.empty())
     {
         throw invalid_cell_reference(reference_string);
     }
 
-    return {column_string, row};
+    // 3. Check for row absolute reference '$'
+    if (i < reference_string.length() && reference_string[i] == '$')
+    {
+        absolute_row = true;
+        ++i;
+    }
+    else
+    {
+        absolute_row = false;
+    }
+
+    // 4. Extract all digits as row number
+    while (i < reference_string.length() && std::isdigit(static_cast<unsigned char>(reference_string[i])))
+    {
+        row_str += reference_string[i];
+        ++i;
+    }
+
+    // 5. Validate format: string must be fully parsed and row part cannot be empty
+    if (i != reference_string.length() || row_str.empty())
+    {
+        throw invalid_cell_reference(reference_string);
+    }
+
+    // 6. Convert row string to number
+    xlnt::row_t row = 0;
+    if (detail::parse(row_str, row) != std::errc())
+    {
+        throw invalid_cell_reference(reference_string);
+    }
+
+    return {col_str, row};
 }
 
 bool cell_reference::column_absolute() const

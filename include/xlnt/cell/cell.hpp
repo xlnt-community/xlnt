@@ -574,7 +574,7 @@ public:
     /// <summary>
     /// Returns true if this cell has a comment applied.
     /// </summary>
-    bool has_comment();
+    bool has_comment() const;
 
     /// <summary>
     /// Deletes the comment applied to this cell if it exists.
@@ -586,7 +586,7 @@ public:
     /// Assumes that the comment exists (please call has_comment() to check).
     /// If this cell does not have a comment, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
-    class comment comment();
+    class comment comment() const;
 
     /// <summary>
     /// Creates a new comment with the given text and optional author and

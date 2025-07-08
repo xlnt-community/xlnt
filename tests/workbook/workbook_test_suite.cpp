@@ -30,6 +30,7 @@
 #include <xlnt/utils/exceptions.hpp>
 #include <helpers/temporary_file.hpp>
 #include <helpers/test_suite.hpp>
+#include <detail/constants.hpp>
 
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/styles/format.hpp>
@@ -77,6 +78,7 @@ public:
         register_test(test_Issue279);
         register_test(test_Issue353);
         register_test(test_Issue494);
+        register_test(test_Issue90);
         register_test(test_style);
         register_test(test_sheet_moving)
     }
@@ -631,6 +633,22 @@ public:
         auto ws = wb.active_sheet();
         xlnt_assert_equals(ws.cell(2, 1).to_string(), "V1.00");
         xlnt_assert_equals(ws.cell(2, 2).to_string(), "V1.00");
+    }
+
+    void test_Issue90()
+    {
+        // Test for Issue #90: Parsing Exception: bad cell coordinates for definedName with Whole-Column Reference
+        // This test verifies that workbooks with definedName entries containing whole-column references
+        // (e.g., $A:$I) can be loaded without throwing exceptions.
+
+        xlnt::workbook wb;
+
+        xlnt_assert_throws_nothing(wb.load(path_helper::test_file("issue90_debug_test_file.xlsx")));
+
+        xlnt_assert(wb.sheet_count() > 0);
+
+        auto ws = wb.active_sheet();
+        xlnt_assert_throws_nothing(ws.title());
     }
 
     void test_style()
