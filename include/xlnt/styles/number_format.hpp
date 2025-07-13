@@ -176,8 +176,9 @@ public:
     static bool is_builtin_format(std::size_t builtin_id);
 
     /// <summary>
-    /// Returns the format with the given ID. Thows an invalid_parameter exception
-    /// if builtin_id is not a valid ID.
+    /// Returns the format with the given ID.
+    /// Assumes that the format ID is valid (please call is_builtin_format() to check).
+    /// Thows an invalid_parameter exception if builtin_id is not a valid ID.
     /// </summary>
     static const number_format &from_builtin_id(std::size_t builtin_id);
 
@@ -230,6 +231,8 @@ public:
 
     /// <summary>
     /// Returns the ID of this format.
+    /// Assumes that this format has an ID (please call has_id() to check).
+    /// If this format does not have an ID, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     std::size_t id() const;
 

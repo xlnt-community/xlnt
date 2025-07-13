@@ -234,7 +234,8 @@ public:
 };
 
 /// <summary>
-/// Exception when setting a class's attribute to an invalid value
+/// Exception when getting a class's attribute before being set/initialized,
+/// or when setting a class's attribute to an invalid value.
 /// </summary>
 class XLNT_API invalid_attribute : public exception
 {
