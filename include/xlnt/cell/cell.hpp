@@ -357,7 +357,8 @@ public:
     void clear_format();
 
     /// <summary>
-    /// Returns the number format of this cell.
+    /// Returns a copy of the number format of this cell. If no number format has been set (format().has_number_format() returns false),
+    /// a default-constructed number format will be returned.
     /// </summary>
     class number_format number_format() const;
 
@@ -368,7 +369,8 @@ public:
     void number_format(const class number_format &format);
 
     /// <summary>
-    /// Returns the font applied to the text in this cell.
+    /// Returns a copy of the font applied to the text in this cell. If no font has been set (format().has_font() returns false),
+    /// a default-constructed font will be returned.
     /// </summary>
     class font font() const;
 
@@ -379,7 +381,8 @@ public:
     void font(const class font &font_);
 
     /// <summary>
-    /// Returns the fill applied to this cell.
+    /// Returns a copy of the fill applied to this cell. If no fill has been set (format().has_fill() returns false),
+    /// a default-constructed fill will be returned.
     /// </summary>
     class fill fill() const;
 
@@ -390,7 +393,8 @@ public:
     void fill(const class fill &fill_);
 
     /// <summary>
-    /// Returns the border of this cell.
+    /// Returns a copy of the border of this cell. If no border has been set (format().has_border() returns false),
+    /// a default-constructed border will be returned.
     /// </summary>
     class border border() const;
 
@@ -401,7 +405,8 @@ public:
     void border(const class border &border_);
 
     /// <summary>
-    /// Returns the alignment of the text in this cell.
+    /// Returns a copy of the alignment of the text in this cell. If no alignment has been set (format().has_alignment() returns false),
+    /// a default-constructed alignment will be returned.
     /// </summary>
     class alignment alignment() const;
 
@@ -412,7 +417,8 @@ public:
     void alignment(const class alignment &alignment_);
 
     /// <summary>
-    /// Returns the protection of this cell.
+    /// Returns a copy of the protection of this cell. If no protection has been set (format().has_protection() returns false),
+    /// a default-constructed protection will be returned.
     /// </summary>
     class protection protection() const;
 
