@@ -81,7 +81,11 @@ const style format::style() const
 
 xlnt::alignment format::alignment() const
 {
-    return d_->parent->alignments.at(d_->alignment_id.get());
+    if (d_->alignment_id.is_set())
+    {
+        return d_->parent->alignments.at(d_->alignment_id.get());
+    }
+    return {};
 }
 
 format format::alignment(const xlnt::alignment &new_alignment, optional<bool> applied)
@@ -92,7 +96,11 @@ format format::alignment(const xlnt::alignment &new_alignment, optional<bool> ap
 
 xlnt::border format::border() const
 {
-    return d_->parent->borders.at(d_->border_id.get());
+    if (d_->border_id.is_set())
+    {
+        return d_->parent->borders.at(d_->border_id.get());
+    }
+    return {};
 }
 
 format format::border(const xlnt::border &new_border, optional<bool> applied)
@@ -103,7 +111,11 @@ format format::border(const xlnt::border &new_border, optional<bool> applied)
 
 xlnt::fill format::fill() const
 {
-    return d_->parent->fills.at(d_->fill_id.get());
+    if (d_->fill_id.is_set())
+    {
+        return d_->parent->fills.at(d_->fill_id.get());
+    }
+    return {};
 }
 
 format format::fill(const xlnt::fill &new_fill, optional<bool> applied)
@@ -114,7 +126,11 @@ format format::fill(const xlnt::fill &new_fill, optional<bool> applied)
 
 xlnt::font format::font() const
 {
-    return d_->parent->fonts.at(d_->font_id.get());
+    if (d_->font_id.is_set())
+    {
+        return d_->parent->fonts.at(d_->font_id.get());
+    }
+    return {};
 }
 
 format format::font(const xlnt::font &new_font, optional<bool> applied)
@@ -157,13 +173,22 @@ format format::number_format(const xlnt::number_format &new_number_format, optio
 
 xlnt::protection format::protection() const
 {
-    return d_->parent->protections.at(d_->protection_id.get());
+    if (d_->protection_id.is_set())
+    {
+        return d_->parent->protections.at(d_->protection_id.get());
+    }
+    return {};
 }
 
 format format::protection(const xlnt::protection &new_protection, optional<bool> applied)
 {
     d_ = d_->parent->find_or_create_with(d_, new_protection, applied);
     return format(d_);
+}
+
+bool format::has_alignment() const
+{
+    return d_->alignment_id.is_set();
 }
 
 bool format::alignment_applied() const
@@ -173,11 +198,21 @@ bool format::alignment_applied() const
         : d_->alignment_id.is_set();
 }
 
+bool format::has_border() const
+{
+    return d_->border_id.is_set();
+}
+
 bool format::border_applied() const
 {
     return d_->border_applied.is_set()
         ? d_->border_applied.get()
         : d_->border_id.is_set();
+}
+
+bool format::has_fill() const
+{
+    return d_->fill_id.is_set();
 }
 
 bool format::fill_applied() const
@@ -187,6 +222,11 @@ bool format::fill_applied() const
         : d_->fill_id.is_set();
 }
 
+bool format::has_font() const
+{
+    return d_->font_id.is_set();
+}
+
 bool format::font_applied() const
 {
     return d_->font_applied.is_set()
@@ -194,11 +234,21 @@ bool format::font_applied() const
         : d_->font_id.is_set();
 }
 
+bool format::has_number_format() const
+{
+    return d_->number_format_id.is_set();
+}
+
 bool format::number_format_applied() const
 {
     return d_->number_format_applied.is_set()
         ? d_->number_format_applied.get()
         : d_->number_format_id.is_set();
+}
+
+bool format::has_protection() const
+{
+    return d_->protection_id.is_set();
 }
 
 bool format::protection_applied() const

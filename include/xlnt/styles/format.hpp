@@ -58,7 +58,8 @@ class XLNT_API format
 {
 public:
     /// <summary>
-    /// Returns the alignment of this format.
+    /// Returns a copy of the alignment of this format. If no alignment has been set (has_alignment() returns false),
+    /// a default-constructed alignment will be returned.
     /// </summary>
     class alignment alignment() const;
 
@@ -70,13 +71,19 @@ public:
     format alignment(const xlnt::alignment &new_alignment, xlnt::optional<bool> applied = {});
 
     /// <summary>
+    /// Returns true if an alignment has been set for this format.
+    /// </summary>
+    bool has_alignment() const;
+
+    /// <summary>
     /// Returns true if the alignment of this format should be applied to cells
     /// using it.
     /// </summary>
     bool alignment_applied() const;
 
     /// <summary>
-    /// Returns the border of this format.
+    /// Returns a copy of the border of this format. If no border has been set (has_border() returns false),
+    /// a default-constructed border will be returned.
     /// </summary>
     class border border() const;
 
@@ -88,12 +95,18 @@ public:
     format border(const xlnt::border &new_border, xlnt::optional<bool> applied = {});
 
     /// <summary>
+    /// Returns true if a border has been set for this format.
+    /// </summary>
+    bool has_border() const;
+
+    /// <summary>
     /// Returns true if the border set for this format should be applied to cells using the format.
     /// </summary>
     bool border_applied() const;
 
     /// <summary>
-    /// Returns the fill of this format.
+    /// Returns a copy the fill of this format. If no fill has been set (has_fill() returns false),
+    /// a default-constructed fill will be returned.
     /// </summary>
     class fill fill() const;
 
@@ -105,12 +118,18 @@ public:
     format fill(const xlnt::fill &new_fill, xlnt::optional<bool> applied = {});
 
     /// <summary>
+    /// Returns true if a fill has been set for this format.
+    /// </summary>
+    bool has_fill() const;
+
+    /// <summary>
     /// Returns true if the fill set for this format should be applied to cells using the format.
     /// </summary>
     bool fill_applied() const;
 
     /// <summary>
-    /// Returns the font of this format.
+    /// Returns a copy of the font of this format. If no font has been set (has_font() returns false),
+    /// a default-constructed font will be returned.
     /// </summary>
     class font font() const;
 
@@ -122,12 +141,18 @@ public:
     format font(const xlnt::font &new_font, xlnt::optional<bool> applied = {});
 
     /// <summary>
+    /// Returns true if a font has been set for this format.
+    /// </summary>
+    bool has_font() const;
+
+    /// <summary>
     /// Returns true if the font set for this format should be applied to cells using the format.
     /// </summary>
     bool font_applied() const;
 
     /// <summary>
-    /// Returns the number format of this format.
+    /// Returns a copy of the number format of this format. If no number format has been set (has_number_format() returns false),
+    /// a default-constructed number format will be returned.
     /// </summary>
     class number_format number_format() const;
 
@@ -139,14 +164,25 @@ public:
     format number_format(const xlnt::number_format &new_number_format, xlnt::optional<bool> applied = {});
 
     /// <summary>
+    /// Returns true if a number format has been set for this format.
+    /// </summary>
+    bool has_number_format() const;
+
+    /// <summary>
     /// Returns true if the number_format set for this format should be applied to cells using the format.
     /// </summary>
     bool number_format_applied() const;
 
     /// <summary>
-    /// Returns the protection of this format.
+    /// Returns a copy of the protection of this format. If no protection has been set (has_protection() returns false),
+    /// a default-constructed protection will be returned.
     /// </summary>
     class protection protection() const;
+
+    /// <summary>
+    /// Returns true if protection has been set for this format.
+    /// </summary>
+    bool has_protection() const;
 
     /// <summary>
     /// Returns true if the protection set for this format should be applied to cells using the format.

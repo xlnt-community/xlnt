@@ -108,9 +108,15 @@ public:
     // Formatting (xf) components
 
     /// <summary>
-    /// Returns the alignment of this style.
+    /// Returns a copy of the alignment of this style. If no alignment has been set (has_alignment() returns false),
+    /// a default-constructed alignment will be returned.
     /// </summary>
     class alignment alignment() const;
+
+    /// <summary>
+    /// Returns true if an alignment has been set for this style.
+    /// </summary>
+    bool has_alignment() const;
 
     /// <summary>
     /// Returns true if the alignment of this style should be applied to cells
@@ -126,9 +132,15 @@ public:
     style alignment(const xlnt::alignment &new_alignment, optional<bool> applied = {});
 
     /// <summary>
-    /// Returns the border of this style.
+    /// Returns a copy of the border of this style. If no border has been set (has_border() returns false),
+    /// a default-constructed border will be returned.
     /// </summary>
     class border border() const;
+
+    /// <summary>
+    /// Returns true if a border has been set for this style.
+    /// </summary>
+    bool has_border() const;
 
     /// <summary>
     /// Returns true if the border set for this style should be applied to cells using the style.
@@ -143,9 +155,15 @@ public:
     style border(const xlnt::border &new_border, optional<bool> applied = {});
 
     /// <summary>
-    /// Returns the fill of this style.
+    /// Returns a copy of the fill of this style. If no fill has been set (has_fill() returns false),
+    /// a default-constructed fill will be returned.
     /// </summary>
     class fill fill() const;
+
+    /// <summary>
+    /// Returns true if a fill has been set for this style.
+    /// </summary>
+    bool has_fill() const;
 
     /// <summary>
     /// Returns true if the fill set for this style should be applied to cells using the style.
@@ -160,9 +178,15 @@ public:
     style fill(const xlnt::fill &new_fill, optional<bool> applied = {});
 
     /// <summary>
-    /// Returns the font of this style.
+    /// Returns a copy of the font of this style. If no font has been set (has_font() returns false),
+    /// a default-constructed font will be returned.
     /// </summary>
     class font font() const;
+
+    /// <summary>
+    /// Returns true if a font has been set for this style.
+    /// </summary>
+    bool has_font() const;
 
     /// <summary>
     /// Returns true if the font set for this style should be applied to cells using the style.
@@ -177,9 +201,15 @@ public:
     style font(const xlnt::font &new_font, optional<bool> applied = {});
 
     /// <summary>
-    /// Returns the number_format of this style.
+    /// Returns a copy of the number_format of this style. If no number format has been set (has_number_format() returns false),
+    /// a default-constructed number format will be returned.
     /// </summary>
     class number_format number_format() const;
+
+    /// <summary>
+    /// Returns true if a number format has been set for this style.
+    /// </summary>
+    bool has_number_format() const;
 
     /// <summary>
     /// Returns true if the number_format set for this style should be applied to cells using the style.
@@ -194,9 +224,15 @@ public:
     style number_format(const xlnt::number_format &new_number_format, optional<bool> applied = {});
 
     /// <summary>
-    /// Returns the protection of this style.
+    /// Returns a copy of the protection of this style. If no protection has been set (has_protection() returns false),
+    /// a default-constructed protection will be returned.
     /// </summary>
     class protection protection() const;
+
+    /// <summary>
+    /// Returns true if protection has been set for this style.
+    /// </summary>
+    bool has_protection() const;
 
     /// <summary>
     /// Returns true if the protection set for this style should be applied to cells using the style.
