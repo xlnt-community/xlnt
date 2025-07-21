@@ -24,7 +24,6 @@
 #pragma once
 
 #include <functional>
-#include <xlnt/styles/color.hpp>
 #include <xlnt/styles/font.hpp>
 
 // A standard, robust way to combine hash values.

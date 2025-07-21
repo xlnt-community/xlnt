@@ -25,6 +25,7 @@
 #include <helpers/test_suite.hpp>
 
 #include <xlnt/styles/color.hpp>
+#include <xlnt/utils/hash.hpp>
 #include <unordered_set>
 
 class color_test_suite : public test_suite
