@@ -349,3 +349,5 @@ private:
 };
 
 } // namespace xlnt
+
+#include <xlnt/utils/hash.hpp>
