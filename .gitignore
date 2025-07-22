@@ -25,3 +25,4 @@ python/xlntpyarrow.egg-info/
 /out/
 /CMakeSettings.json
 include/xlnt/utils/xlnt_cmake_export.h
+.idea/

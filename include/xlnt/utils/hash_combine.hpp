@@ -1,5 +1,4 @@
-// Copyright (c) 2017-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2025 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,21 +20,25 @@
 //
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
+
 #pragma once
 
-#include <chrono>
+#include <cstddef>
+#include <functional>
 
 namespace xlnt {
-namespace benchmarks {
+namespace detail {
 
-inline std::size_t current_time()
+/// <summary>
+/// A standard, robust way to combine hash values.
+/// Often credited to Boost's hash_combine.
+/// </summary>
+template <class T>
+inline void hash_combine(std::size_t& seed, const T& v)
 {
-    auto now = std::chrono::system_clock::now();
-    auto time_since_epoch = now.time_since_epoch();
-    auto duration = std::chrono::duration<double, std::milli>(time_since_epoch);
-
-    return static_cast<std::size_t>(duration.count());
+    std::hash<T> hasher;
+    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
-} // namespace benchmarks
+} // namespace detail
 } // namespace xlnt
