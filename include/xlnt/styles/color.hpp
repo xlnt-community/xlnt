@@ -31,6 +31,7 @@
 
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/utils/optional.hpp>
+#include <xlnt/utils/hash_combine.hpp>
 
 namespace xlnt {
 
@@ -348,19 +349,6 @@ private:
     /// </summary>
     bool auto_color = false;
 };
-
-namespace detail {
-
-// A standard, robust way to combine hash values.
-// Often credited to Boost's hash_combine.
-template <class T>
-inline void hash_combine(std::size_t& seed, const T& v)
-{
-    std::hash<T> hasher;
-    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-}
-
-} // namespace detail
 
 } // namespace xlnt
 

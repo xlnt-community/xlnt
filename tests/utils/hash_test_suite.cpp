@@ -166,6 +166,46 @@ public:
         // We should have a good hash distribution - allow for some collisions
         // but ensure most hashes are unique
         xlnt_assert(color_hashes.size() >= test_colors.size() * 0.8); // Allow 20% collision rate
+        
+        // IMPORTANT: Direct hash uniqueness test for fonts as requested by m7913d
+        // Test that different fonts actually produce different hash values
+        std::vector<xlnt::font> test_fonts;
+        
+        // Create a variety of different fonts
+        xlnt::font f1;
+        test_fonts.push_back(f1);
+        
+        xlnt::font f2;
+        f2.name("Arial");
+        test_fonts.push_back(f2);
+        
+        xlnt::font f3;
+        f3.size(14.0);
+        test_fonts.push_back(f3);
+        
+        xlnt::font f4;
+        f4.bold(true);
+        test_fonts.push_back(f4);
+        
+        xlnt::font f5;
+        f5.italic(true);
+        test_fonts.push_back(f5);
+        
+        xlnt::font f6;
+        f6.color(xlnt::color::red());
+        test_fonts.push_back(f6);
+        
+        // Check that each font has a unique hash
+        std::unordered_set<std::size_t> font_hashes;
+        for (const auto& font : test_fonts) {
+            auto hash = font_hasher(font);
+            // This is the critical test - we expect each different font to have a unique hash
+            xlnt_assert(font_hashes.find(hash) == font_hashes.end());
+            font_hashes.insert(hash);
+        }
+        
+        // Verify we have as many unique hashes as fonts
+        xlnt_assert_equals(font_hashes.size(), test_fonts.size());
     }
 
 
