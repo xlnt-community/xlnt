@@ -74,6 +74,8 @@ public:
 
     /// <summary>
     /// Returns the cell reference of the active cell.
+    /// Assumes that this selection has an active cell (please call has_active_cell() to check).
+    /// If this selection does not have an active cell, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     cell_reference active_cell() const
     {
@@ -100,6 +102,8 @@ public:
     /// Returns the range encompassed by this selection.
     /// If the range contains multiple (non-contiguous) regions, the first range is returned.
     /// Use sqrefs to obtain the full selection.
+    /// Assumes that at least one region exists (please call has_sqref() to check).
+    /// If there are no regions, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     /// <deprecated>
     /// Use sqrefs instead.

@@ -260,6 +260,8 @@ public:
 
     /// <summary>
     /// Returns the relationship of this cell's hyperlink.
+    /// Assumes that this cell has a hyperlink (please call has_hyperlink() to check).
+    /// If this cell does not have a hyperlink, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class hyperlink hyperlink() const;
 
@@ -336,8 +338,9 @@ public:
     bool has_format() const;
 
     /// <summary>
-    /// Returns the format applied to this cell. If this cell has no
-    /// format, an invalid_attribute exception will be thrown.
+    /// Returns the format applied to this cell.
+    /// Assumes that the format exists (please call has_format() to check).
+    /// If this cell has no format, an invalid_attribute exception will be thrown.
     /// </summary>
     const class format format() const;
 
@@ -354,7 +357,8 @@ public:
     void clear_format();
 
     /// <summary>
-    /// Returns the number format of this cell.
+    /// Returns a copy of the number format of this cell. If no number format has been set (format().has_number_format() returns false),
+    /// a default-constructed number format will be returned.
     /// </summary>
     class number_format number_format() const;
 
@@ -365,7 +369,8 @@ public:
     void number_format(const class number_format &format);
 
     /// <summary>
-    /// Returns the font applied to the text in this cell.
+    /// Returns a copy of the font applied to the text in this cell. If no font has been set (format().has_font() returns false),
+    /// a default-constructed font will be returned.
     /// </summary>
     class font font() const;
 
@@ -376,7 +381,8 @@ public:
     void font(const class font &font_);
 
     /// <summary>
-    /// Returns the fill applied to this cell.
+    /// Returns a copy of the fill applied to this cell. If no fill has been set (format().has_fill() returns false),
+    /// a default-constructed fill will be returned.
     /// </summary>
     class fill fill() const;
 
@@ -387,7 +393,8 @@ public:
     void fill(const class fill &fill_);
 
     /// <summary>
-    /// Returns the border of this cell.
+    /// Returns a copy of the border of this cell. If no border has been set (format().has_border() returns false),
+    /// a default-constructed border will be returned.
     /// </summary>
     class border border() const;
 
@@ -398,7 +405,8 @@ public:
     void border(const class border &border_);
 
     /// <summary>
-    /// Returns the alignment of the text in this cell.
+    /// Returns a copy of the alignment of the text in this cell. If no alignment has been set (format().has_alignment() returns false),
+    /// a default-constructed alignment will be returned.
     /// </summary>
     class alignment alignment() const;
 
@@ -409,7 +417,8 @@ public:
     void alignment(const class alignment &alignment_);
 
     /// <summary>
-    /// Returns the protection of this cell.
+    /// Returns a copy of the protection of this cell. If no protection has been set (format().has_protection() returns false),
+    /// a default-constructed protection will be returned.
     /// </summary>
     class protection protection() const;
 
@@ -428,11 +437,15 @@ public:
 
     /// <summary>
     /// Returns a wrapper pointing to the named style applied to this cell.
+    /// Assumes that the style exists (please call has_style() to check).
+    /// If this cell does not have a style, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class style style();
 
     /// <summary>
     /// Returns a wrapper pointing to the named style applied to this cell.
+    /// Assumes that the style exists (please call has_style() to check).
+    /// If this cell does not have a style, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     const class style style() const;
 
@@ -460,6 +473,8 @@ public:
 
     /// <summary>
     /// Returns the string representation of the formula applied to this cell.
+    /// Assumes that cell view has a formula (please call has_formula() to check).
+    /// If this cell does not have a formula, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     std::string formula() const;
 
@@ -574,6 +589,8 @@ public:
 
     /// <summary>
     /// Gets the comment applied to this cell.
+    /// Assumes that the comment exists (please call has_comment() to check).
+    /// If this cell does not have a comment, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class comment comment() const;
 
@@ -644,6 +661,8 @@ private:
     /// <summary>
     /// Returns a non-const reference to the format of this cell.
     /// This is for internal use only.
+    /// Assumes that this cell has a format (please call has_format() to check).
+    /// If this cell does not have a format, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class format modifiable_format();
 
