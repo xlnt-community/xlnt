@@ -188,7 +188,7 @@ gradient_fill &gradient_fill::bottom(double value)
     return *this;
 }
 
-gradient_fill &gradient_fill::add_stop(double position, color stop_color)
+gradient_fill &gradient_fill::add_stop(double position, const color& stop_color)
 {
     stops_[position] = stop_color;
     return *this;
