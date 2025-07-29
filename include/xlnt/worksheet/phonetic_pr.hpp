@@ -100,6 +100,8 @@ public:
 
     /// <summary>
     /// returns the phonetic type
+    /// Assumes that this phonetic_pr has a type (please call has_type() to check).
+    /// If this phonetic_pr has no type, an invalid_attribute exception will be thrown.
     /// </summary>
     phonetic_type type() const;
 
@@ -115,6 +117,8 @@ public:
 
     /// <summary>
     /// get the alignment
+    /// Assumes that this phonetic_pr has an alignment (please call has_alignment() to check).
+    /// If this phonetic_pr has no alignment, an invalid_attribute exception will be thrown.
     /// </summary>
     align alignment() const;
 
