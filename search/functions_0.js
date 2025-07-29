@@ -10,7 +10,7 @@ var searchData=
   ['add_5frun',['add_run',['../classxlnt_1_1rich__text.html#a3eba7c736ea13e227c5984dca0315637',1,'xlnt::rich_text']]],
   ['add_5fselection',['add_selection',['../classxlnt_1_1sheet__view.html#abaaa89960f39516eb52997f8bec6c61c',1,'xlnt::sheet_view']]],
   ['add_5fshared_5fstring',['add_shared_string',['../classxlnt_1_1workbook.html#a33f2f7db17a773cd3f7702c26d2d8681',1,'xlnt::workbook']]],
-  ['add_5fstop',['add_stop',['../classxlnt_1_1gradient__fill.html#aab01da80da998b3a8e55c725fa0f7df5',1,'xlnt::gradient_fill']]],
+  ['add_5fstop',['add_stop',['../classxlnt_1_1gradient__fill.html#a575bd7b2fc7822cc772b54923b1ca27a',1,'xlnt::gradient_fill']]],
   ['add_5fview',['add_view',['../classxlnt_1_1worksheet.html#a17b07f13febfae1a31d728d2fa7eb377',1,'xlnt::worksheet']]],
   ['add_5fworksheet',['add_worksheet',['../classxlnt_1_1streaming__workbook__writer.html#a861df93030c79b2322b71cda3be48482',1,'xlnt::streaming_workbook_writer']]],
   ['align_5fwith_5fmargins',['align_with_margins',['../classxlnt_1_1header__footer.html#ae9512dcb1d060bcc554930ab6ff3bc0d',1,'xlnt::header_footer::align_with_margins() const'],['../classxlnt_1_1header__footer.html#a7c899176931af8ebbdad79a589d437be',1,'xlnt::header_footer::align_with_margins(bool align)']]],
