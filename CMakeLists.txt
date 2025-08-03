@@ -40,7 +40,6 @@ if(index EQUAL -1)
     message(FATAL_ERROR "XLNT_C_LANG must be one of ${XLNT_C_VALID_LANGS}")
 endif()
 
-
 # Optional components
 option(LIBRARY "Set to ON to build the main XLNT library" ON)
 option(TESTS "Set to ON to build test executable (in ./tests)" OFF)

@@ -225,7 +225,7 @@ public:
     /// <summary>
     /// Adds a gradient stop at position with the given color.
     /// </summary>
-    gradient_fill &add_stop(double position, color stop_color);
+    gradient_fill &add_stop(double position, const color& stop_color);
 
     /// <summary>
     /// Deletes all stops from the gradient.

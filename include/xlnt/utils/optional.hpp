@@ -27,6 +27,7 @@
 #include "xlnt/utils/exceptions.hpp"
 #include "xlnt/utils/numeric.hpp"
 #include <type_traits>
+#include <cstring>
 
 namespace xlnt {
 
@@ -74,7 +75,8 @@ public:
     /// Default contructor. is_set() will be false initially.
     /// </summary>
     optional() noexcept
-        : has_value_(false)
+        : has_value_(false),
+        storage_{}
     {
     }
 
@@ -109,6 +111,10 @@ public:
         {
             new (&storage_) T(other.value_ref());
         }
+        else
+        {
+            std::memset(storage_, 0, sizeof(T));
+        }
     }
 
     /// <summary>
@@ -122,6 +128,10 @@ public:
         {
             new (&storage_) T(std::move(other.value_ref()));
             other.clear();
+        }
+        else
+        {
+            std::memset(storage_, 0, sizeof(T));
         }
     }
 
@@ -182,10 +192,6 @@ public:
     /// </summary>
     void set(const T &value) noexcept(XLNT_NOEXCEPT_VALUE_COMPAT(set_copy_noexcept_t{}))
     {
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
         if (has_value_)
         {
             value_ref() = value;
@@ -195,9 +201,6 @@ public:
             new (&storage_) T(value);
             has_value_ = true;
         }
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
     }
 
     /// <summary>
@@ -209,10 +212,6 @@ public:
         // 1. have to deal with implicit conversions internally with perfect forwarding
         // 2. have to deal with the noexcept specfiers for all the different variations
         // overload is just far and away the simpler solution
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
         if (has_value_)
         {
             value_ref() = std::move(value);
@@ -222,9 +221,6 @@ public:
             new (&storage_) T(std::move(value));
             has_value_ = true;
         }
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
     }
 
     /// <summary>

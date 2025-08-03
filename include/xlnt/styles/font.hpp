@@ -25,11 +25,13 @@
 
 #pragma once
 
-#include <string>
+#include <cstring>
+#include <functional>
 
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/styles/color.hpp>
 #include <xlnt/utils/optional.hpp>
+#include <xlnt/utils/hash_combine.hpp>
 
 namespace xlnt {
 
@@ -331,3 +333,64 @@ private:
 };
 
 } // namespace xlnt
+
+namespace std {
+
+template<>
+struct hash<xlnt::font>
+{
+    size_t operator()(const xlnt::font& f) const
+    {
+        size_t seed = 0;
+        
+        // Hash name
+        if (f.has_name())
+        {
+            xlnt::detail::hash_combine(seed, f.name());
+        }
+        
+        // Hash size
+        if (f.has_size())
+        {
+            xlnt::detail::hash_combine(seed, f.size());
+        }
+        
+        // Hash all boolean properties
+        xlnt::detail::hash_combine(seed, f.bold());
+        xlnt::detail::hash_combine(seed, f.italic());
+        xlnt::detail::hash_combine(seed, f.superscript());
+        xlnt::detail::hash_combine(seed, f.subscript());
+        xlnt::detail::hash_combine(seed, f.strikethrough());
+        xlnt::detail::hash_combine(seed, static_cast<int>(f.underline()));
+        xlnt::detail::hash_combine(seed, f.outline());
+        xlnt::detail::hash_combine(seed, f.shadow());
+        
+        // Hash scheme
+        if (f.has_scheme())
+        {
+            xlnt::detail::hash_combine(seed, f.scheme());
+        }
+        
+        // Hash color (importantly, this re-uses the std::hash<xlnt::color> we just defined)
+        if (f.has_color())
+        {
+            xlnt::detail::hash_combine(seed, f.color());
+        }
+        
+        // Hash family
+        if (f.has_family())
+        {
+            xlnt::detail::hash_combine(seed, f.family());
+        }
+        
+        // Hash charset
+        if (f.has_charset())
+        {
+            xlnt::detail::hash_combine(seed, f.charset());
+        }
+
+        return seed;
+    }
+};
+
+} // namespace std
