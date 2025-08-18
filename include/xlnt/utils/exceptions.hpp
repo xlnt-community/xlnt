@@ -344,4 +344,27 @@ public:
     ~unsupported() override;
 };
 
+/// <summary>
+/// Exception for workbooks that have non-compliant relations (Issue #109)
+/// </summary>
+class XLNT_API invalid_relation : public exception
+{
+public:
+    /// <summary>
+    /// Constructs an invalid_relation exception, with the offending relation as an optional message
+    /// feature.
+    /// </summary>
+    explicit invalid_relation(const std::string &offending_relation);
+
+           /// <summary>
+           /// Default copy constructor.
+           /// </summary>
+    invalid_relation(const invalid_relation &) = default;
+
+           /// <summary>
+           /// Destructor
+           /// </summary>
+    ~invalid_relation() override;
+};
+
 } // namespace xlnt

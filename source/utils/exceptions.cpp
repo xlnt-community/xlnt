@@ -159,4 +159,13 @@ unsupported::~unsupported()
 {
 }
 
+invalid_relation::invalid_relation(const std::string &message)
+    : exception(std::string("invalid relation: " + message))
+{
+}
+
+invalid_relation::~invalid_relation()
+{
+}
+
 } // namespace xlnt
