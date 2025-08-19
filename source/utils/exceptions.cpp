@@ -82,7 +82,7 @@ invalid_data_type::~invalid_data_type()
 }
 
 invalid_file::invalid_file(const std::string &reason)
-    : exception(std::string("couldn't load file, reason given: ") + reason + "")
+    : exception(std::string("couldn't load file, reason given: ") + reason)
 {
 }
 
