@@ -124,9 +124,9 @@ class XLNT_API invalid_file : public exception
 public:
     /// <summary>
     /// Constructs an invalid_file exception thrown when attempt to access
-    /// the given filename.
+    /// the given file, containing a description of the reason.
     /// </summary>
-    explicit invalid_file(const std::string &filename);
+    explicit invalid_file(const std::string &reason);
 
     /// <summary>
     /// Default copy constructor.
