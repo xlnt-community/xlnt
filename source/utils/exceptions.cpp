@@ -81,8 +81,8 @@ invalid_data_type::~invalid_data_type()
 {
 }
 
-invalid_file::invalid_file(const std::string &filename)
-    : exception(std::string("couldn't open file: (") + filename + ")")
+invalid_file::invalid_file(const std::string &reason)
+    : exception(std::string("couldn't open file, reason given: (") + reason + ")")
 {
 }
 
@@ -156,15 +156,6 @@ unsupported::unsupported(const std::string &message)
 }
 
 unsupported::~unsupported()
-{
-}
-
-invalid_relation::invalid_relation(const std::string &message)
-    : exception(std::string("invalid relation: " + message))
-{
-}
-
-invalid_relation::~invalid_relation()
 {
 }
 
