@@ -67,7 +67,7 @@ path manifest::canonicalize(const std::vector<xlnt::relationship> &rels) const
             {
 #ifdef THROW_ON_INVALID_XML
                 auto relativestr = relative.string();
-                throw invalid_file("invalid relation : " + relativestr);
+                throw invalid_file("invalid relation: " + relativestr);
 #endif
             }
             else
