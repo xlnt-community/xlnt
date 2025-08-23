@@ -126,6 +126,10 @@ bool rich_text::has_phonetic_properties() const
 
 const phonetic_pr &rich_text::phonetic_properties() const
 {
+    if (!phonetic_properties_.is_set())
+    {
+        throw xlnt::invalid_attribute("rich text has no phonetic properties");
+    }
     return phonetic_properties_.get();
 }
 

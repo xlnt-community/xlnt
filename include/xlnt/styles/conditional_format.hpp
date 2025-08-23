@@ -103,53 +103,53 @@ public:
     // Formatting (xf) components
 
     /// <summary>
-    ///
+    /// Returns true if a border has been set for this conditional format.
     /// </summary>
     bool has_border() const;
 
     /// <summary>
-    /// Returns the border of this conditional format.
-    /// Assumes that this conditional format has a border (please call has_border() to check).
-    /// If this conditional format does not have a border, an xlnt::invalid_attribute exception will be thrown.
+    /// Returns a copy of the border of this conditional format. If no border has been set (has_border() returns false),
+    /// a default-constructed border will be returned.
     /// </summary>
     class border border() const;
 
     /// <summary>
-    ///
+    /// Sets the border of this conditional format to new_border.
+    /// Returns a wrapper pointing to this conditional format.
     /// </summary>
     conditional_format border(const xlnt::border &new_border);
 
     /// <summary>
-    ///
+    /// Returns true if a fill has been set for this conditional format.
     /// </summary>
     bool has_fill() const;
 
     /// <summary>
-    /// Returns the fill of this conditional format.
-    /// Assumes that this conditional format has a fill (please call has_fill() to check).
-    /// If this conditional format does not have a fill, an xlnt::invalid_attribute exception will be thrown.
+    /// Returns a copy of the fill of this conditional format. If no fill has been set (has_fill() returns false),
+    /// a default-constructed fill will be returned.
     /// </summary>
     class fill fill() const;
 
     /// <summary>
-    ///
+    /// Sets the fill of this conditional format to new_fill.
+    /// Returns a wrapper pointing to this conditional format.
     /// </summary>
     conditional_format fill(const xlnt::fill &new_fill);
 
     /// <summary>
-    ///
+    /// Returns true if a font has been set for this conditional format.
     /// </summary>
     bool has_font() const;
 
     /// <summary>
-    /// Returns the font of this conditional format.
-    /// Assumes that this conditional format has a font (please call has_font() to check).
-    /// If this conditional format does not have a font, an xlnt::invalid_attribute exception will be thrown.
+    /// Returns a copy of the font of this conditional format. If no font has been set (has_font() returns false),
+    /// a default-constructed font will be returned.
     /// </summary>
     class font font() const;
 
     /// <summary>
-    ///
+    /// Sets the font of this conditional format to new_font.
+    /// Returns a wrapper pointing to this conditional format.
     /// </summary>
     conditional_format font(const xlnt::font &new_font);
 

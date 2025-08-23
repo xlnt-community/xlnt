@@ -45,16 +45,6 @@ public:
     explicit exception(const std::string &message);
 
     /// <summary>
-    /// Default copy constructor.
-    /// </summary>
-    exception(const exception &) = default;
-
-    /// <summary>
-    /// Destructor
-    /// </summary>
-    ~exception() override;
-
-    /// <summary>
     /// Sets the message after the xlnt::exception is constructed. This can show
     /// more specific information than std::exception::what().
     /// </summary>
@@ -79,19 +69,9 @@ class XLNT_API invalid_parameter : public exception
 {
 public:
     /// <summary>
-    /// Default constructor.
+    /// Constructor with a message.
     /// </summary>
-    explicit invalid_parameter(const char *optional_message = nullptr);
-
-    /// <summary>
-    /// Default copy constructor.
-    /// </summary>
-    invalid_parameter(const invalid_parameter &) = default;
-
-    /// <summary>
-    /// Destructor
-    /// </summary>
-    ~invalid_parameter() override;
+    explicit invalid_parameter(const std::string &message);
 };
 
 /// <summary>
@@ -104,16 +84,6 @@ public:
     /// Default constructor.
     /// </summary>
     explicit invalid_sheet_title(const std::string &title);
-
-    /// <summary>
-    /// Default copy constructor.
-    /// </summary>
-    invalid_sheet_title(const invalid_sheet_title &) = default;
-
-    /// <summary>
-    /// Destructor
-    /// </summary>
-    ~invalid_sheet_title() override;
 };
 
 /// <summary>
@@ -127,16 +97,6 @@ public:
     /// the given filename.
     /// </summary>
     explicit invalid_file(const std::string &filename);
-
-    /// <summary>
-    /// Default copy constructor.
-    /// </summary>
-    invalid_file(const invalid_file &) = default;
-
-    /// <summary>
-    /// Destructor
-    /// </summary>
-    ~invalid_file() override;
 };
 
 /// <summary>
@@ -150,16 +110,6 @@ public:
     /// Constructs an illegal_character exception thrown as a result of the given character.
     /// </summary>
     explicit illegal_character(char c);
-
-    /// <summary>
-    /// Default copy constructor.
-    /// </summary>
-    illegal_character(const illegal_character &) = default;
-
-    /// <summary>
-    /// Destructor
-    /// </summary>
-    ~illegal_character() override;
 };
 
 /// <summary>
@@ -169,19 +119,9 @@ class XLNT_API invalid_data_type : public exception
 {
 public:
     /// <summary>
-    /// Default constructor.
+    /// Constructor with a data type name.
     /// </summary>
-    invalid_data_type();
-
-    /// <summary>
-    /// Default copy constructor.
-    /// </summary>
-    invalid_data_type(const invalid_data_type &) = default;
-
-    /// <summary>
-    /// Destructor
-    /// </summary>
-    ~invalid_data_type() override;
+    invalid_data_type(const std::string &type);
 };
 
 /// <summary>
@@ -191,19 +131,19 @@ class XLNT_API invalid_column_index : public exception
 {
 public:
     /// <summary>
-    /// Default constructor.
+    /// Constructor with a column number.
     /// </summary>
-    invalid_column_index();
+    explicit invalid_column_index(column_t::index_t column_index);
 
     /// <summary>
-    /// Default copy constructor.
+    /// Constructor with a column.
     /// </summary>
-    invalid_column_index(const invalid_column_index &) = default;
+    explicit invalid_column_index(column_t column);
 
     /// <summary>
-    /// Destructor
+    /// Constructor with a column string.
     /// </summary>
-    ~invalid_column_index() override;
+    explicit invalid_column_index(const std::string &column_str);
 };
 
 /// <summary>
@@ -221,16 +161,6 @@ public:
     /// Constructs an invalid_cell_reference exception for the given string.
     /// </summary>
     explicit invalid_cell_reference(const std::string &reference_string);
-
-    /// <summary>
-    /// Default copy constructor.
-    /// </summary>
-    invalid_cell_reference(const invalid_cell_reference &) = default;
-
-    /// <summary>
-    /// Destructor
-    /// </summary>
-    ~invalid_cell_reference() override;
 };
 
 /// <summary>
@@ -241,19 +171,9 @@ class XLNT_API invalid_attribute : public exception
 {
 public:
     /// <summary>
-    /// Constructor.
+    /// Constructor with a message.
     /// </summary>
-    explicit invalid_attribute(const char *optional_message = nullptr);
-
-    /// <summary>
-    /// Default copy constructor.
-    /// </summary>
-    invalid_attribute(const invalid_attribute &) = default;
-
-    /// <summary>
-    /// Destructor
-    /// </summary>
-    ~invalid_attribute() override;
+    explicit invalid_attribute(const std::string &message);
 };
 
 /// <summary>
@@ -263,19 +183,9 @@ class XLNT_API key_not_found : public exception
 {
 public:
     /// <summary>
-    /// Default constructor.
+    /// Constructor with a key name.
     /// </summary>
-    key_not_found();
-
-    /// <summary>
-    /// Default copy constructor.
-    /// </summary>
-    key_not_found(const key_not_found &) = default;
-
-    /// <summary>
-    /// Destructor
-    /// </summary>
-    ~key_not_found() override;
+    explicit key_not_found(const std::string &key_name);
 };
 
 /// <summary>
@@ -288,16 +198,6 @@ public:
     /// Default constructor.
     /// </summary>
     no_visible_worksheets();
-
-    /// <summary>
-    /// Default copy constructor.
-    /// </summary>
-    no_visible_worksheets(const no_visible_worksheets &) = default;
-
-    /// <summary>
-    /// Destructor
-    /// </summary>
-    ~no_visible_worksheets() override;
 };
 
 /// <summary>
@@ -307,19 +207,35 @@ class XLNT_API unhandled_switch_case : public exception
 {
 public:
     /// <summary>
-    /// Default constructor.
+    /// Constructor taking a switch value. Useful for:
+    /// - integer types
+    /// - enums (but rather for handling default switch cases; otherwise for handling single cases use the string overloads below)
     /// </summary>
-    unhandled_switch_case();
+    explicit unhandled_switch_case(long long switch_value);
 
     /// <summary>
-    /// Default copy constructor.
+    /// Constructor taking a switch value as a string.
     /// </summary>
-    unhandled_switch_case(const unhandled_switch_case &) = default;
+    explicit unhandled_switch_case(const std::string &switch_value_string);
 
     /// <summary>
-    /// Destructor
+    /// Constructor taking a switch value as an optional string.
+    /// This constructor with an optional message is unfortunately necessary to avoid complexity in default_case.
+    /// If possible, please always provide a switch value (either as value or as astring) instead of leaving it empty!
     /// </summary>
-    ~unhandled_switch_case() override;
+    explicit unhandled_switch_case(const char *switch_value_optional_string = nullptr);
+};
+
+/// <summary>
+/// Exception for invalid (empty, incorrect) passwords
+/// </summary>
+class XLNT_API invalid_password : public exception
+{
+public:
+    /// <summary>
+    /// Constructor taking a string explaining why the password is invalid.
+    /// </summary>
+    explicit invalid_password(const std::string &message);
 };
 
 /// <summary>
@@ -333,16 +249,6 @@ public:
     /// feature.
     /// </summary>
     explicit unsupported(const std::string &message);
-
-    /// <summary>
-    /// Default copy constructor.
-    /// </summary>
-    unsupported(const unsupported &) = default;
-
-    /// <summary>
-    /// Destructor
-    /// </summary>
-    ~unsupported() override;
 };
 
 } // namespace xlnt

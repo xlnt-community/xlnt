@@ -79,6 +79,10 @@ public:
     /// </summary>
     cell_reference active_cell() const
     {
+        if (!active_cell_.is_set())
+        {
+            throw xlnt::invalid_attribute("selection has no active cell");
+        }
         return active_cell_.get();
     }
 
@@ -111,7 +115,7 @@ public:
     XLNT_DEPRECATED range_reference sqref() const
     {
         if (!has_sqref())
-            throw invalid_attribute();
+            throw invalid_attribute("the selection has no sqref");
 
         return sqref_.front();
     }

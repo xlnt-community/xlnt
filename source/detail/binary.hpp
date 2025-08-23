@@ -273,7 +273,7 @@ public:
 
         if ((reader.offset() + reader_element_count) * sizeof(U) > reader.bytes())
         {
-            throw xlnt::exception("reading past end");
+            throw xlnt::exception("reading past end (from offset " + std::to_string(reader.offset()) + " reading " + std::to_string(reader_element_count * sizeof(U)) + " bytes, although the reader only has " + std::to_string(reader.bytes()) + " bytes)");
         }
 
         std::memcpy(data_->data() + offset_, reader.data() + reader.offset(), reader_element_count * sizeof(U));

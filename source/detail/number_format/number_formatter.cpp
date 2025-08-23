@@ -479,16 +479,16 @@ const std::unordered_map<int, std::string> known_locales()
     return all;
 }
 
-[[noreturn]] void unhandled_case_error()
+[[noreturn]] void unhandled_case_error(const std::string &unhandled_case)
 {
-    throw xlnt::exception("unhandled");
+    throw xlnt::exception("unhandled case \"" + unhandled_case + "\"");
 }
 
-void unhandled_case(bool error)
+void unhandled_case(bool error, const std::string &unhandled_case)
 {
     if (error)
     {
-        unhandled_case_error();
+        unhandled_case_error(unhandled_case);
     }
 }
 
@@ -555,7 +555,7 @@ void number_format_parser::parse()
         case number_format_token::token_type::color: {
             if (section.has_color || section.has_condition || section.has_locale || !section.parts.empty())
             {
-                throw xlnt::exception("color should be the first part of a format");
+                throw xlnt::exception("color should be the first part of a format - cannot use \"" + token.string + "\"");
             }
 
             section.has_color = true;
@@ -567,7 +567,7 @@ void number_format_parser::parse()
         case number_format_token::token_type::locale: {
             if (section.has_locale)
             {
-                throw xlnt::exception("multiple locales");
+                throw xlnt::exception("multiple locales in number format: already has \"" + std::to_string(static_cast<int>(section.locale)) + "\", cannot add \"" + token.string + "\"");
             }
 
             section.has_locale = true;
@@ -588,7 +588,7 @@ void number_format_parser::parse()
         case number_format_token::token_type::condition: {
             if (section.has_condition)
             {
-                throw xlnt::exception("multiple conditions");
+                throw xlnt::exception("multiple conditions - cannot add \"" + token.string + "\"");
             }
 
             section.has_condition = true;
@@ -695,7 +695,7 @@ void number_format_parser::parse()
                     break;
                 }
 
-                unhandled_case(true);
+                unhandled_case(true, token.string);
                 break;
 
             case 'm':
@@ -725,7 +725,7 @@ void number_format_parser::parse()
                     break;
                 }
 
-                unhandled_case(true);
+                unhandled_case(true, token.string);
                 break;
 
             case 'd':
@@ -750,7 +750,7 @@ void number_format_parser::parse()
                     break;
                 }
 
-                unhandled_case(true);
+                unhandled_case(true, token.string);
                 break;
 
             case 'y':
@@ -765,7 +765,7 @@ void number_format_parser::parse()
                     break;
                 }
 
-                unhandled_case(true);
+                unhandled_case(true, token.string);
                 break;
 
             case 'h':
@@ -780,7 +780,7 @@ void number_format_parser::parse()
                     break;
                 }
 
-                unhandled_case(true);
+                unhandled_case(true, token.string);
                 break;
 
             case 's':
@@ -795,7 +795,7 @@ void number_format_parser::parse()
                     break;
                 }
 
-                unhandled_case(true);
+                unhandled_case(true, token.string);
                 break;
 
             case 'A':
@@ -812,11 +812,11 @@ void number_format_parser::parse()
                     break;
                 }
 
-                unhandled_case(true);
+                unhandled_case(true, token.string);
                 break;
 
             default:
-                unhandled_case(true);
+                unhandled_case(true, token.string);
                 break;
             }
 
@@ -1031,12 +1031,12 @@ number_format_token number_format_parser::parse_next_token()
     case '[':
         if (position_ == format_string_.size())
         {
-            throw xlnt::exception("missing ]");
+            throw xlnt::exception("missing ] in string \"" + format_string_ + "\"");
         }
 
         if (format_string_[position_] == ']')
         {
-            throw xlnt::exception("empty []");
+            throw xlnt::exception("empty [] in string \"" + format_string_ + "\"");
         }
 
         do
@@ -1078,7 +1078,7 @@ number_format_token number_format_parser::parse_next_token()
     case 'G':
         if (format_string_.substr(position_ - 1, 7) != "General")
         {
-            throw xlnt::exception("expected General");
+            throw xlnt::exception("expected General, got \"" + format_string_ + "\"");
         }
 
         token.type = number_format_token::token_type::number;
@@ -1157,7 +1157,7 @@ number_format_token number_format_parser::parse_next_token()
         }
         else
         {
-            throw xlnt::exception("expected AM/PM or A/P");
+            throw xlnt::exception("expected AM/PM or A/P, got \"" + token.string + "\"");
         }
 
         break;
@@ -1251,7 +1251,7 @@ number_format_token number_format_parser::parse_next_token()
         break;
 
     default:
-        throw xlnt::exception("unexpected character");
+        throw xlnt::exception("unexpected character '" + std::string{current_char} + "' in string \"" + format_string_ + "\"");
     }
 
     return token;
@@ -1261,14 +1261,14 @@ void number_format_parser::validate()
 {
     if (codes_.size() > 4)
     {
-        throw xlnt::exception("too many format codes");
+        throw xlnt::exception("too many format codes (expected <= 4, got " + std::to_string(codes_.size()) + ")");
     }
 
     if (codes_.size() > 2)
     {
         if (codes_[0].has_condition && codes_[1].has_condition && codes_[2].has_condition)
         {
-            throw xlnt::exception("format should have a maximum of two codes with conditions");
+            throw xlnt::exception("format should have a maximum of two codes with conditions (got " + std::to_string(codes_.size()) + ")");
         }
     }
 }
@@ -1366,7 +1366,7 @@ format_color number_format_parser::color_from_string(const std::string &color)
             }
         }
 
-        unhandled_case(true);
+        unhandled_case(true, color);
         break;
 
     case 'B':
@@ -1379,7 +1379,7 @@ format_color number_format_parser::color_from_string(const std::string &color)
             return format_color::blue;
         }
 
-        unhandled_case(true);
+        unhandled_case(true, color);
         break;
 
     case 'G':
@@ -1388,7 +1388,7 @@ format_color number_format_parser::color_from_string(const std::string &color)
             return format_color::green;
         }
 
-        unhandled_case(true);
+        unhandled_case(true, color);
         break;
 
     case 'W':
@@ -1397,7 +1397,7 @@ format_color number_format_parser::color_from_string(const std::string &color)
             return format_color::white;
         }
 
-        unhandled_case(true);
+        unhandled_case(true, color);
         break;
 
     case 'M':
@@ -1406,7 +1406,7 @@ format_color number_format_parser::color_from_string(const std::string &color)
             return format_color::magenta;
         }
 
-        unhandled_case(true);
+        unhandled_case(true, color);
         break;
 
     case 'Y':
@@ -1415,7 +1415,7 @@ format_color number_format_parser::color_from_string(const std::string &color)
             return format_color::yellow;
         }
 
-        unhandled_case(true);
+        unhandled_case(true, color);
         break;
 
     case 'R':
@@ -1424,14 +1424,14 @@ format_color number_format_parser::color_from_string(const std::string &color)
             return format_color::red;
         }
 
-        unhandled_case(true);
+        unhandled_case(true, color);
         break;
 
     default:
-        unhandled_case(true);
+        unhandled_case(true, color);
     }
 
-    unhandled_case_error();
+    unhandled_case_error(color);
 }
 
 std::pair<format_locale, std::string> number_format_parser::locale_from_string(const std::string &locale_string)
@@ -1440,7 +1440,7 @@ std::pair<format_locale, std::string> number_format_parser::locale_from_string(c
 
     if (locale_string.empty() || locale_string.front() != '$' || hyphen_index == std::string::npos)
     {
-        throw xlnt::invalid_attribute(("bad locale: " + locale_string).c_str());
+        throw xlnt::invalid_attribute("bad locale: " + locale_string);
     }
 
     std::pair<format_locale, std::string> result;
@@ -1454,21 +1454,21 @@ std::pair<format_locale, std::string> number_format_parser::locale_from_string(c
 
     if (country_code_string.empty())
     {
-        throw xlnt::invalid_attribute(("bad locale: " + locale_string).c_str());
+        throw xlnt::invalid_attribute("bad locale: " + locale_string);
     }
 
     for (auto c : country_code_string)
     {
         if (!((c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f') || (c >= '0' && c <= '9')))
         {
-            throw xlnt::invalid_attribute(("bad locale: " + locale_string).c_str());
+            throw xlnt::invalid_attribute("bad locale: " + locale_string);
         }
     }
 
     int country_code = -1;
     if (detail::parse(country_code_string, country_code, nullptr, 16) != std::errc())
     {
-        throw xlnt::invalid_attribute(("bad locale: " + locale_string).c_str());
+        throw xlnt::invalid_attribute("bad locale: " + locale_string);
     }
     country_code &= 0xFFFF;
 

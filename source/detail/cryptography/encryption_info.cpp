@@ -96,7 +96,7 @@ std::vector<std::uint8_t> calculate_standard_key(
 
     if (calculated_verifier_hash != decrypted_verifier_hash)
     {
-        throw xlnt::exception("bad password");
+        throw xlnt::invalid_password("bad password");
     }
 
     return key;
@@ -154,7 +154,7 @@ std::vector<std::uint8_t> calculate_agile_key(
 
     if (calculated_verifier != expected_verifier)
     {
-        throw xlnt::exception("bad password");
+        throw xlnt::invalid_password("bad password");
     }
 
     const std::array<std::uint8_t, block_size> key_value_block_key =

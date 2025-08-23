@@ -67,6 +67,7 @@ public:
     /// Sets the alignment of this format to new_alignment. Applied, which defaults
     /// to true, determines whether the alignment should be enabled for cells using
     /// this format.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
     format alignment(const xlnt::alignment &new_alignment, xlnt::optional<bool> applied = {});
 
@@ -91,6 +92,7 @@ public:
     /// Sets the border of this format to new_border. Applied, which defaults
     /// to true, determines whether the border should be enabled for cells using
     /// this format.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
     format border(const xlnt::border &new_border, xlnt::optional<bool> applied = {});
 
@@ -105,7 +107,7 @@ public:
     bool border_applied() const;
 
     /// <summary>
-    /// Returns a copy the fill of this format. If no fill has been set (has_fill() returns false),
+    /// Returns a copy of the fill of this format. If no fill has been set (has_fill() returns false),
     /// a default-constructed fill will be returned.
     /// </summary>
     class fill fill() const;
@@ -114,6 +116,7 @@ public:
     /// Sets the fill of this format to new_fill. Applied, which defaults
     /// to true, determines whether the border should be enabled for cells using
     /// this format.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
     format fill(const xlnt::fill &new_fill, xlnt::optional<bool> applied = {});
 
@@ -137,6 +140,7 @@ public:
     /// Sets the font of this format to new_font. Applied, which defaults
     /// to true, determines whether the font should be enabled for cells using
     /// this format.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
     format font(const xlnt::font &new_font, xlnt::optional<bool> applied = {});
 
@@ -160,6 +164,7 @@ public:
     /// Sets the number format of this format to new_number_format. Applied, which defaults
     /// to true, determines whether the number format should be enabled for cells using
     /// this format.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
     format number_format(const xlnt::number_format &new_number_format, xlnt::optional<bool> applied = {});
 
@@ -193,6 +198,7 @@ public:
     /// Sets the protection of this format to new_protection. Applied, which defaults
     /// to true, determines whether the protection should be enabled for cells using
     /// this format.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
     format protection(const xlnt::protection &new_protection, xlnt::optional<bool> applied = {});
 
@@ -231,23 +237,25 @@ public:
 
     /// <summary>
     /// Sets the style of this format to a style with the given name.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
     format style(const std::string &name);
 
     /// <summary>
     /// Sets the style of this format to new_style.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
     format style(const class style &new_style);
 
     /// <summary>
-    /// Returns the style of this format.
+    /// Returns a wrapper pointing to the style of this format.
     /// Assumes that the style exists (please call has_style() to check).
     /// If this format has no style, an invalid_attribute exception will be thrown.
     /// </summary>
     class style style();
 
     /// <summary>
-    /// Returns the style of this format.
+    /// Returns a wrapper pointing to the style of this format.
     /// Assumes that the style exists (please call has_style() to check).
     /// If this format has no style, an invalid_attribute exception will be thrown.
     /// </summary>

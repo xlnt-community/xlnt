@@ -69,6 +69,7 @@ template <typename T>
 std::vector<T> keys(const std::vector<std::pair<T, xlnt::variant>> &container)
 {
     auto result = std::vector<T>();
+    result.reserve(container.size());
     auto iter = container.begin();
 
     while (iter != container.end())
@@ -194,7 +195,7 @@ std::string content_type(xlnt::relationship_type type)
     case relationship_type::custom_properties:
         return "application/vnd.openxmlformats-officedocument.custom-properties+xml";
     case relationship_type::custom_property:
-        throw xlnt::unhandled_switch_case();
+        throw xlnt::unhandled_switch_case("xlnt::relationship_type::custom_property");
     case relationship_type::custom_xml_mappings:
         return "application/xml";
     case relationship_type::dialogsheet:
@@ -206,9 +207,9 @@ std::string content_type(xlnt::relationship_type type)
     case relationship_type::external_workbook_references:
         return "application/vnd.openxmlformats-officedocument.spreadsheetml.externalLink+xml";
     case relationship_type::hyperlink:
-        throw xlnt::unhandled_switch_case();
+        throw xlnt::unhandled_switch_case("xlnt::relationship_type::hyperlink");
     case relationship_type::image:
-        throw xlnt::unhandled_switch_case();
+        throw xlnt::unhandled_switch_case("xlnt::relationship_type::image");
     case relationship_type::office_document:
         return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml";
     case relationship_type::pivot_table:
@@ -226,7 +227,7 @@ std::string content_type(xlnt::relationship_type type)
     case relationship_type::shared_string_table:
         return "application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml";
     case relationship_type::shared_workbook:
-        throw xlnt::unhandled_switch_case();
+        throw xlnt::unhandled_switch_case("xlnt::relationship_type::shared_workbook");
     case relationship_type::shared_workbook_revision_headers:
         return "application/vnd.openxmlformats-officedocument.spreadsheetml.revisionHeaders+xml";
     case relationship_type::shared_workbook_user_data:
@@ -280,7 +281,7 @@ variant workbook::core_property(xlnt::core_property type) const
         }
     }
 
-    throw xlnt::invalid_attribute("workbook doesn't have core property");
+    throw xlnt::invalid_attribute("workbook doesn't have core property " + std::to_string(static_cast<int>(type)));
 }
 
 void workbook::core_property(xlnt::core_property type, const variant &value)
@@ -335,7 +336,7 @@ variant workbook::extended_property(xlnt::extended_property type) const
         }
     }
 
-    throw xlnt::invalid_attribute("workbook doesn't have extended property");
+    throw xlnt::invalid_attribute("workbook doesn't have extended property " + std::to_string(static_cast<int>(type)));
 }
 
 bool workbook::has_custom_property(const std::string &property_name) const
@@ -374,7 +375,7 @@ variant workbook::custom_property(const std::string &property_name) const
         }
     }
 
-    throw xlnt::invalid_attribute("workbook doesn't have custom property");
+    throw xlnt::invalid_attribute("workbook doesn't have custom property \"" + property_name + "\"");
 }
 
 void workbook::abs_path(const std::string &path)
@@ -416,12 +417,7 @@ workbook workbook::empty()
     wb.extended_property(xlnt::extended_property::hyperlinks_changed, false);
     wb.extended_property(xlnt::extended_property::app_version, "15.0300");
 
-    detail::workbook_impl::file_version_t file_version;
-    file_version.app_name = "xl";
-    file_version.last_edited = 6;
-    file_version.lowest_edited = 6;
-    file_version.rup_build = 26709;
-    wb.d_->file_version_ = file_version;
+    wb.d_->file_version_ = detail::workbook_impl::file_version_t();
 
     xlnt::workbook_view wb_view;
     wb_view.active_tab = 0;
@@ -686,7 +682,7 @@ const worksheet workbook::sheet_by_title(const std::string &title) const
         }
     }
 
-    throw key_not_found();
+    throw key_not_found(title);
 }
 
 worksheet workbook::sheet_by_title(const std::string &title)
@@ -699,14 +695,14 @@ worksheet workbook::sheet_by_title(const std::string &title)
         }
     }
 
-    throw key_not_found();
+    throw key_not_found(title);
 }
 
 worksheet workbook::sheet_by_index(std::size_t index)
 {
     if (index >= d_->worksheets_.size())
     {
-        throw invalid_parameter();
+        throw invalid_parameter("invalid worksheet index " + std::to_string(index) + " (workbook contains " + std::to_string(d_->worksheets_.size()) + " worksheets)");
     }
 
     auto iter = d_->worksheets_.begin();
@@ -723,7 +719,7 @@ const worksheet workbook::sheet_by_index(std::size_t index) const
 {
     if (index >= d_->worksheets_.size())
     {
-        throw invalid_parameter();
+        throw invalid_parameter("invalid worksheet index " + std::to_string(index) + " (workbook contains " + std::to_string(d_->worksheets_.size()) + " worksheets)");
     }
 
     auto iter = d_->worksheets_.begin();
@@ -733,6 +729,19 @@ const worksheet workbook::sheet_by_index(std::size_t index) const
     }
 
     return worksheet(&*iter);
+}
+
+bool workbook::has_sheet_id(std::size_t id) const
+{
+    for (auto &impl : d_->worksheets_)
+    {
+        if (impl.id_ == id)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 worksheet workbook::sheet_by_id(std::size_t id)
@@ -745,7 +754,7 @@ worksheet workbook::sheet_by_id(std::size_t id)
         }
     }
 
-    throw key_not_found();
+    throw key_not_found(std::to_string(id));
 }
 
 const worksheet workbook::sheet_by_id(std::size_t id) const
@@ -758,14 +767,14 @@ const worksheet workbook::sheet_by_id(std::size_t id) const
         }
     }
 
-    throw key_not_found();
+    throw key_not_found(std::to_string(id));
 }
 
 bool workbook::sheet_hidden_by_index(std::size_t index) const
 {
     if (index >= d_->sheet_hidden_.size())
     {
-        throw invalid_parameter();
+        throw invalid_parameter("invalid hidden worksheet index " + std::to_string(index) + " (workbook contains " + std::to_string(d_->sheet_hidden_.size()) + " hidden worksheets)");
     }
 
     return d_->sheet_hidden_.at(index);
@@ -842,7 +851,7 @@ worksheet workbook::create_sheet()
 
 worksheet workbook::copy_sheet(worksheet to_copy)
 {
-    if (to_copy.d_->parent_.lock() != d_) throw invalid_parameter();
+    if (to_copy.d_->parent_.lock() != d_) throw invalid_parameter("the worksheets do not have the same parent workbook");
 
     detail::worksheet_impl impl(*to_copy.d_);
     auto new_sheet = create_sheet();
@@ -878,7 +887,7 @@ std::size_t workbook::index(worksheet ws) const
 
     if (match == end())
     {
-        throw invalid_parameter();
+        throw invalid_parameter("worksheet not found in workbook");
     }
 
     return static_cast<std::size_t>(std::distance(begin(), match));
@@ -887,7 +896,7 @@ std::size_t workbook::index(worksheet ws) const
 void workbook::move_sheet(worksheet worksheet, std::size_t newIndex)
 {
     if(newIndex >= sheet_count())
-        throw invalid_parameter();
+        throw invalid_parameter("invalid new worksheet index " + std::to_string(newIndex) + " (workbook contains " + std::to_string(sheet_count()) + " worksheets)");
 
     auto sourcePosition = d_->worksheets_.end();
     auto targetPosition = d_->worksheets_.begin();
@@ -909,7 +918,7 @@ void workbook::move_sheet(worksheet worksheet, std::size_t newIndex)
     }
 
     if(sourcePosition == d_->worksheets_.end())
-        throw invalid_parameter();
+        throw invalid_parameter("cannot move worksheet: it does not exist in this workbook");
 
     if(sourceIndex < newIndex)
         ++targetPosition;
@@ -938,7 +947,7 @@ void workbook::remove_named_range(const std::string &name)
         }
     }
 
-    throw key_not_found();
+    throw key_not_found(name);
 }
 
 range workbook::named_range(const std::string &name)
@@ -951,7 +960,7 @@ range workbook::named_range(const std::string &name)
         }
     }
 
-    throw key_not_found();
+    throw key_not_found(name);
 }
 
 void workbook::load(std::istream &stream)
@@ -963,17 +972,10 @@ void workbook::load(std::istream &stream)
     {
         consumer.read(stream);
     }
-    catch (xlnt::exception &e)
+    catch (const xlnt::invalid_password &e)
     {
-        if (e.what() == std::string("xlnt::exception : encrypted xlsx, password required"))
-        {
-            stream.seekg(0, std::ios::beg);
-            consumer.read(stream, "VelvetSweatshop");
-        }
-        else
-        {
-            throw;
-        }
+        stream.seekg(0, std::ios::beg);
+        consumer.read(stream, "VelvetSweatshop");
     }
 }
 
@@ -981,7 +983,7 @@ void workbook::load(const std::vector<std::uint8_t> &data)
 {
     if (data.size() < 22) // the shortest ZIP file is 22 bytes
     {
-        throw xlnt::exception("file is empty or malformed");
+        throw xlnt::invalid_file("file is empty or malformed (data size " + std::to_string(data.size()) + " bytes)");
     }
 
     xlnt::detail::vector_istreambuf data_buffer(data);
@@ -1013,7 +1015,7 @@ void workbook::load(const path &filename)
 
     if (!file_stream.good())
     {
-        throw xlnt::exception("file not found " + filename.string());
+        throw xlnt::invalid_file(filename.string());
     }
 
     load(file_stream);
@@ -1032,7 +1034,7 @@ void workbook::load_internal(const xlnt::path &filename, const T &password)
 
     if (!file_stream.good())
     {
-        throw xlnt::exception("file not found " + filename.string());
+        throw xlnt::invalid_file(filename.string());
     }
 
     return load(file_stream, password);
@@ -1055,7 +1057,7 @@ void workbook::load_internal(const std::vector<std::uint8_t> &data, const T &pas
 {
     if (data.size() < 22) // the shortest ZIP file is 22 bytes
     {
-        throw xlnt::exception("file is empty or malformed");
+        throw xlnt::invalid_file("file is empty or malformed (data size " + std::to_string(data.size()) + " bytes)");
     }
 
     xlnt::detail::vector_istreambuf data_buffer(data);
@@ -1255,7 +1257,7 @@ void workbook::remove_sheet(worksheet ws)
 
     if (match_iter == d_->worksheets_.end())
     {
-        throw invalid_parameter();
+        throw invalid_parameter("cannot remove worksheet: it does not exist in this workbook");
     }
 
     auto ws_rel_id = d_->sheet_title_rel_id_map_.at(ws.title());
@@ -1270,9 +1272,12 @@ void workbook::remove_sheet(worksheet ws)
     // Shift sheet title->ID mappings down as a result of manifest::unregister_relationship above.
     for (auto &title_rel_id_pair : d_->sheet_title_rel_id_map_)
     {
-        title_rel_id_pair.second = rel_id_map.count(title_rel_id_pair.second) > 0
-            ? rel_id_map[title_rel_id_pair.second]
-            : title_rel_id_pair.second;
+        auto rel_id = rel_id_map.find(title_rel_id_pair.second);
+
+        if (rel_id != rel_id_map.end())
+        {
+            title_rel_id_pair.second = rel_id->second;
+        }
     }
 
     update_sheet_properties();
@@ -1428,7 +1433,7 @@ workbook workbook::clone(clone_method method) const
         return workbook(d_);
     }
     default:
-        throw xlnt::invalid_parameter("clone method not supported");
+        throw xlnt::invalid_parameter("clone method " + std::to_string(static_cast<int>(method)) + " not supported");
     }
 }
 
@@ -1439,6 +1444,10 @@ bool workbook::has_theme() const
 
 const theme &workbook::theme() const
 {
+    if (!d_->theme_.is_set())
+    {
+        throw xlnt::invalid_attribute("the workbook has no theme");
+    }
     return d_->theme_.get();
 }
 
@@ -1612,10 +1621,23 @@ void workbook::thumbnail(const std::vector<std::uint8_t> &thumbnail,
     d_->images_[thumbnail_rel.target().to_string()] = thumbnail;
 }
 
+bool workbook::has_thumbnail() const
+{
+    auto thumbnail_rel = d_->manifest_.relationship(path("/"), relationship_type::thumbnail);
+    return d_->images_.count(thumbnail_rel.target().to_string()) > 0;
+}
+
 const std::vector<std::uint8_t> &workbook::thumbnail() const
 {
     auto thumbnail_rel = d_->manifest_.relationship(path("/"), relationship_type::thumbnail);
-    return d_->images_.at(thumbnail_rel.target().to_string());
+    auto thumbnail = d_->images_.find(thumbnail_rel.target().to_string());
+
+    if (thumbnail == d_->images_.end())
+    {
+        throw xlnt::invalid_attribute("the workbook has no thumbnail");
+    }
+
+    return thumbnail->second;
 }
 
 const std::unordered_map<std::string, std::vector<std::uint8_t>> &workbook::binaries() const
@@ -1660,6 +1682,10 @@ bool workbook::has_title() const
 
 std::string workbook::title() const
 {
+    if (!d_->title_.is_set())
+    {
+        throw xlnt::invalid_attribute("the workbook has no title");
+    }
     return d_->title_.get();
 }
 
@@ -1687,7 +1713,7 @@ workbook_view workbook::view() const
 {
     if (!d_->view_.is_set())
     {
-        throw invalid_attribute();
+        throw invalid_attribute("the workbook has no view");
     }
 
     return d_->view_.get();
@@ -1705,9 +1731,9 @@ bool workbook::has_code_name() const
 
 std::string workbook::code_name() const
 {
-    if (has_code_name())
+    if (!has_code_name())
     {
-        throw invalid_attribute();
+        throw invalid_attribute("the workbook has no code name");
     }
 
     return d_->code_name_.get();
@@ -1723,24 +1749,85 @@ bool workbook::has_file_version() const
     return d_->file_version_.is_set();
 }
 
+void workbook::clear_file_version()
+{
+    d_->file_version_.clear();
+}
+
 std::string workbook::app_name() const
 {
+    if (!d_->file_version_.is_set())
+    {
+        throw xlnt::invalid_attribute("the workbook has no app name (due to not having a file version)");
+    }
     return d_->file_version_.get().app_name;
+}
+
+void workbook::app_name(const std::string &app_name)
+{
+    if (!d_->file_version_.is_set())
+    {
+        d_->file_version_ = detail::workbook_impl::file_version_t();
+    }
+
+    d_->file_version_.get().app_name = app_name;
 }
 
 std::size_t workbook::last_edited() const
 {
+    if (!d_->file_version_.is_set())
+    {
+        throw xlnt::invalid_attribute("the workbook has no last edited property (due to not having a file version)");
+    }
     return d_->file_version_.get().last_edited;
+}
+
+void workbook::last_edited(std::size_t last_edited)
+{
+    if (!d_->file_version_.is_set())
+    {
+        d_->file_version_ = detail::workbook_impl::file_version_t();
+    }
+
+    d_->file_version_.get().last_edited = last_edited;
 }
 
 std::size_t workbook::lowest_edited() const
 {
+    if (!d_->file_version_.is_set())
+    {
+        throw xlnt::invalid_attribute("the workbook has no lowest edited property (due to not having a file version)");
+    }
     return d_->file_version_.get().lowest_edited;
+}
+
+void workbook::lowest_edited(std::size_t lowest_edited)
+{
+    if (!d_->file_version_.is_set())
+    {
+        d_->file_version_ = detail::workbook_impl::file_version_t();
+    }
+
+    d_->file_version_.get().lowest_edited = lowest_edited;
 }
 
 std::size_t workbook::rup_build() const
 {
+    if (!d_->file_version_.is_set())
+    {
+        throw xlnt::invalid_attribute("the workbook has no rup_build property (due to not having a file version)");
+    }
     return d_->file_version_.get().rup_build;
+}
+
+void workbook::rup_build(std::size_t rup_build)
+{
+    if (!d_->file_version_.is_set())
+    {
+        d_->file_version_ = detail::workbook_impl::file_version_t();
+    }
+
+    d_->file_version_.get().rup_build = rup_build;
 }
 
 bool workbook::has_calculation_properties() const
@@ -1748,8 +1835,17 @@ bool workbook::has_calculation_properties() const
     return d_->calculation_properties_.is_set();
 }
 
+void workbook::clear_calculation_properties()
+{
+    d_->calculation_properties_.clear();
+}
+
 class calculation_properties workbook::calculation_properties() const
 {
+    if (!d_->calculation_properties_.is_set())
+    {
+        throw xlnt::invalid_attribute("the workbook has no calculation properties");
+    }
     return d_->calculation_properties_.get();
 }
 

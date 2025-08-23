@@ -35,8 +35,10 @@
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/styles/format.hpp>
 #include <xlnt/styles/style.hpp>
+#include <xlnt/workbook/calculation_properties.hpp>
 #include <xlnt/workbook/workbook.hpp>
 #include <xlnt/workbook/worksheet_iterator.hpp>
+#include <xlnt/workbook/workbook_view.hpp>
 #include <xlnt/worksheet/range.hpp>
 #include <xlnt/worksheet/worksheet.hpp>
 
@@ -56,6 +58,18 @@ public:
         register_test(test_get_sheet_by_index_const);
         register_test(test_index_operator);
         register_test(test_contains);
+        register_test(test_core_properties);
+        register_test(test_extended_properties);
+        register_test(test_custom_properties);
+        register_test(test_title);
+        register_test(test_view);
+        register_test(test_code_name);
+        register_test(test_file_version);
+        register_test(test_app_name);
+        register_test(test_last_edited);
+        register_test(test_lowest_edited);
+        register_test(test_rup_build);
+        register_test(test_calculation_properties);
         register_test(test_iter);
         register_test(test_const_iter);
         register_test(test_get_index);
@@ -200,6 +214,147 @@ public:
         xlnt_assert(!wb.contains("NotThere"));
     }
 
+    void test_core_properties()
+    {
+        xlnt::workbook wb;
+        xlnt_assert(!wb.has_core_property(xlnt::core_property::keywords));
+        xlnt_assert_throws(wb.core_property(xlnt::core_property::keywords), xlnt::invalid_attribute);
+
+        wb.core_property(xlnt::core_property::keywords, "keyword1");
+
+        xlnt_assert(wb.has_core_property(xlnt::core_property::keywords));
+        xlnt_assert_equals(wb.core_property(xlnt::core_property::keywords), "keyword1");
+    }
+
+    void test_extended_properties()
+    {
+        xlnt::workbook wb;
+        xlnt_assert(!wb.has_extended_property(xlnt::extended_property::words));
+        xlnt_assert_throws(wb.extended_property(xlnt::extended_property::words), xlnt::invalid_attribute);
+
+        wb.extended_property(xlnt::extended_property::words, "word1");
+
+        xlnt_assert(wb.has_extended_property(xlnt::extended_property::words));
+        xlnt_assert_equals(wb.extended_property(xlnt::extended_property::words), "word1");
+    }
+
+    void test_custom_properties()
+    {
+        xlnt::workbook wb;
+        xlnt_assert(!wb.has_custom_property("VERY_CUSTOM"));
+        xlnt_assert_throws(wb.custom_property("VERY_CUSTOM"), xlnt::invalid_attribute);
+
+        wb.custom_property("VERY_CUSTOM", "so custom!");
+
+        xlnt_assert(wb.has_custom_property("VERY_CUSTOM"));
+        xlnt_assert_equals(wb.custom_property("VERY_CUSTOM"), "so custom!");
+    }
+
+    void test_title()
+    {
+        xlnt::workbook wb;
+        xlnt_assert(!wb.has_title());
+        xlnt_assert_throws(wb.title(), xlnt::invalid_attribute);
+
+        wb.title("Title");
+
+        xlnt_assert(wb.has_title());
+        xlnt_assert_equals(wb.title(), "Title");
+    }
+
+    void test_view()
+    {
+        xlnt::workbook wb;
+        wb.view(xlnt::workbook_view());
+        xlnt_assert(wb.has_view());
+        xlnt_assert_throws_nothing(wb.view());
+    }
+
+    void test_code_name()
+    {
+        xlnt::workbook wb;
+        xlnt_assert(!wb.has_code_name());
+        xlnt_assert_throws(wb.code_name(), xlnt::invalid_attribute);
+
+        wb.code_name("codename_xlnt");
+
+        xlnt_assert(wb.has_code_name());
+        xlnt_assert_equals(wb.code_name(), "codename_xlnt");
+    }
+
+    void test_file_version()
+    {
+        xlnt::workbook wb;
+        wb.clear_file_version();
+        xlnt_assert(!wb.has_file_version());
+    }
+
+    void test_app_name()
+    {
+        xlnt::workbook wb;
+        wb.clear_file_version();
+        xlnt_assert(!wb.has_file_version());
+        xlnt_assert_throws(wb.app_name(), xlnt::invalid_attribute);
+
+        wb.app_name("xlnt");
+
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert_equals(wb.app_name(), "xlnt");
+    }
+
+    void test_last_edited()
+    {
+        xlnt::workbook wb;
+        wb.clear_file_version();
+        xlnt_assert(!wb.has_file_version());
+        xlnt_assert_throws(wb.last_edited(), xlnt::invalid_attribute);
+
+        wb.last_edited(5);
+
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert_equals(wb.last_edited(), 5);
+    }
+
+    void test_lowest_edited()
+    {
+        xlnt::workbook wb;
+        wb.clear_file_version();
+        xlnt_assert(!wb.has_file_version());
+        xlnt_assert_throws(wb.lowest_edited(), xlnt::invalid_attribute);
+
+        wb.lowest_edited(3);
+
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert_equals(wb.lowest_edited(), 3);
+    }
+
+    void test_rup_build()
+    {
+        xlnt::workbook wb;
+        wb.clear_file_version();
+        xlnt_assert(!wb.has_file_version());
+        xlnt_assert_throws(wb.rup_build(), xlnt::invalid_attribute);
+
+        wb.rup_build(1234);
+
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert_equals(wb.rup_build(), 1234);
+    }
+
+    void test_calculation_properties()
+    {
+        xlnt::workbook wb;
+        wb.clear_calculation_properties();
+        xlnt_assert(!wb.has_calculation_properties());
+        xlnt_assert_throws(wb.calculation_properties(), xlnt::invalid_attribute);
+
+        xlnt::calculation_properties calc_props;
+        wb.calculation_properties(calc_props);
+
+        xlnt_assert(wb.has_calculation_properties());
+        xlnt_assert_equals(wb.calculation_properties(), calc_props);
+    }
+
     void test_iter()
     {
         xlnt::workbook wb;
@@ -327,7 +482,7 @@ public:
         wb.create_named_range("test_nr", new_sheet, "A1");
         xlnt_assert(new_sheet.has_named_range("test_nr"));
         xlnt_assert(wb.has_named_range("test_nr"));
-        xlnt_assert_throws(wb2.create_named_range("test_nr", new_sheet, "A1"), std::runtime_error);
+        xlnt_assert_throws(wb2.create_named_range("test_nr", new_sheet, "A1"), xlnt::key_not_found);
     }
 
     void test_get_named_range()
@@ -338,7 +493,7 @@ public:
         auto found_range = wb.named_range("test_nr");
         auto expected_range = new_sheet.range("A1");
         xlnt_assert_equals(expected_range, found_range);
-        xlnt_assert_throws(wb.named_range("test_nr2"), std::runtime_error);
+        xlnt_assert_throws(wb.named_range("test_nr2"), xlnt::key_not_found);
     }
 
     void test_remove_named_range()
@@ -349,7 +504,7 @@ public:
         wb.remove_named_range("test_nr");
         xlnt_assert(!new_sheet.has_named_range("test_nr"));
         xlnt_assert(!wb.has_named_range("test_nr"));
-        xlnt_assert_throws(wb.remove_named_range("test_nr2"), std::runtime_error);
+        xlnt_assert_throws(wb.remove_named_range("test_nr2"), xlnt::key_not_found);
     }
 
     void test_post_increment_iterator()

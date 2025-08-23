@@ -72,6 +72,7 @@ public:
 
     /// <summary>
     /// Sets the name of this style to name.
+    /// Returns a wrapper pointing to this style.
     /// </summary>
     style name(const std::string &name);
 
@@ -84,6 +85,7 @@ public:
     /// Sets the hidden state of this style to value. A hidden style will not
     /// be shown in the list of selectable styles in the UI, but will still
     /// apply its formatting to cells using it.
+    /// Returns a wrapper pointing to this style.
     /// </summary>
     style hidden(bool value);
 
@@ -128,6 +130,7 @@ public:
     /// Sets the alignment of this style to new_alignment. Applied, which defaults
     /// to true, determines whether the alignment should be enabled for cells using
     /// this style.
+    /// Returns a wrapper pointing to this style.
     /// </summary>
     style alignment(const xlnt::alignment &new_alignment, optional<bool> applied = {});
 
@@ -151,6 +154,7 @@ public:
     /// Sets the border of this style to new_border. Applied, which defaults
     /// to true, determines whether the border should be enabled for cells using
     /// this style.
+    /// Returns a wrapper pointing to this style.
     /// </summary>
     style border(const xlnt::border &new_border, optional<bool> applied = {});
 
@@ -197,6 +201,7 @@ public:
     /// Sets the font of this style to new_font. Applied, which defaults
     /// to true, determines whether the font should be enabled for cells using
     /// this style.
+    /// Returns a wrapper pointing to this style.
     /// </summary>
     style font(const xlnt::font &new_font, optional<bool> applied = {});
 
@@ -220,6 +225,7 @@ public:
     /// Sets the number format of this style to new_number_format. Applied, which defaults
     /// to true, determines whether the number format should be enabled for cells using
     /// this style.
+    /// Returns a wrapper pointing to this style.
     /// </summary>
     style number_format(const xlnt::number_format &new_number_format, optional<bool> applied = {});
 
@@ -243,6 +249,7 @@ public:
     /// Sets the border of this style to new_protection. Applied, which defaults
     /// to true, determines whether the protection should be enabled for cells using
     /// this style.
+    /// Returns a wrapper pointing to this style.
     /// </summary>
     style protection(const xlnt::protection &new_protection, optional<bool> applied = {});
 

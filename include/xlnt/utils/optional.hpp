@@ -262,7 +262,7 @@ public:
     {
         if (!has_value_)
         {
-            throw invalid_attribute();
+            throw invalid_attribute("access to empty optional");
         }
 
         return value_ref();
@@ -277,7 +277,7 @@ public:
     {
         if (!has_value_)
         {
-            throw invalid_attribute();
+            throw invalid_attribute("access to empty optional");
         }
 
         return value_ref();

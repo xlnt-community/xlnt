@@ -18,7 +18,7 @@ public:
 	DWORD result = GetTempPath(static_cast<DWORD>(buffer.size()), buffer.data());
 	if(result > MAX_PATH)
 	{
-	    throw xlnt::exception("buffer is too small");
+	    throw xlnt::exception("buffer is too small (" + std::to_string(result) " is necessary but current size is " + std::to_string(MAX_PATH) + ")");
 	}
 	if(result == 0)
 	{

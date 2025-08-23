@@ -330,12 +330,14 @@ public:
 
     /// <summary>
     /// Returns the gradient fill represented by this fill.
+    /// Assumes that this fill is a gradient fill (please call type() to check).
     /// Throws an invalid_attribute exception if this is not a gradient fill.
     /// </summary>
     class gradient_fill gradient_fill() const;
 
     /// <summary>
     /// Returns the pattern fill represented by this fill.
+    /// Assumes that this fill is a pattern fill (please call type() to check).
     /// Throws an invalid_attribute exception if this is not a pattern fill.
     /// </summary>
     class pattern_fill pattern_fill() const;

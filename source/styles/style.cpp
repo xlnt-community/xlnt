@@ -64,6 +64,10 @@ style style::hidden(bool value)
 
 std::size_t style::builtin_id() const
 {
+    if (!d_->builtin_id.is_set())
+    {
+        throw xlnt::invalid_attribute("the style does not use a builtin style");
+    }
     return d_->builtin_id.get();
 }
 

@@ -22,8 +22,6 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <ctime>
-
 #include <helpers/test_suite.hpp>
 
 #include <xlnt/cell/rich_text.hpp>
@@ -132,12 +130,19 @@ public:
     void test_phonetic_properties()
     {
         xlnt::rich_text rt;
+        xlnt_assert(!rt.has_phonetic_properties());
+        xlnt_assert_throws(rt.phonetic_properties(), xlnt::invalid_attribute);
         xlnt::phonetic_pr ph(1);
+        xlnt_assert(!ph.has_type());
+        xlnt_assert_throws(ph.type(), xlnt::invalid_attribute);
         ph.type(xlnt::phonetic_pr::type_from_string("fullwidthKatakana"));
+        xlnt_assert(!ph.has_alignment());
+        xlnt_assert_throws(ph.alignment(), xlnt::invalid_attribute);
         ph.alignment(xlnt::phonetic_pr::alignment_from_string("Center"));
         rt.phonetic_properties(ph);
 
         xlnt_assert_equals(rt.has_phonetic_properties(), true);
+        xlnt_assert_equals(rt.phonetic_properties(), ph);
         xlnt_assert_equals(rt.phonetic_properties().has_type(), true);
         xlnt_assert_equals(rt.phonetic_properties().has_alignment(), true);
     }

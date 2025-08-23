@@ -114,6 +114,7 @@ public:
 
     /// <summary>
     /// Given the path to a part, returns the content type of the part as a string.
+    /// Throws a key_not_found exception if the content type is not found.
     /// </summary>
     std::string content_type(const path &part) const;
 
@@ -131,6 +132,7 @@ public:
 
     /// <summary>
     /// Returns the registered default content type for parts of the given extension.
+    /// Throws key_not_found exception if no default type was found.
     /// </summary>
     std::string default_type(const std::string &extension) const;
 

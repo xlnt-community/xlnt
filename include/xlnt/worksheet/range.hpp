@@ -107,12 +107,12 @@ public:
     const cell_vector vector(std::size_t n) const;
 
     /// <summary>
-    /// Returns a cell in the range relative to its top left cell.
+    /// Returns a wrapper pointing to the cell in the range relative to its top left cell.
     /// </summary>
     class cell cell(const cell_reference &ref);
 
     /// <summary>
-    /// Returns a cell in the range relative to its top left cell.
+    /// Returns a wrapper pointing to the cell in the range relative to its top left cell.
     /// </summary>
     const class cell cell(const cell_reference &ref) const;
 
@@ -180,7 +180,7 @@ public:
     range style(const std::string &style_name);
 
     /// <summary>
-    ///
+    /// Creates a conditional format for the given condition and returns a wrapper pointing to it.
     /// </summary>
     xlnt::conditional_format conditional_format(const condition &when);
 

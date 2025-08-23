@@ -32,6 +32,12 @@ public:
     style_test_suite()
     {
         register_test(test_all);
+        register_test(test_alignment);
+        register_test(test_border);
+        register_test(test_fill);
+        register_test(test_font);
+        register_test(test_number_format);
+        register_test(test_protection);
     }
 
     void test_all()
@@ -61,6 +67,86 @@ public:
         xlnt_assert(!copy_style.quote_prefix());
         copy_style.quote_prefix(true);
         xlnt_assert(copy_style.quote_prefix());
+    }
+
+    void test_alignment()
+    {
+        xlnt::workbook wb;
+        xlnt::style style = wb.create_style("test_style");
+        xlnt_assert(!style.has_alignment());
+        xlnt_assert_throws_nothing(style.alignment());
+
+        xlnt::alignment alignment;
+        style.alignment(alignment);
+
+        xlnt_assert(style.has_alignment());
+        xlnt_assert_equals(style.alignment(), alignment);
+    }
+
+    void test_border()
+    {
+        xlnt::workbook wb;
+        xlnt::style style = wb.create_style("test_style");
+        xlnt_assert_throws_nothing(style.border());
+
+        xlnt::border border;
+        style.border(border);
+
+        xlnt_assert(style.has_border());
+        xlnt_assert_equals(style.border(), border);
+    }
+
+    void test_fill()
+    {
+        xlnt::workbook wb;
+        xlnt::style style = wb.create_style("test_style");
+        xlnt_assert_throws_nothing(style.fill());
+
+        xlnt::fill fill;
+        style.fill(fill);
+
+        xlnt_assert(style.has_fill());
+        xlnt_assert_equals(style.fill(), fill);
+    }
+
+    void test_font()
+    {
+        xlnt::workbook wb;
+        xlnt::style style = wb.create_style("test_style");
+        xlnt_assert_throws_nothing(style.font());
+
+        xlnt::font font;
+        style.font(font);
+
+        xlnt_assert(style.has_font());
+        xlnt_assert_equals(style.font(), font);
+    }
+
+    void test_number_format()
+    {
+        xlnt::workbook wb;
+        xlnt::style style = wb.create_style("test_style");
+        xlnt_assert_throws_nothing(style.number_format());
+
+        xlnt::number_format number_format;
+        style.number_format(number_format);
+
+        xlnt_assert(style.has_number_format());
+        xlnt_assert_equals(style.number_format(), number_format);
+    }
+
+    void test_protection()
+    {
+        xlnt::workbook wb;
+        xlnt::style style = wb.create_style("test_style");
+        xlnt_assert(!style.has_protection());
+        xlnt_assert_throws_nothing(style.protection());
+
+        xlnt::protection protection;
+        style.protection(protection);
+
+        xlnt_assert(style.has_protection());
+        xlnt_assert_equals(style.protection(), protection);
     }
 };
 static style_test_suite x;

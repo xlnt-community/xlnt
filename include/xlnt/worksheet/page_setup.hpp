@@ -164,8 +164,7 @@ public:
 
     /// <summary>
     /// Returns the factor by which the page should be scaled during printing.
-    /// Assumes that this page setup has a scale (please call has_scale() to check).
-    /// If this workbook has no scale, an invalid_attribute exception will be thrown.
+    /// If no scale has been set (has_scale() returns false), the default scale of 100 will be returned.
     /// </summary>
     double scale() const;
 

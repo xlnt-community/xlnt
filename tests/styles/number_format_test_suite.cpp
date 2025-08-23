@@ -83,6 +83,7 @@ public:
         register_test(test_thousands_scale);
         register_test(test_colors);
         register_test(test_bad_format);
+        register_test(test_builtin_format_invalid);
         register_test(test_builtin_format_0);
         register_test(test_builtin_format_1);
         register_test(test_builtin_format_2);
@@ -121,14 +122,17 @@ public:
     void test_basic()
     {
         xlnt::number_format no_id("#\\x\\y\\z");
-        xlnt_assert_throws(no_id.id(), std::runtime_error);
+        xlnt_assert(!no_id.has_id());
+        xlnt_assert_throws(no_id.id(), xlnt::invalid_attribute);
 
         xlnt::number_format id("General", 200);
+        xlnt_assert(id.has_id());
         xlnt_assert_equals(id.id(), 200);
         xlnt_assert_equals(id.format_string(), "General");
 
         xlnt::number_format general(0);
         xlnt_assert_equals(general, xlnt::number_format::general());
+        xlnt_assert(general.has_id());
         xlnt_assert_equals(general.id(), 0);
         xlnt_assert_equals(general.format_string(), "General");
     }
@@ -835,6 +839,13 @@ public:
         xlnt_assert_equals(nf.format(negative, calendar), expect[1]);
         xlnt_assert_equals(nf.format(zero, calendar), expect[2]);
         xlnt_assert_equals(nf.format(text), expect[3]);
+    }
+
+    void test_builtin_format_invalid()
+    {
+        auto invalid_builtin_id = std::numeric_limits<std::size_t>::max();
+        xlnt_assert(!xlnt::number_format::is_builtin_format(invalid_builtin_id));
+        xlnt_assert_throws(xlnt::number_format::from_builtin_id(invalid_builtin_id), xlnt::invalid_parameter);
     }
 
     // General

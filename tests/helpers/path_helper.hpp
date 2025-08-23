@@ -85,7 +85,7 @@ public:
     {
         if(!overwrite && destination.exists())
         {
-            throw xlnt::exception("destination file already exists and overwrite==false");
+            throw xlnt::exception("destination file already exists and overwrite==false for file at path \"" + destination.string() + "\"");
         }
 
         std::ifstream src(source.string(), std::ios::binary);

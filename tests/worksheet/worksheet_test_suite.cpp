@@ -103,6 +103,7 @@ public:
         register_test(test_set_title);
         register_test(test_set_title_unicode);
         register_test(test_phonetics);
+        register_test(test_phonetic_properties);
         register_test(test_insert_rows);
         register_test(test_insert_columns);
         register_test(test_delete_rows);
@@ -118,6 +119,7 @@ public:
         register_test(test_throw_empty_cell);
         register_test(test_zoom_scale);
         register_test(test_zoom_scale_no_view);
+        register_test(test_view);
     }
 
     void test_new_worksheet()
@@ -340,11 +342,16 @@ public:
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
 
+        xlnt_assert(!ws.has_frozen_panes());
+        xlnt_assert_throws(ws.frozen_panes(), xlnt::invalid_attribute);
+
         ws.freeze_panes(ws.cell("b2"));
+        xlnt_assert(ws.has_frozen_panes());
         xlnt_assert_equals(ws.frozen_panes(), "B2");
 
         ws.unfreeze_panes();
         xlnt_assert(!ws.has_frozen_panes());
+        xlnt_assert_throws(ws.frozen_panes(), xlnt::invalid_attribute);
 
         ws.freeze_panes("c5");
         xlnt_assert_equals(ws.frozen_panes(), "C5");
@@ -413,6 +420,7 @@ public:
         auto ws1 = wb.sheet_by_index(0);
 
         xlnt_assert(!ws1.has_print_area());
+        xlnt_assert_throws(ws1.print_area(), xlnt::invalid_attribute);
 
         xlnt_assert(ws1.has_auto_filter());
         xlnt_assert_equals(ws1.auto_filter().to_string(), "A1:A6");
@@ -429,6 +437,7 @@ public:
         xlnt_assert_equals(ws2.print_area().to_string(), "$B$4");
 
         xlnt_assert(!ws2.has_auto_filter());
+        xlnt_assert_throws(ws2.auto_filter(), xlnt::invalid_attribute);
 
         xlnt_assert(ws2.has_print_titles());
         xlnt_assert(!ws2.print_title_rows().is_set());
@@ -442,6 +451,7 @@ public:
         xlnt_assert_equals(ws3.print_area().to_string(), "$B$2:$E$4");
 
         xlnt_assert(!ws3.has_auto_filter());
+        xlnt_assert_throws(ws3.auto_filter(), xlnt::invalid_attribute);
 
         xlnt_assert(ws3.has_print_titles());
         xlnt_assert(ws3.print_title_rows().is_set());
@@ -864,6 +874,11 @@ public:
 
     void test_header()
     {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        xlnt_assert(!ws.has_header_footer());
+        xlnt_assert_throws(ws.header_footer(), xlnt::invalid_attribute);
+
         xlnt::header_footer hf;
         using hf_loc = xlnt::header_footer::location;
 
@@ -885,10 +900,19 @@ public:
 
             xlnt_assert(!hf.has_header(location));
         }
+
+        ws.header_footer(hf);
+        xlnt_assert(ws.has_header_footer());
+        xlnt_assert_equals(ws.header_footer(), hf);
     }
 
     void test_footer()
     {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        xlnt_assert(!ws.has_header_footer());
+        xlnt_assert_throws(ws.header_footer(), xlnt::invalid_attribute);
+
         xlnt::header_footer hf;
         using hf_loc = xlnt::header_footer::location;
 
@@ -910,15 +934,28 @@ public:
 
             xlnt_assert(!hf.has_footer(location));
         }
+
+        ws.header_footer(hf);
+        xlnt_assert(ws.has_header_footer());
+        xlnt_assert_equals(ws.header_footer(), hf);
     }
 
     void test_page_setup()
     {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        xlnt_assert(!ws.has_page_setup());
+        xlnt_assert_throws_nothing(ws.page_setup());
+
         xlnt::page_setup setup;
         setup.page_break(xlnt::page_break::column);
         xlnt_assert_equals(setup.page_break(), xlnt::page_break::column);
         setup.scale(1.23);
         xlnt_assert_equals(setup.scale(), 1.23);
+        ws.page_setup(setup);
+
+        xlnt_assert(ws.has_page_setup());
+        xlnt_assert_equals(ws.page_setup(), setup);
     }
 
     void test_unique_sheet_name()
@@ -936,8 +973,11 @@ public:
         xlnt::workbook wb;
 
         auto ws = wb.active_sheet();
-        auto margins = ws.page_margins();
+        ws.clear_page_margins();
+        xlnt_assert(!ws.has_page_margins());
+        xlnt_assert_throws(ws.page_margins(), xlnt::invalid_attribute);
 
+        xlnt::page_margins margins;
         margins.top(0);
         margins.bottom(1);
         margins.header(2);
@@ -948,6 +988,7 @@ public:
         ws.page_margins(margins);
 
         xlnt_assert(ws.has_page_margins());
+        xlnt_assert_equals(ws.page_margins(), margins);
         xlnt_assert_equals(ws.page_margins().top(), 0);
         xlnt_assert_equals(ws.page_margins().bottom(), 1);
         xlnt_assert_equals(ws.page_margins().header(), 2);
@@ -1198,6 +1239,7 @@ public:
         ws.cell("B2").value("B2");
 
         xlnt_assert(!ws.has_active_cell());
+        xlnt_assert_throws(ws.active_cell(), xlnt::invalid_attribute);
 
         ws.active_cell("B1");
 
@@ -1329,6 +1371,20 @@ public:
         xlnt_assert_equals(ws2.cell("A1").value<xlnt::rich_text>().phonetic_runs()[0].text, "シュウ ");
         xlnt_assert_equals(ws2.cell("B1").phonetics_visible(), true);
         xlnt_assert_equals(ws2.cell("C1").phonetics_visible(), false);
+    }
+
+    void test_phonetic_properties()
+    {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        xlnt_assert(!ws.has_phonetic_properties());
+        xlnt_assert_throws(ws.phonetic_properties(), xlnt::invalid_attribute);
+
+        xlnt::phonetic_pr pr;
+        ws.phonetic_properties(pr);
+
+        xlnt_assert(ws.has_phonetic_properties());
+        xlnt_assert_equals(ws.phonetic_properties(), pr);
     }
 
     void test_insert_rows()
@@ -1706,6 +1762,8 @@ public:
     void test_non_contiguous_selection()
     {
         xlnt::selection s;
+        xlnt_assert(!s.has_sqref());
+        xlnt_assert_throws(s.sqref(), xlnt::invalid_attribute);
         xlnt_assert_throws_nothing(s.sqref("A1 B2:C3 D4:D5 E6:F6"));
         xlnt_assert_equals(s.has_sqref(), true);
         xlnt_assert_equals(s.sqrefs().size(), 4);
@@ -1746,16 +1804,32 @@ public:
         xlnt::workbook wb;
 
         auto ws1 = wb.active_sheet();
-        
+
         // newly created steets do not have a view
         auto ws2 = wb.create_sheet();
         xlnt_assert(!ws2.has_view());
-        
+
         xlnt_assert_equals(100, ws2.zoom_scale());
 
         ws2.zoom_scale(85);
         xlnt_assert(ws2.has_view());
         xlnt_assert_equals(85, ws2.zoom_scale());
+    }
+
+    void test_view()
+    {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        ws.clear_views();
+
+        xlnt_assert(!ws.has_view());
+        xlnt_assert_equals(ws.views().size(), 0);
+        xlnt_assert_throws(ws.view(), xlnt::invalid_parameter);
+
+        ws.add_view(xlnt::sheet_view());
+        xlnt_assert(ws.has_view());
+        xlnt_assert_equals(ws.views().size(), 1);
+        xlnt_assert_equals(ws.view(), xlnt::sheet_view());
     }
 };
 

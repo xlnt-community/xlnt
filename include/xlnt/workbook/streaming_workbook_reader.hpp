@@ -67,15 +67,15 @@ public:
     bool has_cell();
 
     /// <summary>
-    /// Reads the next cell in the current worksheet and optionally returns it if
-    /// the last cell in the sheet has not yet been read.
+    /// Reads the next cell in the current worksheet and returns a wrapper pointing to it
+    /// if the last cell in the sheet has not yet been read.
     /// </summary>
     cell read_cell();
 
     bool has_worksheet(const std::string &name);
 
     /// <summary>
-    /// Beings reading of the next worksheet in the workbook.
+    /// Begins reading of the next worksheet in the workbook.
     /// Assumes that this workbook has a worksheet with
     /// the given name (please call has_worksheet() to check).
     /// If this workbook does not have a worksheet with the given name,
@@ -84,8 +84,8 @@ public:
     void begin_worksheet(const std::string &name);
 
     /// <summary>
-    /// Ends reading of the current worksheet in the workbook and optionally
-    /// returns a worksheet object corresponding to the worksheet with the title
+    /// Ends reading of the current worksheet in the workbook and
+    /// returns a wrapper pointing to the worksheet with the title
     /// returned by begin_worksheet().
     /// </summary>
     worksheet end_worksheet();

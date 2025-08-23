@@ -58,6 +58,10 @@ void page_setup::sheet_state(xlnt::sheet_state sheet_state)
 
 paper_size page_setup::paper_size() const
 {
+    if (!paper_size_.is_set())
+    {
+        throw xlnt::invalid_attribute("the page setup has no paper size");
+    }
     return paper_size_.get();
 }
 
@@ -108,6 +112,10 @@ void page_setup::scale(double scale)
 
 double page_setup::scale() const
 {
+    if (!scale_.is_set())
+    {
+        return 100.0;
+    }
     return scale_.get();
 }
 

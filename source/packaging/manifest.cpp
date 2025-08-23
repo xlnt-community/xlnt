@@ -102,14 +102,16 @@ bool manifest::has_relationship(const path &path, const std::string &rel_id) con
 
 relationship manifest::relationship(const path &part, relationship_type type) const
 {
-    if (relationships_.find(part) == relationships_.end()) throw key_not_found();
+    auto rel_part = relationships_.find(part);
 
-    for (const auto &rel : relationships_.at(part))
+    if (rel_part == relationships_.end()) throw key_not_found(part.string());
+
+    for (const auto &rel : rel_part->second)
     {
         if (rel.second.type() == type) return rel.second;
     }
 
-    throw key_not_found();
+    throw key_not_found(part.string());
 }
 
 std::vector<xlnt::relationship> manifest::relationships(const path &part, relationship_type type) const
@@ -134,17 +136,19 @@ std::string manifest::content_type(const path &part) const
 {
     auto absolute = part.resolve(path("/"));
 
-    if (has_override_type(absolute))
+    auto override_type = override_content_types_.find(absolute);
+    if (override_type != override_content_types_.end())
     {
-        return override_type(absolute);
+        return override_type->second;
     }
 
-    if (has_default_type(part.extension()))
+    auto default_type = default_content_types_.find(part.extension());
+    if (default_type != default_content_types_.end())
     {
-        return default_type(part.extension());
+        return default_type->second;
     }
 
-    throw key_not_found();
+    throw key_not_found(absolute.string());
 }
 
 void manifest::register_override_type(const path &part, const std::string &content_type)
@@ -171,14 +175,16 @@ std::vector<path> manifest::parts_with_overriden_types() const
 
 std::vector<relationship> manifest::relationships(const path &part) const
 {
-    if (relationships_.find(part) == relationships_.end())
+    auto relationship = relationships_.find(part);
+    if (relationship == relationships_.end())
     {
         return {};
     }
 
     std::vector<xlnt::relationship> relationships;
+    relationships.reserve(relationship->second.size());
 
-    for (const auto &rel : relationships_.at(part))
+    for (const auto &rel : relationship->second)
     {
         relationships.push_back(rel.second);
     }
@@ -188,12 +194,14 @@ std::vector<relationship> manifest::relationships(const path &part) const
 
 relationship manifest::relationship(const path &part, const std::string &rel_id) const
 {
-    if (relationships_.find(part) == relationships_.end())
+    auto rel_part = relationships_.find(part);
+
+    if (rel_part == relationships_.end())
     {
-        throw key_not_found();
+        throw key_not_found(part.string());
     }
 
-    for (const auto &rel : relationships_.at(part))
+    for (const auto &rel : rel_part->second)
     {
         if (rel.second.id() == rel_id)
         {
@@ -201,7 +209,7 @@ relationship manifest::relationship(const path &part, const std::string &rel_id)
         }
     }
 
-    throw key_not_found();
+    throw key_not_found(part.string());
 }
 
 std::vector<path> manifest::parts() const
@@ -242,7 +250,7 @@ std::unordered_map<std::string, std::string> manifest::unregister_relationship(c
     // This shouldn't happen, but just in case...
     if (rel_id.substr(0, 3) != "rId" || rel_id.size() < 4)
     {
-        throw xlnt::invalid_parameter();
+        throw xlnt::invalid_parameter("invalid relationship id \"" + rel_id + "\"");
     }
 
     std::unordered_map<std::string, std::string> id_map;
@@ -291,12 +299,14 @@ std::vector<std::string> manifest::extensions_with_default_types() const
 
 std::string manifest::default_type(const std::string &extension) const
 {
-    if (default_content_types_.find(extension) == default_content_types_.end())
+    auto content_type = default_content_types_.find(extension);
+
+    if (content_type == default_content_types_.end())
     {
-        throw key_not_found();
+        throw key_not_found(extension);
     }
 
-    return default_content_types_.at(extension);
+    return content_type->second;
 }
 
 void manifest::register_default_type(const std::string &extension, const std::string &content_type)
@@ -311,10 +321,11 @@ void manifest::unregister_default_type(const std::string &extension)
 
 std::string manifest::next_relationship_id(const path &part) const
 {
-    if (relationships_.find(part) == relationships_.end()) return "rId1";
+    auto relationship = relationships_.find(part);
+    if (relationship == relationships_.end()) return "rId1";
 
     std::size_t index = 1;
-    const auto &part_rels = relationships_.at(part);
+    const auto &part_rels = relationship->second;
 
     while (part_rels.find("rId" + std::to_string(index)) != part_rels.end())
     {
@@ -331,12 +342,14 @@ bool manifest::has_override_type(const xlnt::path &part) const
 
 std::string manifest::override_type(const xlnt::path &part) const
 {
-    if (!has_override_type(part))
+    auto override_type = override_content_types_.find(part);
+
+    if (override_type == override_content_types_.end())
     {
-        throw key_not_found();
+        throw key_not_found(part.string());
     }
 
-    return override_content_types_.at(part);
+    return override_type->second;
 }
 
 bool manifest::operator==(const manifest &other) const

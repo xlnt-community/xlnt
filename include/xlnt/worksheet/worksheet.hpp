@@ -142,6 +142,8 @@ public:
 
     /// <summary>
     /// Sets the title of this sheet.
+    /// If the worksheet title is empty, longer than 31 characters, or contains any of the forbidden
+    /// characters *:/\?[] then an invalid_sheet_title exception will be thrown.
     /// </summary>
     void title(const std::string &title);
 
@@ -182,25 +184,27 @@ public:
     bool has_cell(const cell_reference &reference) const;
 
     /// <summary>
-    /// Returns the cell at the given reference. If the cell doesn't exist, it
-    /// will be initialized to null before being returned.
+    /// Returns a wrapper pointing to the cell at the given reference.
+    /// If the cell doesn't exist (has_cell() returns false), an empty cell will be created,
+    /// added to the worksheet (has_cell() will return true afterwards), and returned.
     /// </summary>
     class cell cell(const cell_reference &reference);
 
     /// <summary>
-    /// Returns the cell at the given reference. If the cell doesn't exist, an
-    /// invalid_parameter exception will be thrown.
+    /// Returns a wrapper pointing to the cell at the given reference.
+    /// Assumes that the cell exists (please call has_cell() to check).
+    /// If the cell doesn't exist, an invalid_parameter exception will be thrown.
     /// </summary>
     const class cell cell(const cell_reference &reference) const;
 
     /// <summary>
-    /// Returns the cell at the given column and row. If the cell doesn't exist, it
+    /// Returns a wrapper pointing to the cell at the given column and row. If the cell doesn't exist, it
     /// will be initialized to null before being returned.
     /// </summary>
     class cell cell(column_t column, row_t row);
 
     /// <summary>
-    /// Returns the cell at the given column and row. If the cell doesn't exist, an
+    /// Returns a wrapper pointing to the cell at the given column and row. If the cell doesn't exist, an
     /// invalid_parameter exception will be thrown.
     /// </summary>
     const class cell cell(column_t column, row_t row) const;
@@ -298,12 +302,16 @@ public:
     // properties
 
     /// <summary>
-    /// Returns the column properties for the given column.
+    /// Returns a reference to the column properties for the given column.
+    /// If the given column does not have properties (has_column_properties() returns false),
+    /// default column properties will be created and returned.
     /// </summary>
     xlnt::column_properties &column_properties(column_t column);
 
     /// <summary>
-    /// Returns the column properties for the given column.
+    /// Returns a reference to the column properties for the given column.
+    /// If the given column does not have properties (has_column_properties() returns false),
+    /// a key_not_found exception will be thrown.
     /// </summary>
     const xlnt::column_properties &column_properties(column_t column) const;
 
@@ -324,12 +332,16 @@ public:
     double column_width(column_t column) const;
 
     /// <summary>
-    /// Returns the row properties for the given row.
+    /// Returns a reference to the row properties for the given row.
+    /// If the given row does not have properties (has_row_properties() returns false),
+    /// default row properties will be created and returned.
     /// </summary>
     xlnt::row_properties &row_properties(row_t row);
 
     /// <summary>
-    /// Returns the row properties for the given row.
+    /// Returns a reference to the row properties for the given row.
+    /// If the given row does not have properties (has_row_properties() returns false),
+    /// a key_not_found exception will be thrown.
     /// </summary>
     const xlnt::row_properties &row_properties(row_t row) const;
 
@@ -463,11 +475,13 @@ public:
 
     /// <summary>
     /// Removes the merging of the cells in the range represented by the given string.
+    /// If the cell has not been merged, an invalid_parameter exception will be thrown.
     /// </summary>
     void unmerge_cells(const std::string &reference_string);
 
     /// <summary>
     /// Removes the merging of the cells in the given range.
+    /// If the cell has not been merged, an invalid_parameter exception will be thrown.
     /// </summary>
     void unmerge_cells(const range_reference &reference);
 
@@ -505,11 +519,13 @@ public:
 
     /// <summary>
     /// Convenience method for worksheet::cell method.
+    /// Returns a wrapper pointing to the cell at the given reference.
     /// </summary>
     class cell operator[](const cell_reference &reference);
 
     /// <summary>
     /// Convenience method for worksheet::cell method.
+    /// Returns a wrapper pointing to the cell at the given reference.
     /// </summary>
     const class cell operator[](const cell_reference &reference) const;
 
@@ -528,9 +544,9 @@ public:
     bool has_page_setup() const;
 
     /// <summary>
-    /// Returns the page setup for this sheet.
-    /// Assumes that this sheet has a page setup (please call has_page_setup() to check).
-    /// If this sheet does not have a page setup, an xlnt::invalid_attribute exception will be thrown.
+    /// Returns a copy of the page setup for this sheet.
+    /// If no page setup has been set (has_page_setup() returns false),
+    /// a default-constructed page setup will be returned.
     /// </summary>
     xlnt::page_setup page_setup() const;
 
@@ -545,7 +561,7 @@ public:
     bool has_page_margins() const;
 
     /// <summary>
-    /// Returns the margins of this sheet.
+    /// Returns a copy of the margins of this sheet.
     /// Assumes that this sheet has page margins (please call has_page_margins() to check).
     /// If this sheet has no page margins, an invalid_attribute exception will be thrown.
     /// </summary>
@@ -555,6 +571,11 @@ public:
     /// Sets the margins of this sheet to margins.
     /// </summary>
     void page_margins(const class page_margins &margins);
+
+    /// <summary>
+    /// Clears the margins of this sheet (has_page_margins() will return false afterwards).
+    /// </summary>
+    void clear_page_margins();
 
     // auto filter
 
@@ -619,7 +640,7 @@ public:
     bool has_header_footer() const;
 
     /// <summary>
-    /// Returns the header/footer of this sheet.
+    /// Returns a copy of the header/footer of this sheet.
     /// Assumes that this sheet has a header/footer (please call has_header_footer() to check).
     /// If this sheet has no header/footer, an invalid_attribute exception will be thrown.
     /// </summary>
@@ -728,7 +749,14 @@ public:
     bool has_view() const;
 
     /// <summary>
+    /// Returns the views.
+    /// </summary>
+    const std::vector<sheet_view> & views() const;
+
+    /// <summary>
     /// Returns the view at the given index.
+    /// Assumes that the index is valid (please call views().size() to check).
+    /// If the index is out of range, an invalid_parameter exception is thrown.
     /// </summary>
     sheet_view &view(std::size_t index = 0) const;
 
@@ -736,6 +764,18 @@ public:
     /// Adds new_view to the set of available views for this sheet.
     /// </summary>
     void add_view(const sheet_view &new_view);
+
+    /// <summary>
+    /// Removes the view at the given index.
+    /// Assumes that the index is valid (please call views().size() to check).
+    /// If the index is out of range, an invalid_parameter exception is thrown.
+    /// </summary>
+    void remove_view(std::size_t index);
+
+    /// <summary>
+    /// Clears all views.
+    /// </summary>
+    void clear_views();
 
     /// <summary>
     /// Set the active cell on the default worksheet view to the given reference.
@@ -783,7 +823,7 @@ public:
     void page_break_at_column(column_t column);
 
     /// <summary>
-    /// Creates a conditional format for the given range with the given condition.
+    /// Creates a conditional format for the given range with the given condition and returns a wrapper pointing to it.
     /// </summary>
     xlnt::conditional_format conditional_format(const range_reference &ref, const condition &when);
 
@@ -798,7 +838,7 @@ public:
     relationship referring_relationship() const;
 
     /// <summary>
-    /// Returns the current formatting properties.
+    /// Returns a copy of the current formatting properties.
     /// </summary>
     sheet_format_properties format_properties() const;
 
@@ -864,6 +904,7 @@ private:
     /// <summary>
     /// Move cells after index down or right by a given amount. The direction is decided by row_or_col.
     /// If reverse is true, the cells will be moved up or left, depending on row_or_col.
+    /// If the cells are moved out of bounds (before the minimum or after the maximum allowed indices), an invalid_parameter exception will be thrown.
     /// </summary>
     void move_cells(std::uint32_t index, std::uint32_t amount, row_or_col_t row_or_col, bool reverse = false);
 

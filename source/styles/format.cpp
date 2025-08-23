@@ -63,7 +63,7 @@ style format::style()
 {
     if (!has_style())
     {
-        throw invalid_attribute();
+        throw invalid_attribute("the format has no style");
     }
 
     return d_->parent->style(d_->style.get());
@@ -73,7 +73,7 @@ const style format::style() const
 {
     if (!has_style())
     {
-        throw invalid_attribute();
+        throw invalid_attribute("the format has no style");
     }
 
     return d_->parent->style(d_->style.get());

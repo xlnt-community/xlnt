@@ -83,22 +83,22 @@ public:
     bool empty() const;
 
     /// <summary>
-    /// Returns the first cell in this vector.
+    /// Returns a wrapper pointing to the first cell in this vector.
     /// </summary>
     cell front();
 
     /// <summary>
-    /// Returns the first cell in this vector.
+    /// Returns a wrapper pointing to the first cell in this vector.
     /// </summary>
     const cell front() const;
 
     /// <summary>
-    /// Returns the last cell in this vector.
+    /// Returns a wrapper pointing to the last cell in this vector.
     /// </summary>
     cell back();
 
     /// <summary>
-    /// Returns the last cell in this vector.
+    /// Returns a wrapper pointing to the last cell in this vector.
     /// </summary>
     const cell back() const;
 
@@ -168,12 +168,12 @@ public:
     const_reverse_iterator crend() const;
 
     /// <summary>
-    /// Returns the cell column_index distance away from the first cell in this vector.
+    /// Returns a wrapper pointing to the cell column_index distance away from the first cell in this vector.
     /// </summary>
     cell operator[](std::size_t column_index);
 
     /// <summary>
-    /// Returns the cell column_index distance away from the first cell in this vector.
+    /// Returns a wrapper pointing to the cell column_index distance away from the first cell in this vector.
     /// </summary>
     const cell operator[](std::size_t column_index) const;
 

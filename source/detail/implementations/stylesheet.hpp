@@ -46,6 +46,9 @@ namespace detail {
 
 struct stylesheet
 {
+    /// <summary>
+    /// Creates a new format and returns a wrapper pointing to it.
+    /// </summary>
     class format create_format(bool default_format)
     {
 		format_impls.push_back(format_impl());
@@ -59,6 +62,9 @@ struct stylesheet
         return xlnt::format(&impl);
     }
 
+    /// <summary>
+    /// Returns a wrapper pointing to the format at the given index.
+    /// </summary>
     class xlnt::format format(std::size_t index)
     {
         auto iter = format_impls.begin();
@@ -67,6 +73,9 @@ struct stylesheet
         return xlnt::format(&*iter);
     }
 
+    /// <summary>
+    /// Creates a new style and returns a wrapper pointing to it.
+    /// </summary>
     class style create_style(const std::string &name)
     {
         auto &impl = style_impls.emplace(name, style_impl()).first->second;
@@ -83,6 +92,11 @@ struct stylesheet
         return xlnt::style(&impl);
     }
 
+    /// <summary>
+    /// Returns a wrapper pointing to the style with the builtin ID.
+    /// Assumes that the builtin ID exists.
+    /// If the builtin ID does not exist, an invalid_parameter exception will be thrown.
+    /// </summary>
 	class style create_builtin_style(const std::size_t builtin_id)
 	{
 		// From Annex G.2
@@ -142,18 +156,39 @@ struct stylesheet
 			{ 53, "Explanatory Text" }
 		};
 
-		auto new_style = create_style(names.at(builtin_id));
+		auto name = names.find(builtin_id);
+
+		if (name == names.end())
+		{
+		    throw xlnt::invalid_parameter("cannot create builtin style: builtin id " + std::to_string(builtin_id) + " is invalid");
+		}
+
+		auto new_style = create_style(name->second);
 		new_style.d_->builtin_id = builtin_id;
 
 		return new_style;
 	}
 
+	/// <summary>
+    /// Returns a wrapper pointing to the named style with the given name.
+    /// Assumes that this stylesheet has a style with the given name (please call has_style() to check).
+    /// If this stylesheet has no style with the given name, a key_not_found exception will be thrown.
+    /// </summary>
     class style style(const std::string &name)
 	{
-        if (!has_style(name)) throw key_not_found();
-        return xlnt::style(&style_impls[name]);
+	    auto style = style_impls.find(name);
+
+		if (style == style_impls.end())
+		{
+		    throw key_not_found(name);
+		}
+
+        return xlnt::style(&style->second);
 	}
 
+	/// <summary>
+	/// Returns true if the stylesheet has a style with the given name.
+	/// </summary>
 	bool has_style(const std::string &name)
 	{
 		return style_impls.count(name) > 0;
@@ -202,7 +237,8 @@ struct stylesheet
         {
             id_map[i] = i - unreferenced;
 
-            if (reference_counts.count(i) == 0 || reference_counts.at(i) == 0)
+            auto reference_count = reference_counts.find(i);
+            if (reference_count == reference_counts.end() || reference_count->second == 0)
             {
                 container.erase(container.begin() + static_cast<typename std::vector<T>::difference_type>(i - unreferenced));
                 unreferenced++;
@@ -530,6 +566,9 @@ struct stylesheet
         colors.clear();
     }
 
+    /// <summary>
+	/// Creates a conditional format for the given range and condition and returns a wrapper pointing to it.
+	/// </summary>
 	conditional_format add_conditional_format_rule(worksheet_impl *ws, const range_reference &ref, const condition &when)
 	{
 		conditional_format_impls.push_back(conditional_format_impl());

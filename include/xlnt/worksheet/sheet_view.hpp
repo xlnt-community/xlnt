@@ -80,6 +80,10 @@ public:
     /// </summary>
     struct pane &pane()
     {
+        if (!pane_.is_set())
+        {
+            throw xlnt::invalid_attribute("sheet view has no pane");
+        }
         return pane_.get();
     }
 
@@ -90,6 +94,10 @@ public:
     /// </summary>
     const struct pane &pane() const
     {
+        if (!pane_.is_set())
+        {
+            throw xlnt::invalid_attribute("sheet view has no pane");
+        }
         return pane_.get();
     }
 
@@ -142,10 +150,16 @@ public:
     }
 
     /// <summary>
-    /// Returns the selection at the given index.
+    /// Returns the selection at the given index (please call selections().size() if the number of selections is unknown).
+    /// If the index is out of bounds, an invalid_parameter exception will be thrown.
     /// </summary>
     class xlnt::selection &selection(std::size_t index)
     {
+        if (index >= selections_.size())
+        {
+            throw xlnt::invalid_parameter("sheet view selection at index " + std::to_string(index) + " does not exist (" + std::to_string(selections_.size()) + " selections available)");
+        }
+
         return selections_.at(index);
     }
 
@@ -220,6 +234,10 @@ public:
     /// </summary>
     cell_reference top_left_cell() const
     {
+        if (!top_left_cell_.is_set())
+        {
+            throw xlnt::invalid_attribute("sheet view has no top left cell");
+        }
         return top_left_cell_.get();
     }
 

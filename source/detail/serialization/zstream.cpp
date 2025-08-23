@@ -74,14 +74,14 @@ xlnt::detail::zheader read_header(std::istream &istream, const bool global)
     {
         if (sig != 0x02014b50)
         {
-            throw xlnt::exception("missing global header signature");
+            throw xlnt::exception("missing global header signature (signature " + std::to_string(sig) + ")");
         }
 
         header.version = read_int<std::uint16_t>(istream);
     }
     else if (sig != 0x04034b50)
     {
-        throw xlnt::exception("missing local header signature");
+        throw xlnt::exception("missing local header signature (signature " + std::to_string(sig) + ")");
     }
 
     // Read rest of header
@@ -214,7 +214,7 @@ public:
         else
         {
             compressed_data = false;
-            throw xlnt::exception("unsupported compression type, should be DEFLATE or uncompressed");
+            throw xlnt::exception("unsupported compression type " + std::to_string(header.compression_type) + ", should be DEFLATE or uncompressed");
         }
 
         // initialize the inflate
@@ -227,7 +227,7 @@ public:
 
             if (result != Z_OK)
             {
-                throw xlnt::exception("couldn't inflate ZIP, possibly corrupted");
+                throw xlnt::exception("couldn't inflate ZIP, possibly corrupted (error code " + std::to_string(result) + ")");
             }
         }
 
@@ -267,7 +267,7 @@ public:
 
                 if (ret == Z_STREAM_ERROR || ret == Z_NEED_DICT || ret == Z_DATA_ERROR || ret == Z_MEM_ERROR)
                 {
-                    throw xlnt::exception("couldn't inflate ZIP, possibly corrupted");
+                    throw xlnt::exception("couldn't inflate ZIP, possibly corrupted (error code " + std::to_string(ret) + ")");
                 }
 
                 if (ret == Z_STREAM_END) break;
@@ -520,7 +520,7 @@ bool izstream::read_central_header()
 
     if (read_start <= 0)
     {
-        throw xlnt::exception("file is empty");
+        throw xlnt::exception("file is empty (read_start = " + std::to_string(read_start) + ")");
     }
 
     source_stream_.read(reinterpret_cast<char *>(buf.data()), read_start);
@@ -528,7 +528,7 @@ bool izstream::read_central_header()
     if (buf[0] == 0xd0 && buf[1] == 0xcf && buf[2] == 0x11 && buf[3] == 0xe0
         && buf[4] == 0xa1 && buf[5] == 0xb1 && buf[6] == 0x1a && buf[7] == 0xe1)
     {
-        throw xlnt::exception("encrypted xlsx, password required");
+        throw xlnt::invalid_password("encrypted xlsx, password required");
     }
 
     auto found_header = false;
@@ -561,7 +561,7 @@ bool izstream::read_central_header()
 
     if (disk_number1 != disk_number2 || disk_number1 != 0)
     {
-        throw xlnt::exception("multiple disk zip files are not supported");
+        throw xlnt::exception("multiple disk zip files are not supported (disk_number1 = " + std::to_string(disk_number1) + ", disk_number2 = " + std::to_string(disk_number2) + ")");
     }
 
     auto num_files = read_int<std::uint16_t>(source_stream_); // one entry in center in this disk
@@ -569,7 +569,7 @@ bool izstream::read_central_header()
 
     if (num_files != num_files_this_disk)
     {
-        throw xlnt::exception("multi disk zip files are not supported");
+        throw xlnt::exception("multi disk zip files are not supported (num_files = " + std::to_string(num_files) + ", num_files_this_disk = " + std::to_string(num_files_this_disk) + ")");
     }
 
     /*auto size_of_header = */ read_int<std::uint32_t>(source_stream_); // size of header
@@ -591,7 +591,7 @@ std::unique_ptr<std::streambuf> izstream::open(const path &filename) const
 {
     if (!has_file(filename))
     {
-        throw xlnt::exception("file not found");
+        throw xlnt::exception("file not found at path: " + filename.string());
     }
 
     auto header = file_headers_.at(filename.string());
