@@ -84,8 +84,8 @@ invalid_data_type::invalid_data_type(const std::string &type)
 {
 }
 
-invalid_file::invalid_file(const std::string &filename)
-    : exception(std::string("couldn't open file: (") + filename + ")")
+invalid_file::invalid_file(const std::string &reason)
+    : exception("couldn't load file, reason given: " + reason)
 {
 }
 

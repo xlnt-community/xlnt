@@ -93,6 +93,7 @@ public:
         register_test(test_Issue353);
         register_test(test_Issue494);
         register_test(test_Issue90);
+        register_test(test_Issue109);
         register_test(test_style);
         register_test(test_sheet_moving)
     }
@@ -799,6 +800,22 @@ public:
         xlnt::workbook wb;
 
         xlnt_assert_throws_nothing(wb.load(path_helper::test_file("issue90_debug_test_file.xlsx")));
+
+        xlnt_assert(wb.sheet_count() > 0);
+
+        auto ws = wb.active_sheet();
+        xlnt_assert_throws_nothing(ws.title());
+    }
+
+    void test_Issue109()
+    {
+        // Test for Issue #109 (Community): Notebook with invalid relations containing relative paths starting with ..
+        // This test checks for whether it can open the file with the invalid paths. This is liberal mode. XLNT will
+        // throw on this file when THROW_ON_INVALID_XML is defined
+
+        xlnt::workbook wb;
+
+        xlnt_assert_throws_nothing(wb.load(path_helper::test_file("issue109_noncompliant_relations.xlsx")));
 
         xlnt_assert(wb.sheet_count() > 0);
 

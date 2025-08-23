@@ -43,7 +43,7 @@ path manifest::canonicalize(const std::vector<xlnt::relationship> &rels) const
 {
     xlnt::path relative;
 
-    for (auto component : rels)
+    for (const auto& component : rels)
     {
         if (component == rels.back())
         {
@@ -63,7 +63,18 @@ path manifest::canonicalize(const std::vector<xlnt::relationship> &rels) const
 
         if (component == "..")
         {
-            absolute_parts.pop_back();
+            if (absolute_parts.empty())
+            {
+#ifdef THROW_ON_INVALID_XML
+                auto relativestr = relative.string();
+                throw invalid_file("invalid relation: " + relativestr);
+#endif
+            }
+            else
+            {
+                absolute_parts.pop_back();
+            }
+
             continue;
         }
 
