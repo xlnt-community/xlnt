@@ -38,8 +38,16 @@ public:
         xlnt::page_setup ps;
 
         xlnt_assert(!ps.has_paper_size());
+        xlnt_assert_throws(ps.paper_size(), xlnt::invalid_attribute);
         ps.paper_size(xlnt::paper_size::executive);
+        xlnt_assert(ps.has_paper_size());
         xlnt_assert_equals(ps.paper_size(), xlnt::paper_size::executive);
+
+        xlnt_assert(!ps.has_scale());
+        xlnt_assert_equals(ps.scale(), 100.0);
+        ps.scale(2.0);
+        xlnt_assert(ps.has_scale());
+        xlnt_assert_equals(ps.scale(), 2.0);
 
         xlnt_assert(!ps.orientation_.is_set());
         ps.orientation_.set(xlnt::orientation::landscape);

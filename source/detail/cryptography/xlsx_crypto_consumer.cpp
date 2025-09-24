@@ -130,13 +130,13 @@ encryption_info::standard_encryption_info read_standard_encryption_info(std::ist
     }
     else
     {
-        throw xlnt::exception("invalid cipher algorithm");
+        throw xlnt::exception("invalid cipher algorithm " + std::to_string(alg_id));
     }
 
     auto alg_id_hash = read<std::uint32_t>(info_stream);
     if (alg_id_hash != 0x00008004 && alg_id_hash == 0)
     {
-        throw xlnt::exception("invalid hash algorithm");
+        throw xlnt::exception("invalid hash algorithm " + std::to_string(alg_id_hash));
     }
 
     result.key_bits = read<std::uint32_t>(info_stream);
@@ -145,13 +145,14 @@ encryption_info::standard_encryption_info read_standard_encryption_info(std::ist
     auto provider_type = read<std::uint32_t>(info_stream);
     if (provider_type != 0 && provider_type != 0x00000018)
     {
-        throw xlnt::exception("invalid provider type");
+        throw xlnt::exception("invalid provider type " + std::to_string(provider_type));
     }
 
     read<std::uint32_t>(info_stream); // reserved 1
-    if (read<std::uint32_t>(info_stream) != 0) // reserved 2
+    auto reserved2 = read<std::uint32_t>(info_stream); // reserved 2
+    if (reserved2 != 0)
     {
-        throw xlnt::exception("invalid header");
+        throw xlnt::exception("invalid header - expected 0, got " + std::to_string(reserved2));
     }
 
     const auto csp_name_length = static_cast<std::size_t>((header_length
@@ -162,7 +163,7 @@ encryption_info::standard_encryption_info read_standard_encryption_info(std::ist
     if (csp_name != u"Microsoft Enhanced RSA and AES Cryptographic Provider (Prototype)"
         && csp_name != u"Microsoft Enhanced RSA and AES Cryptographic Provider")
     {
-        throw xlnt::exception("invalid cryptographic provider");
+        throw xlnt::exception("invalid cryptographic provider \"" + xlnt::detail::utf16_to_utf8(csp_name) + "\"");
     }
 
     const auto salt_size = read<std::uint32_t>(info_stream);
@@ -238,7 +239,7 @@ encryption_info::agile_encryption_info read_agile_encryption_info(std::istream &
         }
         else
         {
-            throw xlnt::unsupported("other encryption key types not supported");
+            throw xlnt::unsupported("encryption key type not supported (namespace \"" + parser.namespace_() + "\", key \"" + parser.name() + "\")");
         }
 
         parser.next_expect(xml::parser::event_type::end_element);
@@ -273,7 +274,7 @@ encryption_info read_encryption_info(std::istream &info_stream, const std::u16st
     {
         if (encryption_flags != 0x40)
         {
-            throw xlnt::exception("bad header");
+            throw xlnt::exception("bad header - agile encryption flags " + std::to_string(encryption_flags));
         }
 
         info.agile = read_agile_encryption_info(info_stream);
@@ -282,23 +283,23 @@ encryption_info read_encryption_info(std::istream &info_stream, const std::u16st
     {
         if (version_minor != 2 || (version_major != 2 && version_major != 3 && version_major != 4))
         {
-            throw xlnt::exception("unsupported encryption version");
+            throw xlnt::exception("unsupported encryption version " + std::to_string(version_major) + "." + std::to_string(version_minor));
         }
 
         if ((encryption_flags & 0x03) != 0) // Reserved1 and Reserved2, MUST be 0
         {
-            throw xlnt::exception("bad header");
+            throw xlnt::exception("bad header - encryption flags " + std::to_string(encryption_flags));
         }
 
         if ((encryption_flags & 0x04) == 0 // fCryptoAPI
             || (encryption_flags & 0x10) != 0) // fExternal
         {
-            throw xlnt::exception("extensible encryption is not supported");
+            throw xlnt::exception("extensible encryption is not supported - encryption flags " + std::to_string(encryption_flags));
         }
 
         if ((encryption_flags & 0x20) == 0) // fAES
         {
-            throw xlnt::exception("not an OOXML document");
+            throw xlnt::exception("not an OOXML document - encryption flags " + std::to_string(encryption_flags));
         }
 
         info.standard = read_standard_encryption_info(info_stream);
@@ -313,7 +314,7 @@ std::vector<std::uint8_t> decrypt_xlsx(
 {
     if (bytes.empty())
     {
-        throw xlnt::exception("empty file");
+        throw xlnt::invalid_file("empty file");
     }
 
     xlnt::detail::vector_istreambuf buffer(bytes);

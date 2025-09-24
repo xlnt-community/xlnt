@@ -259,12 +259,14 @@ public:
     // hyperlink
 
     /// <summary>
-    /// Returns the relationship of this cell's hyperlink.
+    /// Returns a wrapper pointing to the relationship of this cell's hyperlink.
+    /// Assumes that this cell has a hyperlink (please call has_hyperlink() to check).
+    /// If this cell does not have a hyperlink, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class hyperlink hyperlink() const;
 
     /// <summary>
-    /// Adds a hyperlink to this cell pointing to the URI of the given value and sets
+    /// Adds a hyperlink to this cell pointing to the URI of the given value (which must not be empty) and sets
     /// the text value of the cell to the given parameter.
     /// </summary>
     void hyperlink(const std::string &url, const std::string &display = "");
@@ -336,8 +338,9 @@ public:
     bool has_format() const;
 
     /// <summary>
-    /// Returns the format applied to this cell. If this cell has no
-    /// format, an invalid_attribute exception will be thrown.
+    /// Returns a wrapper pointing to the format applied to this cell.
+    /// Assumes that the format exists (please call has_format() to check).
+    /// If this cell has no format, an invalid_attribute exception will be thrown.
     /// </summary>
     const class format format() const;
 
@@ -354,7 +357,8 @@ public:
     void clear_format();
 
     /// <summary>
-    /// Returns the number format of this cell.
+    /// Returns a copy of the number format of this cell. If no number format has been set (has_format() returns false,
+    /// or format().has_number_format() returns false), a default-constructed number format will be returned.
     /// </summary>
     class number_format number_format() const;
 
@@ -365,7 +369,8 @@ public:
     void number_format(const class number_format &format);
 
     /// <summary>
-    /// Returns the font applied to the text in this cell.
+    /// Returns a copy of the font applied to the text in this cell. If no font has been set (has_format() returns false,
+    /// or format().has_font() returns false), a default-constructed font will be returned.
     /// </summary>
     class font font() const;
 
@@ -376,7 +381,8 @@ public:
     void font(const class font &font_);
 
     /// <summary>
-    /// Returns the fill applied to this cell.
+    /// Returns a copy of the fill applied to this cell. If no fill has been set (has_format() returns false,
+    /// or format().has_fill() returns false), a default-constructed fill will be returned.
     /// </summary>
     class fill fill() const;
 
@@ -387,7 +393,8 @@ public:
     void fill(const class fill &fill_);
 
     /// <summary>
-    /// Returns the border of this cell.
+    /// Returns a copy of the border of this cell. If no border has been set (has_format() returns false,
+    /// or format().has_border() returns false), a default-constructed border will be returned.
     /// </summary>
     class border border() const;
 
@@ -398,7 +405,8 @@ public:
     void border(const class border &border_);
 
     /// <summary>
-    /// Returns the alignment of the text in this cell.
+    /// Returns a copy of the alignment of the text in this cell. If no alignment has been set (has_format() returns false,
+    /// or format().has_alignment() returns false), a default-constructed alignment will be returned.
     /// </summary>
     class alignment alignment() const;
 
@@ -409,7 +417,8 @@ public:
     void alignment(const class alignment &alignment_);
 
     /// <summary>
-    /// Returns the protection of this cell.
+    /// Returns a copy of the protection of this cell. If no protection has been set (has_format() returns false,
+    /// or format().has_protection() returns false), a default-constructed protection will be returned.
     /// </summary>
     class protection protection() const;
 
@@ -428,11 +437,15 @@ public:
 
     /// <summary>
     /// Returns a wrapper pointing to the named style applied to this cell.
+    /// Assumes that the style exists (please call has_style() to check).
+    /// If this cell does not have a style, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class style style();
 
     /// <summary>
     /// Returns a wrapper pointing to the named style applied to this cell.
+    /// Assumes that the style exists (please call has_style() to check).
+    /// If this cell does not have a style, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     const class style style() const;
 
@@ -460,6 +473,8 @@ public:
 
     /// <summary>
     /// Returns the string representation of the formula applied to this cell.
+    /// Assumes that cell view has a formula (please call has_formula() to check).
+    /// If this cell does not have a formula, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     std::string formula() const;
 
@@ -525,33 +540,33 @@ public:
     void error(const std::string &error);
 
     /// <summary>
-    /// Returns a cell from this cell's parent workbook at
+    /// Returns a wrapper pointing to the cell from this cell's parent workbook at
     /// a relative offset given by the parameters.
     /// </summary>
     cell offset(int column, int row);
 
     /// <summary>
-    /// Returns the worksheet that owns this cell.
+    /// Returns a wrapper pointing to the worksheet that owns this cell.
     /// </summary>
     class worksheet worksheet();
 
     /// <summary>
-    /// Returns the worksheet that owns this cell.
+    /// Returns a wrapper pointing to the worksheet that owns this cell.
     /// </summary>
     const class worksheet worksheet() const;
 
     /// <summary>
-    /// Returns the workbook of the worksheet that owns this cell.
+    /// Returns a wrapper pointing to the workbook of the worksheet that owns this cell.
     /// </summary>
     class workbook workbook();
 
     /// <summary>
-    /// Returns the workbook of the worksheet that owns this cell.
+    /// Returns a wrapper pointing to the workbook of the worksheet that owns this cell.
     /// </summary>
     const class workbook workbook() const;
 
     /// <summary>
-    /// Returns the base date of the parent workbook.
+    /// Returns a copy of the base date of the parent workbook.
     /// </summary>
     calendar base_date() const;
 
@@ -573,7 +588,9 @@ public:
     void clear_comment();
 
     /// <summary>
-    /// Gets the comment applied to this cell.
+    /// Returns a copy of the comment applied to this cell.
+    /// Assumes that the comment exists (please call has_comment() to check).
+    /// If this cell does not have a comment, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class comment comment() const;
 
@@ -642,8 +659,10 @@ private:
     friend struct detail::cell_impl;
 
     /// <summary>
-    /// Returns a non-const reference to the format of this cell.
+    /// Returns a non-const wrapper pointing to the format of this cell.
     /// This is for internal use only.
+    /// Assumes that this cell has a format (please call has_format() to check).
+    /// If this cell does not have a format, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class format modifiable_format();
 

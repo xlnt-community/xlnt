@@ -69,6 +69,7 @@ public:
         register_test(test_illegal_characters);
         register_test(test_timedelta);
         register_test(test_cell_offset);
+        register_test(test_format);
         register_test(test_font);
         register_test(test_fill);
         register_test(test_border);
@@ -237,6 +238,7 @@ private:
         xlnt_assert(cell.data_type() == xlnt::cell::type::shared_string);
         xlnt_assert(cell.value<std::string>() == "=");
         xlnt_assert(!cell.has_formula());
+        xlnt_assert_throws(cell.formula(), xlnt::invalid_attribute);
     }
 
     void test_boolean()
@@ -404,17 +406,37 @@ private:
         xlnt_assert(cell.offset(1, 2).reference() == "B3");
     }
 
+    void test_format()
+    {
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        auto cell = ws.cell(xlnt::cell_reference(1, 1));
+
+        xlnt_assert(!cell.has_format());
+        xlnt_assert_throws(cell.format(), xlnt::invalid_attribute);
+
+        xlnt::format format = wb.create_format();
+        cell.format(format);
+
+        xlnt_assert(cell.has_format());
+        xlnt_assert_throws_nothing(cell.format());
+    }
+
     void test_font()
     {
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
         auto cell = ws.cell("A1");
 
+        xlnt_assert(!cell.has_format());
+        xlnt_assert_throws_nothing(cell.font());
+
         auto font = xlnt::font().bold(true);
 
         cell.font(font);
 
         xlnt_assert(cell.has_format());
+        xlnt_assert(cell.format().has_font());
         xlnt_assert(cell.format().font_applied());
         xlnt_assert_equals(cell.font(), font);
     }
@@ -425,12 +447,16 @@ private:
         auto ws = wb.active_sheet();
         auto cell = ws.cell("A1");
 
+        xlnt_assert(!cell.has_format());
+        xlnt_assert_throws_nothing(cell.fill());
+
         xlnt::fill fill(xlnt::pattern_fill()
                             .type(xlnt::pattern_fill_type::solid)
                             .foreground(xlnt::color::red()));
         cell.fill(fill);
 
         xlnt_assert(cell.has_format());
+        xlnt_assert(cell.format().has_fill());
         xlnt_assert(cell.format().fill_applied());
         xlnt_assert_equals(cell.fill(), fill);
     }
@@ -441,10 +467,14 @@ private:
         auto ws = wb.active_sheet();
         auto cell = ws.cell("A1");
 
+        xlnt_assert(!cell.has_format());
+        xlnt_assert_throws_nothing(cell.border());
+
         xlnt::border border;
         cell.border(border);
 
         xlnt_assert(cell.has_format());
+        xlnt_assert(cell.format().has_border());
         xlnt_assert(cell.format().border_applied());
         xlnt_assert_equals(cell.border(), border);
     }
@@ -455,11 +485,16 @@ private:
         auto ws = wb.active_sheet();
         auto cell = ws.cell("A1");
 
+        xlnt_assert(!cell.has_format());
+        xlnt_assert_throws_nothing(cell.number_format());
+
         xlnt::number_format format("dd--hh--mm");
         cell.number_format(format);
 
         xlnt_assert(cell.has_format());
+        xlnt_assert(cell.format().has_number_format());
         xlnt_assert(cell.format().number_format_applied());
+        xlnt_assert_equals(cell.number_format(), format);
         xlnt_assert_equals(cell.number_format().format_string(), "dd--hh--mm");
     }
 
@@ -495,12 +530,16 @@ private:
         auto ws = wb.active_sheet();
         auto cell = ws.cell("A1");
 
+        xlnt_assert(!cell.has_format());
+        xlnt_assert_throws_nothing(cell.alignment());
+
         xlnt::alignment align;
         align.wrap(true);
 
         cell.alignment(align);
 
         xlnt_assert(cell.has_format());
+        xlnt_assert(cell.format().has_alignment());
         xlnt_assert(cell.format().alignment_applied());
         xlnt_assert_equals(cell.alignment(), align);
     }
@@ -512,11 +551,13 @@ private:
         auto cell = ws.cell("A1");
 
         xlnt_assert(!cell.has_format());
+        xlnt_assert_throws_nothing(cell.protection());
 
         auto protection = xlnt::protection().locked(false).hidden(true);
         cell.protection(protection);
 
         xlnt_assert(cell.has_format());
+        xlnt_assert(cell.format().has_protection());
         xlnt_assert(cell.format().protection_applied());
         xlnt_assert_equals(cell.protection(), protection);
 
@@ -802,6 +843,18 @@ private:
         xlnt_assert_equals(cell.value<int>(), 123);
         xlnt_assert_equals(cell.hyperlink().display(), cell_value_str); // display text ignored
         cell.clear_value();
+        // tooltip
+        cell.hyperlink(link1);
+        xlnt_assert(!cell.hyperlink().has_tooltip());
+        xlnt_assert_throws(cell.hyperlink().tooltip(), xlnt::invalid_attribute);
+        cell.hyperlink().tooltip("example");
+        xlnt_assert_equals(cell.hyperlink().tooltip(), "example");
+        // location
+        cell.hyperlink(link1);
+        xlnt_assert(!cell.hyperlink().has_location());
+        xlnt_assert_throws(cell.hyperlink().location(), xlnt::invalid_attribute);
+        cell.hyperlink().location("location");
+        xlnt_assert_equals(cell.hyperlink().location(), "location");
     }
 
     void test_comment()
@@ -810,13 +863,13 @@ private:
         auto ws = wb.active_sheet();
         auto cell = ws.cell("A1");
         xlnt_assert(!cell.has_comment());
-        xlnt_assert_throws(cell.comment(), xlnt::exception);
+        xlnt_assert_throws(cell.comment(), xlnt::invalid_attribute);
         cell.comment(xlnt::comment("comment", "author"));
         xlnt_assert(cell.has_comment());
         xlnt_assert_equals(cell.comment(), xlnt::comment("comment", "author"));
         cell.clear_comment();
         xlnt_assert(!cell.has_comment());
-        xlnt_assert_throws(cell.comment(), xlnt::exception);
+        xlnt_assert_throws(cell.comment(), xlnt::invalid_attribute);
 
         xlnt::comment comment_with_size("test comment", "author");
         comment_with_size.size(1000, 30);

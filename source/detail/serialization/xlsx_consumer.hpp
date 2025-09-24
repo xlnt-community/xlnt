@@ -96,7 +96,7 @@ private:
     bool has_cell();
 
     /// <summary>
-    /// Reads the next cell in the current worksheet and optionally returns it if
+    /// Reads the next cell in the current worksheet and returns a wrapper pointing to it if
     /// the last cell in the sheet has not yet been read. An exception will be thrown
     /// if this is not open as a streaming consumer.
     /// </summary>
@@ -232,6 +232,7 @@ private:
 
     /// <summary>
     /// xl/sheets/*.xml
+    /// Returns a wrapper pointing to the worksheet that has been read.
     /// </summary>
     worksheet read_worksheet_end(const std::string &rel_id);
 

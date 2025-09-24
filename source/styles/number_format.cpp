@@ -77,7 +77,7 @@ const std::unordered_map<std::size_t, xlnt::number_format> &builtin_formats()
             {48, "##0.0E+0"},
             {49, "@"}};
 
-        for (auto format_string_pair : format_strings)
+        for (const auto &format_string_pair : format_strings)
         {
             formats[format_string_pair.first] =
                 xlnt::number_format(format_string_pair.second, format_string_pair.first);
@@ -256,12 +256,14 @@ bool number_format::is_builtin_format(std::size_t builtin_id)
 
 const number_format &number_format::from_builtin_id(std::size_t builtin_id)
 {
-    if (!is_builtin_format(builtin_id))
+    auto format = builtin_formats().find(builtin_id);
+
+    if (format == builtin_formats().end())
     {
-        throw invalid_parameter();
+        throw invalid_parameter("invalid builtin ID " + std::to_string(builtin_id) + " for number format");
     }
 
-    return builtin_formats().at(builtin_id);
+    return format->second;
 }
 
 std::string number_format::format_string() const
@@ -304,7 +306,7 @@ std::size_t number_format::id() const
 {
     if (!has_id())
     {
-        throw invalid_attribute();
+        throw invalid_attribute("the number format has no ID");
     }
 
     return id_.get();
