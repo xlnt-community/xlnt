@@ -1534,8 +1534,10 @@ void xlsx_producer::write_styles(const relationship & /*rel*/)
     write_start_element(xmlns, "cellXfs");
     write_attribute("count", stylesheet.format_impls.size());
 
-    for (auto &current_format_impl : stylesheet.format_impls)
+    for (auto &current_format_item : stylesheet.format_impls)
     {
+        auto &current_format_impl = *current_format_item;
+
         write_start_element(xmlns, "xf");
 
         if (current_format_impl.number_format_id.is_set())

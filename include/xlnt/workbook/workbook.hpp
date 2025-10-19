@@ -803,11 +803,18 @@ public:
     /// </summary>
     xlnt::format create_format(bool default_format = false);
 
+    void set_default_format(const xlnt::format& format);
+
     /// <summary>
     /// Clear all cell-level formatting and formats from the styelsheet. This leaves
     /// all other styling in place (e.g. named styles).
     /// </summary>
     void clear_formats();
+
+    /// <summary>
+    /// Returns the number of formats in this workbook.
+    /// </summary>
+    std::size_t format_count() const;
 
     // Styles
 

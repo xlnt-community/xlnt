@@ -57,7 +57,7 @@ struct cell_impl
 
     optional<std::string> formula_;
     optional<hyperlink_impl> hyperlink_;
-    optional<format_impl *> format_;
+    format_impl_ptr format_;
     optional<comment *> comment_;
 
     bool is_garbage_collectible() const

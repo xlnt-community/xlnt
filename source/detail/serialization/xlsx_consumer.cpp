@@ -1865,6 +1865,12 @@ void xlsx_consumer::populate_workbook(bool streaming)
 
     read_part({manifest().relationship(root_path,
         relationship_type::office_document)});
+
+    if (target_.impl().stylesheet_.is_set())
+    {
+        // re-enable garbage collection, but do not run the garbage collection immediately, to allow a succesfull roundtrip without losing non-used formats.
+        target_.impl().stylesheet_.get().garbage_collection_enabled = true;
+    }
 }
 
 // Package Parts
@@ -2371,6 +2377,7 @@ void xlsx_consumer::read_stylesheet()
 {
     target_.impl().stylesheet_ = detail::stylesheet();
     auto &stylesheet = target_.impl().stylesheet_.get();
+    stylesheet.garbage_collection_enabled = false; // garbage collection isn't allowed while reading the file, as other parts of the xlsx file reference to the index of a format in the stylesheet. If garbage collection is enabled, all formats will be deleted immediately (before the format usage is read).
 
     expect_start_element(qn("spreadsheetml", "styleSheet"), xml::content::complex);
     skip_attributes({qn("mc", "Ignorable")});
@@ -3078,13 +3085,11 @@ void xlsx_consumer::read_stylesheet()
 
     for (const auto &record : format_records)
     {
-        stylesheet.format_impls.push_back(format_impl());
-        auto &new_format = stylesheet.format_impls.back();
+        stylesheet.format_impls.emplace_back();
+        auto &new_format = *stylesheet.format_impls.back();
 
         new_format.id = record_index++;
         new_format.parent = &stylesheet;
-
-        ++new_format.references;
 
         new_format.alignment_id = record.first.alignment_id;
         new_format.alignment_applied = record.first.alignment_applied;

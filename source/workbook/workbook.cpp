@@ -485,12 +485,13 @@ workbook workbook::empty()
         .font(default_font)
         .number_format(xlnt::number_format::general());
 
-    wb.create_format(true)
+    auto format = wb.create_format()
         .border(default_border)
         .fill(default_fill)
         .font(default_font)
         .number_format(xlnt::number_format::general())
         .style("Normal");
+    wb.set_default_format(format);
 
     xlnt::calculation_properties calc_props;
     calc_props.calc_id = 150000;
@@ -1469,6 +1470,11 @@ format workbook::create_format(bool default_format)
     return d_->stylesheet_.get().create_format(default_format);
 }
 
+void workbook::set_default_format(const class format &format)
+{
+    d_->stylesheet_.get().set_default_format(format);
+}
+
 bool workbook::has_style(const std::string &name) const
 {
     return d_->stylesheet_.get().has_style(name);
@@ -1507,6 +1513,11 @@ bool workbook::known_fonts_enabled() const
 void workbook::clear_formats()
 {
     apply_to_cells([](cell c) { c.clear_format(); });
+}
+
+std::size_t workbook::format_count() const
+{
+    return d_->stylesheet_.get().format_impls.size();
 }
 
 void workbook::apply_to_cells(std::function<void(cell)> f)
