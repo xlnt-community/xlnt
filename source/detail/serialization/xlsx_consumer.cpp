@@ -430,6 +430,11 @@ xlsx_consumer::xlsx_consumer(workbook &target)
 
 xlsx_consumer::~xlsx_consumer()
 {
+    if (target_.impl().stylesheet_.is_set())
+    {
+        // re-enable garbage collection, but do not run the garbage collection immediately, to allow a succesfull roundtrip without losing non-used formats.
+        target_.impl().stylesheet_.get().garbage_collection_enabled = true;
+    }
 }
 
 void xlsx_consumer::read(std::istream &source)
@@ -1865,12 +1870,6 @@ void xlsx_consumer::populate_workbook(bool streaming)
 
     read_part({manifest().relationship(root_path,
         relationship_type::office_document)});
-
-    if (target_.impl().stylesheet_.is_set())
-    {
-        // re-enable garbage collection, but do not run the garbage collection immediately, to allow a succesfull roundtrip without losing non-used formats.
-        target_.impl().stylesheet_.get().garbage_collection_enabled = true;
-    }
 }
 
 // Package Parts
