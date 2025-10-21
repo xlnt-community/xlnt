@@ -432,7 +432,7 @@ xlsx_consumer::~xlsx_consumer()
 {
     if (target_.impl().stylesheet_.is_set())
     {
-        // re-enable garbage collection, but do not run the garbage collection immediately, to allow a succesfull roundtrip without losing non-used formats.
+        // re-enable garbage collection, but do not run the garbage collection immediately, to allow a successful roundtrip without losing non-used formats.
         target_.impl().stylesheet_.get().garbage_collection_enabled = true;
     }
 }

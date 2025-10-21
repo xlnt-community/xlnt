@@ -29,8 +29,10 @@ struct stylesheet;
 class references
 {
 public:
-    references() {}
+    references() = default;
     references(const references& /*reference*/) {}
+    references(references&& /*reference*/) {}
+    ~references() = default;
 
     operator std::size_t() const {return count;}
 
@@ -38,6 +40,7 @@ public:
     references& operator-- () {--count; return *this;}
 
     references& operator = (const references& /*reference*/) {return *this;}
+    references& operator = (references&& /*reference*/) {return *this;}
 
 private:
     std::size_t count = 0;
@@ -124,7 +127,7 @@ public:
         return *this;
     }
 
-    int use_count () {return format_->references;}
+    std::size_t use_count () const {return format_->references;}
 
     bool is_set () const {return format_ != nullptr;}
     void clear () {operator=(nullptr);}

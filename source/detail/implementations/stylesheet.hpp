@@ -48,21 +48,21 @@ struct stylesheet
 {
     class format create_format(bool default_format)
     {
-        format_impls.push_back(format_impl_list_item());
+        format_impls.emplace_back();
         auto &impl = format_impls.back();
 
 		impl->parent = this;
 		impl->id = format_impls.size() - 1;
 
         if (default_format)
-            this->default_format = impl;
+            this->default_format_impl = impl;
 
         return xlnt::format(impl);
     }
 
-    void set_default_format(const format &format)
+    void default_format(const format &format)
     {
-        default_format = format.d_;
+        default_format_impl = format.d_;
     }
 
     class xlnt::format format(std::size_t index)
@@ -577,7 +577,7 @@ struct stylesheet
     std::unordered_map<std::string, style_impl> style_impls;
     std::vector<std::string> style_names;
     optional<std::string> default_slicer_style;
-    detail::format_impl_ptr default_format;
+    detail::format_impl_ptr default_format_impl;
 
 	std::vector<alignment> alignments;
     std::vector<border> borders;

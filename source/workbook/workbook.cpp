@@ -491,7 +491,7 @@ workbook workbook::empty()
         .font(default_font)
         .number_format(xlnt::number_format::general())
         .style("Normal");
-    wb.set_default_format(format);
+    wb.default_format(format);
 
     xlnt::calculation_properties calc_props;
     calc_props.calc_id = 150000;
@@ -1470,9 +1470,9 @@ format workbook::create_format(bool default_format)
     return d_->stylesheet_.get().create_format(default_format);
 }
 
-void workbook::set_default_format(const class format &format)
+void workbook::default_format(const class format &format)
 {
-    d_->stylesheet_.get().set_default_format(format);
+    d_->stylesheet_.get().default_format(format);
 }
 
 bool workbook::has_style(const std::string &name) const

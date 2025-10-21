@@ -803,8 +803,6 @@ public:
     /// </summary>
     xlnt::format create_format(bool default_format = false);
 
-    void set_default_format(const xlnt::format& format);
-
     /// <summary>
     /// Clear all cell-level formatting and formats from the styelsheet. This leaves
     /// all other styling in place (e.g. named styles).
@@ -1153,6 +1151,11 @@ private:
     /// Sheet 1 should be rId1, sheet 2 should be rId2, etc.
     /// </summary>
     void reorder_relationships();
+
+    /// <summary>
+    /// Sets the default format
+    /// </summary>
+    void default_format(const xlnt::format& format);
 
     /// <summary>
     /// An opaque pointer to a structure that holds all of the data relating to this workbook.
