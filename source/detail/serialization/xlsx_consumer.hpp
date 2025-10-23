@@ -33,7 +33,7 @@
 #include <vector>
 
 #include <detail/external/include_libstudxml.hpp>
-#include <detail/serialization/zstream.hpp>
+#include <detail/serialization/archive.hpp>
 #include <detail/serialization/serialisation_helpers.hpp>
 #include <xlnt/internal/features.hpp>
 
@@ -59,7 +59,6 @@ class worksheet;
 
 namespace detail {
 
-class izstream;
 struct cell_impl;
 struct defined_name;
 struct worksheet_impl;
@@ -402,7 +401,7 @@ private:
 	/// <summary>
 	/// The ZIP file containing the files that make up the OOXML package.
 	/// </summary>
-	std::unique_ptr<izstream> archive_;
+	std::unique_ptr<archive_reader> archive_;
 
 	/// <summary>
 	/// Map of sheet titles to relationship IDs.

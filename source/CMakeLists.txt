@@ -130,6 +130,40 @@ set(XLNT_SOURCES ${CELL_SOURCES} ${CHARTS_SOURCES} ${CHARTSHEET_SOURCES}
   ${WORKSHEET_SOURCES} ${DETAIL_SOURCES} ${DETAIL_CRYPTO_SOURCES}
   ${DRAWING_SOURCES} ${MINIZ_SOURCES})
 
+# ============================================================================
+# ZIP Backend Configuration (MUST be before add_library to affect GLOB files)
+# ============================================================================
+
+set(XLNT_ZIP_BACKEND "minizipng" CACHE STRING "ZIP backend: builtin or minizipng")
+set_property(CACHE XLNT_ZIP_BACKEND PROPERTY STRINGS builtin minizipng)
+
+if(XLNT_ZIP_BACKEND STREQUAL "minizipng")
+    message(STATUS "Using minizip-ng ZIP backend (Zip64 support enabled)")
+
+    # Configure minizip-ng to fetch and build zlib-ng automatically
+    set(MZ_COMPAT OFF CACHE BOOL "Build minizip 1.x compatibility layer" FORCE)
+    set(MZ_ZLIB ON CACHE BOOL "Enable ZLIB compression" FORCE)
+    set(MZ_BZIP2 OFF CACHE BOOL "Enable BZIP2 compression" FORCE)
+    set(MZ_LZMA OFF CACHE BOOL "Enable LZMA compression" FORCE)
+    set(MZ_ZSTD OFF CACHE BOOL "Enable ZSTD compression" FORCE)
+    set(MZ_OPENSSL OFF CACHE BOOL "Enable OpenSSL for encryption" FORCE)
+    set(MZ_LIBBSD OFF CACHE BOOL "Use libbsd" FORCE)
+    set(MZ_FETCH_LIBS ON CACHE BOOL "Let minizip-ng fetch zlib-ng automatically" FORCE)
+    set(MZ_BUILD_TESTS OFF CACHE BOOL "Build minizip-ng tests" FORCE)
+    set(MZ_BUILD_UNIT_TESTS OFF CACHE BOOL "Build minizip-ng unit tests" FORCE)
+
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../third-party/minizip-ng
+                     ${CMAKE_BINARY_DIR}/third-party/minizip-ng
+                     EXCLUDE_FROM_ALL)
+
+    # Set compile definition as a directory property so GLOB files get it
+    add_compile_definitions(XLNT_USE_MINIZIP_NG)
+
+    message(STATUS "minizip-ng backend configured (with auto-fetched zlib-ng)")
+else()
+    message(STATUS "Using builtin ZIP backend (miniz, no Zip64 support)")
+endif()
+
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   # Set a default CMAKE_INSTALL_PREFIX if one wasn't specified
 
@@ -215,6 +249,30 @@ target_include_directories(xlnt
     ${XLNT_SOURCE_DIR}/../third-party/fmt/include
     ${XLNT_SOURCE_DIR}/../third-party/fast_float/include)
 
+# ============================================================================
+# Link minizip-ng if configured (configured earlier before add_library)
+# ============================================================================
+
+if(XLNT_ZIP_BACKEND STREQUAL "minizipng")
+    # 正确链接 minizip-ng 目标：优先使用提供的别名，其次使用实际目标名
+    if(TARGET MINIZIP::minizip)
+        target_link_libraries(xlnt PRIVATE MINIZIP::minizip)
+        message(STATUS "Linking against MINIZIP::minizip")
+    elseif(TARGET minizip-ng)
+        target_link_libraries(xlnt PRIVATE minizip-ng)
+        message(STATUS "Linking against minizip-ng")
+    elseif(TARGET minizip)
+        target_link_libraries(xlnt PRIVATE minizip)
+        message(STATUS "Linking against minizip")
+    else()
+        message(FATAL_ERROR "minizip-ng target not found (expected MINIZIP::minizip, minizip-ng, or minizip)")
+    endif()
+
+    # 依赖目标会传递包含路径；以下包含可作为补充
+    target_include_directories(xlnt PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/minizip-ng)
+endif()
+
 # Platform- and file-specific settings, MSVC
 if(MSVC)
   target_compile_definitions(xlnt PRIVATE _CRT_SECURE_NO_WARNINGS=1)
@@ -237,7 +295,7 @@ else()
     set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/detail/serialization/miniz.cpp
 	  PROPERTIES
 	  COMPILE_FLAGS "-Wno-undef")
-    set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/detail/serialization/zstream.cpp
+    set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/detail/serialization/zip_builtin.cpp
 	  PROPERTIES
       COMPILE_FLAGS "-Wno-undef -Wno-shorten-64-to-32")
   endif()

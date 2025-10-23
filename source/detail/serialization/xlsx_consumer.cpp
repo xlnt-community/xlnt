@@ -45,7 +45,7 @@
 #include <detail/serialization/serialisation_helpers.hpp>
 #include <detail/serialization/vector_streambuf.hpp>
 #include <detail/serialization/xlsx_consumer.hpp>
-#include <detail/serialization/zstream.hpp>
+#include <detail/serialization/archive_factory.hpp>
 #include <detail/limits.hpp>
 #include <detail/serialization/parsers.hpp>
 
@@ -434,13 +434,13 @@ xlsx_consumer::~xlsx_consumer()
 
 void xlsx_consumer::read(std::istream &source)
 {
-    archive_.reset(new izstream(source));
+    archive_ = make_archive_reader(source);
     populate_workbook(false);
 }
 
 void xlsx_consumer::open(std::istream &source)
 {
-    archive_.reset(new izstream(source));
+    archive_ = make_archive_reader(source);
     populate_workbook(true);
 }
 

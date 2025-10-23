@@ -31,6 +31,7 @@
 
 #include <detail/constants.hpp>
 #include <detail/external/include_libstudxml.hpp>
+#include <detail/serialization/archive.hpp>
 #include <detail/serialization/serialisation_helpers.hpp>
 #include <xlnt/internal/features.hpp>
 
@@ -60,7 +61,6 @@ class worksheet;
 
 namespace detail {
 
-class ozstream;
 struct cell_impl;
 struct worksheet_impl;
 
@@ -240,7 +240,7 @@ private:
 	/// </summary>
 	const workbook &source_;
 
-	std::unique_ptr<ozstream> archive_;
+	std::unique_ptr<archive_writer> archive_;
     std::unique_ptr<xml::serializer> current_part_serializer_;
     std::unique_ptr<std::streambuf> current_part_streambuf_;
     std::ostream current_part_stream_;

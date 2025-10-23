@@ -7,7 +7,7 @@
 #include <xlnt/workbook/workbook.hpp>
 #include <detail/external/include_libstudxml.hpp>
 #include <detail/serialization/vector_streambuf.hpp>
-#include <detail/serialization/zstream.hpp>
+#include <detail/serialization/zip_builtin.hpp>
 
 class xml_helper
 {
@@ -275,13 +275,13 @@ public:
     {
         xlnt::detail::vector_istreambuf left_buffer(left);
         std::istream left_stream(&left_buffer);
-        xlnt::detail::izstream left_archive(left_stream);
+        xlnt::detail::zip_builtin_reader left_archive(left_stream);
 
         const auto left_info = left_archive.files();
 
         xlnt::detail::vector_istreambuf right_buffer(right);
         std::istream right_stream(&right_buffer);
-        xlnt::detail::izstream right_archive(right_stream);
+        xlnt::detail::zip_builtin_reader right_archive(right_stream);
 
         const auto right_info = right_archive.files();
 

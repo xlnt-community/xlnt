@@ -33,7 +33,6 @@
 #include <detail/external/include_libstudxml.hpp>
 #include <detail/serialization/vector_streambuf.hpp>
 #include <detail/serialization/xlsx_producer.hpp>
-#include <detail/serialization/zstream.hpp>
 #include <detail/unicode.hpp>
 #include <detail/utils/string_helpers.hpp>
 

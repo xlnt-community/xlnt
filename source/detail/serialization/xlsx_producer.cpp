@@ -44,7 +44,7 @@
 #include <detail/serialization/defined_name.hpp>
 #include <detail/serialization/vector_streambuf.hpp>
 #include <detail/serialization/xlsx_producer.hpp>
-#include <detail/serialization/zstream.hpp>
+#include <detail/serialization/archive_factory.hpp>
 #include <detail/serialization/parsers.hpp>
 #include <detail/utils/string_helpers.hpp>
 
@@ -98,13 +98,13 @@ xlsx_producer::~xlsx_producer()
 
 void xlsx_producer::write(std::ostream &destination)
 {
-    archive_.reset(new ozstream(destination));
+    archive_ = make_archive_writer(destination);
     populate_archive(false);
 }
 
 void xlsx_producer::open(std::ostream &destination)
 {
-    archive_.reset(new ozstream(destination));
+    archive_ = make_archive_writer(destination);
     populate_archive(true);
 }
 
@@ -183,6 +183,9 @@ void xlsx_producer::end_part()
 void xlsx_producer::begin_part(const path &part)
 {
     end_part();
+    // 确保切换到新的 streambuf 前清除之前可能遗留的失败状态，
+    // 否则 libstudxml 会在第一次写入时报告 "io error"。
+    current_part_stream_.clear();
     current_part_streambuf_ = archive_->open(part);
     current_part_stream_.rdbuf(current_part_streambuf_.get());
 
