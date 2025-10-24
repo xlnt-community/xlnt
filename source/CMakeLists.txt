@@ -151,7 +151,7 @@ set(XLNT_SOURCES ${CELL_SOURCES} ${CHARTS_SOURCES} ${CHARTSHEET_SOURCES}
 # Example: cmake -DXLNT_ZIP_BACKEND=minizipng ..
 # ============================================================================
 
-set(XLNT_ZIP_BACKEND "minizipng" CACHE STRING "ZIP backend: builtin or minizipng")
+set(XLNT_ZIP_BACKEND "builtin" CACHE STRING "ZIP backend: builtin or minizipng")
 set_property(CACHE XLNT_ZIP_BACKEND PROPERTY STRINGS builtin minizipng)
 
 if(XLNT_ZIP_BACKEND STREQUAL "minizipng")
