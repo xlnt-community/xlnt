@@ -80,7 +80,6 @@ if(BENCHMARKS)
   add_subdirectory(benchmarks)
 endif()
 
-# 先添加库工程，确保下游（tests/benchmarks）能检测到其目标与依赖
 # Add library first so downstream (tests/benchmarks) can detect targets and dependencies
 if (LIBRARY)
   add_subdirectory(source)
