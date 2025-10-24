@@ -38,6 +38,7 @@ class format_test_suite : public test_suite
         register_test(test_format_impl_ptr);
         register_test(test_format_garbage_collection);
         register_test(test_inplace_editing_non_shared_format);
+        register_test(test_reference);
     }
 
     void test_issue93()
@@ -163,6 +164,33 @@ class format_test_suite : public test_suite
           );
 
         xlnt_assert_equals(s.format_impls.size(), 1);
+    }
+
+    void test_reference()
+    {
+        xlnt::detail::references ref1;
+
+        xlnt_assert_equals(ref1, 0);
+
+        ++ref1;
+        xlnt_assert_equals(ref1, 1);
+
+        xlnt::detail::references ref2(ref1);
+        xlnt_assert_equals(ref2, 0); // a copied object is a new object. The new object is not referenced (although it contains the same data as another object that may be referenced)
+
+        xlnt::detail::references ref3;
+        ref3 = ref2; // same, but for copy constructor;
+        xlnt_assert_equals(ref3, 0);
+
+        xlnt::detail::references ref4(std::move(ref1));
+        xlnt_assert_equals(ref4, 0); // also moved objects are new objects.
+        ++ref4;
+        xlnt_assert_equals(ref4, 1);
+
+        xlnt::detail::references ref5;
+        xlnt_assert_equals(ref5, 0);
+        ref5 = std::move(ref4);
+        xlnt_assert_equals(ref5, 0); // idem for move operator
     }
 };
 static format_test_suite x;
