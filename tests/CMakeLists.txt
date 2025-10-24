@@ -99,12 +99,47 @@ source_group(tests\\workbook FILES ${WORKBOOK_TESTS})
 source_group(tests\\worksheet FILES ${WORKSHEET_TESTS})
 
 if(MSVC AND NOT STATIC)
-  # copy xlnt DLL into xlnt.test directory
+  # Copy xlnt DLL into the test output directory
   add_custom_command(TARGET xlnt.test POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<TARGET_FILE:xlnt>
     $<TARGET_FILE_DIR:xlnt.test>)
+
+  # Copy zlib/minizip runtimes only when using minizip-ng backend
+  if(XLNT_ZIP_BACKEND STREQUAL "minizipng")
+    # Prefer copying from known targets (built or imported)
+    if(TARGET zlib)
+      add_custom_command(TARGET xlnt.test POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:zlib>"
+        "$<TARGET_FILE_DIR:xlnt.test>/"
+        COMMENT "Copying zlib runtime to test directory"
+        COMMAND_EXPAND_LISTS VERBATIM)
+    elseif(TARGET zlib-ng)
+      add_custom_command(TARGET xlnt.test POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:zlib-ng>"
+        "$<TARGET_FILE_DIR:xlnt.test>/"
+        COMMENT "Copying zlib-ng runtime to test directory"
+        COMMAND_EXPAND_LISTS VERBATIM)
+    elseif(TARGET ZLIB::ZLIB)
+      add_custom_command(TARGET xlnt.test POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:ZLIB::ZLIB>"
+        "$<TARGET_FILE_DIR:xlnt.test>/"
+        COMMENT "Copying ZLIB::ZLIB runtime to test directory"
+        COMMAND_EXPAND_LISTS VERBATIM)
+    elseif(TARGET ZLIB-NG::ZLIB-NG)
+      add_custom_command(TARGET xlnt.test POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:ZLIB-NG::ZLIB-NG>"
+        "$<TARGET_FILE_DIR:xlnt.test>/"
+        COMMENT "Copying ZLIB-NG::ZLIB-NG runtime to test directory"
+        COMMAND_EXPAND_LISTS VERBATIM)
+    endif()
+  endif()
 endif()
 
 # Use add_test() for CTest support
 add_test(NAME xlnt_test COMMAND xlnt.test)
+

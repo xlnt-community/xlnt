@@ -133,6 +133,23 @@ set(XLNT_SOURCES ${CELL_SOURCES} ${CHARTS_SOURCES} ${CHARTSHEET_SOURCES}
 # ============================================================================
 # ZIP Backend Configuration (MUST be before add_library to affect GLOB files)
 # ============================================================================
+# xlnt supports two ZIP compression backends:
+#
+# 1. "builtin" (default):
+#    - Uses miniz library (embedded in xlnt)
+#    - Lightweight, no external dependencies
+#    - Does NOT support Zip64 (files > 4GB)
+#    - Recommended for most use cases
+#
+# 2. "minizipng":
+#    - Uses minizip-ng library with zlib-ng (auto-fetched via CMake)
+#    - Full Zip64 support (handles large files and archives)
+#    - Requires external dependencies (minizip-ng, zlib-ng)
+#    - Recommended for large Excel files or advanced ZIP features
+#
+# To change the backend, set XLNT_ZIP_BACKEND to "builtin" or "minizipng"
+# Example: cmake -DXLNT_ZIP_BACKEND=minizipng ..
+# ============================================================================
 
 set(XLNT_ZIP_BACKEND "minizipng" CACHE STRING "ZIP backend: builtin or minizipng")
 set_property(CACHE XLNT_ZIP_BACKEND PROPERTY STRINGS builtin minizipng)
@@ -271,6 +288,72 @@ if(XLNT_ZIP_BACKEND STREQUAL "minizipng")
     # 依赖目标会传递包含路径；以下包含可作为补充
     target_include_directories(xlnt PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/minizip-ng)
+
+    # Windows DLL 处理：将依赖 DLL 复制到 xlnt 运行目录
+    # Windows DLL handling: copy required runtime DLLs into the xlnt output directory
+    if(WIN32 AND NOT STATIC)
+        # 复制 zlib(-ng) 运行时：兼容内置目标与导入目标
+        # zlib(-ng) runtime: handle in-tree and imported targets
+        if(TARGET zlib)
+            add_custom_command(TARGET xlnt POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "$<TARGET_FILE:zlib>"
+                    "$<TARGET_FILE_DIR:xlnt>"
+                COMMENT "Copying zlib runtime to xlnt output directory")
+        elseif(TARGET zlib-ng)
+            add_custom_command(TARGET xlnt POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "$<TARGET_FILE:zlib-ng>"
+                    "$<TARGET_FILE_DIR:xlnt>"
+                COMMENT "Copying zlib-ng runtime to xlnt output directory")
+        elseif(TARGET ZLIB::ZLIB)
+            # 使用 CMake 自带的 ZLIB 导入目标
+            add_custom_command(TARGET xlnt POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "$<TARGET_FILE:ZLIB::ZLIB>"
+                    "$<TARGET_FILE_DIR:xlnt>"
+                COMMENT "Copying ZLIB::ZLIB runtime to xlnt output directory")
+        elseif(TARGET ZLIB-NG::ZLIB-NG)
+            add_custom_command(TARGET xlnt POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "$<TARGET_FILE:ZLIB-NG::ZLIB-NG>"
+                    "$<TARGET_FILE_DIR:xlnt>"
+                COMMENT "Copying ZLIB-NG::ZLIB-NG runtime to xlnt output directory")
+        endif()
+
+        # 复制 minizip(-ng) 运行时（如构建为共享库）
+        # minizip(-ng) runtime (only when built as shared)
+        if(TARGET MINIZIP::minizip)
+            add_custom_command(TARGET xlnt POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "$<TARGET_FILE:MINIZIP::minizip>"
+                    "$<TARGET_FILE_DIR:xlnt>"
+                COMMENT "Copying minizip-ng runtime to xlnt output directory")
+        elseif(TARGET minizip-ng)
+            add_custom_command(TARGET xlnt POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "$<TARGET_FILE:minizip-ng>"
+                    "$<TARGET_FILE_DIR:xlnt>"
+                COMMENT "Copying minizip-ng runtime to xlnt output directory")
+        elseif(TARGET minizip)
+            add_custom_command(TARGET xlnt POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "$<TARGET_FILE:minizip>"
+                    "$<TARGET_FILE_DIR:xlnt>"
+                COMMENT "Copying minizip runtime to xlnt output directory")
+        endif()
+
+        # 若 CMake >= 3.21，使用 TARGET_RUNTIME_DLLS 自动复制所有传递 DLL 依赖
+        # For CMake >= 3.21, optionally copy transitive runtime DLLs
+        if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
+            add_custom_command(TARGET xlnt POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    $<TARGET_RUNTIME_DLLS:xlnt>
+                    $<TARGET_FILE_DIR:xlnt>
+                COMMAND_EXPAND_LISTS
+                COMMENT "Copying transitive runtime DLLs of xlnt")
+        endif()
+    endif()
 endif()
 
 # Platform- and file-specific settings, MSVC

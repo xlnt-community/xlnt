@@ -42,12 +42,19 @@ endif()
 
 # Optional components
 option(LIBRARY "Set to ON to build the main XLNT library" ON)
-option(TESTS "Set to ON to build test executable (in ./tests)" OFF)
+option(TESTS "Set to ON to build test executable (in ./tests)" ON)
 option(SAMPLES "Set to ON to build executable code samples (in ./samples)" OFF)
 option(BENCHMARKS "Set to ON to build performance benchmarks (in ./benchmarks)" OFF)
 option(PYTHON "Set to ON to build Arrow conversion functions (in ./python)" OFF)
 mark_as_advanced(PYTHON)
 option(DOCUMENTATION "Set to ON to build API reference documentation (in ./api-reference)" OFF)
+
+# ZIP 后端默认值需在添加 tests 之前定义，确保 tests 能读取到
+# Define default ZIP backend before adding tests so tests can read it
+if(NOT DEFINED XLNT_ZIP_BACKEND)
+  set(XLNT_ZIP_BACKEND "minizipng" CACHE STRING "ZIP backend: builtin or minizipng")
+  set_property(CACHE XLNT_ZIP_BACKEND PROPERTY STRINGS builtin minizipng)
+endif()
 
 # Platform specific options
 if(MSVC)
@@ -72,6 +79,12 @@ endif()
 
 if(BENCHMARKS)
   add_subdirectory(benchmarks)
+endif()
+
+# 先添加库工程，确保下游（tests/benchmarks）能检测到其目标与依赖
+# Add library first so downstream (tests/benchmarks) can detect targets and dependencies
+if (LIBRARY)
+  add_subdirectory(source)
 endif()
 
 if(TESTS)
@@ -106,6 +119,3 @@ if(DOCUMENTATION)
       COMMENT "Generating API documentation with Doxygen")
 endif()
 
-if (LIBRARY)
-  add_subdirectory(source)
-endif()

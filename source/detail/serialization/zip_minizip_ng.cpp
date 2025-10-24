@@ -225,6 +225,7 @@ int32_t iostream_seek(void *stream_data, int64_t offset, int32_t origin) {
     }
 
     // 清除 EOF/失败状态，确保后续 seek 成功
+    // Clear EOF/fail state to ensure subsequent seek succeeds
     is->clear();
     is->seekg(offset, dir);
     return is->fail() ? MZ_SEEK_ERROR : MZ_OK;
@@ -377,8 +378,11 @@ zip_minizip_reader::zip_minizip_reader(std::istream &stream)
 zip_minizip_reader::~zip_minizip_reader() {
     if (zip_handle_) {
         // 先关闭 ZIP，以便 minizip 在需要时还能访问底层流
+        // Close ZIP first so minizip can still access the underlying stream when needed
+        // Must close the ZIP; writing the central directory may access the underlying stream
         mz_zip_close(zip_handle_);
         if (stream_handle_) {
+            // Destroy callback has already released the iostream object
             mz_stream_delete(&stream_handle_);
             ios_stream_ = nullptr; // destroy 回调已释放对象
         }
@@ -443,8 +447,11 @@ void zip_minizip_reader::build_file_index() {
 }
 
 std::unique_ptr<std::streambuf> zip_minizip_reader::open(const path &file) const {
+    // To match legacy builtin backend behavior, support opening multiple entries at once
     // 为了与历史内置后端一致，支持同时打开多个条目，这里一次性解压到内存并返回只读缓冲。
     std::string filename = normalize_zip_path(file);
+
+    // Locate the entry
 
     // 定位条目
     int32_t err = mz_zip_locate_entry(zip_handle_, filename.c_str(), 0);
@@ -453,12 +460,14 @@ std::unique_ptr<std::streambuf> zip_minizip_reader::open(const path &file) const
     }
 
     // 打开读取
+    // Open for reading
     err = mz_zip_entry_read_open(zip_handle_, 0, nullptr);
     if (err != MZ_OK) {
         throw_minizip_error(err, "Cannot open file for reading: " + filename);
     }
 
     // 读取数据到 string（由 stringbuf 自行持有）
+    // Read data into std::string (owned by stringbuf)
     std::string out;
     char buffer[64 * 1024];
     for (;;) {
@@ -472,6 +481,8 @@ std::unique_ptr<std::streambuf> zip_minizip_reader::open(const path &file) const
     }
 
     mz_zip_entry_close(zip_handle_);
+
+    // Use stringbuf as an immutable input buffer to avoid lifetime issues
 
     // 使用 stringbuf 作为不可变输入缓冲，避免生命周期问题
     return std::unique_ptr<std::streambuf>(new std::stringbuf(std::move(out), std::ios_base::in));
@@ -638,6 +649,7 @@ zip_minizip_writer::zip_minizip_writer(std::ostream &stream)
     }
 
     // 打开写入模式，创建新归档
+    // Open for writing and create a new archive
     err = mz_zip_open(zip_handle_, stream_handle_, MZ_OPEN_MODE_WRITE | MZ_OPEN_MODE_CREATE);
     if (err != MZ_OK) {
         // Clean up in reverse order
@@ -653,7 +665,15 @@ zip_minizip_writer::~zip_minizip_writer() {
     if (zip_handle_) {
         // 必须先关闭 ZIP，写入中央目录会访问底层流
         mz_zip_close(zip_handle_);
+
+        // CRITICAL: Force flush to disk before cleaning up
+        // Ensures central directory is fully written
+        if (destination_stream_.good()) {
+            destination_stream_.flush();
+        }
+
         if (stream_handle_) {
+            // Destroy callback has already released the iostream object
             mz_stream_delete(&stream_handle_);
             ios_stream_ = nullptr; // destroy 回调已释放对象
         }
@@ -696,6 +716,10 @@ minizip_write_streambuf::minizip_write_streambuf(void *zip_handle, const std::st
     file_info.compression_method = MZ_COMPRESS_METHOD_DEFLATE;
     file_info.flag = MZ_ZIP_FLAG_UTF8;
 
+    // CRITICAL: Disable Zip64 for Excel 2007/2010 compatibility
+    // Excel has poor Zip64 support for small files (< 4GB)
+    file_info.zip64 = MZ_ZIP64_DISABLE;  // = 2
+
     // Open file for writing
     int32_t err = mz_zip_entry_write_open(zip_handle_, &file_info, MZ_COMPRESS_LEVEL_DEFAULT, 0, nullptr);
     if (err != MZ_OK) {
@@ -724,14 +748,24 @@ minizip_write_streambuf::~minizip_write_streambuf() {
 }
 
 std::streambuf::int_type minizip_write_streambuf::overflow(std::streambuf::int_type c) {
+    // 修复缓冲区溢出：当缓冲已满时，先刷新再写入当前字符，
+    // 否则会对 epptr() 处进行越界写入，导致 ZIP 数据损坏。
+    // Fix buffer overflow: when the buffer is full, flush before writing the current character,
+    // otherwise writing past epptr() would corrupt ZIP data.
     if (c != traits_type::eof()) {
+        if (pptr() == epptr()) {
+            flush_buffer();
+        }
         *pptr() = static_cast<char>(c);
         pbump(1);
+        return c;
     }
 
+    // EOF 时只需刷新已有缓冲
+    // At EOF, just flush any pending buffer
+    // Flush pending buffer first, then write directly to ZIP to avoid overflow-induced state issues
     flush_buffer();
-
-    return c;
+    return traits_type::not_eof(c);
 }
 
 int minizip_write_streambuf::sync() {
@@ -746,7 +780,8 @@ void minizip_write_streambuf::flush_buffer() {
         if (written != n) {
             throw xlnt::exception("Failed to write to ZIP entry");
         }
-        pbump(-static_cast<int>(n));
+        // Reset buffer pointers only AFTER successful write
+        setp(buffer_.data(), buffer_.data() + buffer_size);
     }
 }
 
@@ -761,6 +796,7 @@ std::streamsize minizip_write_streambuf::xsputn(const char* s, std::streamsize n
         int32_t written = mz_zip_entry_write(zip_handle_, s + total, chunk);
         if (written <= 0) {
             // 返回部分写入，让上层设置 failbit
+            // Return partial write so the upper layer can set failbit
             return total;
         }
         total += written;
