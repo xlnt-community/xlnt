@@ -102,7 +102,7 @@ private:
 class XLNT_API format_impl_ptr
 {
 public:
-    format_impl_ptr() {}
+    format_impl_ptr() = default;
     format_impl_ptr(const format_impl_ptr& r) : format_(r.format_) {increment();}
     format_impl_ptr(format_impl_ptr&& r) : format_(r.format_) {r.format_ = nullptr;}
     format_impl_ptr(format_impl *format) : format_(format) {increment();}
@@ -154,6 +154,11 @@ public:
     format_impl_list_item(const format_impl& R) : format_(new format_impl(R)) {}
     format_impl_list_item(const format_impl_list_item& R) : format_impl_list_item(*R.format_) {}
     format_impl_list_item(format_impl_list_item&& R) = default;
+    ~format_impl_list_item() = default;
+
+    format_impl_list_item& operator=(const format_impl& R) {format_.reset(new format_impl(R)); return *this;}
+    format_impl_list_item& operator=(const format_impl_list_item& R) {return operator =(*R.format_);}
+    format_impl_list_item& operator=(format_impl_list_item&& R) = default;
 
     format_impl* operator->() {return format_.get();}
     format_impl& operator* () {return *format_;}
