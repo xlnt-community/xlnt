@@ -22,10 +22,10 @@
 // @author: see AUTHORS file
 
 #include <detail/serialization/archive_factory.hpp>
-#include <detail/serialization/zip_builtin.hpp>
-
 #ifdef XLNT_USE_MINIZIP_NG
-#include <detail/serialization/zip_minizip_ng.hpp>
+#  include <detail/serialization/zip_minizip_ng.hpp>
+#else
+#  include <detail/serialization/zip_builtin.hpp>
 #endif
 
 namespace xlnt {

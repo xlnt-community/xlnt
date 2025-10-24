@@ -38,6 +38,7 @@
 #include <mz.h>
 #include <mz_zip.h>
 #include <mz_strm.h>
+#include <mz_strm_mem.h>
 
 namespace xlnt {
 namespace detail {
@@ -106,7 +107,7 @@ static void throw_minizip_error(int32_t error_code, const std::string &context) 
         case MZ_SUPPORT_ERROR:
             message =
                 "Feature not supported by current minizip build: " + context +
-                " (可能未启用解压库，如 zlib；请在构建 minizip-ng 时开启 MZ_ZLIB 或提供可用的解压实现)";
+                " (Compression library may be missing; rebuild minizip-ng with MZ_ZLIB enabled or provide a compatible decompressor)";
             break;
 
         default:
@@ -332,42 +333,34 @@ zip_minizip_reader::zip_minizip_reader(std::istream &stream)
         throw xlnt::exception("Invalid or corrupted input stream for ZIP archive");
     }
 
+    // Build shared snapshot and open a memory-backed stream for indexing
+    ensure_snapshot();
+
     // Create minizip handle
     zip_handle_ = mz_zip_create();
     if (!zip_handle_) {
         throw xlnt::exception("Failed to create minizip-ng handle");
     }
 
-    // Create custom stream for std::istream
-    stream_handle_ = iostream_create_read();
+    // Create and open memory stream
+    stream_handle_ = mz_stream_mem_create();
     if (!stream_handle_) {
         mz_zip_delete(&zip_handle_);
-        throw xlnt::exception("Failed to create stream handle");
+        throw xlnt::exception("Failed to create memory stream for ZIP archive");
     }
 
-    // The create callback allocated the stream object; take ownership pointer
-    ios_stream_ = static_cast<mz_stream_iostream *>(stream_handle_);
-
-    ios_stream_->std_stream = &source_stream_;
-    ios_stream_->total_in = 0;
-    ios_stream_->total_out = 0;
-
-    // Open the stream (required by minizip-ng before using it)
-    int32_t err = mz_stream_open(stream_handle_, nullptr, MZ_OPEN_MODE_READ);
+    mz_stream_mem_set_buffer(stream_handle_, (void*)snapshot_.data(), (int32_t)snapshot_.size());
+    int32_t err = mz_stream_mem_open(stream_handle_, nullptr, MZ_OPEN_MODE_READ);
     if (err != MZ_OK) {
         mz_stream_delete(&stream_handle_);
-        ios_stream_ = nullptr;
         mz_zip_delete(&zip_handle_);
-        throw_minizip_error(err, "Failed to open stream");
+        throw_minizip_error(err, "Failed to open memory stream");
     }
 
-    // Open archive for reading
-    // This validates the ZIP file structure and central directory
+    // Open archive for reading (validate central directory)
     err = mz_zip_open(zip_handle_, stream_handle_, MZ_OPEN_MODE_READ);
     if (err != MZ_OK) {
-        // Clean up in reverse order
         mz_stream_delete(&stream_handle_);
-        ios_stream_ = nullptr;
         mz_zip_delete(&zip_handle_);
         zip_handle_ = nullptr;
         throw_minizip_error(err, "Failed to open ZIP archive");
@@ -376,13 +369,10 @@ zip_minizip_reader::zip_minizip_reader(std::istream &stream)
 
 zip_minizip_reader::~zip_minizip_reader() {
     if (zip_handle_) {
-        // Close ZIP first so minizip can still access the underlying stream when needed
-        // Must close the ZIP; writing the central directory may access the underlying stream
         mz_zip_close(zip_handle_);
         if (stream_handle_) {
-            // Destroy callback has already released the iostream object
             mz_stream_delete(&stream_handle_);
-            ios_stream_ = nullptr; // destroy
+            ios_stream_ = nullptr;
         }
         mz_zip_delete(&zip_handle_);
     }
@@ -391,6 +381,11 @@ zip_minizip_reader::~zip_minizip_reader() {
 void zip_minizip_reader::build_file_index() {
     if (index_built_) {
         return;
+    }
+
+    // Ensure snapshot/handle are ready
+    if (!snapshot_built_) {
+        ensure_snapshot();
     }
 
     // Clear any existing index and order
@@ -445,38 +440,9 @@ void zip_minizip_reader::build_file_index() {
 }
 
 std::unique_ptr<std::streambuf> zip_minizip_reader::open(const path &file) const {
-    // To match legacy builtin backend behavior, support opening multiple entries at once
+    // Return a streaming buffer using a dedicated zip handle over the shared snapshot
     std::string filename = normalize_zip_path(file);
-
-    // Locate the entry
-    int32_t err = mz_zip_locate_entry(zip_handle_, filename.c_str(), 0);
-    if (err != MZ_OK) {
-        throw_minizip_error(err, "Cannot locate file: " + filename);
-    }
-    
-    // Open for reading
-    err = mz_zip_entry_read_open(zip_handle_, 0, nullptr);
-    if (err != MZ_OK) {
-        throw_minizip_error(err, "Cannot open file for reading: " + filename);
-    }
-    
-    // Read data into std::string (owned by stringbuf)
-    std::string out;
-    char buffer[64 * 1024];
-    for (;;) {
-        int32_t n = mz_zip_entry_read(zip_handle_, buffer, sizeof(buffer));
-        if (n < 0) {
-            mz_zip_entry_close(zip_handle_);
-            throw_minizip_error(n, "Error reading from ZIP entry: " + filename);
-        }
-        if (n == 0) break;
-        out.append(buffer, static_cast<size_t>(n));
-    }
-
-    mz_zip_entry_close(zip_handle_);
-
-    // Use stringbuf as an immutable input buffer to avoid lifetime issues
-    return std::unique_ptr<std::streambuf>(new std::stringbuf(out, std::ios_base::in));
+    return std::unique_ptr<std::streambuf>(new minizip_streambuf(filename, const_cast<zip_minizip_reader*>(this)));
 }
 
 std::string zip_minizip_reader::read(const path &file) const {
@@ -511,47 +477,95 @@ bool zip_minizip_reader::has_file(const path &file) const {
     return file_index_.count(normalized) > 0;
 }
 
-void zip_minizip_reader::mark_entry_opened() const {
-    if (entry_open_) {
-        throw xlnt::exception("Cannot open multiple ZIP entries simultaneously");
+// Load the entire ZIP stream into an immutable in-memory snapshot for
+// concurrent entry reading using independent minizip handles.
+void zip_minizip_reader::ensure_snapshot() const {
+    if (snapshot_built_) return;
+
+    // Read all bytes from source_stream_ (binary) into snapshot_
+    std::vector<std::uint8_t> tmp;
+    constexpr size_t chunk = 256 * 1024;
+    tmp.reserve(4 * 1024 * 1024); // initial reserve to avoid small growths
+
+    std::istream &is = const_cast<std::istream &>(source_stream_);
+    is.clear();
+    for (;;) {
+        std::uint8_t buf[chunk];
+        is.read(reinterpret_cast<char *>(buf), static_cast<std::streamsize>(chunk));
+        std::streamsize got = is.gcount();
+        if (got > 0) {
+            tmp.insert(tmp.end(), buf, buf + got);
+        }
+        if (got < static_cast<std::streamsize>(chunk)) {
+            if (is.bad()) {
+                throw xlnt::exception("Failed to read input stream for ZIP snapshot");
+            }
+            break;
+        }
     }
-    entry_open_ = true;
+
+    snapshot_ = std::move(tmp);
+    snapshot_built_ = true;
 }
 
-void zip_minizip_reader::mark_entry_closed() const {
-    entry_open_ = false;
-}
+// No-op with per-entry handles
+void zip_minizip_reader::mark_entry_opened() const {}
+void zip_minizip_reader::mark_entry_closed() const {}
 
 // =============================================================================
 // minizip_streambuf implementation
 // =============================================================================
 
-minizip_streambuf::minizip_streambuf(void *zip_handle, const std::string &filename, zip_minizip_reader *reader)
-    : zip_handle_(zip_handle)
-    , reader_(reader)
+minizip_streambuf::minizip_streambuf(const std::string &filename, zip_minizip_reader *reader)
+    : reader_(reader)
     , buffer_(buffer_size)
     , eof_reached_(false)
 {
-    // Check for concurrent entry access
-    if (reader_) {
-        reader_->mark_entry_opened();
+    // Ensure snapshot ready
+    reader_->ensure_snapshot();
+
+    // Create independent zip handle and memory stream over the shared snapshot
+    zip_handle_ = mz_zip_create();
+    if (!zip_handle_) {
+        throw xlnt::exception("Failed to create minizip-ng handle for entry");
     }
 
-    // Locate file entry
-    int32_t err = mz_zip_locate_entry(zip_handle_, filename.c_str(), 0);
+    stream_handle_ = mz_stream_mem_create();
+    if (!stream_handle_) {
+        mz_zip_delete(&zip_handle_);
+        throw xlnt::exception("Failed to create memory stream for entry");
+    }
+
+    mz_stream_mem_set_buffer(stream_handle_, (void*)reader_->snapshot_.data(), (int32_t)reader_->snapshot_.size());
+    int32_t err = mz_stream_mem_open(stream_handle_, nullptr, MZ_OPEN_MODE_READ);
     if (err != MZ_OK) {
-        if (reader_) {
-            reader_->mark_entry_closed();
-        }
+        mz_stream_delete(&stream_handle_);
+        mz_zip_delete(&zip_handle_);
+        throw_minizip_error(err, "Cannot open memory stream for entry");
+    }
+
+    err = mz_zip_open(zip_handle_, stream_handle_, MZ_OPEN_MODE_READ);
+    if (err != MZ_OK) {
+        mz_stream_delete(&stream_handle_);
+        mz_zip_delete(&zip_handle_);
+        throw_minizip_error(err, "Cannot open ZIP archive for entry");
+    }
+
+    // Locate file entry in this handle
+    err = mz_zip_locate_entry(zip_handle_, filename.c_str(), 0);
+    if (err != MZ_OK) {
+        mz_zip_close(zip_handle_);
+        mz_stream_delete(&stream_handle_);
+        mz_zip_delete(&zip_handle_);
         throw_minizip_error(err, "Cannot locate file: " + filename);
     }
 
     // Open file for reading
     err = mz_zip_entry_read_open(zip_handle_, 0, nullptr);
     if (err != MZ_OK) {
-        if (reader_) {
-            reader_->mark_entry_closed();
-        }
+        mz_zip_close(zip_handle_);
+        mz_stream_delete(&stream_handle_);
+        mz_zip_delete(&zip_handle_);
         throw_minizip_error(err, "Cannot open file for reading: " + filename);
     }
 
@@ -560,12 +574,18 @@ minizip_streambuf::minizip_streambuf(void *zip_handle, const std::string &filena
 }
 
 minizip_streambuf::~minizip_streambuf() {
-    if (zip_handle_) {
-        mz_zip_entry_close(zip_handle_);
-    }
-    if (reader_) {
-        reader_->mark_entry_closed();
-    }
+    try {
+        if (zip_handle_) {
+            mz_zip_entry_close(zip_handle_);
+            mz_zip_close(zip_handle_);
+        }
+        if (stream_handle_) {
+            mz_stream_delete(&stream_handle_);
+        }
+        if (zip_handle_) {
+            mz_zip_delete(&zip_handle_);
+        }
+    } catch (...) {}
 }
 
 std::streambuf::int_type minizip_streambuf::underflow() {
@@ -664,7 +684,7 @@ zip_minizip_writer::~zip_minizip_writer() {
         if (stream_handle_) {
             // Destroy callback has already released the iostream object
             mz_stream_delete(&stream_handle_);
-            ios_stream_ = nullptr; // destroy 回调已释放对象
+            ios_stream_ = nullptr; // 'destroy' callback has released the object
         }
         mz_zip_delete(&zip_handle_);
     }
@@ -705,9 +725,10 @@ minizip_write_streambuf::minizip_write_streambuf(void *zip_handle, const std::st
     file_info.compression_method = MZ_COMPRESS_METHOD_DEFLATE;
     file_info.flag = MZ_ZIP_FLAG_UTF8;
 
-    // CRITICAL: Disable Zip64 for Excel 2007/2010 compatibility
-    // Excel has poor Zip64 support for small files (< 4GB)
-    file_info.zip64 = MZ_ZIP64_DISABLE;  // = 2
+    // Favor compatibility while supporting large files:
+    // disable Zip64 for small files; automatically enable it when exceeding
+    // 4GB or central directory limits.
+    file_info.zip64 = MZ_ZIP64_AUTO;  // let minizip-ng decide automatically
 
     // Open file for writing
     int32_t err = mz_zip_entry_write_open(zip_handle_, &file_info, MZ_COMPRESS_LEVEL_DEFAULT, 0, nullptr);

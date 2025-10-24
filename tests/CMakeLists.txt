@@ -64,6 +64,11 @@ target_include_directories(xlnt.test
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/miniz
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/fast_float/include)
 
+# Ensure test TU sees the same backend selection macros as the library
+if(XLNT_ZIP_BACKEND STREQUAL "minizipng")
+  target_compile_definitions(xlnt.test PRIVATE XLNT_USE_MINIZIP_NG)
+endif()
+
 set(XLNT_TEST_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data)
 target_compile_definitions(xlnt.test PRIVATE XLNT_TEST_DATA_DIR="${XLNT_TEST_DATA_DIR}")
 # requires cmake 3.8+
@@ -105,41 +110,12 @@ if(MSVC AND NOT STATIC)
     $<TARGET_FILE:xlnt>
     $<TARGET_FILE_DIR:xlnt.test>)
 
-  # Copy zlib/minizip runtimes only when using minizip-ng backend
+  # Unified runtime copy helper (Windows only)
   if(XLNT_ZIP_BACKEND STREQUAL "minizipng")
-    # Prefer copying from known targets (built or imported)
-    if(TARGET zlib)
-      add_custom_command(TARGET xlnt.test POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_FILE:zlib>"
-        "$<TARGET_FILE_DIR:xlnt.test>/"
-        COMMENT "Copying zlib runtime to test directory"
-        COMMAND_EXPAND_LISTS VERBATIM)
-    elseif(TARGET zlib-ng)
-      add_custom_command(TARGET xlnt.test POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_FILE:zlib-ng>"
-        "$<TARGET_FILE_DIR:xlnt.test>/"
-        COMMENT "Copying zlib-ng runtime to test directory"
-        COMMAND_EXPAND_LISTS VERBATIM)
-    elseif(TARGET ZLIB::ZLIB)
-      add_custom_command(TARGET xlnt.test POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_FILE:ZLIB::ZLIB>"
-        "$<TARGET_FILE_DIR:xlnt.test>/"
-        COMMENT "Copying ZLIB::ZLIB runtime to test directory"
-        COMMAND_EXPAND_LISTS VERBATIM)
-    elseif(TARGET ZLIB-NG::ZLIB-NG)
-      add_custom_command(TARGET xlnt.test POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_FILE:ZLIB-NG::ZLIB-NG>"
-        "$<TARGET_FILE_DIR:xlnt.test>/"
-        COMMENT "Copying ZLIB-NG::ZLIB-NG runtime to test directory"
-        COMMAND_EXPAND_LISTS VERBATIM)
-    endif()
+    include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/XLNTCopyRuntime.cmake)
+    xlnt_copy_runtime(xlnt.test ZLIB::ZLIB zlib-ng zlib MINIZIP::minizip minizip-ng minizip)
   endif()
 endif()
 
 # Use add_test() for CTest support
 add_test(NAME xlnt_test COMMAND xlnt.test)
-

@@ -27,6 +27,7 @@
 
 #include <detail/serialization/archive.hpp>
 #include <streambuf>
+#include <cstdint>
 #include <unordered_map>
 #include <vector>
 
@@ -57,27 +58,33 @@ public:
     std::vector<path> files() const override;
     bool has_file(const path &file) const override;
 
-    // Entry open tracking (called by minizip_streambuf)
+    // Entry tracking no longer needed with per-entry handles (kept for ABI)
     void mark_entry_opened() const;
     void mark_entry_closed() const;
 
 private:
     void build_file_index();
+    void ensure_snapshot() const; // load whole archive into memory once for concurrent reads
 
     std::istream &source_stream_;
     void *zip_handle_;  // Actually mz_zip*, but avoid header dependency
-    void *stream_handle_ = nullptr; // mz_stream* used to open
-    mz_stream_iostream *ios_stream_ = nullptr;
+    void *stream_handle_ = nullptr; // mz_stream* (memory-backed)
+    mz_stream_iostream *ios_stream_ = nullptr; // unused with memory stream
     mutable std::unordered_map<std::string, int64_t> file_index_;  // filename -> entry index
     mutable std::vector<std::string> file_order_;  // Stable ordering (central directory order)
     mutable bool index_built_;
-    mutable bool entry_open_;  // Track if an entry is currently open
+    mutable bool entry_open_;  // Kept for compatibility, unused
+    // Shared immutable snapshot of the ZIP binary (compressed data)
+    mutable std::vector<std::uint8_t> snapshot_;
+    mutable bool snapshot_built_ = false;
+    friend class minizip_streambuf;
 };
 
 /// Streambuf wrapper for minizip-ng file entry (read-only)
 class minizip_streambuf : public std::streambuf {
 public:
-    minizip_streambuf(void *zip_handle, const std::string &filename, zip_minizip_reader *reader);
+    // Construct an entry streambuf using its own zip handle over the reader's memory snapshot
+    minizip_streambuf(const std::string &filename, zip_minizip_reader *reader);
     ~minizip_streambuf() override;
 
     // Delete copy/move
@@ -88,8 +95,9 @@ protected:
     std::streambuf::int_type underflow() override;
 
 private:
-    void *zip_handle_;
-    zip_minizip_reader *reader_;  // For entry tracking
+    void *zip_handle_ = nullptr;
+    void *stream_handle_ = nullptr; // memory stream for this handle
+    zip_minizip_reader *reader_;
     std::vector<char> buffer_;
     static constexpr size_t buffer_size = 65536;  // 64KB for better performance
     bool eof_reached_;

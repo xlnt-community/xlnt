@@ -7,7 +7,7 @@
 #include <xlnt/workbook/workbook.hpp>
 #include <detail/external/include_libstudxml.hpp>
 #include <detail/serialization/vector_streambuf.hpp>
-#include <detail/serialization/zip_builtin.hpp>
+#include <detail/serialization/archive_factory.hpp>
 
 class xml_helper
 {
@@ -275,15 +275,15 @@ public:
     {
         xlnt::detail::vector_istreambuf left_buffer(left);
         std::istream left_stream(&left_buffer);
-        xlnt::detail::zip_builtin_reader left_archive(left_stream);
+        auto left_archive = xlnt::detail::make_archive_reader(left_stream);
 
-        const auto left_info = left_archive.files();
+        const auto left_info = left_archive->files();
 
         xlnt::detail::vector_istreambuf right_buffer(right);
         std::istream right_stream(&right_buffer);
-        xlnt::detail::zip_builtin_reader right_archive(right_stream);
+        auto right_archive = xlnt::detail::make_archive_reader(right_stream);
 
-        const auto right_info = right_archive.files();
+        const auto right_info = right_archive->files();
 
         auto difference_is_missing_calc_chain = false;
 
@@ -370,7 +370,7 @@ public:
 
         for (auto left_member : left_info)
         {
-            if (!right_archive.has_file(left_member))
+            if (!right_archive->has_file(left_member))
             {
                 if (difference_is_missing_calc_chain)
                 {
@@ -403,8 +403,8 @@ public:
                 break;
             }
 
-            if (!compare_files(left_archive.read(left_member),
-                    right_archive.read(left_member), left_content_type))
+            if (!compare_files(left_archive->read(left_member),
+                    right_archive->read(left_member), left_content_type))
             {
                 std::cout << left_member.string() << std::endl;
                 match = false;

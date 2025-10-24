@@ -183,8 +183,8 @@ void xlsx_producer::end_part()
 void xlsx_producer::begin_part(const path &part)
 {
     end_part();
-    // 确保切换到新的 streambuf 前清除之前可能遗留的失败状态，
-    // 否则 libstudxml 会在第一次写入时报告 "io error"。
+    // Clear any previous failure state before switching to a new stream buffer.
+    // Otherwise libstudxml may report an "io error" on the first write.
     current_part_stream_.clear();
     current_part_streambuf_ = archive_->open(part);
     current_part_stream_.rdbuf(current_part_streambuf_.get());
