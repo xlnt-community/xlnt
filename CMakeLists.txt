@@ -49,11 +49,21 @@ option(PYTHON "Set to ON to build Arrow conversion functions (in ./python)" OFF)
 mark_as_advanced(PYTHON)
 option(DOCUMENTATION "Set to ON to build API reference documentation (in ./api-reference)" OFF)
 
-# Enforce builtin ZIP backend by default (do not use minizip-ng)
-set(XLNT_ZIP_BACKEND "builtin" CACHE STRING "ZIP backend: builtin or minizipng" FORCE)
-set_property(CACHE XLNT_ZIP_BACKEND PROPERTY STRINGS builtin minizipng)
+# Force builtin ZIP backend toggle (for convenient switching)
+option(XLNT_FORCE_BUILTIN "Force builtin ZIP backend (ignore minizip-ng)" ON)
 
-# Ensure tests are disabled in cache as requested
+# ZIP backend selection
+set_property(CACHE XLNT_ZIP_BACKEND PROPERTY STRINGS builtin minizipng)
+if(XLNT_FORCE_BUILTIN)
+  set(XLNT_ZIP_BACKEND "builtin" CACHE STRING "ZIP backend: builtin or minizipng" FORCE)
+  message(STATUS "XLNT_FORCE_BUILTIN=ON: Using builtin ZIP backend")
+else()
+  if(NOT DEFINED XLNT_ZIP_BACKEND)
+    set(XLNT_ZIP_BACKEND "minizipng" CACHE STRING "ZIP backend: builtin or minizipng")
+  endif()
+endif()
+
+# Ensure tests remain disabled unless explicitly enabled by the user
 set(TESTS OFF CACHE BOOL "Set to ON to build test executable (in ./tests)" FORCE)
 
 # Platform specific options
