@@ -64,6 +64,11 @@ target_include_directories(xlnt.test
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/miniz
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/fast_float/include)
 
+# Ensure test TU sees the same backend selection macros as the library
+if(XLNT_ZIP_BACKEND STREQUAL "minizipng")
+  target_compile_definitions(xlnt.test PRIVATE XLNT_USE_MINIZIP_NG)
+endif()
+
 set(XLNT_TEST_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data)
 target_compile_definitions(xlnt.test PRIVATE XLNT_TEST_DATA_DIR="${XLNT_TEST_DATA_DIR}")
 # requires cmake 3.8+
@@ -99,11 +104,17 @@ source_group(tests\\workbook FILES ${WORKBOOK_TESTS})
 source_group(tests\\worksheet FILES ${WORKSHEET_TESTS})
 
 if(MSVC AND NOT STATIC)
-  # copy xlnt DLL into xlnt.test directory
+  # Copy xlnt DLL into the test output directory
   add_custom_command(TARGET xlnt.test POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<TARGET_FILE:xlnt>
     $<TARGET_FILE_DIR:xlnt.test>)
+
+  # Unified runtime copy helper (Windows only)
+  if(XLNT_ZIP_BACKEND STREQUAL "minizipng")
+    include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/XLNTCopyRuntime.cmake)
+    xlnt_copy_runtime(xlnt.test ZLIB::ZLIB zlib-ng zlib MINIZIP::minizip minizip-ng minizip)
+  endif()
 endif()
 
 # Use add_test() for CTest support

@@ -44,7 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 
 #include <xlnt/utils/exceptions.hpp>
 #include <detail/serialization/vector_streambuf.hpp>
-#include <detail/serialization/zstream.hpp>
+#include <detail/serialization/zip_builtin.hpp>
 
 namespace {
 
@@ -317,15 +317,17 @@ class zip_streambuf_compress : public std::streambuf
     std::array<char, buffer_size> out;
 
     zheader *header;
+    zip_builtin_writer *writer_;
     std::uint32_t uncompressed_size;
     std::uint32_t crc;
 
     bool valid;
 
 public:
-    zip_streambuf_compress(zheader *central_header, std::ostream &stream)
-        : ostream(stream), header(central_header), valid(true)
+    zip_streambuf_compress(zheader *central_header, std::ostream &stream, zip_builtin_writer *writer)
+        : ostream(stream), header(central_header), writer_(writer), valid(true)
     {
+        if (writer_) writer_->mark_entry_opened();
         strm.zalloc = nullptr;
         strm.zfree = nullptr;
         strm.opaque = nullptr;
@@ -376,6 +378,7 @@ public:
                 write_int(ostream, uncompressed_size);
             }
         }
+        if (writer_) writer_->mark_entry_closed();
         if (!header) delete &ostream;
     }
 
@@ -441,7 +444,7 @@ int zip_streambuf_compress::overflow(int c)
     return c;
 }
 
-ozstream::ozstream(std::ostream &stream)
+zip_builtin_writer::zip_builtin_writer(std::ostream &stream)
     : destination_stream_(stream)
 {
     if (!destination_stream_)
@@ -450,7 +453,7 @@ ozstream::ozstream(std::ostream &stream)
     }
 }
 
-ozstream::~ozstream()
+zip_builtin_writer::~zip_builtin_writer()
 {
     // Write all file headers
     auto final_position = destination_stream_.tellp();
@@ -473,17 +476,35 @@ ozstream::~ozstream()
     write_int(destination_stream_, static_cast<std::uint16_t>(0)); // zip comment
 }
 
-std::unique_ptr<std::streambuf> ozstream::open(const path &filename)
+void zip_builtin_writer::mark_entry_opened()
 {
+    if (entry_open_)
+    {
+        throw xlnt::exception("Cannot open multiple ZIP entries simultaneously");
+    }
+    entry_open_ = true;
+}
+
+void zip_builtin_writer::mark_entry_closed()
+{
+    entry_open_ = false;
+}
+
+std::unique_ptr<std::streambuf> zip_builtin_writer::open(const path &filename)
+{
+    if (entry_open_)
+    {
+        throw xlnt::exception("Cannot open multiple ZIP entries simultaneously");
+    }
     zheader header;
     header.filename = filename.string();
     file_headers_.push_back(header);
-    auto buffer = new zip_streambuf_compress(&file_headers_.back(), destination_stream_);
+    auto buffer = new zip_streambuf_compress(&file_headers_.back(), destination_stream_, this);
 
     return std::unique_ptr<zip_streambuf_compress>(buffer);
 }
 
-izstream::izstream(std::istream &stream)
+zip_builtin_reader::zip_builtin_reader(std::istream &stream)
     : source_stream_(stream)
 {
     if (!stream)
@@ -494,11 +515,11 @@ izstream::izstream(std::istream &stream)
     read_central_header();
 }
 
-izstream::~izstream()
+zip_builtin_reader::~zip_builtin_reader()
 {
 }
 
-bool izstream::read_central_header()
+bool zip_builtin_reader::read_central_header()
 {
     // Find the header
     // NOTE: this assumes the zip file header is the last thing written to file...
@@ -582,12 +603,14 @@ bool izstream::read_central_header()
     {
         auto header = read_header(source_stream_, true);
         file_headers_[header.filename] = header;
+        // Record central directory order for stable files() output
+        file_order_.emplace_back(header.filename);
     }
 
     return true;
 }
 
-std::unique_ptr<std::streambuf> izstream::open(const path &filename) const
+std::unique_ptr<std::streambuf> zip_builtin_reader::open(const path &filename) const
 {
     if (!has_file(filename))
     {
@@ -601,7 +624,7 @@ std::unique_ptr<std::streambuf> izstream::open(const path &filename) const
     return std::unique_ptr<zip_streambuf_decompress>(buffer);
 }
 
-std::string izstream::read(const path &filename) const
+std::string zip_builtin_reader::read(const path &filename) const
 {
     auto buffer = open(filename);
     std::istream stream(buffer.get());
@@ -610,16 +633,12 @@ std::string izstream::read(const path &filename) const
     return std::string(bytes.begin(), bytes.end());
 }
 
-std::vector<path> izstream::files() const
+std::vector<path> zip_builtin_reader::files() const
 {
-    std::vector<path> filenames;
-    std::transform(file_headers_.begin(), file_headers_.end(), std::back_inserter(filenames),
-        [](const std::pair<std::string, zheader> &h) { return path(h.first); });
-
-    return filenames;
+    return file_order_;
 }
 
-bool izstream::has_file(const path &filename) const
+bool zip_builtin_reader::has_file(const path &filename) const
 {
     return file_headers_.count(filename.string()) != 0;
 }

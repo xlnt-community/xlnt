@@ -40,10 +40,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <deque>
 
 #include <xlnt/xlnt_config.hpp>
 #include <detail/xlnt_config_impl.hpp>
 #include <xlnt/utils/path.hpp>
+#include <detail/serialization/archive.hpp>
 
 namespace xlnt {
 namespace detail {
@@ -69,82 +71,96 @@ struct XLNT_API_INTERNAL zheader
 };
 
 /// <summary>
+/// Builtin ZIP writer using miniz (PARTIO-based implementation).
 /// Writes a series of uncompressed binary file data as ostreams into another ostream
 /// according to the ZIP format.
 /// </summary>
-class XLNT_API_INTERNAL ozstream
+class XLNT_API_INTERNAL zip_builtin_writer : public archive_writer
 {
 public:
     /// <summary>
     /// Construct a new zip_file_writer which writes a ZIP archive to the given stream.
     /// </summary>
-    ozstream(std::ostream &stream);
+    explicit zip_builtin_writer(std::ostream &stream);
 
     /// <summary>
-    /// Destructor.
+    /// Destructor. Writes central directory to stream.
     /// </summary>
-    virtual ~ozstream();
+    ~zip_builtin_writer() override;
 
     /// <summary>
     /// Returns a pointer to a streambuf which compresses the data it receives.
     /// </summary>
-    std::unique_ptr<std::streambuf> open(const path &file);
+    std::unique_ptr<std::streambuf> open(const path &file) override;
+
+    /// Forbid multiple simultaneous open entries (matching minizip behavior)
+    void mark_entry_opened();
+    void mark_entry_closed();
 
 private:
-    std::vector<zheader> file_headers_;
+    // Use deque to keep header pointers stable across push_backs while entries are open
+    std::deque<zheader> file_headers_;
     std::ostream &destination_stream_;
+    bool entry_open_ = false;
 };
 
 /// <summary>
+/// Builtin ZIP reader using miniz (PARTIO-based implementation).
 /// Reads an archive containing a number of files from an istream and allows them
 /// to be decompressed into an istream.
 /// </summary>
-class XLNT_API_INTERNAL izstream
+class XLNT_API_INTERNAL zip_builtin_reader : public archive_reader
 {
 public:
     /// <summary>
     /// Construct a new zip_file_reader which reads a ZIP archive from the given stream.
     /// </summary>
-    izstream(std::istream &stream);
+    explicit zip_builtin_reader(std::istream &stream);
 
     /// <summary>
     /// Destructor.
     /// </summary>
-    virtual ~izstream();
+    ~zip_builtin_reader() override;
 
     /// <summary>
-    ///
+    /// Open a file in the archive for reading.
     /// </summary>
-    std::unique_ptr<std::streambuf> open(const path &file) const;
+    std::unique_ptr<std::streambuf> open(const path &file) const override;
 
     /// <summary>
-    ///
+    /// Read entire file content as string.
     /// </summary>
-    std::string read(const path &file) const;
+    std::string read(const path &file) const override;
 
     /// <summary>
-    ///
+    /// Get list of all files in the archive.
     /// </summary>
-    std::vector<path> files() const;
+    std::vector<path> files() const override;
 
     /// <summary>
-    ///
+    /// Check if a file exists in the archive.
     /// </summary>
-    bool has_file(const path &filename) const;
+    bool has_file(const path &filename) const override;
 
 private:
     /// <summary>
-    ///
+    /// Read the central directory header.
     /// </summary>
     bool read_central_header();
 
     /// <summary>
-    ///
+    /// Map of filename to header information.
     /// </summary>
     std::unordered_map<std::string, zheader> file_headers_;
 
     /// <summary>
-    ///
+    /// File list order as read from the central directory, used by files() to return
+    /// a stable, deterministic ordering.
+    /// </summary>
+    std::vector<path> file_order_;
+
+    /// <summary>
+    /// Reference to the source stream.
     /// </summary>
     std::istream &source_stream_;
 };
