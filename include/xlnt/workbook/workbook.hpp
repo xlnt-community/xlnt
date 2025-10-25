@@ -809,6 +809,11 @@ public:
     /// </summary>
     void clear_formats();
 
+    /// <summary>
+    /// Returns the number of formats in this workbook.
+    /// </summary>
+    std::size_t format_count() const;
+
     // Styles
 
     /// <summary>
@@ -1146,6 +1151,11 @@ private:
     /// Sheet 1 should be rId1, sheet 2 should be rId2, etc.
     /// </summary>
     void reorder_relationships();
+
+    /// <summary>
+    /// Sets the default format
+    /// </summary>
+    void default_format(const xlnt::format& format);
 
     /// <summary>
     /// An opaque pointer to a structure that holds all of the data relating to this workbook.

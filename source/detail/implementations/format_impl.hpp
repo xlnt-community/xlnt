@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 
 #include <detail/xlnt_config_impl.hpp>
 
@@ -24,6 +25,26 @@ class protection;
 namespace detail {
 
 struct stylesheet;
+
+class references
+{
+public:
+    references() = default;
+    references(const references& /*reference*/) {}
+    references(references&& /*reference*/) {}
+    ~references() = default;
+
+    operator std::size_t() const {return count;}
+
+    references& operator++ () {++count; return *this;}
+    references& operator-- () {--count; return *this;}
+
+    references& operator = (const references& /*reference*/) {return *this;}
+    references& operator = (references&& /*reference*/) {return *this;}
+
+private:
+    std::size_t count = 0;
+};
 
 struct format_impl
 {
@@ -50,8 +71,6 @@ struct format_impl
 
 	optional<std::string> style;
 
-    std::size_t references = 0;
-
     friend bool operator==(const format_impl &left, const format_impl &right)
     {
         // not comparing parent
@@ -71,6 +90,96 @@ struct format_impl
             && left.quote_prefix_ == right.quote_prefix_
             && left.style == right.style;
     }
+
+    bool is_used () const {return references > 0;}
+    bool is_shared () const {return references > 1;}
+
+private:
+    class references references;
+    friend class format_impl_ptr;
+};
+
+class XLNT_API format_impl_ptr
+{
+public:
+    format_impl_ptr() = default;
+    format_impl_ptr(const format_impl_ptr& r) : format_(r.format_) {increment();}
+    format_impl_ptr(format_impl_ptr&& r) : format_(r.format_) {r.format_ = nullptr;}
+    format_impl_ptr(format_impl *format) : format_(format) {increment();}
+    ~format_impl_ptr() {decrement();}
+
+    format_impl_ptr& operator=(const format_impl_ptr& r)
+    {
+        if (this == &r)
+            return *this;
+
+        decrement();
+        format_ = r.format_;
+        increment();
+        return *this;
+    }
+
+    format_impl_ptr& operator=(format_impl_ptr&& r)
+    {
+        decrement();
+        format_ = r.format_;
+        r.format_ = nullptr;
+        return *this;
+    }
+
+    std::size_t use_count () const {return format_->references;}
+
+    bool is_set () const {return format_ != nullptr;}
+    void clear () {operator=(nullptr);}
+
+    format_impl *get() const {return format_;}
+    format_impl *operator->() const {return get();}
+    operator format_impl *() const {return get();}
+
+    bool operator== (const format_impl_ptr& r) const {return format_ == r.format_;}
+    bool operator== (format_impl *format) const {return format_ == format;}
+
+protected:
+    void increment();
+    void decrement();
+
+protected:
+    format_impl *format_ = nullptr;
+};
+
+class format_impl_list_item
+{
+public:
+    format_impl_list_item() : format_(new format_impl()) {}
+    format_impl_list_item(const format_impl& R) : format_(new format_impl(R)) {}
+    format_impl_list_item(const format_impl_list_item& R) : format_impl_list_item(*R.format_) {}
+    format_impl_list_item(format_impl_list_item&& R) = default;
+    ~format_impl_list_item() = default;
+
+    format_impl_list_item& operator=(const format_impl& R) {format_.reset(new format_impl(R)); return *this;}
+    format_impl_list_item& operator=(const format_impl_list_item& R) {return operator =(*R.format_);}
+    format_impl_list_item& operator=(format_impl_list_item&& R) = default;
+
+    format_impl* operator->() {return format_.get();}
+    format_impl& operator* () {return *format_;}
+    const format_impl& operator* () const {return *format_;}
+    operator format_impl_ptr() {return format_.get();}
+
+    bool operator==(const format_impl_list_item& R) const {return *format_ == *R.format_;}
+
+protected:
+    struct D
+    {
+        void operator()(format_impl* impl) const
+        {
+            if (impl->is_used())
+                impl->parent = nullptr; // will be destructed by format_impl_ptr::decrement
+            else
+                delete impl;
+        }
+    };
+
+    std::unique_ptr<format_impl, D> format_;
 };
 
 } // namespace detail
