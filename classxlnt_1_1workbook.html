@@ -388,6 +388,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0460152745a9801d2ff5d44ee12cc5ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a0460152745a9801d2ff5d44ee12cc5ba">clear_formats</a> ()</td></tr>
 <tr class="memdesc:a0460152745a9801d2ff5d44ee12cc5ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all cell-level formatting and formats from the styelsheet. This leaves all other styling in place (e.g. named styles).  <a href="#a0460152745a9801d2ff5d44ee12cc5ba">More...</a><br /></td></tr>
 <tr class="separator:a0460152745a9801d2ff5d44ee12cc5ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e7aa032079821b887b0da23f585d156"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a5e7aa032079821b887b0da23f585d156">format_count</a> () const</td></tr>
+<tr class="memdesc:a5e7aa032079821b887b0da23f585d156"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of formats in this workbook.  <a href="#a5e7aa032079821b887b0da23f585d156">More...</a><br /></td></tr>
+<tr class="separator:a5e7aa032079821b887b0da23f585d156"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21ddb585620af57719db5d1299dbaab1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1workbook.html#a21ddb585620af57719db5d1299dbaab1">has_style</a> (const std::string &amp;name) const</td></tr>
 <tr class="memdesc:a21ddb585620af57719db5d1299dbaab1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this workbook has a style with a name of name.  <a href="#a21ddb585620af57719db5d1299dbaab1">More...</a><br /></td></tr>
 <tr class="separator:a21ddb585620af57719db5d1299dbaab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1926,6 +1929,25 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::worksheet_i
 
 </div>
 </div>
+<a id="a5e7aa032079821b887b0da23f585d156"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e7aa032079821b887b0da23f585d156">&#9670;&nbsp;</a></span>format_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t xlnt::workbook::format_count </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of formats in this workbook. </p>
+
+</div>
+</div>
 <a id="ad9117218cd4446e36c910b7fd158b771"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad9117218cd4446e36c910b7fd158b771">&#9670;&nbsp;</a></span>has_calculation_properties()</h2>
 
@@ -3155,28 +3177,8 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::worksheet_i
 
 </div>
 </div>
-<a id="a5d8db56d21b0ded166acd3094c307ab9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d8db56d21b0ded166acd3094c307ab9">&#9670;&nbsp;</a></span>style() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">class <a class="el" href="classxlnt_1_1style.html">style</a> xlnt::workbook::style </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns the named style with the given name. </p>
-
-</div>
-</div>
 <a id="a06fa5c7db2fde59a04b2f5d4c9770571"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a06fa5c7db2fde59a04b2f5d4c9770571">&#9670;&nbsp;</a></span>style() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a06fa5c7db2fde59a04b2f5d4c9770571">&#9670;&nbsp;</a></span>style() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3187,6 +3189,26 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::worksheet_i
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
           <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the named style with the given name. </p>
+
+</div>
+</div>
+<a id="a5d8db56d21b0ded166acd3094c307ab9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d8db56d21b0ded166acd3094c307ab9">&#9670;&nbsp;</a></span>style() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">class <a class="el" href="classxlnt_1_1style.html">style</a> xlnt::workbook::style </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
