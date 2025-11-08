@@ -245,4 +245,9 @@ void detail::format_impl_ptr::decrement()
     }
 }
 
+std::size_t detail::format_impl_ptr::use_count () const
+{
+  return format_->references;
+}
+
 } // namespace xlnt

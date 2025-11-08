@@ -27,7 +27,7 @@
 #include <string>
 
 #include <xlnt/xlnt_config.hpp>
-#include <detail/implementations/format_impl.hpp>
+#include <xlnt/internal/format_impl_ptr.hpp>
 
 namespace xlnt {
 

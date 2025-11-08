@@ -23,7 +23,7 @@
 // @author: see AUTHORS file
 
 #include <xlnt/utils/path.hpp>
-#include <detail/utils/string_helpers.hpp>
+#include <xlnt/internal/features.hpp>
 #include <helpers/path_helper.hpp>
 #include <helpers/temporary_file.hpp>
 #include <helpers/test_suite.hpp>
@@ -79,7 +79,7 @@ public:
     {
         xlnt::path path(u8"🤔🥳😇");
         path = path.append(u8"🍕🍟🍔");
-        xlnt_assert_equals(path.string(), U8_TO_CHAR_PTR(u8"🤔🥳😇/🍕🍟🍔"));
+        xlnt_assert_equals(path.string(), XLNT_TEST_U8_TO_CHAR_PTR(u8"🤔🥳😇/🍕🍟🍔"));
     }
 #endif
 

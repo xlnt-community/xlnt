@@ -25,7 +25,7 @@
 #include <stdexcept>
 
 #include <helpers/test_suite.hpp>
-#include <helpers/xml_helper.hpp>
+#include <helpers/internal/xml_helper.hpp>
 #include <helpers/assertions.hpp>
 
 #include <xlnt/utils/exceptions.hpp>

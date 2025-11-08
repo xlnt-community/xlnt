@@ -5,6 +5,7 @@
 
 #include <detail/xlnt_config_impl.hpp>
 
+#include <xlnt/internal/format_impl_ptr.hpp>
 #include <xlnt/styles/alignment.hpp>
 #include <xlnt/styles/border.hpp>
 #include <xlnt/styles/fill.hpp>
@@ -97,54 +98,6 @@ struct format_impl
 private:
     class references references;
     friend class format_impl_ptr;
-};
-
-class XLNT_API format_impl_ptr
-{
-public:
-    format_impl_ptr() = default;
-    format_impl_ptr(const format_impl_ptr& r) : format_(r.format_) {increment();}
-    format_impl_ptr(format_impl_ptr&& r) : format_(r.format_) {r.format_ = nullptr;}
-    format_impl_ptr(format_impl *format) : format_(format) {increment();}
-    ~format_impl_ptr() {decrement();}
-
-    format_impl_ptr& operator=(const format_impl_ptr& r)
-    {
-        if (this == &r)
-            return *this;
-
-        decrement();
-        format_ = r.format_;
-        increment();
-        return *this;
-    }
-
-    format_impl_ptr& operator=(format_impl_ptr&& r)
-    {
-        decrement();
-        format_ = r.format_;
-        r.format_ = nullptr;
-        return *this;
-    }
-
-    std::size_t use_count () const {return format_->references;}
-
-    bool is_set () const {return format_ != nullptr;}
-    void clear () {operator=(nullptr);}
-
-    format_impl *get() const {return format_;}
-    format_impl *operator->() const {return get();}
-    operator format_impl *() const {return get();}
-
-    bool operator== (const format_impl_ptr& r) const {return format_ == r.format_;}
-    bool operator== (format_impl *format) const {return format_ == format;}
-
-protected:
-    void increment();
-    void decrement();
-
-protected:
-    format_impl *format_ = nullptr;
 };
 
 class format_impl_list_item
