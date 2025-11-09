@@ -27,6 +27,7 @@
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/styles/fill.hpp>
 #include <xlnt/utils/date.hpp>
+#include <xlnt/workbook/workbook.hpp>
 #include <xlnt/worksheet/worksheet.hpp>
 
 class fill_test_suite : public test_suite

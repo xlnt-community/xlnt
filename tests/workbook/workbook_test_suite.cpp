@@ -26,11 +26,9 @@
 #include <iostream>
 
 #include <xlnt/xlnt.hpp>
-#include <detail/serialization/open_stream.hpp>
 #include <xlnt/utils/exceptions.hpp>
 #include <helpers/temporary_file.hpp>
 #include <helpers/test_suite.hpp>
-#include <detail/constants.hpp>
 
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/styles/format.hpp>

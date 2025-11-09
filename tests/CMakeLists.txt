@@ -47,7 +47,10 @@ endif()
 file(GLOB HELPERS_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/helpers/*.hpp)
 file(GLOB HELPERS_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/helpers/*.cpp)
 
+file(GLOB HELPERS_INTERNAL_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/helpers/internal/*.hpp)
+
 set(HELPERS ${HELPERS_HEADERS} ${HELPERS_SOURCES})
+set(HELPERS_INTERNAL ${HELPERS_INTERNAL_HEADERS})
 set(RUNNER ${CMAKE_CURRENT_SOURCE_DIR}/runner.cpp)
 
 if(COVERAGE)
@@ -55,14 +58,17 @@ if(COVERAGE)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
 endif()
 
-add_executable(xlnt.test ${RUNNER} ${TESTS} ${HELPERS} $<TARGET_OBJECTS:libstudxml>)
+add_executable(xlnt.test ${RUNNER} ${TESTS} ${HELPERS} ${HELPERS_INTERNAL} $<TARGET_OBJECTS:libstudxml>)
 target_link_libraries(xlnt.test PRIVATE xlnt)
 target_include_directories(xlnt.test
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../source
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/libstudxml
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/miniz
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/fast_float/include)
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+if (NOT XLNT_SKIP_INTERNAL_TESTS)
+  target_include_directories(xlnt.test
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../source
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/libstudxml
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/miniz
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/fast_float/include)
+endif()
 
 set(XLNT_TEST_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data)
 target_compile_definitions(xlnt.test PRIVATE XLNT_TEST_DATA_DIR="${XLNT_TEST_DATA_DIR}")
@@ -86,6 +92,7 @@ if(MSVC)
 endif()
 
 source_group(helpers FILES ${HELPERS})
+source_group(helpers\\internal FILES ${HELPERS_INTERNAl})
 source_group(runner FILES ${RUNNER})
 source_group(tests\\cell FILES ${CELL_TESTS})
 source_group(tests\\detail FILES ${DETAIL_TESTS})

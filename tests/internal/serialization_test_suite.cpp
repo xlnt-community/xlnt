@@ -27,7 +27,7 @@
 #include <helpers/path_helper.hpp>
 #include <helpers/temporary_file.hpp>
 #include <helpers/test_suite.hpp>
-#include <helpers/xml_helper.hpp>
+#include <helpers/internal/xml_helper.hpp>
 #include <detail/serialization/xlsx_consumer.hpp>
 #include <detail/utils/string_helpers.hpp>
 #include <xlnt/internal/features.hpp>

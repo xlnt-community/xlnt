@@ -29,7 +29,6 @@
 #include <xlnt/worksheet/header_footer.hpp>
 #include <xlnt/worksheet/range.hpp>
 #include <xlnt/worksheet/worksheet.hpp>
-#include <detail/constants.hpp>
 
 class range_test_suite : public test_suite
 {

@@ -21,7 +21,6 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <detail/implementations/stylesheet.hpp>
 #include <helpers/test_suite.hpp>
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/styles/fill.hpp>
@@ -35,10 +34,7 @@ class format_test_suite : public test_suite
     format_test_suite()
     {
         register_test(test_issue93);
-        register_test(test_format_impl_ptr);
         register_test(test_format_garbage_collection);
-        register_test(test_inplace_editing_non_shared_format);
-        register_test(test_reference);
     }
 
     void test_issue93()
@@ -70,35 +66,6 @@ class format_test_suite : public test_suite
         xlnt_assert(ws.cell("A1").has_format());
         xlnt_assert(ws.cell("A1").format().fill_applied());
         xlnt_assert_equals(ws.cell("A1").format().fill(), xlnt::gradient_fill());
-    }
-
-    void test_format_impl_ptr()
-    {
-        xlnt::detail::format_impl_ptr p1(new xlnt::detail::format_impl());
-        xlnt_assert_equals(p1.use_count(), 1);
-
-        // copy constructor
-        auto p2 = p1;
-        xlnt_assert_equals(p1.use_count(), 2);
-
-        p2 = nullptr;
-        xlnt_assert_equals(p1.use_count(), 1);
-
-        // self assignment
-        p1 = p1;
-        xlnt_assert_equals(p1.use_count(), 1);
-
-        {
-            // constructor
-            xlnt::detail::format_impl_ptr p4(p1.get());
-            xlnt_assert_equals(p1.use_count(), 2);
-        }
-        // destructor
-        xlnt_assert_equals(p1.use_count(), 1);
-
-        // move constructor
-        auto p3 = std::move(p1);
-        xlnt_assert_equals(p3.use_count(), 1);
     }
 
     void test_format_garbage_collection()
@@ -143,54 +110,6 @@ class format_test_suite : public test_suite
             xlnt_assert_equals(wb.format_count(), 2); // format is still referenced by local variable f.
         }
         xlnt_assert_equals(wb.format_count(), 1);
-    }
-
-    void test_inplace_editing_non_shared_format()
-    {
-        xlnt::detail::stylesheet s;
-        s.garbage_collection_enabled = false;
-
-        xlnt_assert_equals(s.format_impls.size(), 0);
-
-        xlnt::format f = [&s](const xlnt::format& f){
-            xlnt_assert_equals(s.format_impls.size(), 1);
-            return f;
-        } (s.create_format(false)
-            .border(xlnt::border())
-            .fill(xlnt::fill(xlnt::pattern_fill()))
-            .font(xlnt::font())
-            .number_format(xlnt::number_format())
-            .style("X")
-          );
-
-        xlnt_assert_equals(s.format_impls.size(), 1);
-    }
-
-    void test_reference()
-    {
-        xlnt::detail::references ref1;
-
-        xlnt_assert_equals(ref1, 0);
-
-        ++ref1;
-        xlnt_assert_equals(ref1, 1);
-
-        xlnt::detail::references ref2(ref1);
-        xlnt_assert_equals(ref2, 0); // a copied object is a new object. The new object is not referenced (although it contains the same data as another object that may be referenced)
-
-        xlnt::detail::references ref3;
-        ref3 = ref2; // same, but for copy constructor;
-        xlnt_assert_equals(ref3, 0);
-
-        xlnt::detail::references ref4(std::move(ref1));
-        xlnt_assert_equals(ref4, 0); // also moved objects are new objects.
-        ++ref4;
-        xlnt_assert_equals(ref4, 1);
-
-        xlnt::detail::references ref5;
-        xlnt_assert_equals(ref5, 0);
-        ref5 = std::move(ref4);
-        xlnt_assert_equals(ref5, 0); // idem for move operator
     }
 };
 static format_test_suite x;
