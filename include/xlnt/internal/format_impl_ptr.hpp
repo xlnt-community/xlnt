@@ -26,7 +26,8 @@
 namespace xlnt {
 namespace detail {
 
-class format_impl;
+struct format_impl;
+
 class XLNT_API format_impl_ptr
 {
 public:
