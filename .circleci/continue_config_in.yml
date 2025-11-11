@@ -209,8 +209,8 @@ jobs:
 
   build-macos:
     macos:
-      xcode: 15.4.0
-    resource_class: "macos.m1.medium.gen1"
+      xcode: 26.1.0
+    resource_class: "m4pro.medium"
     parameters:
       benchmarks:
         default: "OFF"
@@ -229,7 +229,7 @@ jobs:
       - run: git submodule update --init --recursive
       - run: brew install cmake
       - run: cmake -G "Xcode" -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=ON -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
-      - run: cmake --build . -j4 --config << parameters.build-type >>
+      - run: cmake --build . -j6 --config << parameters.build-type >>
       - run: ./tests/<< parameters.build-type >>/xlnt.test
       - when:
           condition:
