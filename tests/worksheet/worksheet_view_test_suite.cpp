@@ -24,6 +24,7 @@
 #include <helpers/test_suite.hpp>
 
 #include <xlnt/worksheet/worksheet.hpp>
+#include <xlnt/workbook/workbook.hpp>
 
 class worksheet_view_test_suite : public test_suite
 {

@@ -32,7 +32,7 @@ inline std::size_t current_time()
 {
     auto now = std::chrono::system_clock::now();
     auto time_since_epoch = now.time_since_epoch();
-    auto duration = std::chrono::duration<double, std::milli>(time_since_epoch);
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(time_since_epoch);
 
     return static_cast<std::size_t>(duration.count());
 }

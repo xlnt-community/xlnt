@@ -27,6 +27,7 @@
 #include <string>
 
 #include <xlnt/xlnt_config.hpp>
+#include <xlnt/internal/format_impl_ptr.hpp>
 
 namespace xlnt {
 
@@ -69,7 +70,7 @@ public:
     /// this format.
     /// Returns a wrapper pointing to this format.
     /// </summary>
-    format alignment(const xlnt::alignment &new_alignment, xlnt::optional<bool> applied = {});
+    format& alignment(const xlnt::alignment &new_alignment, xlnt::optional<bool> applied = {});
 
     /// <summary>
     /// Returns true if an alignment has been set for this format.
@@ -94,7 +95,7 @@ public:
     /// this format.
     /// Returns a wrapper pointing to this format.
     /// </summary>
-    format border(const xlnt::border &new_border, xlnt::optional<bool> applied = {});
+    format& border(const xlnt::border &new_border, xlnt::optional<bool> applied = {});
 
     /// <summary>
     /// Returns true if a border has been set for this format.
@@ -118,7 +119,7 @@ public:
     /// this format.
     /// Returns a wrapper pointing to this format.
     /// </summary>
-    format fill(const xlnt::fill &new_fill, xlnt::optional<bool> applied = {});
+    format& fill(const xlnt::fill &new_fill, xlnt::optional<bool> applied = {});
 
     /// <summary>
     /// Returns true if a fill has been set for this format.
@@ -142,7 +143,7 @@ public:
     /// this format.
     /// Returns a wrapper pointing to this format.
     /// </summary>
-    format font(const xlnt::font &new_font, xlnt::optional<bool> applied = {});
+    format& font(const xlnt::font &new_font, xlnt::optional<bool> applied = {});
 
     /// <summary>
     /// Returns true if a font has been set for this format.
@@ -166,7 +167,7 @@ public:
     /// this format.
     /// Returns a wrapper pointing to this format.
     /// </summary>
-    format number_format(const xlnt::number_format &new_number_format, xlnt::optional<bool> applied = {});
+    format& number_format(const xlnt::number_format &new_number_format, xlnt::optional<bool> applied = {});
 
     /// <summary>
     /// Returns true if a number format has been set for this format.
@@ -200,7 +201,7 @@ public:
     /// this format.
     /// Returns a wrapper pointing to this format.
     /// </summary>
-    format protection(const xlnt::protection &new_protection, xlnt::optional<bool> applied = {});
+    format& protection(const xlnt::protection &new_protection, xlnt::optional<bool> applied = {});
 
     /// <summary>
     /// Returns true if the pivot table interface is enabled for this format.
@@ -239,13 +240,13 @@ public:
     /// Sets the style of this format to a style with the given name.
     /// Returns a wrapper pointing to this format.
     /// </summary>
-    format style(const std::string &name);
+    format& style(const std::string &name);
 
     /// <summary>
     /// Sets the style of this format to new_style.
     /// Returns a wrapper pointing to this format.
     /// </summary>
-    format style(const class style &new_style);
+    format& style(const class style &new_style);
 
     /// <summary>
     /// Returns a wrapper pointing to the style of this format.
@@ -270,12 +271,12 @@ private:
     /// <summary>
     /// Constructs a format from an impl pointer.
     /// </summary>
-    format(detail::format_impl *d);
+    format(detail::format_impl_ptr d);
 
     /// <summary>
     /// The internal implementation of this format
     /// </summary>
-    detail::format_impl *d_ = nullptr;
+    detail::format_impl_ptr d_;
 };
 
 } // namespace xlnt

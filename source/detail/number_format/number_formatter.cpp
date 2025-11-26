@@ -1602,7 +1602,7 @@ std::string number_formatter::fill_placeholders(const format_placeholders &p, do
         if (result.size() < p.num_zeros + p.num_spaces)
         {
             // Add leading spaces.
-            result.insert(0, p.num_zeros + p.num_spaces - result.size(), ' ');
+            result.insert(static_cast<size_t>(0), p.num_zeros + p.num_spaces - result.size(), ' ');
         }
 
         if (p.use_comma_separator)
