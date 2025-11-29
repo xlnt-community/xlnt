@@ -326,7 +326,7 @@ public:
     {
         xlnt::workbook wb;
         const auto path = path_helper::test_file("5_encrypted_agile.xlsx");
-        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(wb.load(path, "secret"));
     }
 
@@ -334,14 +334,14 @@ public:
     {
         xlnt::workbook wb;
         const auto path = path_helper::test_file("6_encrypted_libre.xlsx");
-        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(wb.load(path, u8"\u043F\u0430\u0440\u043E\u043B\u044C")); // u8"пароль"
     }
 
     void test_decrypt_libre_office_constructor()
     {
         const auto path = path_helper::test_file("6_encrypted_libre.xlsx");
-        xlnt_assert_throws(xlnt::workbook(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(xlnt::workbook(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(xlnt::workbook(path, u8"\u043F\u0430\u0440\u043E\u043B\u044C")); // u8"пароль"
     }
 
@@ -349,7 +349,7 @@ public:
     {
         xlnt::workbook wb;
         const auto path = path_helper::test_file("7_encrypted_standard.xlsx");
-        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(wb.load(path, "password"));
     }
 
@@ -357,7 +357,7 @@ public:
     {
         xlnt::workbook wb;
         const auto path = path_helper::test_file("8_encrypted_numbers.xlsx");
-        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(wb.load(path, "secret"));
     }
 

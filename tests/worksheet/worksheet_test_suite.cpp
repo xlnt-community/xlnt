@@ -115,7 +115,10 @@ public:
         register_test(test_issue_484);
         register_test(test_issue_5_empty_bottom_rows);
         register_test(test_issue_18_defined_name_with_workbook_scope);
+        register_test(test_selections);
         register_test(test_non_contiguous_selection);
+        register_test(test_column_properties);
+        register_test(test_row_properties);
         register_test(test_throw_empty_cell);
         register_test(test_zoom_scale);
         register_test(test_zoom_scale_no_view);
@@ -216,7 +219,7 @@ public:
     {
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
-        xlnt_assert_throws(ws.remove_named_range("bad_range"), std::runtime_error);
+        xlnt_assert_throws(ws.remove_named_range("bad_range"), xlnt::key_not_found);
     }
 
     void test_cell_alternate_coordinates()
@@ -399,7 +402,8 @@ public:
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
 
-        xlnt_assert_throws(ws.unmerge_cells("A1:D3"), std::runtime_error);
+        xlnt_assert_throws(ws.unmerge_cells("A1:D3"), xlnt::invalid_parameter);
+        xlnt_assert_throws(ws.unmerge_cells(xlnt::range_reference("A1:D3")), xlnt::invalid_parameter);
     }
 
     void test_unmerge_range_string()
@@ -1346,8 +1350,7 @@ public:
         const std::string test_long_utf8_title("巧みな外交は戦争を避ける助けとなる。");
         xlnt_assert_throws_nothing(ws.title(test_long_utf8_title));
         const std::string invalid_unicode("\xe6\x97\xa5\xd1\x88\xfa");
-        xlnt_assert_throws(ws.title(invalid_unicode),
-                           xlnt::exception);
+        xlnt_assert_throws(ws.title(invalid_unicode), xlnt::invalid_sheet_title);
     }
 
     void test_phonetics()
@@ -1619,8 +1622,7 @@ public:
     {
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
-        xlnt_assert_throws(ws.insert_rows(10, 4294967290),
-                           xlnt::exception);
+        xlnt_assert_throws(ws.insert_rows(10, 4294967290), xlnt::invalid_parameter);
     }
 
     void test_insert_delete_moves_merges()
@@ -1672,6 +1674,7 @@ public:
         xlnt::workbook wb;
         wb.load(path_helper::test_file("16_hidden_sheet.xlsx"));
         xlnt_assert_equals(wb.sheet_hidden_by_index(1), true);
+        xlnt_assert_throws(wb.sheet_hidden_by_index(2), xlnt::invalid_parameter);
     }
 
     void test_xlsm_read_write()
@@ -1759,6 +1762,35 @@ public:
         xlnt_assert_throws_nothing(wb.load(path_helper::test_file("Issue18_defined_name_with_workbook_scope.xlsx")));
     }
 
+    void test_selections()
+    {
+        xlnt::selection selection;
+        xlnt_assert(!selection.has_active_cell());
+        xlnt_assert_throws(selection.active_cell(), xlnt::invalid_attribute);
+        selection.active_cell(xlnt::cell_reference{1, 1});
+        xlnt_assert(selection.has_active_cell());
+        xlnt_assert_throws_nothing(selection.active_cell());
+        selection.clear_active_cell();
+        xlnt_assert(!selection.has_active_cell());
+        xlnt_assert_throws(selection.active_cell(), xlnt::invalid_attribute);
+        // Clearing again should never throw.
+        xlnt_assert_throws_nothing(selection.clear_active_cell());
+
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        xlnt::sheet_view& view = ws.view();
+        xlnt_assert(!view.has_selections());
+        xlnt_assert_throws(view.selection(0), xlnt::invalid_parameter);
+        view.add_selection(selection);
+        xlnt_assert(view.has_selections());
+        xlnt_assert_throws_nothing(view.selection(0));
+        view.clear_selections();
+        xlnt_assert(!view.has_selections());
+        xlnt_assert_throws(view.selection(0), xlnt::invalid_parameter);
+        // Clearing again should never throw.
+        xlnt_assert_throws_nothing(view.clear_selections());
+    }
+
     void test_non_contiguous_selection()
     {
         xlnt::selection s;
@@ -1773,6 +1805,32 @@ public:
         xlnt_assert_equals(s.sqrefs()[2], "D4:D5");
         xlnt_assert_equals(s.sqrefs()[3], "E6:F6");
         xlnt_assert_differs(s.sqrefs()[0], "B1");
+    }
+
+    void test_column_properties()
+    {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        const auto& ws_const = ws;
+        xlnt_assert(!ws.has_column_properties("A"));
+        xlnt_assert_throws(ws_const.column_properties("A"), xlnt::key_not_found);
+        // Note: the following line will also create the column properties!
+        xlnt_assert_throws_nothing(ws.column_properties("A"));
+        xlnt_assert(ws.has_column_properties("A"));
+        xlnt_assert_equals(ws_const.column_properties("A"), xlnt::column_properties{});
+    }
+
+    void test_row_properties()
+    {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        const auto& ws_const = ws;
+        xlnt_assert(!ws.has_row_properties(1));
+        xlnt_assert_throws(ws_const.row_properties(1), xlnt::key_not_found);
+        // Note: the following line will also create the row properties!
+        xlnt_assert_throws_nothing(ws.row_properties(1));
+        xlnt_assert(ws.has_row_properties(1));
+        xlnt_assert_equals(ws_const.row_properties(1), xlnt::row_properties{});
     }
 
     void test_throw_empty_cell()
@@ -1830,6 +1888,12 @@ public:
         xlnt_assert(ws.has_view());
         xlnt_assert_equals(ws.views().size(), 1);
         xlnt_assert_equals(ws.view(), xlnt::sheet_view());
+
+        xlnt_assert_throws(ws.remove_view(1), xlnt::invalid_parameter);
+        xlnt_assert_throws_nothing(ws.remove_view(0));
+        xlnt_assert(!ws.has_view());
+        xlnt_assert_equals(ws.views().size(), 0);
+        xlnt_assert_throws(ws.view(), xlnt::invalid_parameter);
     }
 };
 

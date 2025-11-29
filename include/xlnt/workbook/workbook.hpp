@@ -1096,12 +1096,16 @@ public:
     workbook &operator=(workbook &&other) = default;
 
     /// <summary>
-    /// Returns a wrapper pointing to the worksheet with a title of "name".
+    /// Returns a wrapper pointing to the worksheet with a title of "name". This will throw a key_not_found exception
+    /// if the sheet isn't found. Use workbook::contains(const std::string &)
+    /// to make sure the sheet exists before calling this method.
     /// </summary>
     worksheet operator[](const std::string &name);
 
     /// <summary>
     /// Returns a wrapper pointing to the worksheet at "index".
+    /// This method will throw an invalid_parameter exception if index is greater than or equal to
+    /// the number of sheets in this workbook (call sheet_count() to check).
     /// </summary>
     worksheet operator[](std::size_t index);
 

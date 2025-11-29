@@ -7,7 +7,11 @@
 #include <xlnt/utils/path.hpp>
 #include <xlnt/internal/features.hpp>
 
-#define XLNT_TEST_U8STRING_LITERAL(a) u8##a
+#define XLNT_TEST_LSTRING_LITERAL2(a) L##a
+#define XLNT_TEST_U8STRING_LITERAL2(a) u8##a
+
+#define XLNT_TEST_LSTRING_LITERAL(a) XLNT_TEST_LSTRING_LITERAL2(a)
+#define XLNT_TEST_U8STRING_LITERAL(a) XLNT_TEST_U8STRING_LITERAL2(a)
 
 #ifdef __cpp_char8_t
 /// Casts const char8_t arrays from C++20 to const char arrays.

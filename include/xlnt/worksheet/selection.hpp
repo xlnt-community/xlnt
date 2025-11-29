@@ -95,6 +95,14 @@ public:
     }
 
     /// <summary>
+    /// Clears the active cell.
+    /// </summary>
+    void clear_active_cell()
+    {
+        active_cell_.clear();
+    }
+
+    /// <summary>
     /// Returns true if this selection has a defined sqref.
     /// </summary>
     bool has_sqref() const

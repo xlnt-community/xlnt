@@ -136,9 +136,13 @@ public:
         xlnt_assert(!ph.has_type());
         xlnt_assert_throws(ph.type(), xlnt::invalid_attribute);
         ph.type(xlnt::phonetic_pr::type_from_string("fullwidthKatakana"));
+        xlnt_assert(ph.has_type());
+        xlnt_assert_throws_nothing(ph.type());
         xlnt_assert(!ph.has_alignment());
         xlnt_assert_throws(ph.alignment(), xlnt::invalid_attribute);
         ph.alignment(xlnt::phonetic_pr::alignment_from_string("Center"));
+        xlnt_assert(ph.has_alignment());
+        xlnt_assert_throws_nothing(ph.alignment());
         rt.phonetic_properties(ph);
 
         xlnt_assert_equals(rt.has_phonetic_properties(), true);

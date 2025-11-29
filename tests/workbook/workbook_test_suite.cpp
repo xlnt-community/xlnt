@@ -54,6 +54,7 @@ public:
         register_test(test_get_sheet_by_title_const);
         register_test(test_get_sheet_by_index);
         register_test(test_get_sheet_by_index_const);
+        register_test(test_get_sheet_by_id);
         register_test(test_index_operator);
         register_test(test_contains);
         register_test(test_core_properties);
@@ -84,15 +85,20 @@ public:
         register_test(test_memory);
         register_test(test_clear);
         register_test(test_comparison);
+        register_test(test_theme);
         register_test(test_id_gen);
         register_test(test_load_file);
         register_test(test_load_file_encrypted);
+        register_test(test_load_file_encrypted_invalid_password);
+        register_test(test_load_file_non_existent);
         register_test(test_Issue279);
         register_test(test_Issue353);
         register_test(test_Issue494);
         register_test(test_Issue90);
         register_test(test_Issue109);
         register_test(test_style);
+        register_test(test_builtin_style);
+        register_test(test_thumbnail);
         register_test(test_sheet_moving)
     }
 
@@ -132,7 +138,7 @@ public:
         xlnt::workbook wb1, wb2;
         auto new_sheet = wb1.active_sheet();
         xlnt_assert_throws(wb2.copy_sheet(new_sheet), xlnt::invalid_parameter);
-        xlnt_assert_throws(wb2.index(new_sheet), std::runtime_error);
+        xlnt_assert_throws(wb2.index(new_sheet), xlnt::invalid_parameter);
     }
 
     void test_add_sheet_at_index()
@@ -155,7 +161,7 @@ public:
         new_sheet.title("removed");
         wb.remove_sheet(new_sheet);
         xlnt_assert(!wb.contains("removed"));
-        xlnt_assert_throws(wb.remove_sheet(wb2.active_sheet()), std::runtime_error);
+        xlnt_assert_throws(wb.remove_sheet(wb2.active_sheet()), xlnt::invalid_parameter);
     }
 
     void test_get_sheet_by_title()
@@ -199,11 +205,25 @@ public:
         xlnt_assert_throws(wb_const.sheet_by_index(2), xlnt::invalid_parameter); // out of range
     }
 
+    void test_get_sheet_by_id()
+    {
+        xlnt::workbook wb;
+        auto new_sheet = wb.create_sheet();
+        const auto &wb_const = wb;
+        xlnt_assert_equals(new_sheet, wb.sheet_by_id(2));
+        xlnt_assert_throws(wb.sheet_by_id(3), xlnt::key_not_found);
+        xlnt_assert_equals(new_sheet, wb_const.sheet_by_id(2));
+        xlnt_assert_throws(wb_const.sheet_by_id(3), xlnt::key_not_found);
+    }
+
     void test_index_operator() // test_getitem
     {
         xlnt::workbook wb;
         xlnt_assert_throws_nothing(wb["Sheet1"]);
         xlnt_assert_throws(wb["NotThere"], xlnt::key_not_found);
+        xlnt_assert_equals(wb.sheet_count(), 1);
+        xlnt_assert_throws_nothing(wb[0]);
+        xlnt_assert_throws(wb[1], xlnt::invalid_parameter);
     }
 
     void test_contains()
@@ -264,7 +284,6 @@ public:
     void test_view()
     {
         xlnt::workbook wb;
-        wb.view(xlnt::workbook_view());
         xlnt_assert(wb.has_view());
         xlnt_assert_throws_nothing(wb.view());
     }
@@ -346,6 +365,8 @@ public:
         wb.clear_calculation_properties();
         xlnt_assert(!wb.has_calculation_properties());
         xlnt_assert_throws(wb.calculation_properties(), xlnt::invalid_attribute);
+        // Clearing again should never throw.
+        xlnt_assert_throws_nothing(wb.clear_calculation_properties());
 
         xlnt::calculation_properties calc_props;
         wb.calculation_properties(calc_props);
@@ -357,11 +378,16 @@ public:
     void test_iter()
     {
         xlnt::workbook wb;
+        const auto& wb_const = wb;
 
         for (auto ws : wb)
         {
             xlnt_assert_equals(ws.title(), "Sheet1");
         }
+
+        xlnt_assert_throws(*wb.end(), xlnt::invalid_parameter);
+        xlnt_assert_throws(*wb_const.end(), xlnt::invalid_parameter);
+        xlnt_assert_throws(*wb.cend(), xlnt::invalid_parameter);
 
         xlnt::workbook wb2;
         auto iter = wb.begin();
@@ -503,6 +529,7 @@ public:
         wb.remove_named_range("test_nr");
         xlnt_assert(!new_sheet.has_named_range("test_nr"));
         xlnt_assert(!wb.has_named_range("test_nr"));
+        xlnt_assert_throws(wb.remove_named_range("test_nr"), xlnt::key_not_found);
         xlnt_assert_throws(wb.remove_named_range("test_nr2"), xlnt::key_not_found);
     }
 
@@ -596,7 +623,13 @@ public:
         xlnt::manifest m;
         xlnt_assert(!m.has_default_type("xml"));
         xlnt_assert_throws(m.default_type("xml"), xlnt::key_not_found);
+        xlnt_assert_throws(m.content_type(xlnt::path("/")), xlnt::key_not_found);
+        xlnt_assert(!m.has_override_type(xlnt::path("/")));
+        xlnt_assert_throws(m.override_type(xlnt::path("/")), xlnt::key_not_found);
         xlnt_assert(!m.has_relationship(xlnt::path("/"), xlnt::relationship_type::office_document));
+        xlnt_assert_throws(m.relationship(xlnt::path("/"), xlnt::relationship_type::office_document), xlnt::key_not_found);
+        xlnt_assert(!m.has_relationship(xlnt::path("/"), "test123"));
+        xlnt_assert_throws(m.relationship(xlnt::path("/"), "test123"), xlnt::key_not_found);
         xlnt_assert(m.relationships(xlnt::path("xl/workbook.xml")).empty());
     }
 
@@ -644,15 +677,15 @@ public:
         xlnt_assert(!wb.compare(wb2, true));
         xlnt_assert(wb.compare(wb2, false));
 
+
+    }
+
+    void test_theme()
+    {
+        xlnt::workbook wb;
         const auto &wb_const = wb;
-        //TODO these aren't tests...
-        wb_const.manifest();
-
         xlnt_assert(wb.has_theme());
-
-        wb.create_style("style1");
-        wb.style("style1");
-        wb_const.style("style1");
+        xlnt_assert_throws_nothing(wb.theme());
     }
 
     void test_id_gen()
@@ -677,10 +710,12 @@ public:
         xlnt_assert_differs(wb_path, wb_load1);
         wb_load1.load(file.string());
         xlnt_assert(wb_path.compare(wb_load1, false));
+#ifdef _MSC_VER
         // load with wstring
         xlnt::workbook wb_load2;
-        wb_load2.load(file.string());
+        wb_load2.load(file.wstring());
         xlnt_assert(wb_path.compare(wb_load2, false));
+#endif
         // load with path
         xlnt::workbook wb_load3;
         wb_load3.load(file);
@@ -698,11 +733,16 @@ public:
         xlnt::workbook wb_load5;
         wb_load5.load(data);
         xlnt_assert(wb_path.compare(wb_load5, false));
+        // load vector with empty data
+        xlnt::workbook wb_load6;
+        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}), xlnt::invalid_file);
     }
 
     void test_load_file_encrypted()
     {
-        const auto password = u8"\u043F\u0430\u0440\u043E\u043B\u044C"; // u8"пароль"
+#define PASSWORD "\u043F\u0430\u0440\u043E\u043B\u044C" // "пароль"
+        const auto password_u8 = XLNT_TEST_U8STRING_LITERAL(PASSWORD); // u8"пароль"
+        const auto password_wide = XLNT_TEST_LSTRING_LITERAL(PASSWORD); // L"пароль"
         xlnt::path file = path_helper::test_file("6_encrypted_libre.xlsx");
 #ifdef __cpp_lib_char8_t
         // The reinterpret_cast is ugly as hell, but I'm not sure if duplicating
@@ -711,27 +751,29 @@ public:
 #else
         std::string file_as_string = file.string();
 #endif
-        xlnt::workbook wb_path(file, password);
+        xlnt::workbook wb_path(file, password_u8);
         // ctor from ifstream
         std::ifstream file_reader(file.string(), std::ios::binary);
-        xlnt_assert(wb_path.compare(xlnt::workbook(file_reader, password), false));
+        xlnt_assert(wb_path.compare(xlnt::workbook(file_reader, password_u8), false));
         // load with string
         xlnt::workbook wb_load1;
         xlnt_assert_differs(wb_path, wb_load1);
-        wb_load1.load(file_as_string, password);
+        wb_load1.load(file_as_string, password_u8);
         xlnt_assert(wb_path.compare(wb_load1, false));
+#ifdef _MSC_VER
         // load with wstring
         xlnt::workbook wb_load2;
-        wb_load2.load(file_as_string, password);
+        wb_load2.load(file.wstring(), password_wide);
         xlnt_assert(wb_path.compare(wb_load2, false));
+#endif
         // load with path
         xlnt::workbook wb_load3;
-        wb_load3.load(file, password);
+        wb_load3.load(file, password_u8);
         xlnt_assert(wb_path.compare(wb_load3, false));
         // load with istream
         xlnt::workbook wb_load4;
         std::ifstream file_reader2(file.string(), std::ios::binary);
-        wb_load4.load(file_reader2, password);
+        wb_load4.load(file_reader2, password_u8);
         xlnt_assert(wb_path.compare(wb_load4, false));
         // load with vector
         std::ifstream file_reader3(file.string(), std::ios::binary);
@@ -739,8 +781,103 @@ public:
         std::vector<uint8_t> data(std::istream_iterator<uint8_t>{file_reader3},
             std::istream_iterator<uint8_t>());
         xlnt::workbook wb_load5;
-        wb_load5.load(data, password);
+        wb_load5.load(data, password_u8);
         xlnt_assert(wb_path.compare(wb_load5, false));
+        // load vector with empty data
+        xlnt::workbook wb_load6;
+        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}, password_u8), xlnt::invalid_file);
+    }
+
+    void test_load_file_encrypted_invalid_password()
+    {
+        const auto invalid_password_u8 = u8"INVALID";
+        const auto invalid_password_wide = L"INVALID";
+        xlnt::path file = path_helper::test_file("6_encrypted_libre.xlsx");
+#ifdef __cpp_lib_char8_t
+        // The reinterpret_cast is ugly as hell, but I'm not sure if duplicating
+        // the path_helper and xlnt::path functionality is worth it...
+        std::u8string file_as_string = reinterpret_cast<const char8_t *>(file.string().c_str());
+#else
+        std::string file_as_string = file.string();
+#endif
+        xlnt_assert_throws(xlnt::workbook(file, invalid_password_u8), xlnt::invalid_password);
+        xlnt_assert_throws(xlnt::workbook{file}, xlnt::invalid_password); // also invalid with no password
+        // ctor from ifstream
+        std::ifstream file_reader(file.string(), std::ios::binary);
+        xlnt_assert_throws(xlnt::workbook(file_reader, invalid_password_u8), xlnt::invalid_password);
+        xlnt_assert_throws(xlnt::workbook{file_reader}, xlnt::invalid_password); // also invalid with no password
+        // load with string
+        xlnt::workbook wb_load1;
+        xlnt_assert_throws(wb_load1.load(file_as_string, invalid_password_u8), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load1.load(file_as_string), xlnt::invalid_password); // also invalid with no password
+#ifdef _MSC_VER
+        // load with wstring
+        xlnt::workbook wb_load2;
+        xlnt_assert_throws(wb_load2.load(file.wstring(), invalid_password_wide), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load2.load(file.wstring()), xlnt::invalid_password); // also invalid with no password
+#endif
+        // load with path
+        xlnt::workbook wb_load3;
+        xlnt_assert_throws(wb_load3.load(file, invalid_password_u8), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load3.load(file), xlnt::invalid_password); // also invalid with no password
+        // load with istream
+        xlnt::workbook wb_load4;
+        std::ifstream file_reader2(file.string(), std::ios::binary);
+        xlnt_assert_throws(wb_load4.load(file_reader2, invalid_password_u8), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load4.load(file_reader2), xlnt::invalid_password); // also invalid with no password
+        // load with vector
+        std::ifstream file_reader3(file.string(), std::ios::binary);
+        file_reader3.unsetf(std::ios::skipws);
+        std::vector<uint8_t> data(std::istream_iterator<uint8_t>{file_reader3},
+            std::istream_iterator<uint8_t>());
+        xlnt::workbook wb_load5;
+        xlnt_assert_throws(wb_load5.load(data, invalid_password_u8), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load5.load(data), xlnt::invalid_password); // also invalid with no password
+        // load vector with empty data
+        xlnt::workbook wb_load6;
+        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}, invalid_password_u8), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}), xlnt::invalid_file); // also invalid with no password
+    }
+
+    void test_load_file_non_existent()
+    {
+        xlnt::path file = path_helper::test_file("SHOULD NEVER EVER EXIST");
+#ifdef __cpp_lib_char8_t
+        // The reinterpret_cast is ugly as hell, but I'm not sure if duplicating
+        // the path_helper and xlnt::path functionality is worth it...
+        std::u8string file_as_string = reinterpret_cast<const char8_t *>(file.string().c_str());
+#else
+        std::string file_as_string = file.string();
+#endif
+        xlnt_assert_throws(xlnt::workbook{file}, xlnt::invalid_file);
+        // ctor from ifstream
+        std::ifstream file_reader(file.string(), std::ios::binary);
+        xlnt_assert_throws(xlnt::workbook{file_reader}, xlnt::invalid_file);
+        // load with string
+        xlnt::workbook wb_load1;
+        xlnt_assert_throws(wb_load1.load(file_as_string), xlnt::invalid_file);
+#ifdef _MSC_VER
+        // load with wstring
+        xlnt::workbook wb_load2;
+        xlnt_assert_throws(wb_load2.load(file.wstring()), xlnt::invalid_file);
+#endif
+        // load with path
+        xlnt::workbook wb_load3;
+        xlnt_assert_throws(wb_load3.load(file), xlnt::invalid_file);
+        // load with istream
+        xlnt::workbook wb_load4;
+        std::ifstream file_reader2(file.string(), std::ios::binary);
+        xlnt_assert_throws(wb_load4.load(file_reader2), xlnt::invalid_file);
+        // load with vector
+        std::ifstream file_reader3(file.string(), std::ios::binary);
+        file_reader3.unsetf(std::ios::skipws);
+        std::vector<uint8_t> data(std::istream_iterator<uint8_t>{file_reader3},
+            std::istream_iterator<uint8_t>());
+        xlnt::workbook wb_load5;
+        xlnt_assert_throws(wb_load5.load(data), xlnt::invalid_file);
+        // load vector with empty data
+        xlnt::workbook wb_load6;
+        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}), xlnt::invalid_file);
     }
 
     void test_Issue279()
@@ -824,9 +961,27 @@ public:
     void test_style()
     {
         xlnt::workbook wb;
-        xlnt_assert_equals(wb.has_style("my_custom_style"), false);
+        const auto &wb_const = wb;
+        xlnt_assert(!wb.has_style("my_custom_style"));
+        xlnt_assert_throws(wb.style("my_custom_style"), xlnt::key_not_found);
+        xlnt_assert_throws(wb_const.style("my_custom_style"), xlnt::key_not_found);
         wb.create_style("my_custom_style");
-        xlnt_assert_equals(wb.has_style("my_custom_style"), true);
+        xlnt_assert(wb.has_style("my_custom_style"));
+        xlnt_assert_throws_nothing(wb.style("my_custom_style"));
+        xlnt_assert_throws_nothing(wb_const.style("my_custom_style"));
+    }
+
+    void test_builtin_style()
+    {
+        xlnt::workbook wb;
+        xlnt_assert_throws(wb.create_builtin_style(std::numeric_limits<std::size_t>::max()), xlnt::invalid_parameter);
+    }
+
+    void test_thumbnail()
+    {
+        xlnt::workbook wb;
+        xlnt_assert(wb.has_thumbnail());
+        xlnt_assert_throws_nothing(wb.thumbnail());
     }
 
     void test_sheet_moving()

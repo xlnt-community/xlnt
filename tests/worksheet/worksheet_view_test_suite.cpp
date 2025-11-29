@@ -39,7 +39,7 @@ public:
     {
         xlnt::workbook wb;
         xlnt::worksheet ws = wb.active_sheet();
-        xlnt::sheet_view view = ws.view();
+        xlnt::sheet_view& view = ws.view();
         xlnt_assert(!view.has_pane());
         xlnt_assert_throws(view.pane(), xlnt::invalid_attribute);
 
@@ -54,7 +54,7 @@ public:
     {
         xlnt::workbook wb;
         xlnt::worksheet ws = wb.active_sheet();
-        xlnt::sheet_view view = ws.view();
+        xlnt::sheet_view& view = ws.view();
         xlnt_assert(!view.has_top_left_cell());
         xlnt_assert_throws(view.top_left_cell(), xlnt::invalid_attribute);
 

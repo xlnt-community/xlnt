@@ -250,11 +250,20 @@ void worksheet::title(const std::string &title)
     {
         return;
     }
-    // excel limits worksheet titles to 31 characters
-    if (title.empty() || detail::string_length(title) > 31)
+
+    try
+    {
+        // excel limits worksheet titles to 31 characters
+        if (title.empty() || detail::string_length(title) > 31)
+        {
+            throw invalid_sheet_title(title);
+        }
+    }
+    catch (const xlnt::encoding_error& ex)
     {
         throw invalid_sheet_title(title);
     }
+
     // invalid characters in a worksheet name
     if (title.find_first_of("*:/\\?[]") != std::string::npos)
     {

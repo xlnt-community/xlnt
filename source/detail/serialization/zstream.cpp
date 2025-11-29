@@ -488,7 +488,7 @@ izstream::izstream(std::istream &stream)
 {
     if (!stream)
     {
-        throw xlnt::exception("Invalid file handle");
+        throw xlnt::invalid_file("Invalid file handle");
     }
 
     read_central_header();

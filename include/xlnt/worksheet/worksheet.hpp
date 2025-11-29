@@ -281,21 +281,29 @@ public:
 
     /// <summary>
     /// Insert empty rows before the given row index
+    /// If the rows are inserted out of bounds (before the minimum or after the maximum allowed indices),
+    /// an invalid_parameter exception will be thrown.
     /// </summary>
     void insert_rows(row_t row, std::uint32_t amount);
 
     /// <summary>
     /// Insert empty columns before the given column index
+    /// If the columns are inserted out of bounds (before the minimum or after the maximum allowed indices),
+    /// an invalid_parameter exception will be thrown.
     /// </summary>
     void insert_columns(column_t column, std::uint32_t amount);
 
     /// <summary>
     /// Delete rows before the given row index
+    /// If the rows are deleted out of bounds (before the minimum or after the maximum allowed indices),
+    /// an invalid_parameter exception will be thrown.
     /// </summary>
     void delete_rows(row_t row, std::uint32_t amount);
 
     /// <summary>
     /// Delete columns before the given column index
+    /// If the columns are deleted out of bounds (before the minimum or after the maximum allowed indices),
+    /// an invalid_parameter exception will be thrown.
     /// </summary>
     void delete_columns(column_t column, std::uint32_t amount);
 

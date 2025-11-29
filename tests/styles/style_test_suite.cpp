@@ -44,6 +44,8 @@ public:
     {
         xlnt::workbook wb;
         auto test_style = wb.create_style("test_style");
+        xlnt_assert(!test_style.builtin());
+        xlnt_assert_throws(test_style.builtin_id(), xlnt::invalid_attribute);
         test_style.number_format(xlnt::number_format::date_ddmmyyyy());
 
         auto copy_style(test_style);

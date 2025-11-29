@@ -106,12 +106,12 @@ illegal_character::illegal_character(char c)
 }
 
 invalid_parameter::invalid_parameter(const std::string &message)
-    : exception(message)
+    : exception("invalid parameter: " + message)
 {
 }
 
 invalid_attribute::invalid_attribute(const std::string &message)
-    : exception(message)
+    : exception("invalid attribute: " + message)
 {
 }
 
@@ -131,7 +131,12 @@ invalid_password::invalid_password(const std::string &message)
 }
 
 unsupported::unsupported(const std::string &message)
-    : exception(message)
+    : exception("unsupported: " + message)
+{
+}
+
+encoding_error::encoding_error(const std::string &message)
+    : exception("encoding error: " + message)
 {
 }
 

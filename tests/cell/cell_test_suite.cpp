@@ -219,6 +219,7 @@ private:
         auto cell = ws.cell(xlnt::cell_reference(1, 1));
 
         xlnt_assert(!cell.has_formula());
+        xlnt_assert_throws(cell.formula(), xlnt::invalid_attribute);
         xlnt_assert_throws_nothing(cell.formula(""));
         xlnt_assert(!cell.has_formula());
         cell.formula("=42");
@@ -226,6 +227,9 @@ private:
         xlnt_assert_equals(cell.formula(), "42");
         cell.clear_formula();
         xlnt_assert(!cell.has_formula());
+        xlnt_assert_throws(cell.formula(), xlnt::invalid_attribute);
+        // Clearing again should never throw.
+        xlnt_assert_throws_nothing(cell.clear_formula());
     }
 
     void test_not_formula()
@@ -564,6 +568,8 @@ private:
         xlnt_assert(cell.has_format());
         cell.clear_format();
         xlnt_assert(!cell.has_format());
+        // Clearing again should never throw.
+        xlnt_assert_throws_nothing(cell.clear_format());
     }
 
     void test_style()
@@ -573,6 +579,7 @@ private:
         auto cell = ws.cell("A1");
 
         xlnt_assert(!cell.has_style());
+        xlnt_assert_throws(cell.style(), xlnt::invalid_attribute);
 
         auto test_style = wb.create_style("test_style");
         test_style.number_format(xlnt::number_format::date_ddmmyyyy(), true);
@@ -602,6 +609,8 @@ private:
 
         xlnt_assert(!cell.has_style());
         xlnt_assert_throws(cell.style(), xlnt::invalid_attribute);
+        // Clearing again should never throw.
+        xlnt_assert_throws_nothing(cell.clear_style());
     }
 
     void test_print()
@@ -770,33 +779,49 @@ private:
         const std::string link1("http://example.com");
         cell.hyperlink(link1);
         xlnt_assert(cell.has_hyperlink());
+        xlnt_assert_throws_nothing(cell.hyperlink());
         xlnt_assert(cell.hyperlink().external());
         xlnt_assert_equals(cell.hyperlink().url(), link1);
         xlnt_assert_equals(cell.hyperlink().relationship().target().to_string(), link1);
+        xlnt_assert(cell.hyperlink().has_display());
         xlnt_assert_equals(cell.hyperlink().display(), link1);
+        cell.hyperlink().clear_display();
+        xlnt_assert(!cell.hyperlink().has_display());
+        xlnt_assert_throws(cell.hyperlink().display(), xlnt::invalid_attribute);
+        // Clearing again should never throw.
+        xlnt_assert_throws_nothing(cell.hyperlink().clear_display());
         cell.clear_value();
         // link with display
         const std::string link2("http://example2.com");
         const std::string display_txt("notaurl");
         cell.hyperlink(link2, display_txt);
         xlnt_assert(cell.has_hyperlink());
+        xlnt_assert_throws_nothing(cell.hyperlink());
         xlnt_assert(cell.hyperlink().external());
         xlnt_assert_equals(cell.hyperlink().url(), link2);
         xlnt_assert_equals(cell.hyperlink().relationship().target().to_string(), link2);
+        xlnt_assert(cell.hyperlink().has_display());
         xlnt_assert_equals(cell.hyperlink().display(), display_txt);
+        xlnt_assert_throws(cell.hyperlink().target_range(), xlnt::invalid_attribute);
+        cell.hyperlink().clear_display();
+        xlnt_assert(!cell.hyperlink().has_display());
+        xlnt_assert_throws(cell.hyperlink().display(), xlnt::invalid_attribute);
         // relative (local) url
         const std::string local("../test_local");
         cell.hyperlink(local);
         xlnt_assert(cell.has_hyperlink());
+        xlnt_assert_throws_nothing(cell.hyperlink());
         xlnt_assert(cell.hyperlink().external());
         xlnt_assert_equals(cell.hyperlink().url(), local);
         xlnt_assert_equals(cell.hyperlink().relationship().target().to_string(), local);
+        xlnt_assert_throws(cell.hyperlink().target_range(), xlnt::invalid_attribute);
         // value
         int cell_test_val = 123;
         cell.value(cell_test_val);
         std::string cell_value_str = std::to_string(cell_test_val);
         cell.hyperlink(link2, display_txt);
         xlnt_assert_equals(cell.value<int>(), 123);
+        xlnt_assert(cell.hyperlink().has_display());
         xlnt_assert_equals(cell.hyperlink().display(), cell_value_str); // display text ignored
         cell.clear_value();
         // cell overload without display
@@ -807,18 +832,25 @@ private:
         xlnt_assert(cell.has_hyperlink());
         xlnt_assert(!cell.hyperlink().external());
         xlnt_assert_equals(cell.hyperlink().target_range(), link3);
+        xlnt_assert(cell.hyperlink().has_display());
         xlnt_assert_equals(cell.hyperlink().display(), link3);
+        xlnt_assert_throws(cell.hyperlink().relationship(), xlnt::invalid_attribute);
+        xlnt_assert_throws(cell.hyperlink().url(), xlnt::invalid_attribute);
         cell.clear_value();
         // cell overload with display
         cell.hyperlink(cell_target, display_txt);
         xlnt_assert(cell.has_hyperlink());
         xlnt_assert(!cell.hyperlink().external());
         xlnt_assert_equals(cell.hyperlink().target_range(), link3);
+        xlnt_assert(cell.hyperlink().has_display());
         xlnt_assert_equals(cell.hyperlink().display(), display_txt);
+        xlnt_assert_throws(cell.hyperlink().relationship(), xlnt::invalid_attribute);
+        xlnt_assert_throws(cell.hyperlink().url(), xlnt::invalid_attribute);
         // value
         cell.value(cell_test_val);
         cell.hyperlink(cell_target, display_txt);
         xlnt_assert_equals(cell.value<int>(), 123);
+        xlnt_assert(cell.hyperlink().has_display());
         xlnt_assert_equals(cell.hyperlink().display(), cell_value_str); // display text ignored
         cell.clear_value();
         // range overload without display
@@ -829,18 +861,25 @@ private:
         xlnt_assert(cell.has_hyperlink());
         xlnt_assert(!cell.hyperlink().external());
         xlnt_assert_equals(cell.hyperlink().target_range(), link4);
+        xlnt_assert(cell.hyperlink().has_display());
         xlnt_assert_equals(cell.hyperlink().display(), link4);
+        xlnt_assert_throws(cell.hyperlink().relationship(), xlnt::invalid_attribute);
+        xlnt_assert_throws(cell.hyperlink().url(), xlnt::invalid_attribute);
         cell.clear_value();
         // range overload with display
         cell.hyperlink(range_target, display_txt);
         xlnt_assert(cell.has_hyperlink());
         xlnt_assert(!cell.hyperlink().external());
         xlnt_assert_equals(cell.hyperlink().target_range(), link4);
+        xlnt_assert(cell.hyperlink().has_display());
         xlnt_assert_equals(cell.hyperlink().display(), display_txt);
+        xlnt_assert_throws(cell.hyperlink().relationship(), xlnt::invalid_attribute);
+        xlnt_assert_throws(cell.hyperlink().url(), xlnt::invalid_attribute);
         // value
         cell.value(cell_test_val);
         cell.hyperlink(range_target, display_txt);
         xlnt_assert_equals(cell.value<int>(), 123);
+        xlnt_assert(cell.hyperlink().has_display());
         xlnt_assert_equals(cell.hyperlink().display(), cell_value_str); // display text ignored
         cell.clear_value();
         // tooltip
@@ -848,13 +887,25 @@ private:
         xlnt_assert(!cell.hyperlink().has_tooltip());
         xlnt_assert_throws(cell.hyperlink().tooltip(), xlnt::invalid_attribute);
         cell.hyperlink().tooltip("example");
+        xlnt_assert(cell.hyperlink().has_tooltip());
         xlnt_assert_equals(cell.hyperlink().tooltip(), "example");
+        cell.hyperlink().clear_tooltip();
+        xlnt_assert(!cell.hyperlink().has_tooltip());
+        xlnt_assert_throws(cell.hyperlink().tooltip(), xlnt::invalid_attribute);
+        // Clearing again should never throw.
+        xlnt_assert_throws_nothing(cell.hyperlink().clear_tooltip());
         // location
         cell.hyperlink(link1);
         xlnt_assert(!cell.hyperlink().has_location());
         xlnt_assert_throws(cell.hyperlink().location(), xlnt::invalid_attribute);
         cell.hyperlink().location("location");
+        xlnt_assert(cell.hyperlink().has_location());
         xlnt_assert_equals(cell.hyperlink().location(), "location");
+        cell.hyperlink().clear_location();
+        xlnt_assert(!cell.hyperlink().has_location());
+        xlnt_assert_throws(cell.hyperlink().location(), xlnt::invalid_attribute);
+        // Clearing again should never throw.
+        xlnt_assert_throws_nothing(cell.hyperlink().clear_location());
     }
 
     void test_comment()
@@ -870,6 +921,8 @@ private:
         cell.clear_comment();
         xlnt_assert(!cell.has_comment());
         xlnt_assert_throws(cell.comment(), xlnt::invalid_attribute);
+        // Clearing again should never throw.
+        xlnt_assert_throws_nothing(cell.clear_comment());
 
         xlnt::comment comment_with_size("test comment", "author");
         comment_with_size.size(1000, 30);

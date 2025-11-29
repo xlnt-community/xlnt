@@ -350,9 +350,8 @@ public:
     void format(const class format new_format);
 
     /// <summary>
-    /// Removes the cell-level formatting from this cell.
+    /// Removes the cell-level formatting from this cell, if the cell has a format.
     /// This doesn't affect the style that may also be applied to the cell.
-    /// Throws an invalid_attribute exception if no format is applied.
     /// </summary>
     void clear_format();
 
@@ -463,8 +462,7 @@ public:
     void style(const std::string &style_name);
 
     /// <summary>
-    /// Removes the named style from this cell.
-    /// An invalid_attribute exception will be thrown if this cell has no style.
+    /// Removes the named style from this cell, if the cell has a style.
     /// This will not affect the cell format of the cell.
     /// </summary>
     void clear_style();

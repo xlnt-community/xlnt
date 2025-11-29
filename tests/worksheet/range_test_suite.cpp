@@ -25,6 +25,7 @@
 #include <helpers/test_suite.hpp>
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/styles/font.hpp>
+#include <xlnt/styles/style.hpp>
 #include <xlnt/workbook/workbook.hpp>
 #include <xlnt/worksheet/header_footer.hpp>
 #include <xlnt/worksheet/range.hpp>
@@ -43,6 +44,7 @@ public:
         register_test(test_mixed_reference_formats);
         register_test(test_invalid_references);
         register_test(test_offset);
+        register_test(test_style);
     }
 
     void test_construction()
@@ -286,6 +288,19 @@ public:
     {
         xlnt_assert_equals(xlnt::range_reference("B3:E10").make_offset(2, 5), xlnt::range_reference("D8:G15"));
         xlnt_assert_differs(xlnt::range_reference("B3:E10").make_offset(3, 5), xlnt::range_reference("D8:G15"));
+    }
+
+    void test_style()
+    {
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        auto range = ws.range("1:5");
+        xlnt_assert(!wb.has_style("style1"));
+        xlnt_assert_throws(range.style("style1"), xlnt::key_not_found);
+        wb.create_style("style1");
+        xlnt_assert(wb.has_style("style1"));
+        // TODO FIX: the line below causes an infinite loop.
+        //xlnt_assert_throws_nothing(range.style("style1"));
     }
 };
 static range_test_suite x;

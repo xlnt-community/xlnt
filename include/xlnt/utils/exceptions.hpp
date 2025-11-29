@@ -251,4 +251,16 @@ public:
     explicit unsupported(const std::string &message);
 };
 
+/// <summary>
+/// Exception for encoding errors
+/// </summary>
+class XLNT_API encoding_error : public exception
+{
+public:
+    /// <summary>
+    /// Constructs an encoding_error exception with a message describing the encoding error.
+    /// </summary>
+    explicit encoding_error(const std::string &message);
+};
+
 } // namespace xlnt
