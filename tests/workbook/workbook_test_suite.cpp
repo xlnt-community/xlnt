@@ -172,6 +172,7 @@ public:
         new_sheet.title(title);
         auto found_sheet = wb.sheet_by_title(title);
         xlnt_assert_equals(new_sheet, found_sheet);
+        xlnt_assert(!wb.contains("error"));
         xlnt_assert_throws(wb.sheet_by_title("error"), xlnt::key_not_found);
         const auto &wb_const = wb;
         xlnt_assert_throws(wb_const.sheet_by_title("error"), xlnt::key_not_found);
@@ -192,6 +193,7 @@ public:
     {
         xlnt::workbook wb;
         auto new_sheet = wb.create_sheet();
+        xlnt_assert_equals(wb.sheet_count(), 2);
         xlnt_assert_equals(new_sheet, wb.sheet_by_index(1)); // in range
         xlnt_assert_throws(wb.sheet_by_index(2), xlnt::invalid_parameter); // out of range
     }
@@ -201,6 +203,7 @@ public:
         xlnt::workbook wb;
         auto new_sheet = wb.create_sheet();
         const auto &wb_const = wb;
+        xlnt_assert_equals(wb_const.sheet_count(), 2);
         xlnt_assert_equals(new_sheet, wb_const.sheet_by_index(1)); // in range
         xlnt_assert_throws(wb_const.sheet_by_index(2), xlnt::invalid_parameter); // out of range
     }
@@ -210,9 +213,13 @@ public:
         xlnt::workbook wb;
         auto new_sheet = wb.create_sheet();
         const auto &wb_const = wb;
+        xlnt_assert(wb.has_sheet_id(2));
         xlnt_assert_equals(new_sheet, wb.sheet_by_id(2));
+        xlnt_assert(!wb.has_sheet_id(3));
         xlnt_assert_throws(wb.sheet_by_id(3), xlnt::key_not_found);
+        xlnt_assert(wb_const.has_sheet_id(2));
         xlnt_assert_equals(new_sheet, wb_const.sheet_by_id(2));
+        xlnt_assert(!wb_const.has_sheet_id(3));
         xlnt_assert_throws(wb_const.sheet_by_id(3), xlnt::key_not_found);
     }
 
@@ -514,10 +521,13 @@ public:
     {
         xlnt::workbook wb;
         auto new_sheet = wb.create_sheet();
+        xlnt_assert(!wb.has_named_range("test_nr"));
         wb.create_named_range("test_nr", new_sheet, "A1");
+        xlnt_assert(wb.has_named_range("test_nr"));
         auto found_range = wb.named_range("test_nr");
         auto expected_range = new_sheet.range("A1");
         xlnt_assert_equals(expected_range, found_range);
+        xlnt_assert(!wb.has_named_range("test_nr2"));
         xlnt_assert_throws(wb.named_range("test_nr2"), xlnt::key_not_found);
     }
 
@@ -563,10 +573,13 @@ public:
         wb1.create_sheet().title("NEW1");
         xlnt::workbook wb2_shallow_copy = wb1.clone(xlnt::workbook::clone_method::shallow_copy);
         wb1.sheet_by_title("NEW1").title("NEW_CHANGED");
+        xlnt_assert(wb2_shallow_copy.contains("NEW_CHANGED"));
         xlnt_assert_throws_nothing(wb2_shallow_copy.sheet_by_title("NEW_CHANGED"));
         xlnt::workbook wb3_deep_copy = wb2_shallow_copy.clone(xlnt::workbook::clone_method::deep_copy);
         wb3_deep_copy.sheet_by_title("NEW_CHANGED").title("NEW_CHANGED_AGAIN");
+        xlnt_assert(!wb2_shallow_copy.contains("NEW_CHANGED_AGAIN"));
         xlnt_assert_throws(wb2_shallow_copy.sheet_by_title("NEW_CHANGED_AGAIN"), xlnt::key_not_found);
+        xlnt_assert(!wb1.contains("NEW_CHANGED_AGAIN"));
         xlnt_assert_throws(wb1.sheet_by_title("NEW_CHANGED_AGAIN"), xlnt::key_not_found);
     }
 
@@ -623,6 +636,7 @@ public:
         xlnt::manifest m;
         xlnt_assert(!m.has_default_type("xml"));
         xlnt_assert_throws(m.default_type("xml"), xlnt::key_not_found);
+        xlnt_assert(!m.has_content_type(xlnt::path("/")));
         xlnt_assert_throws(m.content_type(xlnt::path("/")), xlnt::key_not_found);
         xlnt_assert(!m.has_override_type(xlnt::path("/")));
         xlnt_assert_throws(m.override_type(xlnt::path("/")), xlnt::key_not_found);
@@ -683,7 +697,6 @@ public:
     void test_theme()
     {
         xlnt::workbook wb;
-        const auto &wb_const = wb;
         xlnt_assert(wb.has_theme());
         xlnt_assert_throws_nothing(wb.theme());
     }

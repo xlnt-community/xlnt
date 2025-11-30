@@ -74,6 +74,7 @@ public:
         register_test(test_lowest_row_or_props);
         register_test(test_highest_row);
         register_test(test_highest_row_or_props);
+        register_test(test_iterator_throws);
         register_test(test_iterator_has_value);
         register_test(test_const_iterators);
         register_test(test_const_reverse_iterators);
@@ -109,6 +110,7 @@ public:
         register_test(test_delete_rows);
         register_test(test_delete_columns);
         register_test(test_insert_too_many);
+        register_test(test_delete_too_many);
         register_test(test_insert_delete_moves_merges);
         register_test(test_hidden_sheet);
         register_test(test_xlsm_read_write);
@@ -598,6 +600,28 @@ public:
         auto ws = wb.active_sheet();
         ws.row_properties(11).height = 14.3;
         xlnt_assert_equals(ws.highest_row_or_props(), 11);
+    }
+
+    void test_iterator_throws()
+    {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        const auto& ws_const = ws;
+        xlnt_assert_throws(*ws.end(), xlnt::invalid_parameter);
+        xlnt_assert_throws(*ws_const.end(), xlnt::invalid_parameter);
+        xlnt_assert_throws(*ws.cend(), xlnt::invalid_parameter);
+
+        ws.cell("A1").value("A1");
+        xlnt::range rows = ws.rows();
+        auto rows_first = rows[0];
+        const auto& rows_first_const = rows_first;
+        xlnt_assert_throws(*rows_first.cend(), xlnt::invalid_parameter);
+        xlnt_assert_throws(*rows_first_const.end(), xlnt::invalid_parameter);
+
+        // The following will create cell B1.
+        xlnt_assert(!ws.has_cell(xlnt::cell_reference(2, 1)));
+        xlnt_assert_throws_nothing(*rows_first.end());
+        xlnt_assert(ws.has_cell(xlnt::cell_reference(2, 1)));
     }
 
     void test_iterator_has_value()
@@ -1623,6 +1647,15 @@ public:
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
         xlnt_assert_throws(ws.insert_rows(10, 4294967290), xlnt::invalid_parameter);
+        xlnt_assert_throws(ws.insert_columns(10, 4294967290), xlnt::invalid_parameter);
+    }
+
+    void test_delete_too_many()
+    {
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        xlnt_assert_throws(ws.delete_rows(10, 4294967290), xlnt::invalid_parameter);
+        xlnt_assert_throws(ws.delete_columns(10, 4294967290), xlnt::invalid_parameter);
     }
 
     void test_insert_delete_moves_merges()
@@ -1673,6 +1706,7 @@ public:
     {
         xlnt::workbook wb;
         wb.load(path_helper::test_file("16_hidden_sheet.xlsx"));
+        xlnt_assert_equals(wb.sheet_count(), 2);
         xlnt_assert_equals(wb.sheet_hidden_by_index(1), true);
         xlnt_assert_throws(wb.sheet_hidden_by_index(2), xlnt::invalid_parameter);
     }
@@ -1838,7 +1872,9 @@ public:
         xlnt::workbook wb;
         const auto ws = wb.active_sheet();
 
+        xlnt_assert(!ws.has_cell("X10"));
         xlnt_assert_throws(ws.cell("X10"), xlnt::invalid_parameter);
+        xlnt_assert_throws(ws.cell(24, 10), xlnt::invalid_parameter); // X10
     }
 
     void test_zoom_scale()

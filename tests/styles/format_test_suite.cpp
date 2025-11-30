@@ -148,6 +148,11 @@ public:
 
         xlnt_assert(format.has_style());
         xlnt_assert_throws_nothing(format.style());
+        format.clear_style();
+        xlnt_assert(!format.has_style());
+        xlnt_assert_throws(format.style(), xlnt::invalid_attribute);
+        // Clearing again should never throw.
+        xlnt_assert_throws_nothing(format.clear_style());
     }
 
     void test_issue93()

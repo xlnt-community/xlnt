@@ -424,6 +424,11 @@ private:
 
         xlnt_assert(cell.has_format());
         xlnt_assert_throws_nothing(cell.format());
+        cell.clear_format();
+        xlnt_assert(!cell.has_format());
+        xlnt_assert_throws(cell.format(), xlnt::invalid_attribute);
+        // Clearing again should never throw.
+        xlnt_assert_throws_nothing(cell.clear_format());
     }
 
     void test_font()
@@ -564,12 +569,6 @@ private:
         xlnt_assert(cell.format().has_protection());
         xlnt_assert(cell.format().protection_applied());
         xlnt_assert_equals(cell.protection(), protection);
-
-        xlnt_assert(cell.has_format());
-        cell.clear_format();
-        xlnt_assert(!cell.has_format());
-        // Clearing again should never throw.
-        xlnt_assert_throws_nothing(cell.clear_format());
     }
 
     void test_style()

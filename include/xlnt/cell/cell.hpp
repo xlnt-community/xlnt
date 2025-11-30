@@ -456,6 +456,7 @@ public:
 
     /// <summary>
     /// Sets the named style applied to this cell to a style named style_name.
+    /// Assumes that the style already exists in the workbook (please call workbook::has_style() to check).
     /// If this style has not been previously created in the workbook, a
     /// key_not_found exception will be thrown.
     /// </summary>

@@ -351,8 +351,8 @@ public:
 
     /// <summary>
     /// Returns an iterator to the worksheet following the last worksheet of the workbook.
-    /// This worksheet acts as a placeholder; attempting to access it will cause an
-    /// exception to be thrown.
+    /// This worksheet acts as a placeholder; attempting to access it will cause
+    /// an xlnt::invalid_parameter exception to be thrown.
     /// </summary>
     iterator end();
 
@@ -363,8 +363,8 @@ public:
 
     /// <summary>
     /// Returns a const iterator to the worksheet following the last worksheet of the workbook.
-    /// This worksheet acts as a placeholder; attempting to access it will cause an
-    /// exception to be thrown.
+    /// This worksheet acts as a placeholder; attempting to access it will cause
+    /// an xlnt::invalid_parameter exception to be thrown.
     /// </summary>
     const_iterator end() const;
 
@@ -375,8 +375,8 @@ public:
 
     /// <summary>
     /// Returns a const iterator to the worksheet following the last worksheet of the workbook.
-    /// This worksheet acts as a placeholder; attempting to access it will cause an
-    /// exception to be thrown.
+    /// This worksheet acts as a placeholder; attempting to access it will cause
+    /// an xlnt::invalid_parameter exception to be thrown.
     /// </summary>
     const_iterator cend() const;
 

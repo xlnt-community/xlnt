@@ -162,6 +162,25 @@ std::string manifest::content_type(const path &part) const
     throw key_not_found(absolute.string());
 }
 
+bool manifest::has_content_type(const path &part) const
+{
+    auto absolute = part.resolve(path("/"));
+
+    auto override_type = override_content_types_.find(absolute);
+    if (override_type != override_content_types_.end())
+    {
+        return true;
+    }
+
+    auto default_type = default_content_types_.find(part.extension());
+    if (default_type != default_content_types_.end())
+    {
+        return true;
+    }
+
+    return false;
+}
+
 void manifest::register_override_type(const path &part, const std::string &content_type)
 {
     override_content_types_[part] = content_type;
