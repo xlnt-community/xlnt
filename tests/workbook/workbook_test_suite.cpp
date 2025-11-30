@@ -740,9 +740,7 @@ public:
 
     void test_load_file_encrypted()
     {
-#define PASSWORD "\u043F\u0430\u0440\u043E\u043B\u044C" // "пароль"
-        const auto password_u8 = XLNT_TEST_U8STRING_LITERAL(PASSWORD); // u8"пароль"
-        const auto password_wide = XLNT_TEST_LSTRING_LITERAL(PASSWORD); // L"пароль"
+        const auto password = u8"\u043F\u0430\u0440\u043E\u043B\u044C"; // u8"пароль"
         xlnt::path file = path_helper::test_file("6_encrypted_libre.xlsx");
 #ifdef __cpp_lib_char8_t
         // The reinterpret_cast is ugly as hell, but I'm not sure if duplicating
@@ -751,29 +749,29 @@ public:
 #else
         std::string file_as_string = file.string();
 #endif
-        xlnt::workbook wb_path(file, password_u8);
+        xlnt::workbook wb_path(file, password);
         // ctor from ifstream
         std::ifstream file_reader(file.string(), std::ios::binary);
-        xlnt_assert(wb_path.compare(xlnt::workbook(file_reader, password_u8), false));
+        xlnt_assert(wb_path.compare(xlnt::workbook(file_reader, password), false));
         // load with string
         xlnt::workbook wb_load1;
         xlnt_assert_differs(wb_path, wb_load1);
-        wb_load1.load(file_as_string, password_u8);
+        wb_load1.load(file_as_string, password);
         xlnt_assert(wb_path.compare(wb_load1, false));
 #ifdef _MSC_VER
         // load with wstring
         xlnt::workbook wb_load2;
-        wb_load2.load(file.wstring(), password_wide);
+        wb_load2.load(file.wstring(), password);
         xlnt_assert(wb_path.compare(wb_load2, false));
 #endif
         // load with path
         xlnt::workbook wb_load3;
-        wb_load3.load(file, password_u8);
+        wb_load3.load(file, password);
         xlnt_assert(wb_path.compare(wb_load3, false));
         // load with istream
         xlnt::workbook wb_load4;
         std::ifstream file_reader2(file.string(), std::ios::binary);
-        wb_load4.load(file_reader2, password_u8);
+        wb_load4.load(file_reader2, password);
         xlnt_assert(wb_path.compare(wb_load4, false));
         // load with vector
         std::ifstream file_reader3(file.string(), std::ios::binary);
@@ -781,17 +779,16 @@ public:
         std::vector<uint8_t> data(std::istream_iterator<uint8_t>{file_reader3},
             std::istream_iterator<uint8_t>());
         xlnt::workbook wb_load5;
-        wb_load5.load(data, password_u8);
+        wb_load5.load(data, password);
         xlnt_assert(wb_path.compare(wb_load5, false));
         // load vector with empty data
         xlnt::workbook wb_load6;
-        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}, password_u8), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}, password), xlnt::invalid_file);
     }
 
     void test_load_file_encrypted_invalid_password()
     {
-        const auto invalid_password_u8 = u8"INVALID";
-        const auto invalid_password_wide = L"INVALID";
+        const auto invalid_password = u8"INVALID";
         xlnt::path file = path_helper::test_file("6_encrypted_libre.xlsx");
 #ifdef __cpp_lib_char8_t
         // The reinterpret_cast is ugly as hell, but I'm not sure if duplicating
@@ -800,30 +797,30 @@ public:
 #else
         std::string file_as_string = file.string();
 #endif
-        xlnt_assert_throws(xlnt::workbook(file, invalid_password_u8), xlnt::invalid_password);
+        xlnt_assert_throws(xlnt::workbook(file, invalid_password), xlnt::invalid_password);
         xlnt_assert_throws(xlnt::workbook{file}, xlnt::invalid_password); // also invalid with no password
         // ctor from ifstream
         std::ifstream file_reader(file.string(), std::ios::binary);
-        xlnt_assert_throws(xlnt::workbook(file_reader, invalid_password_u8), xlnt::invalid_password);
+        xlnt_assert_throws(xlnt::workbook(file_reader, invalid_password), xlnt::invalid_password);
         xlnt_assert_throws(xlnt::workbook{file_reader}, xlnt::invalid_password); // also invalid with no password
         // load with string
         xlnt::workbook wb_load1;
-        xlnt_assert_throws(wb_load1.load(file_as_string, invalid_password_u8), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load1.load(file_as_string, invalid_password), xlnt::invalid_password);
         xlnt_assert_throws(wb_load1.load(file_as_string), xlnt::invalid_password); // also invalid with no password
 #ifdef _MSC_VER
         // load with wstring
         xlnt::workbook wb_load2;
-        xlnt_assert_throws(wb_load2.load(file.wstring(), invalid_password_wide), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load2.load(file.wstring(), invalid_password), xlnt::invalid_password);
         xlnt_assert_throws(wb_load2.load(file.wstring()), xlnt::invalid_password); // also invalid with no password
 #endif
         // load with path
         xlnt::workbook wb_load3;
-        xlnt_assert_throws(wb_load3.load(file, invalid_password_u8), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load3.load(file, invalid_password), xlnt::invalid_password);
         xlnt_assert_throws(wb_load3.load(file), xlnt::invalid_password); // also invalid with no password
         // load with istream
         xlnt::workbook wb_load4;
         std::ifstream file_reader2(file.string(), std::ios::binary);
-        xlnt_assert_throws(wb_load4.load(file_reader2, invalid_password_u8), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load4.load(file_reader2, invalid_password), xlnt::invalid_password);
         xlnt_assert_throws(wb_load4.load(file_reader2), xlnt::invalid_password); // also invalid with no password
         // load with vector
         std::ifstream file_reader3(file.string(), std::ios::binary);
@@ -831,11 +828,11 @@ public:
         std::vector<uint8_t> data(std::istream_iterator<uint8_t>{file_reader3},
             std::istream_iterator<uint8_t>());
         xlnt::workbook wb_load5;
-        xlnt_assert_throws(wb_load5.load(data, invalid_password_u8), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load5.load(data, invalid_password), xlnt::invalid_password);
         xlnt_assert_throws(wb_load5.load(data), xlnt::invalid_password); // also invalid with no password
         // load vector with empty data
         xlnt::workbook wb_load6;
-        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}, invalid_password_u8), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}, invalid_password), xlnt::invalid_file);
         xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}), xlnt::invalid_file); // also invalid with no password
     }
 
