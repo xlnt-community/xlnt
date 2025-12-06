@@ -84,6 +84,7 @@ public:
         register_test(test_hyperlink);
         register_test(test_comment);
         register_test(test_copy_and_compare);
+        register_test(test_copy_value_between_workbooks);
         register_test(test_cell_phonetic_properties);
     }
 
@@ -847,6 +848,102 @@ private:
         // assign
         cell3 = cell2;
         xlnt_assert_equals(cell2, cell3);
+    }
+
+    void test_copy_value_between_workbooks()
+    {
+        // Test copying shared_string between different workbooks
+        xlnt::workbook wb_a;
+        auto ws_a = wb_a.active_sheet();
+        auto cell_a = ws_a.cell("A1");
+        cell_a.value("Test String");
+        xlnt_assert(cell_a.data_type() == xlnt::cell::type::shared_string);
+
+        xlnt::workbook wb_b;
+        auto ws_b = wb_b.active_sheet();
+        auto cell_b = ws_b.cell("B1");
+
+        // Copy value from workbook A to workbook B
+        cell_b.value(cell_a);
+
+        // Verify string is preserved correctly
+        xlnt_assert_equals(cell_b.value<std::string>(), "Test String");
+        xlnt_assert(cell_b.data_type() == xlnt::cell::type::shared_string);
+
+        // Verify workbooks are different
+        auto workbook_a = cell_a.workbook();
+        auto workbook_b = cell_b.workbook();
+        xlnt_assert(&workbook_a != &workbook_b);
+
+        // Test copying rich_text between workbooks
+        xlnt::rich_text rt;
+        rt.plain_text("Rich Text Example", false);
+        cell_a.value(rt);
+        cell_b.value(cell_a);
+        xlnt_assert_equals(cell_b.value<xlnt::rich_text>(), rt);
+
+        // Test copying numeric value between workbooks
+        cell_a.value(42.5);
+        cell_b.value(cell_a);
+        xlnt_assert_delta(cell_b.value<double>(), 42.5, 1E-9);
+        xlnt_assert(cell_b.data_type() == xlnt::cell::type::number);
+
+        // Test copying boolean between workbooks
+        cell_a.value(true);
+        cell_b.value(cell_a);
+        xlnt_assert(cell_b.value<bool>() == true);
+        xlnt_assert(cell_b.data_type() == xlnt::cell::type::boolean);
+
+        // Test copying formula between workbooks
+        cell_a.value(10.0);
+        cell_a.formula("=SUM(A1:A10)");
+        cell_b.value(cell_a);
+        xlnt_assert(cell_b.has_formula());
+        xlnt_assert_equals(cell_b.formula(), "SUM(A1:A10)");
+
+        // Test copying multiple different strings to verify shared_string deduplication
+        auto cell_a2 = ws_a.cell("A2");
+        auto cell_a3 = ws_a.cell("A3");
+        cell_a2.value("First String");
+        cell_a3.value("Second String");
+
+        auto cell_b2 = ws_b.cell("B2");
+        auto cell_b3 = ws_b.cell("B3");
+        cell_b2.value(cell_a2);
+        cell_b3.value(cell_a3);
+
+        xlnt_assert_equals(cell_b2.value<std::string>(), "First String");
+        xlnt_assert_equals(cell_b3.value<std::string>(), "Second String");
+
+        // Test copying same string twice (deduplication check)
+        cell_a2.value("Duplicate String");
+        cell_a3.value("Duplicate String");
+        cell_b2.value(cell_a2);
+        cell_b3.value(cell_a3);
+        xlnt_assert_equals(cell_b2.value<std::string>(), "Duplicate String");
+        xlnt_assert_equals(cell_b3.value<std::string>(), "Duplicate String");
+
+        // Test that hyperlinks are NOT copied between workbooks (safety)
+        auto cell_a4 = ws_a.cell("A4");
+        cell_a4.value("Link");
+        cell_a4.hyperlink("https://example.com");
+        xlnt_assert(cell_a4.has_hyperlink());
+
+        auto cell_b4 = ws_b.cell("B4");
+        cell_b4.value(cell_a4);
+        xlnt_assert_equals(cell_b4.value<std::string>(), "Link");
+        xlnt_assert(!cell_b4.has_hyperlink()); // Hyperlink should NOT be copied
+
+        // Test that formats are NOT copied between workbooks (safety)
+        auto cell_a5 = ws_a.cell("A5");
+        cell_a5.value("Formatted");
+        cell_a5.font(xlnt::font().bold(true));
+        xlnt_assert(cell_a5.has_format());
+
+        auto cell_b5 = ws_b.cell("B5");
+        cell_b5.value(cell_a5);
+        xlnt_assert_equals(cell_b5.value<std::string>(), "Formatted");
+        xlnt_assert(!cell_b5.has_format()); // Format should NOT be copied
     }
 
     void test_cell_phonetic_properties()

@@ -642,6 +642,12 @@ private:
     friend struct detail::cell_impl;
 
     /// <summary>
+    /// Helper to copy value from cell in different workbook.
+    /// Handles shared_string remapping and deep copy of resources.
+    /// </summary>
+    void copy_from_other_workbook(const cell &source);
+
+    /// <summary>
     /// Returns a non-const reference to the format of this cell.
     /// This is for internal use only.
     /// </summary>

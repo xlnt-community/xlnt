@@ -268,12 +268,59 @@ void cell::value(const char *c)
 
 void cell::value(const cell c)
 {
+    // Check if source cell belongs to a different workbook
+    auto source_wb = c.workbook();
+    auto target_wb = workbook();
+
+    if (&source_wb != &target_wb)
+    {
+        copy_from_other_workbook(c);
+        return;
+    }
+
+    // Same workbook: shallow copy (existing behavior)
     d_->type_ = c.d_->type_;
     d_->value_numeric_ = c.d_->value_numeric_;
     d_->value_text_ = c.d_->value_text_;
     d_->hyperlink_ = c.d_->hyperlink_;
     d_->formula_ = c.d_->formula_;
     d_->format_ = c.d_->format_;
+}
+
+void cell::copy_from_other_workbook(const cell &source)
+{
+    d_->type_ = source.d_->type_;
+
+    // Handle shared_string: remap to destination workbook
+    if (source.data_type() == type::shared_string)
+    {
+        const auto text = source.value<rich_text>();
+        const auto new_index = workbook().add_shared_string(text, false);
+        d_->value_numeric_ = static_cast<double>(new_index);
+        d_->value_text_ = rich_text();
+    }
+    else if (source.data_type() == type::inline_string || source.data_type() == type::formula_string)
+    {
+        d_->value_text_ = source.d_->value_text_;
+        d_->value_numeric_ = 0.0;
+    }
+    else
+    {
+        d_->value_numeric_ = source.d_->value_numeric_;
+        d_->value_text_ = source.d_->value_text_;
+    }
+
+    // Copy formula (text-based, safe to copy)
+    d_->formula_ = source.d_->formula_;
+
+    // Hyperlinks contain workbook-specific relationship IDs and cannot be
+    // safely copied between workbooks. Clear and let user reapply if needed.
+    d_->hyperlink_.clear();
+
+    // Formats reference stylesheet objects owned by the source workbook.
+    // Copying would create dangling pointers when source workbook is destroyed.
+    // Clear and let user reapply formatting if needed.
+    d_->format_.clear();
 }
 
 void cell::value(const date &d)
