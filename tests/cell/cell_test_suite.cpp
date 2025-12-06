@@ -945,6 +945,22 @@ private:
         xlnt_assert_equals(cell_b5.value<std::string>(), "Formatted");
         xlnt_assert(cell_b5.has_format()); // Format IS copied with automatic deep-copy
         xlnt_assert(cell_b5.font().bold()); // And formatting properties are preserved
+
+        // Test that same-worksheet copy uses shallow copy (original behavior preserved)
+        auto cell_a6 = ws_a.cell("A6");
+        auto cell_a7 = ws_a.cell("A7");
+        cell_a6.value("Same Sheet");
+        cell_a6.font(xlnt::font().italic(true));
+        cell_a6.hyperlink("https://example.com");
+        xlnt_assert(cell_a6.has_hyperlink());
+        xlnt_assert(cell_a6.has_format());
+
+        cell_a7.value(cell_a6); // Copy within same worksheet
+        xlnt_assert_equals(cell_a7.value<std::string>(), "Same Sheet");
+        xlnt_assert(cell_a7.has_format());
+        xlnt_assert(cell_a7.font().italic());
+        xlnt_assert(cell_a7.has_hyperlink());
+        xlnt_assert_equals(cell_a7.hyperlink().url(), "https://example.com");
     }
 
     // Test cross-workbook format handling with automatic deep-copy.
