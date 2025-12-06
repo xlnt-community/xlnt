@@ -268,11 +268,7 @@ void cell::value(const char *c)
 
 void cell::value(const cell c)
 {
-    // Check if source cell belongs to a different workbook
-    auto source_wb = c.workbook();
-    auto target_wb = workbook();
-
-    if (&source_wb != &target_wb)
+    if (c.worksheet().workbook() != worksheet().workbook())
     {
         copy_from_other_workbook(c);
         return;
