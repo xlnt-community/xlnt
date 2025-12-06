@@ -1089,6 +1089,55 @@ private:
         xlnt_assert(cell_f2.has_format());
         xlnt_assert_equals(cell_f2.font().size(), 20.0);
 
+        // Test 5: Border, protection, custom number_format, pivot_button, quote_prefix, style
+        // Uses scope to verify format survives after source workbook destruction
+        xlnt::workbook wb_dest_full;
+        wb_dest_full.create_style("TestStyle");
+        auto cell_dest_full = wb_dest_full.active_sheet().cell("A1");
+
+        {
+            xlnt::workbook wb_full;
+            auto fmt_full = wb_full.create_format();
+
+            // Border
+            xlnt::border test_border;
+            test_border.side(xlnt::border_side::top, xlnt::border::border_property().style(xlnt::border_style::thick).color(xlnt::color::blue()));
+            fmt_full.border(test_border, true);
+
+            // Protection
+            fmt_full.protection(xlnt::protection().locked(false).hidden(true), true);
+
+            // Custom number format (non-builtin)
+            xlnt::number_format custom_nf("0.000%");
+            fmt_full.number_format(custom_nf, true);
+
+            // Pivot button and quote prefix
+            fmt_full.pivot_button(true);
+            fmt_full.quote_prefix(true);
+
+            // Style
+            auto src_style = wb_full.create_style("TestStyle");
+            src_style.font(xlnt::font().name("Arial"), true);
+            fmt_full.style("TestStyle");
+
+            cell_dest_full.format(fmt_full);
+        }
+        // Source workbook destroyed, verify format is still valid
+
+        xlnt_assert(cell_dest_full.has_format());
+        xlnt_assert(cell_dest_full.format().border_applied());
+        xlnt_assert(cell_dest_full.border().side(xlnt::border_side::top).is_set());
+        xlnt_assert_equals(cell_dest_full.border().side(xlnt::border_side::top).get().style().get(), xlnt::border_style::thick);
+        xlnt_assert(cell_dest_full.format().protection_applied());
+        xlnt_assert_equals(cell_dest_full.protection().locked(), false);
+        xlnt_assert_equals(cell_dest_full.protection().hidden(), true);
+        xlnt_assert(cell_dest_full.format().number_format_applied());
+        xlnt_assert_equals(cell_dest_full.number_format().format_string(), "0.000%");
+        xlnt_assert(cell_dest_full.format().pivot_button());
+        xlnt_assert(cell_dest_full.format().quote_prefix());
+        xlnt_assert(cell_dest_full.has_style());
+        xlnt_assert_equals(cell_dest_full.style().name(), "TestStyle");
+
         // Test 6: cell::value() does shallow copy within same workbook
         xlnt::workbook wb_same;
         auto ws_same = wb_same.active_sheet();
