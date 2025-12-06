@@ -85,6 +85,8 @@ public:
         register_test(test_comment);
         register_test(test_copy_and_compare);
         register_test(test_copy_value_between_workbooks);
+        register_test(test_copy_inline_string_between_workbooks);
+        register_test(test_copy_formula_string_between_workbooks);
         register_test(test_format_from_different_workbook);
         register_test(test_cell_phonetic_properties);
     }
@@ -963,6 +965,50 @@ private:
         xlnt_assert_equals(cell_a7.hyperlink().url(), "https://example.com");
     }
 
+    void test_copy_inline_string_between_workbooks()
+    {
+        // Load workbook with inline_string cell
+        xlnt::workbook wb_source;
+        wb_source.load(path_helper::test_file("Issue445_inline_str.xlsx"));
+        auto ws_source = wb_source.active_sheet();
+        auto source_cell = ws_source.cell("A1");
+
+        xlnt_assert_equals(source_cell.data_type(), xlnt::cell::type::inline_string);
+        xlnt_assert_equals(source_cell.value<std::string>(), "a");
+
+        // Copy to different workbook
+        xlnt::workbook wb_dest;
+        auto ws_dest = wb_dest.active_sheet();
+        auto dest_cell = ws_dest.cell("B1");
+
+        dest_cell.value(source_cell);
+
+        xlnt_assert_equals(dest_cell.value<std::string>(), "a");
+        xlnt_assert_equals(dest_cell.data_type(), xlnt::cell::type::inline_string);
+    }
+
+    void test_copy_formula_string_between_workbooks()
+    {
+        // Load workbook with formula_string cells (CONCATENATE returns string)
+        xlnt::workbook wb_source;
+        wb_source.load(path_helper::test_file("18_formulae.xlsx"));
+        auto ws_source = wb_source.sheet_by_index(0);
+        auto source_cell = ws_source.cell("D1"); // CONCATENATE(A1,B1) = "a11"
+
+        xlnt_assert_equals(source_cell.data_type(), xlnt::cell::type::formula_string);
+        xlnt_assert_equals(source_cell.value<std::string>(), "a11");
+
+        // Copy to different workbook
+        xlnt::workbook wb_dest;
+        auto ws_dest = wb_dest.active_sheet();
+        auto dest_cell = ws_dest.cell("B1");
+
+        dest_cell.value(source_cell);
+
+        xlnt_assert_equals(dest_cell.value<std::string>(), "a11");
+        xlnt_assert_equals(dest_cell.data_type(), xlnt::cell::type::formula_string);
+    }
+
     // Test cross-workbook format handling with automatic deep-copy.
     // When cell::format() receives a format from a different workbook,
     // it automatically clones all properties to the destination workbook's stylesheet.
@@ -1042,6 +1088,27 @@ private:
         cell_f2.format(cell_f1.format());
         xlnt_assert(cell_f2.has_format());
         xlnt_assert_equals(cell_f2.font().size(), 20.0);
+
+        // Test 6: cell::value() does shallow copy within same workbook
+        xlnt::workbook wb_same;
+        auto ws_same = wb_same.active_sheet();
+        auto cell_source = ws_same.cell("A1");
+        auto cell_dest = ws_same.cell("B1");
+
+        cell_source.value("Test");
+        cell_source.font(xlnt::font().bold(true).size(14));
+
+        auto initial_format_count = wb_same.format_count();
+
+        cell_dest.value(cell_source); // Copy within same workbook
+
+        // Format count should NOT increase (shallow copy)
+        xlnt_assert_equals(wb_same.format_count(), initial_format_count);
+
+        // Both cells should share the same format object
+        xlnt_assert(cell_dest.has_format());
+        xlnt_assert_equals(cell_dest.font().bold(), true);
+        xlnt_assert_equals(cell_dest.font().size(), 14.0);
 
         // Test 5: cell::value() clones format from different workbook (automatic deep-copy)
         xlnt::workbook wb_g;
