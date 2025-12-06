@@ -1159,7 +1159,7 @@ private:
         xlnt_assert_equals(cell_dest.font().bold(), true);
         xlnt_assert_equals(cell_dest.font().size(), 14.0);
 
-        // Test 5: cell::value() clones format from different workbook (automatic deep-copy)
+        // Test 7: cell::value() clones format from different workbook (automatic deep-copy)
         xlnt::workbook wb_g;
         auto cell_g = wb_g.active_sheet().cell("G1");
 
