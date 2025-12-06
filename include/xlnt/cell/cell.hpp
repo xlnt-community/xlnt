@@ -196,6 +196,9 @@ public:
 
     /// <summary>
     /// Sets the value and formatting of this cell to that of other_cell.
+    /// NOTE: if copying from a different workbook, shared strings are remapped
+    /// correctly, formulas are copied as text, hyperlinks are cleared for safety,
+    /// and formats are deep-copied automatically.
     /// </summary>
     void value(const cell other_cell);
 
@@ -643,7 +646,8 @@ private:
 
     /// <summary>
     /// Helper to copy value from cell in different workbook.
-    /// Handles shared_string remapping and deep copy of resources.
+    /// Handles shared_string remapping, formula copying, format deep-copy,
+    /// and clears hyperlinks for safety (workbook-specific relationships).
     /// </summary>
     void copy_from_other_workbook(const cell &source);
 

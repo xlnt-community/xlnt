@@ -317,10 +317,14 @@ void cell::copy_from_other_workbook(const cell &source)
     // safely copied between workbooks. Clear and let user reapply if needed.
     d_->hyperlink_.clear();
 
-    // Formats reference stylesheet objects owned by the source workbook.
-    // Copying would create dangling pointers when source workbook is destroyed.
-    // Clear and let user reapply formatting if needed.
-    d_->format_.clear();
+    if (source.has_format())
+    {
+        format(source.format());
+    }
+    else
+    {
+        d_->format_.clear();
+    }
 }
 
 void cell::value(const date &d)

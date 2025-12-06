@@ -933,9 +933,8 @@ private:
         auto cell_b4 = ws_b.cell("B4");
         cell_b4.value(cell_a4);
         xlnt_assert_equals(cell_b4.value<std::string>(), "Link");
-        xlnt_assert(!cell_b4.has_hyperlink()); // Hyperlink should NOT be copied
+        xlnt_assert(!cell_b4.has_hyperlink());
 
-        // Test that formats are NOT copied between workbooks (safety)
         auto cell_a5 = ws_a.cell("A5");
         cell_a5.value("Formatted");
         cell_a5.font(xlnt::font().bold(true));
@@ -944,7 +943,8 @@ private:
         auto cell_b5 = ws_b.cell("B5");
         cell_b5.value(cell_a5);
         xlnt_assert_equals(cell_b5.value<std::string>(), "Formatted");
-        xlnt_assert(!cell_b5.has_format()); // Format should NOT be copied
+        xlnt_assert(cell_b5.has_format()); // Format IS copied with automatic deep-copy
+        xlnt_assert(cell_b5.font().bold()); // And formatting properties are preserved
     }
 
     // Test cross-workbook format handling with automatic deep-copy.
@@ -1027,7 +1027,7 @@ private:
         xlnt_assert(cell_f2.has_format());
         xlnt_assert_equals(cell_f2.font().size(), 20.0);
 
-        // Test 5: cell::value() clears format from different workbook
+        // Test 5: cell::value() clones format from different workbook (automatic deep-copy)
         xlnt::workbook wb_g;
         auto cell_g = wb_g.active_sheet().cell("G1");
 
@@ -1039,7 +1039,8 @@ private:
         cell_g.value(cell_h);
 
         xlnt_assert_equals(cell_g.value<std::string>(), "Test");
-        xlnt_assert(!cell_g.has_format());
+        xlnt_assert(cell_g.has_format()); // Format is now automatically cloned
+        xlnt_assert(cell_g.font().bold()); // Font properties are preserved
     }
 
     void test_cell_phonetic_properties()
