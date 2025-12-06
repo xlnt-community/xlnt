@@ -648,6 +648,14 @@ private:
     void copy_from_other_workbook(const cell &source);
 
     /// <summary>
+    /// Helper to clone format from different workbook.
+    /// Creates deep-copy of format in destination workbook's stylesheet,
+    /// copying all properties (alignment, border, fill, font, number_format,
+    /// protection, pivot_button, quote_prefix, style).
+    /// </summary>
+    void copy_format_from_other_workbook(const class format &source_format);
+
+    /// <summary>
     /// Returns a non-const reference to the format of this cell.
     /// This is for internal use only.
     /// </summary>

@@ -1470,6 +1470,21 @@ format workbook::create_format(bool default_format)
     return d_->stylesheet_.get().create_format(default_format);
 }
 
+bool workbook::owns_format(const class format &fmt) const
+{
+    if (!d_->stylesheet_.is_set())
+    {
+        return false;
+    }
+
+    if (!fmt.d_ || !fmt.d_->parent)
+    {
+        return false;
+    }
+
+    return fmt.d_->parent == &d_->stylesheet_.get();
+}
+
 void workbook::default_format(const class format &format)
 {
     d_->stylesheet_.get().default_format(format);

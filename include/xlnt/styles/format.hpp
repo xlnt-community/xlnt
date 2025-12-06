@@ -221,6 +221,7 @@ private:
     friend class detail::xlsx_producer;
     friend class detail::xlsx_consumer;
     friend class cell;
+    friend class workbook;
 
     /// <summary>
     /// Constructs a format from an impl pointer.

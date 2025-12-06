@@ -804,6 +804,12 @@ public:
     xlnt::format create_format(bool default_format = false);
 
     /// <summary>
+    /// Returns true if the given format belongs to this workbook's stylesheet.
+    /// Used to detect cross-workbook format references that could cause dangling pointers.
+    /// </summary>
+    bool owns_format(const class format &fmt) const;
+
+    /// <summary>
     /// Clear all cell-level formatting and formats from the styelsheet. This leaves
     /// all other styling in place (e.g. named styles).
     /// </summary>

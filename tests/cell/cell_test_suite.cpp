@@ -85,6 +85,7 @@ public:
         register_test(test_comment);
         register_test(test_copy_and_compare);
         register_test(test_copy_value_between_workbooks);
+        register_test(test_format_from_different_workbook);
         register_test(test_cell_phonetic_properties);
     }
 
@@ -944,6 +945,101 @@ private:
         cell_b5.value(cell_a5);
         xlnt_assert_equals(cell_b5.value<std::string>(), "Formatted");
         xlnt_assert(!cell_b5.has_format()); // Format should NOT be copied
+    }
+
+    // Test cross-workbook format handling with automatic deep-copy.
+    // When cell::format() receives a format from a different workbook,
+    // it automatically clones all properties to the destination workbook's stylesheet.
+    void test_format_from_different_workbook()
+    {
+        // Test 1: Format from different workbook is cloned automatically
+        xlnt::workbook wb_a;
+        auto ws_a = wb_a.active_sheet();
+        auto cell_a = ws_a.cell("A1");
+
+        xlnt::workbook wb_b;
+        auto ws_b = wb_b.active_sheet();
+        auto cell_b = ws_b.cell("B1");
+
+        cell_a.font(xlnt::font().bold(true).size(14));
+        cell_a.fill(xlnt::fill(xlnt::pattern_fill()
+                .type(xlnt::pattern_fill_type::solid)
+                .foreground(xlnt::color::red())));
+
+        xlnt_assert(cell_a.has_format());
+
+        cell_b.format(cell_a.format());
+
+        xlnt_assert(cell_b.has_format());
+        xlnt_assert(cell_b.font().bold());
+        xlnt_assert_equals(cell_b.font().size(), 14.0);
+
+        // Test 2: Multiple format properties are cloned
+        xlnt::workbook wb_c;
+        auto fmt_c = wb_c.create_format();
+        fmt_c.font(xlnt::font().italic(true), true);
+        fmt_c.number_format(xlnt::number_format::percentage(), true);
+        fmt_c.alignment(xlnt::alignment().horizontal(xlnt::horizontal_alignment::center), true);
+
+        xlnt::workbook wb_d;
+        auto ws_d = wb_d.active_sheet();
+        auto cell_d = ws_d.cell("D1");
+        cell_d.value(0.5);
+
+        cell_d.format(fmt_c);
+
+        xlnt_assert(cell_d.has_format());
+        xlnt_assert(cell_d.font().italic());
+        xlnt_assert_equals(cell_d.alignment().horizontal(), xlnt::horizontal_alignment::center);
+
+        // Test 3: Format remains valid after source workbook destruction
+        xlnt::workbook wb_e;
+        auto cell_e = wb_e.active_sheet().cell("E1");
+
+        {
+            xlnt::workbook wb_temp;
+            auto cell_temp = wb_temp.active_sheet().cell("T1");
+            cell_temp.font(xlnt::font().bold(true).underline(xlnt::font::underline_style::single));
+
+            cell_e.format(cell_temp.format());
+
+            xlnt_assert(!cell_e.workbook().owns_format(cell_temp.format()));
+            xlnt_assert(cell_e.workbook().owns_format(cell_e.format()));
+
+            xlnt_assert(!cell_temp.workbook().owns_format(cell_e.format()));
+            xlnt_assert(cell_temp.workbook().owns_format(cell_temp.format()));
+        }
+
+        xlnt_assert(cell_e.has_format());
+        xlnt_assert(cell_e.font().bold());
+        xlnt_assert(cell_e.font().underlined());
+
+        // Test 4: Same workbook format assignment works without cloning
+        xlnt::workbook wb_f;
+        auto ws_f = wb_f.active_sheet();
+        auto cell_f1 = ws_f.cell("F1");
+        auto cell_f2 = ws_f.cell("F2");
+
+        cell_f1.font(xlnt::font().size(20));
+        xlnt_assert(cell_f1.has_format());
+
+        cell_f2.format(cell_f1.format());
+        xlnt_assert(cell_f2.has_format());
+        xlnt_assert_equals(cell_f2.font().size(), 20.0);
+
+        // Test 5: cell::value() clears format from different workbook
+        xlnt::workbook wb_g;
+        auto cell_g = wb_g.active_sheet().cell("G1");
+
+        xlnt::workbook wb_h;
+        auto cell_h = wb_h.active_sheet().cell("H1");
+        cell_h.value("Test");
+        cell_h.font(xlnt::font().bold(true));
+
+        cell_g.value(cell_h);
+
+        xlnt_assert_equals(cell_g.value<std::string>(), "Test");
+        xlnt_assert(!cell_g.has_format());
     }
 
     void test_cell_phonetic_properties()
