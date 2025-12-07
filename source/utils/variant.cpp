@@ -24,6 +24,7 @@
 
 #include <xlnt/utils/datetime.hpp>
 #include <xlnt/utils/variant.hpp>
+#include <xlnt/utils/exceptions.hpp>
 
 namespace xlnt {
 
@@ -148,37 +149,67 @@ bool variant::is(type t) const
 template <>
 std::string variant::get() const
 {
-    return lpstr_value_;
+    if (type_ == type::lpstr)
+    {
+        return lpstr_value_;
+    }
+
+    throw xlnt::bad_variant_access(static_cast<int>(type::lpstr), static_cast<int>(type_));
 }
 
 template <>
 bool variant::get() const
 {
-    return i4_value_ != 0;
+    if (type_ == type::boolean)
+    {
+        return i4_value_ != 0;
+    }
+
+    throw xlnt::bad_variant_access(static_cast<int>(type::boolean), static_cast<int>(type_));
 }
 
 template <>
 std::int32_t variant::get() const
 {
-    return i4_value_;
+    if (type_ == type::i4)
+    {
+        return i4_value_;
+    }
+
+    throw xlnt::bad_variant_access(static_cast<int>(type::i4), static_cast<int>(type_));
 }
 
 template <>
 datetime variant::get() const
 {
-    return datetime::from_iso_string(lpstr_value_);
+    if (type_ == type::date)
+    {
+        return datetime::from_iso_string(lpstr_value_);
+    }
+
+    throw xlnt::bad_variant_access(static_cast<int>(type::date), static_cast<int>(type_));
 }
 
 template <>
 std::vector<variant> variant::get() const
 {
-    return vector_value_;
+    if (type_ == type::vector)
+    {
+        return vector_value_;
+    }
+
+    throw xlnt::bad_variant_access(static_cast<int>(type::vector), static_cast<int>(type_));
 }
 
 template<typename T>
 std::vector<T> variant::get_vector_internal() const
 {
-    // According to the specification, "Vector contents shall be of uniform type"
+    if (type_ != type::vector)
+    {
+        throw xlnt::bad_variant_access(static_cast<int>(type::vector), static_cast<int>(type_));
+    }
+
+    // According to the OOXML specification, "Vector contents shall be of uniform type"
     std::vector<T> vec;
     vec.reserve(vector_value_.size());
     for (const variant &var : vector_value_)

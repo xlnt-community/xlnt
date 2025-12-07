@@ -263,4 +263,16 @@ public:
     explicit encoding_error(const std::string &message);
 };
 
+/// <summary>
+/// Exception for xlnt::variant access
+/// </summary>
+class XLNT_API bad_variant_access : public exception
+{
+public:
+    /// <summary>
+    /// Constructs a bad_variant_access exception given the mismatched types.
+    /// </summary>
+    explicit bad_variant_access(int expected_type, int actual_type);
+};
+
 } // namespace xlnt

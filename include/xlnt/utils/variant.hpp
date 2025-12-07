@@ -47,39 +47,40 @@ public:
     /// </summary>
     enum class type
     {
-        vector,
-        //array,
-        //blob,
-        //oblob,
-        //empty,
-        null,
-        //i1,
-        //i2,
-        i4,
-        //i8,
-        //integer,
-        //ui1,
-        //ui2,
-        //ui4,
-        //ui8,
-        //uint,
-        //r4,
-        //r8,
-        //decimal,
-        lpstr, // TODO: how does this differ from lpwstr?
-        //lpwstr,
-        //bstr,
-        date,
-        //filetime,
-        boolean,
-        //cy,
-        //error,
-        //stream,
-        //ostream,
-        //storage,
-        //ostorage,
-        //vstream,
-        //clsid
+        //variant = 0, // this variant type
+        vector = 1,
+        //array = 2,
+        //blob = 3, // XSD type xsd:base64Binary
+        //oblob = 4, // XSD type xsd:base64Binary
+        //empty = 5,
+        null = 6,
+        //i1 = 7, // XSD type xsd:byte (8-bit signed integer)
+        //i2 = 8, // XSD type xsd:short (16-bit signed integer)
+        i4 = 9, // XSD type xsd:int (32-bit signed integer)
+        //i8 = 10, // XSD type xsd:long (64-bit signed integer)
+        //integer = 11, // XSD type xsd:int (32-bit signed integer)
+        //ui1 = 12, // XSD type xsd:unsignedByte (8-bit unsigned integer)
+        //ui2 = 13, // XSD type xsd:unsignedShort (16-bit unsigned integer)
+        //ui4 = 14, // XSD type xsd:unsignedInt (32-bit unsigned integer)
+        //ui8 = 15, // XSD type xsd:unsignedLong (64-bit unsigned integer)
+        //uint = 16, // XSD type xsd:unsignedInt (32-bit unsigned integer)
+        //r4 = 17, // XSD type xsd:float (32-bit floating point number)
+        //r8 = 18, // XSD type xsd:double (64-bit floating point number)
+        //decimal = 19, XSD type xsd:decimal
+        lpstr = 20, // XSD type xsd:string. OOXML says: "This element specifies a string variant type."
+        //lpwstr = 21, // XSD type xsd:string. OOXML says: "This element specifies a string variant type."
+        //bstr = 22, // XSD type xsd:string. OOXML says: "This element defines a binary basic string variant type, which can store any valid Unicode character."
+        date = 23, // XSD type xsd:dateTime
+        //filetime = 24, // XSD type xsd:dateTime
+        boolean = 25, // XSD type xsd:boolean (any of: 'true', 'false', '1', '0')
+        //cy = 26,
+        //error = 27,
+        //stream = 28, // XSD type xsd:base64Binary
+        //ostream = 29, // XSD type xsd:base64Binary
+        //storage = 30, // XSD type xsd:base64Binary
+        //ostorage = 31, // XSD type xsd:base64Binary
+        //vstream = 32,
+        //clsid = 33
     };
 
     /// <summary>
@@ -175,7 +176,7 @@ public:
     /// <summary>
     /// Returns the value of this variant as type T.
     /// Assumes that the variant is of type T (please call is() or value_type() to check).
-    /// An exception will be thrown if the types are not convertible.
+    /// An xlnt::bad_variant_access exception will be thrown if the types are not convertible.
     /// </summary>
     template <typename T>
     T get() const;

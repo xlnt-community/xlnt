@@ -140,4 +140,9 @@ encoding_error::encoding_error(const std::string &message)
 {
 }
 
+bad_variant_access::bad_variant_access(int expected_type, int actual_type)
+    : exception("bad variant access: expected type " + std::to_string(expected_type) + " but got type " + std::to_string(actual_type))
+{
+}
+
 } // namespace xlnt
