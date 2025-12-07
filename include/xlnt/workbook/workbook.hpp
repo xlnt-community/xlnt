@@ -804,12 +804,6 @@ public:
     xlnt::format create_format(bool default_format = false);
 
     /// <summary>
-    /// Returns true if the given format belongs to this workbook's stylesheet.
-    /// Used to detect cross-workbook format references that could cause dangling pointers.
-    /// </summary>
-    bool owns_format(const class format &fmt) const;
-
-    /// <summary>
     /// Clear all cell-level formatting and formats from the styelsheet. This leaves
     /// all other styling in place (e.g. named styles).
     /// </summary>
@@ -998,11 +992,29 @@ public:
     bool operator!=(const workbook &rhs) const;
 
 private:
+    friend class cell;
     friend class streaming_workbook_reader;
     friend class worksheet;
     friend class detail::xlsx_consumer;
     friend class detail::xlsx_producer;
     friend struct detail::worksheet_impl;
+
+    /// <summary>
+    /// Creates a deep copy of source_format in this workbook's stylesheet.
+    /// All format properties (alignment, border, fill, font, number format, protection)
+    /// are cloned using public API calls to avoid unnecessary duplication.
+    /// Pivot button and quote prefix properties are copied directly.
+    /// If source_format has a style, the cloned format is associated with the same style name.
+    /// Note: Deep cloning of the style itself is not yet implemented.
+    /// Returns the newly created format in this workbook.
+    /// </summary>
+    xlnt::format clone_format_from(const xlnt::format &source_format);
+
+    /// <summary>
+    /// Returns true if the given format belongs to this workbook's stylesheet.
+    /// Used internally to detect cross-workbook format references that could cause dangling pointers.
+    /// </summary>
+    bool owns_format(const class format &fmt) const;
 
     /// <summary>
     /// Private constructor. Constructs a workbook from an implementation pointer.

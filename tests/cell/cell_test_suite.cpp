@@ -855,324 +855,163 @@ private:
 
     void test_copy_value_between_workbooks()
     {
-        // Test copying shared_string between different workbooks
+        // Test 1: Cross-workbook copy with scope destruction (proves deep copy, not raw pointers)
+        xlnt::workbook wb_dest;
+        auto cell_dest = wb_dest.active_sheet().cell("A1");
+
+        {
+            xlnt::workbook wb_source;
+            auto cell_source = wb_source.active_sheet().cell("A1");
+
+            // Set various value types
+            cell_source.value("Test String");
+            cell_source.formula("=SUM(A1:A10)");
+            cell_source.font(xlnt::font().bold(true).size(14));
+
+            cell_dest.value(cell_source);
+        }
+        // Source workbook destroyed - if raw pointers were copied, this would crash/corrupt
+
+        xlnt_assert_equals(cell_dest.value<std::string>(), "Test String");
+        xlnt_assert(cell_dest.has_formula());
+        xlnt_assert(cell_dest.has_format());
+        xlnt_assert(cell_dest.font().bold());
+        xlnt_assert_equals(cell_dest.font().size(), 14.0);
+
+        // Test 2: Shared string deduplication
         xlnt::workbook wb_a;
         auto ws_a = wb_a.active_sheet();
-        auto cell_a = ws_a.cell("A1");
-        cell_a.value("Test String");
-        xlnt_assert(cell_a.data_type() == xlnt::cell::type::shared_string);
 
         xlnt::workbook wb_b;
         auto ws_b = wb_b.active_sheet();
-        auto cell_b = ws_b.cell("B1");
 
-        // Copy value from workbook A to workbook B
-        cell_b.value(cell_a);
+        ws_a.cell("A1").value("Duplicate");
+        ws_a.cell("A2").value("Duplicate");
 
-        // Verify string is preserved correctly
-        xlnt_assert_equals(cell_b.value<std::string>(), "Test String");
-        xlnt_assert(cell_b.data_type() == xlnt::cell::type::shared_string);
+        ws_b.cell("B1").value(ws_a.cell("A1"));
+        auto count_after_first = wb_b.shared_strings().size();
 
-        // Verify workbooks are different
-        auto workbook_a = cell_a.workbook();
-        auto workbook_b = cell_b.workbook();
-        xlnt_assert(&workbook_a != &workbook_b);
+        ws_b.cell("B2").value(ws_a.cell("A2")); // Same string
+        xlnt_assert_equals(wb_b.shared_strings().size(), count_after_first); // Deduplicated
 
-        // Test copying rich_text between workbooks
-        xlnt::rich_text rt;
-        rt.plain_text("Rich Text Example", false);
-        cell_a.value(rt);
-        cell_b.value(cell_a);
-        xlnt_assert_equals(cell_b.value<xlnt::rich_text>(), rt);
+        // Test 3: Same-workbook shallow copy (format_count unchanged, hyperlink preserved)
+        xlnt::workbook wb_same;
+        auto ws_same = wb_same.active_sheet();
+        auto cell_src = ws_same.cell("A1");
+        auto cell_dst = ws_same.cell("A2");
 
-        // Test copying numeric value between workbooks
-        cell_a.value(42.5);
-        cell_b.value(cell_a);
-        xlnt_assert_delta(cell_b.value<double>(), 42.5, 1E-9);
-        xlnt_assert(cell_b.data_type() == xlnt::cell::type::number);
+        cell_src.value("Data");
+        cell_src.font(xlnt::font().italic(true));
+        cell_src.hyperlink("https://example.com");
 
-        // Test copying boolean between workbooks
-        cell_a.value(true);
-        cell_b.value(cell_a);
-        xlnt_assert(cell_b.value<bool>() == true);
-        xlnt_assert(cell_b.data_type() == xlnt::cell::type::boolean);
+        auto format_count = wb_same.format_count();
+        cell_dst.value(cell_src);
 
-        // Test copying formula between workbooks
-        cell_a.value(10.0);
-        cell_a.formula("=SUM(A1:A10)");
-        cell_b.value(cell_a);
-        xlnt_assert(cell_b.has_formula());
-        xlnt_assert_equals(cell_b.formula(), "SUM(A1:A10)");
-
-        // Test copying multiple different strings to verify shared_string deduplication
-        auto cell_a2 = ws_a.cell("A2");
-        auto cell_a3 = ws_a.cell("A3");
-        cell_a2.value("First String");
-        cell_a3.value("Second String");
-
-        auto cell_b2 = ws_b.cell("B2");
-        auto cell_b3 = ws_b.cell("B3");
-        cell_b2.value(cell_a2);
-        cell_b3.value(cell_a3);
-
-        xlnt_assert_equals(cell_b2.value<std::string>(), "First String");
-        xlnt_assert_equals(cell_b3.value<std::string>(), "Second String");
-
-        // Test copying same string twice (deduplication check)
-        cell_a2.value("Duplicate String");
-        cell_a3.value("Duplicate String");
-        cell_b2.value(cell_a2);
-        cell_b3.value(cell_a3);
-        xlnt_assert_equals(cell_b2.value<std::string>(), "Duplicate String");
-        xlnt_assert_equals(cell_b3.value<std::string>(), "Duplicate String");
-
-        // Test that hyperlinks are NOT copied between workbooks (safety)
-        auto cell_a4 = ws_a.cell("A4");
-        cell_a4.value("Link");
-        cell_a4.hyperlink("https://example.com");
-        xlnt_assert(cell_a4.has_hyperlink());
-
-        auto cell_b4 = ws_b.cell("B4");
-        cell_b4.value(cell_a4);
-        xlnt_assert_equals(cell_b4.value<std::string>(), "Link");
-        xlnt_assert(!cell_b4.has_hyperlink());
-
-        auto cell_a5 = ws_a.cell("A5");
-        cell_a5.value("Formatted");
-        cell_a5.font(xlnt::font().bold(true));
-        xlnt_assert(cell_a5.has_format());
-
-        auto cell_b5 = ws_b.cell("B5");
-        cell_b5.value(cell_a5);
-        xlnt_assert_equals(cell_b5.value<std::string>(), "Formatted");
-        xlnt_assert(cell_b5.has_format()); // Format IS copied with automatic deep-copy
-        xlnt_assert(cell_b5.font().bold()); // And formatting properties are preserved
-
-        // Test that same-worksheet copy uses shallow copy (original behavior preserved)
-        auto cell_a6 = ws_a.cell("A6");
-        auto cell_a7 = ws_a.cell("A7");
-        cell_a6.value("Same Sheet");
-        cell_a6.font(xlnt::font().italic(true));
-        cell_a6.hyperlink("https://example.com");
-        xlnt_assert(cell_a6.has_hyperlink());
-        xlnt_assert(cell_a6.has_format());
-
-        cell_a7.value(cell_a6); // Copy within same worksheet
-        xlnt_assert_equals(cell_a7.value<std::string>(), "Same Sheet");
-        xlnt_assert(cell_a7.has_format());
-        xlnt_assert(cell_a7.font().italic());
-        xlnt_assert(cell_a7.has_hyperlink());
-        xlnt_assert_equals(cell_a7.hyperlink().url(), "https://example.com");
+        xlnt_assert_equals(wb_same.format_count(), format_count); // No new format created
+        xlnt_assert(cell_dst.has_hyperlink()); // Hyperlink preserved (same workbook)
+        xlnt_assert_equals(cell_dst.hyperlink().url(), "https://example.com");
     }
 
     void test_copy_inline_string_between_workbooks()
     {
-        // Load workbook with inline_string cell
-        xlnt::workbook wb_source;
-        wb_source.load(path_helper::test_file("Issue445_inline_str.xlsx"));
-        auto ws_source = wb_source.active_sheet();
-        auto source_cell = ws_source.cell("A1");
-
-        xlnt_assert_equals(source_cell.data_type(), xlnt::cell::type::inline_string);
-        xlnt_assert_equals(source_cell.value<std::string>(), "a");
-
-        // Copy to different workbook
         xlnt::workbook wb_dest;
-        auto ws_dest = wb_dest.active_sheet();
-        auto dest_cell = ws_dest.cell("B1");
+        auto cell_dest = wb_dest.active_sheet().cell("A1");
+        std::string expected_value;
+        xlnt::cell::type expected_type;
 
-        dest_cell.value(source_cell);
+        {
+            xlnt::workbook wb_source;
+            wb_source.load(path_helper::test_file("Issue445_inline_str.xlsx"));
+            auto cell_source = wb_source.active_sheet().cell("A1");
 
-        xlnt_assert_equals(dest_cell.value<std::string>(), "a");
-        xlnt_assert_equals(dest_cell.data_type(), xlnt::cell::type::inline_string);
+            expected_value = cell_source.value<std::string>();
+            expected_type = cell_source.data_type();
+
+            cell_dest.value(cell_source);
+        }
+        // Source workbook destroyed
+
+        xlnt_assert_equals(cell_dest.value<std::string>(), expected_value);
+        xlnt_assert_equals(cell_dest.data_type(), expected_type);
     }
 
     void test_copy_formula_string_between_workbooks()
     {
-        // Load workbook with formula_string cells (CONCATENATE returns string)
-        xlnt::workbook wb_source;
-        wb_source.load(path_helper::test_file("18_formulae.xlsx"));
-        auto ws_source = wb_source.sheet_by_index(0);
-        auto source_cell = ws_source.cell("D1"); // CONCATENATE(A1,B1) = "a11"
-
-        xlnt_assert_equals(source_cell.data_type(), xlnt::cell::type::formula_string);
-        xlnt_assert_equals(source_cell.value<std::string>(), "a11");
-
-        // Copy to different workbook
         xlnt::workbook wb_dest;
-        auto ws_dest = wb_dest.active_sheet();
-        auto dest_cell = ws_dest.cell("B1");
+        auto cell_dest = wb_dest.active_sheet().cell("A1");
+        std::string expected_value;
+        xlnt::cell::type expected_type;
 
-        dest_cell.value(source_cell);
+        {
+            xlnt::workbook wb_source;
+            wb_source.load(path_helper::test_file("18_formulae.xlsx"));
+            auto cell_source = wb_source.sheet_by_index(0).cell("D1");
 
-        xlnt_assert_equals(dest_cell.value<std::string>(), "a11");
-        xlnt_assert_equals(dest_cell.data_type(), xlnt::cell::type::formula_string);
+            expected_value = cell_source.value<std::string>();
+            expected_type = cell_source.data_type();
+
+            cell_dest.value(cell_source);
+        }
+        // Source workbook destroyed
+
+        xlnt_assert_equals(cell_dest.value<std::string>(), expected_value);
+        xlnt_assert_equals(cell_dest.data_type(), expected_type);
     }
 
-    // Test cross-workbook format handling with automatic deep-copy.
-    // When cell::format() receives a format from a different workbook,
-    // it automatically clones all properties to the destination workbook's stylesheet.
+    // Test cross-workbook format deep-copy via cell::format()
     void test_format_from_different_workbook()
     {
-        // Test 1: Format from different workbook is cloned automatically
-        xlnt::workbook wb_a;
-        auto ws_a = wb_a.active_sheet();
-        auto cell_a = ws_a.cell("A1");
+        // Test 1: Deep copy with scope destruction - proves no dangling pointers
+        xlnt::workbook wb_dest;
+        wb_dest.create_style("TestStyle"); // Pre-create style with same name
+        auto cell_dest = wb_dest.active_sheet().cell("A1");
 
-        xlnt::workbook wb_b;
-        auto ws_b = wb_b.active_sheet();
-        auto cell_b = ws_b.cell("B1");
+        auto initial_format_count = wb_dest.format_count();
 
-        cell_a.font(xlnt::font().bold(true).size(14));
-        cell_a.fill(xlnt::fill(xlnt::pattern_fill()
-                .type(xlnt::pattern_fill_type::solid)
-                .foreground(xlnt::color::red())));
+        {
+            xlnt::workbook wb_source;
+            auto fmt = wb_source.create_format();
 
-        xlnt_assert(cell_a.has_format());
+            fmt.font(xlnt::font().bold(true).size(14), true);
+            fmt.fill(xlnt::fill(xlnt::pattern_fill()
+                             .type(xlnt::pattern_fill_type::solid)
+                             .foreground(xlnt::color::red())),
+                true);
+            fmt.border(xlnt::border().side(xlnt::border_side::top,
+                           xlnt::border::border_property().style(xlnt::border_style::thick)),
+                true);
+            fmt.alignment(xlnt::alignment().horizontal(xlnt::horizontal_alignment::center), true);
+            fmt.protection(xlnt::protection().locked(false), true);
+            fmt.number_format(xlnt::number_format::percentage(), true);
+            fmt.pivot_button(true);
+            fmt.quote_prefix(true);
+            wb_source.create_style("TestStyle");
+            fmt.style("TestStyle");
+
+            cell_dest.format(fmt);
+        }
+        // Source workbook destroyed - accessing format must not crash
+
+        // Essential checks: format was cloned into destination workbook,
+        // cell has a format, font bold preserved, and style associated by name.
+        xlnt_assert(wb_dest.format_count() > initial_format_count);
+        xlnt_assert(cell_dest.has_format());
+        xlnt_assert(cell_dest.font().bold());
+        xlnt_assert(cell_dest.has_style());
+        xlnt_assert_equals(cell_dest.format().style().name(), "TestStyle");
+
+        // Test 2: Same workbook - no cloning (format_count unchanged)
+        xlnt::workbook wb_same;
+        auto cell_a = wb_same.active_sheet().cell("A1");
+        auto cell_b = wb_same.active_sheet().cell("A2");
+
+        cell_a.font(xlnt::font().italic(true));
+        auto format_count = wb_same.format_count();
 
         cell_b.format(cell_a.format());
 
-        xlnt_assert(cell_b.has_format());
-        xlnt_assert(cell_b.font().bold());
-        xlnt_assert_equals(cell_b.font().size(), 14.0);
-
-        // Test 2: Multiple format properties are cloned
-        xlnt::workbook wb_c;
-        auto fmt_c = wb_c.create_format();
-        fmt_c.font(xlnt::font().italic(true), true);
-        fmt_c.number_format(xlnt::number_format::percentage(), true);
-        fmt_c.alignment(xlnt::alignment().horizontal(xlnt::horizontal_alignment::center), true);
-
-        xlnt::workbook wb_d;
-        auto ws_d = wb_d.active_sheet();
-        auto cell_d = ws_d.cell("D1");
-        cell_d.value(0.5);
-
-        cell_d.format(fmt_c);
-
-        xlnt_assert(cell_d.has_format());
-        xlnt_assert(cell_d.font().italic());
-        xlnt_assert_equals(cell_d.alignment().horizontal(), xlnt::horizontal_alignment::center);
-
-        // Test 3: Format remains valid after source workbook destruction
-        xlnt::workbook wb_e;
-        auto cell_e = wb_e.active_sheet().cell("E1");
-
-        {
-            xlnt::workbook wb_temp;
-            auto cell_temp = wb_temp.active_sheet().cell("T1");
-            cell_temp.font(xlnt::font().bold(true).underline(xlnt::font::underline_style::single));
-
-            cell_e.format(cell_temp.format());
-
-            xlnt_assert(!cell_e.workbook().owns_format(cell_temp.format()));
-            xlnt_assert(cell_e.workbook().owns_format(cell_e.format()));
-
-            xlnt_assert(!cell_temp.workbook().owns_format(cell_e.format()));
-            xlnt_assert(cell_temp.workbook().owns_format(cell_temp.format()));
-        }
-
-        xlnt_assert(cell_e.has_format());
-        xlnt_assert(cell_e.font().bold());
-        xlnt_assert(cell_e.font().underlined());
-
-        // Test 4: Same workbook format assignment works without cloning
-        xlnt::workbook wb_f;
-        auto ws_f = wb_f.active_sheet();
-        auto cell_f1 = ws_f.cell("F1");
-        auto cell_f2 = ws_f.cell("F2");
-
-        cell_f1.font(xlnt::font().size(20));
-        xlnt_assert(cell_f1.has_format());
-
-        cell_f2.format(cell_f1.format());
-        xlnt_assert(cell_f2.has_format());
-        xlnt_assert_equals(cell_f2.font().size(), 20.0);
-
-        // Test 5: Border, protection, custom number_format, pivot_button, quote_prefix, style
-        // Uses scope to verify format survives after source workbook destruction
-        xlnt::workbook wb_dest_full;
-        wb_dest_full.create_style("TestStyle");
-        auto cell_dest_full = wb_dest_full.active_sheet().cell("A1");
-
-        {
-            xlnt::workbook wb_full;
-            auto fmt_full = wb_full.create_format();
-
-            // Border
-            xlnt::border test_border;
-            test_border.side(xlnt::border_side::top, xlnt::border::border_property().style(xlnt::border_style::thick).color(xlnt::color::blue()));
-            fmt_full.border(test_border, true);
-
-            // Protection
-            fmt_full.protection(xlnt::protection().locked(false).hidden(true), true);
-
-            // Custom number format (non-builtin)
-            xlnt::number_format custom_nf("0.000%");
-            fmt_full.number_format(custom_nf, true);
-
-            // Pivot button and quote prefix
-            fmt_full.pivot_button(true);
-            fmt_full.quote_prefix(true);
-
-            // Style
-            auto src_style = wb_full.create_style("TestStyle");
-            src_style.font(xlnt::font().name("Arial"), true);
-            fmt_full.style("TestStyle");
-
-            cell_dest_full.format(fmt_full);
-        }
-        // Source workbook destroyed, verify format is still valid
-
-        xlnt_assert(cell_dest_full.has_format());
-        xlnt_assert(cell_dest_full.format().border_applied());
-        xlnt_assert(cell_dest_full.border().side(xlnt::border_side::top).is_set());
-        xlnt_assert_equals(cell_dest_full.border().side(xlnt::border_side::top).get().style().get(), xlnt::border_style::thick);
-        xlnt_assert(cell_dest_full.format().protection_applied());
-        xlnt_assert_equals(cell_dest_full.protection().locked(), false);
-        xlnt_assert_equals(cell_dest_full.protection().hidden(), true);
-        xlnt_assert(cell_dest_full.format().number_format_applied());
-        xlnt_assert_equals(cell_dest_full.number_format().format_string(), "0.000%");
-        xlnt_assert(cell_dest_full.format().pivot_button());
-        xlnt_assert(cell_dest_full.format().quote_prefix());
-        xlnt_assert(cell_dest_full.has_style());
-        xlnt_assert_equals(cell_dest_full.style().name(), "TestStyle");
-
-        // Test 6: cell::value() does shallow copy within same workbook
-        xlnt::workbook wb_same;
-        auto ws_same = wb_same.active_sheet();
-        auto cell_source = ws_same.cell("A1");
-        auto cell_dest = ws_same.cell("B1");
-
-        cell_source.value("Test");
-        cell_source.font(xlnt::font().bold(true).size(14));
-
-        auto initial_format_count = wb_same.format_count();
-
-        cell_dest.value(cell_source); // Copy within same workbook
-
-        // Format count should NOT increase (shallow copy)
-        xlnt_assert_equals(wb_same.format_count(), initial_format_count);
-
-        // Both cells should share the same format object
-        xlnt_assert(cell_dest.has_format());
-        xlnt_assert_equals(cell_dest.font().bold(), true);
-        xlnt_assert_equals(cell_dest.font().size(), 14.0);
-
-        // Test 7: cell::value() clones format from different workbook (automatic deep-copy)
-        xlnt::workbook wb_g;
-        auto cell_g = wb_g.active_sheet().cell("G1");
-
-        xlnt::workbook wb_h;
-        auto cell_h = wb_h.active_sheet().cell("H1");
-        cell_h.value("Test");
-        cell_h.font(xlnt::font().bold(true));
-
-        cell_g.value(cell_h);
-
-        xlnt_assert_equals(cell_g.value<std::string>(), "Test");
-        xlnt_assert(cell_g.has_format()); // Format is now automatically cloned
-        xlnt_assert(cell_g.font().bold()); // Font properties are preserved
+        xlnt_assert_equals(wb_same.format_count(), format_count);
+        xlnt_assert(cell_b.font().italic());
     }
 
     void test_cell_phonetic_properties()

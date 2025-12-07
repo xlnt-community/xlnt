@@ -257,8 +257,7 @@ void cell::value(const rich_text &text)
 {
     check_string(text.plain_text());
 
-    d_->type_ = type::shared_string;
-    d_->value_numeric_ = static_cast<double>(workbook().add_shared_string(text));
+    value_no_check(text);
 }
 
 void cell::value(const char *c)
@@ -283,6 +282,12 @@ void cell::value(const cell c)
     d_->format_ = c.d_->format_;
 }
 
+void cell::value_no_check(const rich_text &text)
+{
+    d_->type_ = type::shared_string;
+    d_->value_numeric_ = static_cast<double>(workbook().add_shared_string(text));
+}
+
 void cell::copy_from_other_workbook(const cell &source)
 {
     d_->type_ = source.d_->type_;
@@ -290,28 +295,35 @@ void cell::copy_from_other_workbook(const cell &source)
     // Handle shared_string: remap to destination workbook
     if (source.data_type() == type::shared_string)
     {
-        const auto text = source.value<rich_text>();
-        const auto new_index = workbook().add_shared_string(text, false);
-        d_->value_numeric_ = static_cast<double>(new_index);
-        d_->value_text_ = rich_text();
+        value_no_check(source.value<rich_text>());
     }
     else if (source.data_type() == type::inline_string || source.data_type() == type::formula_string)
     {
-        d_->value_text_ = source.d_->value_text_;
         d_->value_numeric_ = 0.0;
     }
     else
     {
         d_->value_numeric_ = source.d_->value_numeric_;
-        d_->value_text_ = source.d_->value_text_;
     }
 
-    // Copy formula (text-based, safe to copy)
+    d_->value_text_ = source.d_->value_text_;
     d_->formula_ = source.d_->formula_;
 
-    // Hyperlinks contain workbook-specific relationship IDs and cannot be
-    // safely copied between workbooks. Clear and let user reapply if needed.
-    d_->hyperlink_.clear();
+    // Copy external hyperlinks; internal hyperlinks (cell/range references)
+    // are not yet implemented as they would need worksheet title remapping.
+    if (source.has_hyperlink())
+    {
+        auto copy_hyperlink = source.hyperlink();
+
+        if (copy_hyperlink.external())
+        {
+            hyperlink(copy_hyperlink.url(), copy_hyperlink.display());
+        }
+        else
+        {
+            d_->hyperlink_.clear();
+        }
+    }
 
     if (source.has_format())
     {
@@ -827,97 +839,7 @@ void cell::format(const class format new_format)
 
 void cell::copy_format_from_other_workbook(const class format &source_format)
 {
-    // Option B: Automatically clone the format to this workbook's stylesheet
-    // Start with a blank format from our workbook
-    auto cloned_format = workbook().create_format(true);
-
-    // Copy alignment if present
-    if (source_format.d_->alignment_id.is_set())
-    {
-        auto src_alignment = source_format.d_->parent->alignments.at(source_format.d_->alignment_id.get());
-        cloned_format.alignment(src_alignment, source_format.d_->alignment_applied);
-    }
-
-    // Copy border if present
-    if (source_format.d_->border_id.is_set())
-    {
-        auto src_border = source_format.d_->parent->borders.at(source_format.d_->border_id.get());
-        cloned_format.border(src_border, source_format.d_->border_applied);
-    }
-
-    // Copy fill if present
-    if (source_format.d_->fill_id.is_set())
-    {
-        auto src_fill = source_format.d_->parent->fills.at(source_format.d_->fill_id.get());
-        cloned_format.fill(src_fill, source_format.d_->fill_applied);
-    }
-
-    // Copy font if present
-    if (source_format.d_->font_id.is_set())
-    {
-        auto src_font = source_format.d_->parent->fonts.at(source_format.d_->font_id.get());
-        cloned_format.font(src_font, source_format.d_->font_applied);
-    }
-
-    // Copy number format if present
-    if (source_format.d_->number_format_id.is_set())
-    {
-        const auto number_format_id = source_format.d_->number_format_id.get();
-        xlnt::number_format src_number_format;
-
-        if (number_format::is_builtin_format(number_format_id))
-        {
-            src_number_format = number_format::from_builtin_id(number_format_id);
-        }
-        else
-        {
-            const auto it = std::find_if(source_format.d_->parent->number_formats.begin(),
-                source_format.d_->parent->number_formats.end(),
-                [number_format_id](const xlnt::number_format &nf) {
-                    return nf.id() == number_format_id;
-                });
-            if (it != source_format.d_->parent->number_formats.end())
-            {
-                src_number_format = *it;
-            }
-        }
-
-        cloned_format.number_format(src_number_format, source_format.d_->number_format_applied);
-    }
-
-    // Copy protection if present
-    if (source_format.d_->protection_id.is_set())
-    {
-        auto src_protection = source_format.d_->parent->protections.at(source_format.d_->protection_id.get());
-        cloned_format.protection(src_protection, source_format.d_->protection_applied);
-    }
-
-    // Copy other properties
-    if (source_format.d_->pivot_button_)
-    {
-        cloned_format.pivot_button(source_format.d_->pivot_button_);
-    }
-
-    if (source_format.d_->quote_prefix_)
-    {
-        cloned_format.quote_prefix(source_format.d_->quote_prefix_);
-    }
-
-    // Try to copy style name if it exists in destination workbook
-    // This preserves style-based formatting when styles are shared across workbooks
-    if (source_format.d_->style.is_set())
-    {
-        const auto &style_name = source_format.d_->style.get();
-
-        // Only copy if destination workbook has a style with the same name
-        // This avoids creating style name mismatches or conflicts
-        if (workbook().has_style(style_name))
-        {
-            cloned_format.style(style_name);
-        }
-        // Otherwise, formatting properties (font, fill, border, etc)
-        // were already copied above
-    }
+    auto cloned_format = workbook().clone_format_from(source_format);
 
     // Use the cloned format
     d_->format_ = cloned_format.d_;

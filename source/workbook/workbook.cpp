@@ -1470,14 +1470,60 @@ format workbook::create_format(bool default_format)
     return d_->stylesheet_.get().create_format(default_format);
 }
 
+format workbook::clone_format_from(const xlnt::format &source_format)
+{
+    // Start with a blank format from this workbook (not default format)
+    auto cloned_format = create_format();
+
+    // Copy all format properties using public API
+    if (source_format.alignment_applied())
+    {
+        cloned_format.alignment(source_format.alignment(), true);
+    }
+
+    if (source_format.border_applied())
+    {
+        cloned_format.border(source_format.border(), true);
+    }
+
+    if (source_format.fill_applied())
+    {
+        cloned_format.fill(source_format.fill(), true);
+    }
+
+    if (source_format.font_applied())
+    {
+        cloned_format.font(source_format.font(), true);
+    }
+
+    if (source_format.number_format_applied())
+    {
+        cloned_format.number_format(source_format.number_format(), true);
+    }
+
+    if (source_format.protection_applied())
+    {
+        cloned_format.protection(source_format.protection(), true);
+    }
+
+    // Copy other properties (no "applied" flag for these)
+    cloned_format.pivot_button(source_format.pivot_button());
+    cloned_format.quote_prefix(source_format.quote_prefix());
+
+    if (source_format.has_style())
+    {
+        // Style assignment is automatically deduplicating:
+        // xlnt reuses existing style objects if identical, or creates new ones if needed.
+        // This prevents duplicate styles in the destination workbook.
+        cloned_format.style(source_format.style());
+    }
+
+    return cloned_format;
+}
+
 bool workbook::owns_format(const class format &fmt) const
 {
     if (!d_->stylesheet_.is_set())
-    {
-        return false;
-    }
-
-    if (!fmt.d_ || !fmt.d_->parent)
     {
         return false;
     }

@@ -197,8 +197,9 @@ public:
     /// <summary>
     /// Sets the value and formatting of this cell to that of other_cell.
     /// NOTE: if copying from a different workbook, shared strings are remapped
-    /// correctly, formulas are copied as text, hyperlinks are cleared for safety,
-    /// and formats are deep-copied automatically.
+    /// correctly, formulas are copied as text, and formats are deep-copied
+    /// automatically. External hyperlinks are copied; internal hyperlinks
+    /// (cell/range references) are not yet implemented.
     /// </summary>
     void value(const cell other_cell);
 
@@ -645,17 +646,21 @@ private:
     friend struct detail::cell_impl;
 
     /// <summary>
+    /// Helper to set rich_text value without calling check_string.
+    /// </summary>
+    void value_no_check(const rich_text &text);
+
+    /// <summary>
     /// Helper to copy value from cell in different workbook.
-    /// Handles shared_string remapping, formula copying, format deep-copy,
-    /// and clears hyperlinks for safety (workbook-specific relationships).
+    /// Handles shared_string remapping, formula copying, format deep-copy.
+    /// External hyperlinks are copied; internal hyperlinks (cell/range
+    /// references) are not yet implemented.
     /// </summary>
     void copy_from_other_workbook(const cell &source);
 
     /// <summary>
     /// Helper to clone format from different workbook.
     /// Creates deep-copy of format in destination workbook's stylesheet,
-    /// copying all properties (alignment, border, fill, font, number_format,
-    /// protection, pivot_button, quote_prefix, style).
     /// </summary>
     void copy_format_from_other_workbook(const class format &source_format);
 
