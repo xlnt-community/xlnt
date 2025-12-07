@@ -173,8 +173,9 @@ public:
     bool is(type t) const;
 
     /// <summary>
-    /// Returns the value of this variant as type T. An exception will
-    /// be thrown if the types are not convertible.
+    /// Returns the value of this variant as type T.
+    /// Assumes that the variant is of type T (please call is() or value_type() to check).
+    /// An exception will be thrown if the types are not convertible.
     /// </summary>
     template <typename T>
     T get() const;

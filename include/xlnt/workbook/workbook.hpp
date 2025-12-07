@@ -520,7 +520,7 @@ public:
     void create_named_range(const std::string &name, worksheet worksheet, const range_reference &reference);
 
     /// <summary>
-    /// Creates a new names range.
+    /// Creates a new named range.
     /// </summary>
     void create_named_range(const std::string &name, worksheet worksheet, const std::string &reference_string);
 

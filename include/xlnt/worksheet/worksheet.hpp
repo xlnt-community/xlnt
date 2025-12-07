@@ -483,12 +483,14 @@ public:
 
     /// <summary>
     /// Removes the merging of the cells in the range represented by the given string.
+    /// Assumes that the cells in the range have been merged (please call merged_ranges() to get all merged ranges).
     /// If the cell has not been merged, an invalid_parameter exception will be thrown.
     /// </summary>
     void unmerge_cells(const std::string &reference_string);
 
     /// <summary>
     /// Removes the merging of the cells in the given range.
+    /// Assumes that the cells in the range have been merged (please call merged_ranges() to get all merged ranges).
     /// If the cell has not been merged, an invalid_parameter exception will be thrown.
     /// </summary>
     void unmerge_cells(const range_reference &reference);

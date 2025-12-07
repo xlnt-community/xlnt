@@ -186,13 +186,21 @@ public:
     {
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
+        xlnt_assert(!wb.has_named_range("test_range"));
+        xlnt_assert(!ws.has_named_range("test_range"));
         wb.create_named_range("test_range", ws, "C5");
+        xlnt_assert(wb.has_named_range("test_range"));
+        xlnt_assert(ws.has_named_range("test_range"));
         auto xlrange = ws.named_range("test_range");
         xlnt_assert_equals(1, xlrange.length());
         xlnt_assert_equals(1, xlrange[0].length());
         xlnt_assert_equals(5, xlrange[0][0].row());
 
+        xlnt_assert(!wb.has_named_range("test_range2"));
+        xlnt_assert(!ws.has_named_range("test_range2"));
         ws.create_named_range("test_range2", "C6");
+        xlnt_assert(wb.has_named_range("test_range2"));
+        xlnt_assert(ws.has_named_range("test_range2"));
         auto xlrange2 = ws.named_range("test_range2");
         xlnt_assert_equals(1, xlrange2.length());
         xlnt_assert_equals(1, xlrange2[0].length());
@@ -203,6 +211,7 @@ public:
     {
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
+        xlnt_assert(!ws.has_named_range("bad_range"));
         xlnt_assert_throws(ws.named_range("bad_range"), xlnt::key_not_found);
     }
 
@@ -213,7 +222,13 @@ public:
         wb.create_sheet();
         auto ws1 = wb[0];
         auto ws2 = wb[1];
+        xlnt_assert(!wb.has_named_range("wrong_sheet_range"));
+        xlnt_assert(!ws1.has_named_range("wrong_sheet_range"));
+        xlnt_assert(!ws2.has_named_range("wrong_sheet_range"));
         wb.create_named_range("wrong_sheet_range", ws1, "C5");
+        xlnt_assert(wb.has_named_range("wrong_sheet_range"));
+        xlnt_assert(ws1.has_named_range("wrong_sheet_range"));
+        xlnt_assert(!ws2.has_named_range("wrong_sheet_range"));
         xlnt_assert_throws(ws2.named_range("wrong_sheet_range"), xlnt::key_not_found);
     }
 
@@ -221,6 +236,7 @@ public:
     {
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
+        xlnt_assert(!ws.has_named_range("bad_range"));
         xlnt_assert_throws(ws.remove_named_range("bad_range"), xlnt::key_not_found);
     }
 

@@ -174,6 +174,7 @@ public:
 
     /// <summary>
     /// Sets the named style applied to all cells in this range to a style named style_name.
+    /// Assumes that the style has been previously created in the workbook (please call workbook::has_style() to check).
     /// If this style has not been previously created in the workbook, a
     /// key_not_found exception will be thrown.
     /// </summary>
