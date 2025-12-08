@@ -62,7 +62,7 @@ jobs:
           steps:
             - run: |
                 if [ "<< parameters.sanitize >>" = "ON" ]; then
-                  export UBSAN_OPTIONS="suppressions=../ubsan.supp"
+                  export UBSAN_OPTIONS="suppressions=$PWD/ubsan.supp"
                 fi
                 ./tests/xlnt.test
       - when:
@@ -204,7 +204,7 @@ jobs:
           steps:
             - run: |
                 if [ "<< parameters.sanitize >>" = "ON" ]; then
-                  export UBSAN_OPTIONS="suppressions=../ubsan.supp"
+                  export UBSAN_OPTIONS="suppressions=$PWD/ubsan.supp"
                 fi
                 ./tests/<< parameters.build-type >>/xlnt.test.exe
       - when:
@@ -249,7 +249,7 @@ jobs:
       - run: cmake --build . -j6 --config << parameters.build-type >>
       - run: |
           if [ "<< parameters.sanitize >>" = "ON" ]; then
-            export UBSAN_OPTIONS="suppressions=../ubsan.supp"
+            export UBSAN_OPTIONS="suppressions=$PWD/ubsan.supp"
           fi
           ./tests/<< parameters.build-type >>/xlnt.test
       - when:
