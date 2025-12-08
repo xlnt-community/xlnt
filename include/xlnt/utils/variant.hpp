@@ -166,6 +166,11 @@ public:
     /// <summary>
     /// Creates a vector_variant-type variant with the given value.
     /// </summary>
+    variant(const std::initializer_list<variant> &value);
+
+    /// <summary>
+    /// Creates a vector_variant-type variant with the given value.
+    /// </summary>
     variant(const std::vector<variant> &value);
 
     /// <summary>

@@ -78,7 +78,7 @@ variant::variant(const std::initializer_list<std::int32_t> &value)
     construct_vector_internal(value);
 }
 
-variant::variant(const std::vector<int> &value)
+variant::variant(const std::vector<std::int32_t> &value)
     : type_(type::vector)
 {
     construct_vector_internal(value);
@@ -103,6 +103,36 @@ variant::variant(const std::initializer_list<std::string> &value)
 }
 
 variant::variant(const std::vector<std::string> &value)
+    : type_(type::vector)
+{
+    construct_vector_internal(value);
+}
+
+variant::variant(const std::initializer_list<bool> &value)
+    : type_(type::vector)
+{
+    construct_vector_internal(value);
+}
+
+variant::variant(const std::vector<bool> &value)
+    : type_(type::vector)
+{
+    construct_vector_internal(value);
+}
+
+variant::variant(const std::initializer_list<datetime> &value)
+    : type_(type::vector)
+{
+    construct_vector_internal(value);
+}
+
+variant::variant(const std::vector<datetime> &value)
+    : type_(type::vector)
+{
+    construct_vector_internal(value);
+}
+
+variant::variant(const std::initializer_list<variant> &value)
     : type_(type::vector)
 {
     construct_vector_internal(value);
