@@ -48,16 +48,23 @@ jobs:
       image:
         default: PLACEHOLDER_IMAGE(gcc7_cmake3.9.5)
         type: string
+      sanitize:
+        default: "OFF"
+        type: string
     steps:
       - checkout
       - run: git submodule update --init --recursive
-      - run: cmake -D XLNT_ALL_WARNINGS_AS_ERRORS=<< parameters.warnings-as-errors >> -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D XLNT_MICROBENCH_ENABLED=<< parameters.micro-benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> -D XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR=de_DE -D XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR=ps_AF .
+      - run: cmake -D XLNT_SANITIZE=<< parameters.sanitize >> -D XLNT_ALL_WARNINGS_AS_ERRORS=<< parameters.warnings-as-errors >> -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D XLNT_MICROBENCH_ENABLED=<< parameters.micro-benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> -D XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR=de_DE -D XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR=ps_AF .
       - run: cmake --build . -- -j2
       - when:
           condition:
             equal: ["ON", << parameters.tests >>]
           steps:
-            - run: ./tests/xlnt.test
+            - run: |
+                if [ "<< parameters.sanitize >>" = "ON" ]; then
+                  export UBSAN_OPTIONS="suppressions=../ubsan.supp"
+                fi
+                ./tests/xlnt.test
       - when:
           condition:
             equal: ["ON", << parameters.samples >>]
@@ -175,6 +182,9 @@ jobs:
       cmake-generator:
         default: "Visual Studio 16 2019"
         type: string
+      sanitize:
+        default: "OFF"
+        type: string
     steps:
       - checkout
       - run: git submodule update --init --recursive
@@ -186,13 +196,17 @@ jobs:
           steps:
             - run: choco install visualstudio2017buildtools -y
             - run: choco install visualstudio2017-workload-vctools -y
-      - run: cmake -G "<< parameters.cmake-generator >>" -D CMAKE_GENERATOR_PLATFORM=x64 -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
+      - run: cmake -G "<< parameters.cmake-generator >>" -D XLNT_SANITIZE=<< parameters.sanitize >> -D CMAKE_GENERATOR_PLATFORM=x64 -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
       - run: cmake --build . -j4 --config << parameters.build-type >>
       - when:
           condition:
             equal: ["ON", << parameters.tests >>]
           steps:
-            - run: ./tests/<< parameters.build-type >>/xlnt.test.exe
+            - run: |
+                if [ "<< parameters.sanitize >>" = "ON" ]; then
+                  export UBSAN_OPTIONS="suppressions=../ubsan.supp"
+                fi
+                ./tests/<< parameters.build-type >>/xlnt.test.exe
       - when:
           condition:
             equal: ["ON", << parameters.samples >>]
@@ -224,13 +238,20 @@ jobs:
       static:
         default: "ON"
         type: string
+      sanitize:
+        default: "OFF"
+        type: string
     steps:
       - checkout
       - run: git submodule update --init --recursive
       - run: brew install cmake
-      - run: cmake -G "Xcode" -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=ON -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
+      - run: cmake -G "Xcode" -D XLNT_SANITIZE=<< parameters.sanitize >> -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=ON -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
       - run: cmake --build . -j6 --config << parameters.build-type >>
-      - run: ./tests/<< parameters.build-type >>/xlnt.test
+      - run: |
+          if [ "<< parameters.sanitize >>" = "ON" ]; then
+            export UBSAN_OPTIONS="suppressions=../ubsan.supp"
+          fi
+          ./tests/<< parameters.build-type >>/xlnt.test
       - when:
           condition:
             equal: ["ON", << parameters.samples >>]
@@ -313,6 +334,26 @@ workflows:
             branches:
               ignore: gh-pages
 
+      - build-gcc:
+          name: tests-gcc-sanitize
+          image: PLACEHOLDER_IMAGE(gcc_cmake_latest)
+          matrix:
+            alias: tests-gcc-sanitize-all
+            parameters:
+              cxx-ver:
+                - "23"
+              build-type:
+                - Debug
+              static:
+                - "OFF"
+              skip-internal-tests:
+                - "OFF"
+              sanitize:
+                - "ON"
+          filters:
+            branches:
+              ignore: gh-pages
+
       - build-msvc:
           name: tests-samples-msvc
           matrix:
@@ -350,6 +391,20 @@ workflows:
             branches:
               ignore: gh-pages
 
+      - build-msvc:
+          name: tests-msvc-sanitize
+          build-type: Debug
+          static: "OFF"
+          skip-internal-tests: "OFF"
+          sanitize: "ON"
+          samples: "OFF"
+          benchmarks: "OFF"
+          requires:
+            - tests-gcc-sanitize-all # prevent building windows in case of gcc failures, as windows builds are more expensive
+          filters:
+            branches:
+              ignore: gh-pages
+
       - build-macos:
           name: tests-samples-macos
           matrix:
@@ -363,6 +418,18 @@ workflows:
           samples: "ON"
           requires:
             - tests-gcc7-cmake3.2-all # prevent building macos in case of gcc failures, as macos builds are more expensive
+          filters:
+            branches:
+              ignore: gh-pages
+
+      - build-macos:
+          name: tests-macos-sanitize
+          build-type: Debug
+          static: "OFF"
+          samples: "OFF"
+          sanitize: "ON"
+          requires:
+            - tests-gcc-sanitize-all # prevent building macos in case of gcc failures, as macos builds are more expensive
           filters:
             branches:
               ignore: gh-pages

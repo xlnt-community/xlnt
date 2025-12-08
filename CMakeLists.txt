@@ -52,18 +52,21 @@ option(DOCUMENTATION "Set to ON to build API reference documentation (in ./api-r
 
 if(XLNT_SANITIZE)
     if(MSVC)
-        # MSVC sanitizers
-        add_compile_options(/fsanitize=address)
-        add_compile_options(/Zi)
+        # Require VS 2019 16.9+ (cl with /fsanitize=address)
+        add_compile_options(/fsanitize=address /Zi)
     else()
-        # GCC/Clang
         set(SANITIZER_FLAGS
             -fno-omit-frame-pointer
             -fsanitize=address
             -fsanitize=undefined
-            -fsanitize=leak
             -g
         )
+
+        # LSan (leak sanitizer) is not supported on macOS with AppleClang
+        if (NOT (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"))
+            list(APPEND SANITIZER_FLAGS -fsanitize=leak)
+        endif()
+
         add_compile_options(${SANITIZER_FLAGS})
         add_link_options(${SANITIZER_FLAGS})
     endif()
