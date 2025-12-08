@@ -311,6 +311,7 @@ void cell::copy_from_other_workbook(const cell &source)
 
     // Copy external hyperlinks; internal hyperlinks (cell/range references)
     // are not yet implemented as they would need worksheet title remapping.
+    // TODO: implement internal hyperlink remapping.
     if (source.has_hyperlink())
     {
         auto copy_hyperlink = source.hyperlink();
@@ -318,10 +319,6 @@ void cell::copy_from_other_workbook(const cell &source)
         if (copy_hyperlink.external())
         {
             hyperlink(copy_hyperlink.url(), copy_hyperlink.display());
-        }
-        else
-        {
-            d_->hyperlink_.clear();
         }
     }
 

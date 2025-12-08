@@ -867,6 +867,8 @@ private:
             cell_source.value("Test String");
             cell_source.formula("=SUM(A1:A10)");
             cell_source.font(xlnt::font().bold(true).size(14));
+            // External hyperlink should be copied on cross-workbook copy
+            cell_source.hyperlink("https://example.com");
 
             cell_dest.value(cell_source);
         }
@@ -877,6 +879,8 @@ private:
         xlnt_assert(cell_dest.has_format());
         xlnt_assert(cell_dest.font().bold());
         xlnt_assert_equals(cell_dest.font().size(), 14.0);
+        xlnt_assert(cell_dest.has_hyperlink());
+        xlnt_assert_equals(cell_dest.hyperlink().url(), "https://example.com");
 
         // Test 2: Shared string deduplication
         xlnt::workbook wb_a;

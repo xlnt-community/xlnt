@@ -1005,7 +1005,10 @@ private:
     /// are cloned using public API calls to avoid unnecessary duplication.
     /// Pivot button and quote prefix properties are copied directly.
     /// If source_format has a style, the cloned format is associated with the same style name.
-    /// Note: Deep cloning of the style itself is not yet implemented.
+    /// NOTE: Deep cloning of the style itself is not yet implemented.
+    /// The cloned format will be assigned the style name from the source format.
+    /// If a style with the same name and properties already exists in the destination workbook,
+    /// it will be reused.
     /// Returns the newly created format in this workbook.
     /// </summary>
     xlnt::format clone_format_from(const xlnt::format &source_format);

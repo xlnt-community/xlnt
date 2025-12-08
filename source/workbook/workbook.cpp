@@ -1515,6 +1515,7 @@ format workbook::clone_format_from(const xlnt::format &source_format)
         // Style assignment is automatically deduplicating:
         // xlnt reuses existing style objects if identical, or creates new ones if needed.
         // This prevents duplicate styles in the destination workbook.
+        // This function is only copying the name using the format pattern from "cloned_format".
         cloned_format.style(source_format.style());
     }
 
