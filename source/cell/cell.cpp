@@ -297,10 +297,6 @@ void cell::copy_from_other_workbook(const cell &source)
     {
         value_no_check(source.value<rich_text>());
     }
-    else if (source.data_type() == type::inline_string || source.data_type() == type::formula_string)
-    {
-        d_->value_numeric_ = 0.0;
-    }
     else
     {
         d_->value_numeric_ = source.d_->value_numeric_;
