@@ -208,7 +208,7 @@ jobs:
                   set -x
 
                   # On Windows, UBSAN seems to ignore suppressions files, but keep it for consistency
-                  export UBSAN_OPTIONS="suppressions=$PWD/ubsan.supp"
+                  export UBSAN_OPTIONS="suppressions=ubsan.supp"
 
                   ASAN_DIR=""
 
