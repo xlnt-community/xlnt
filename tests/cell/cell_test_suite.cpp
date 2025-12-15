@@ -876,6 +876,7 @@ private:
 
         xlnt_assert_equals(cell_dest.value<std::string>(), "Test String");
         xlnt_assert(cell_dest.has_formula());
+        xlnt_assert_equals(cell_dest.formula(), "SUM(A1:A10)");
         xlnt_assert(cell_dest.has_format());
         xlnt_assert(cell_dest.font().bold());
         xlnt_assert_equals(cell_dest.font().size(), 14.0);
