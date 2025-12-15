@@ -203,8 +203,48 @@ jobs:
             equal: ["ON", << parameters.tests >>]
           steps:
             - run: |
+                # CircleCI is using git bash on windows
                 if [ "<< parameters.sanitize >>" = "ON" ]; then
+                  # On Windows, UBSAN seems to ignore suppressions files but lets keep it for consistency with other platforms
                   export UBSAN_OPTIONS="suppressions=$PWD/ubsan.supp"
+
+                  # Search the Visual Studio installation path for the ASan runtime DLLs
+                  # We should not keep this hardcoded, CircleCI could update VS version at any time
+                  VSWHERE="/c/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe"
+                  VSROOT_WIN="$("$VSWHERE" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath | tr -d '\r')"
+                  VSROOT="$(cygpath -u "$VSROOT_WIN")"
+
+                  TOOLSET_BASE="$VSROOT/VC/Tools/MSVC"
+                  MSVC_VER="$(ls -1 "$TOOLSET_BASE" | sort -V | tail -n 1)"
+
+                  # if MSVC_VER ends with "/", remove it
+                  if [[ "$MSVC_VER" == */ ]]; then
+                    MSVC_VER="${MSVC_VER%/}"
+                  fi
+
+                  TOOLSET="$TOOLSET_BASE/$MSVC_VER"
+
+                  # x64: locating the directory that actually contains the ASan DLL
+                  ASAN_BIN=""
+                  for d in "$TOOLSET/bin/Hostx64/x64" "$TOOLSET/bin/Hostx86/x64"; do
+                    if [ -f "$d/clang_rt.asan_dynamic-x86_64.dll" ] || [ -f "$d/clang_rt.asan_dbg_dynamic-x86_64.dll" ]; then
+                      ASAN_BIN="$d"
+                      break
+                    fi
+                  done
+
+                  if [ -z "$ASAN_BIN" ]; then
+                    echo "ASan runtime not found under: $TOOLSET" >&2
+                    exit 1
+                  fi
+
+                  export PATH="$ASAN_BIN:$PATH"
+
+                  # For debug reasons, check if ldd exists and can find the ASan DLL
+                  if command -v ldd >/dev/null 2>&1; then
+                    echo "Checking xlnt.test.exe dependencies with ldd:"
+                    ldd ./tests/<< parameters.build-type >>/xlnt.test.exe || true
+                  fi
                 fi
                 ./tests/<< parameters.build-type >>/xlnt.test.exe
       - when:
