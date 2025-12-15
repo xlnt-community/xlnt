@@ -207,9 +207,6 @@ jobs:
                   # CircleCI is using git bash on windows
                   set -x
 
-                  # On Windows, UBSAN seems to ignore suppressions files, but keep it for consistency
-                  export UBSAN_OPTIONS="suppressions=ubsan.supp"
-
                   ASAN_DIR=""
 
                   #
