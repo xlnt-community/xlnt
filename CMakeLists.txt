@@ -46,8 +46,31 @@ option(TESTS "Set to ON to build test executable (in ./tests)" OFF)
 option(SAMPLES "Set to ON to build executable code samples (in ./samples)" OFF)
 option(BENCHMARKS "Set to ON to build performance benchmarks (in ./benchmarks)" OFF)
 option(PYTHON "Set to ON to build Arrow conversion functions (in ./python)" OFF)
+option(XLNT_SANITIZE "Sanitize addresses" OFF)
 mark_as_advanced(PYTHON)
 option(DOCUMENTATION "Set to ON to build API reference documentation (in ./api-reference)" OFF)
+
+if(XLNT_SANITIZE)
+    if(MSVC)
+        # Require VS 2019 16.9+ (cl with /fsanitize=address)
+        add_compile_options(/fsanitize=address /Zi)
+    else()
+        set(SANITIZER_FLAGS
+            -fno-omit-frame-pointer
+            -fsanitize=address
+            -fsanitize=undefined
+            -g
+        )
+
+        # LSan (leak sanitizer) is not supported on macOS with AppleClang
+        if (NOT (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"))
+            list(APPEND SANITIZER_FLAGS -fsanitize=leak)
+        endif()
+
+        add_compile_options(${SANITIZER_FLAGS})
+        add_link_options(${SANITIZER_FLAGS})
+    endif()
+endif()
 
 # Platform specific options
 if(MSVC)
