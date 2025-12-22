@@ -169,11 +169,15 @@ public:
 
     /// <summary>
     /// Returns a wrapper pointing to the cell column_index distance away from the first cell in this vector.
+    /// If the cell at the given column index doesn't exist (please call length() to check),
+    /// an empty cell will be created, added to the worksheet, and returned.
     /// </summary>
     cell operator[](std::size_t column_index);
 
     /// <summary>
     /// Returns a wrapper pointing to the cell column_index distance away from the first cell in this vector.
+    /// Assumes that the cell at the given column index exists (please call length() to check).
+    /// If the cell doesn't exist, an invalid_parameter exception will be thrown.
     /// </summary>
     const cell operator[](std::size_t column_index) const;
 

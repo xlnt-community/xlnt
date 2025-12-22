@@ -54,6 +54,7 @@ public:
         register_test(test_one_cell);
         register_test(test_cols);
         register_test(test_getitem);
+        register_test(test_getitem_const);
         register_test(test_setitem);
         register_test(test_getslice);
         register_test(test_freeze);
@@ -334,17 +335,31 @@ public:
     {
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
+        xlnt_assert(!ws.has_cell("A12"));
         xlnt::cell cell = ws[xlnt::cell_reference("A1")];
+        xlnt_assert(!cell.has_value());
         xlnt_assert_equals(cell.reference().to_string(), "A1");
         xlnt_assert_equals(cell.data_type(), xlnt::cell::type::empty);
+    }
+
+    void test_getitem_const()
+    {
+        xlnt::workbook wb;
+        const auto ws = wb.active_sheet();
+        xlnt_assert(!ws.has_cell("A12"));
+        xlnt_assert_throws(ws[xlnt::cell_reference("A1")], xlnt::invalid_parameter);
     }
 
     void test_setitem()
     {
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
-        ws[xlnt::cell_reference("A12")].value(5);
-        xlnt_assert(ws[xlnt::cell_reference("A12")].value<int>() == 5);
+        xlnt_assert(!ws.has_cell("A12"));
+        xlnt::cell cell = ws[xlnt::cell_reference("A1")];
+        xlnt_assert(!cell.has_value());
+        cell.value(5);
+        xlnt_assert(cell.has_value());
+        xlnt_assert(cell.value<int>() == 5);
     }
 
     void test_getslice()

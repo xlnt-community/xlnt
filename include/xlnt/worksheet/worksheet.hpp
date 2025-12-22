@@ -198,14 +198,16 @@ public:
     const class cell cell(const cell_reference &reference) const;
 
     /// <summary>
-    /// Returns a wrapper pointing to the cell at the given column and row. If the cell doesn't exist, it
-    /// will be initialized to null before being returned.
+    /// Returns a wrapper pointing to the cell at the given column and row.
+    /// If the cell doesn't exist (has_cell() returns false), an empty cell will be created,
+    /// added to the worksheet (has_cell() will return true afterwards), and returned.
     /// </summary>
     class cell cell(column_t column, row_t row);
 
     /// <summary>
-    /// Returns a wrapper pointing to the cell at the given column and row. If the cell doesn't exist, an
-    /// invalid_parameter exception will be thrown.
+    /// Returns a wrapper pointing to the cell at the given column and row.
+    /// Assumes that the cell exists (please call has_cell() to check).
+    /// If the cell doesn't exist, an invalid_parameter exception will be thrown.
     /// </summary>
     const class cell cell(column_t column, row_t row) const;
 
@@ -530,12 +532,16 @@ public:
     /// <summary>
     /// Convenience method for worksheet::cell method.
     /// Returns a wrapper pointing to the cell at the given reference.
+    /// If the cell doesn't exist (has_cell() returns false), an empty cell will be created,
+    /// added to the worksheet (has_cell() will return true afterwards), and returned.
     /// </summary>
     class cell operator[](const cell_reference &reference);
 
     /// <summary>
     /// Convenience method for worksheet::cell method.
     /// Returns a wrapper pointing to the cell at the given reference.
+    /// Assumes that the cell exists (please call has_cell() to check).
+    /// If the cell doesn't exist, an invalid_parameter exception will be thrown.
     /// </summary>
     const class cell operator[](const cell_reference &reference) const;
 

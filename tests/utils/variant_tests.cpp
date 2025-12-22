@@ -158,7 +158,7 @@ public:
         xlnt_assert_equals(var_c_str.value_type(), xlnt::variant::type::lpstr);
         xlnt_assert(var_c_str.is(xlnt::variant::type::lpstr));
         xlnt_assert_equals("test1", var_c_str.get<std::string>());
-        test_throw<const char *>(var_c_str);
+        test_throw<std::string>(var_c_str);
     }
 
     void test_c_string_vector_from_initializer_list()

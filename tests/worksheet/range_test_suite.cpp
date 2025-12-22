@@ -45,6 +45,8 @@ public:
         register_test(test_invalid_references);
         register_test(test_offset);
         register_test(test_style);
+        register_test(test_mutable_range_cell_access);
+        register_test(test_const_range_cell_access);
     }
 
     void test_construction()
@@ -301,6 +303,33 @@ public:
         xlnt_assert(wb.has_style("style1"));
         // TODO FIX: the line below causes an infinite loop.
         //xlnt_assert_throws_nothing(range.style("style1"));
+    }
+
+    void test_mutable_range_cell_access()
+    {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        ws.cell("A1").value("A1");
+        xlnt::range range = ws.range("A1:B1");
+        xlnt_assert(ws.has_cell("A1"));
+        xlnt_assert_equals(range.cell("A1").value<std::string>(), "A1");
+        xlnt_assert(!ws.has_cell("B1"));
+        // Accessing the cell will create it.
+        xlnt_assert(!range.cell("B1").has_value());
+        xlnt_assert(ws.has_cell("B1"));
+    }
+
+    void test_const_range_cell_access()
+    {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+        ws.cell("A1").value("A1");
+        const xlnt::range range = ws.range("A1:B1");
+        xlnt_assert(ws.has_cell("A1"));
+        xlnt_assert_equals(range.cell("A1").value<std::string>(), "A1");
+        xlnt_assert(!ws.has_cell("B1"));
+        xlnt_assert_throws(range.cell("B1"), xlnt::invalid_parameter);
+        xlnt_assert(!ws.has_cell("B1"));
     }
 };
 static range_test_suite x;

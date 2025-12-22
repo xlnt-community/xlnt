@@ -108,11 +108,14 @@ public:
 
     /// <summary>
     /// Returns a wrapper pointing to the cell in the range relative to its top left cell.
+    /// If the cell doesn't exist, an empty cell will be created, added to the worksheet, and returned.
     /// </summary>
     class cell cell(const cell_reference &ref);
 
     /// <summary>
     /// Returns a wrapper pointing to the cell in the range relative to its top left cell.
+    /// Assumes that the cell exists.
+    /// If the cell doesn't exist, an invalid_parameter exception will be thrown.
     /// </summary>
     const class cell cell(const cell_reference &ref) const;
 

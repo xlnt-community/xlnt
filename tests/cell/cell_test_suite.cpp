@@ -602,6 +602,7 @@ private:
         xlnt_assert_equals(cell.style().number_format(), xlnt::number_format::percentage());
         xlnt_assert_equals(cell.style(), last_style);
 
+        xlnt_assert(!wb.has_style("doesn't exist"));
         xlnt_assert_throws(cell.style("doesn't exist"), xlnt::key_not_found);
 
         cell.clear_style();
