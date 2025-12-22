@@ -335,7 +335,7 @@ public:
     {
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
-        xlnt_assert(!ws.has_cell("A12"));
+        xlnt_assert(!ws.has_cell("A1"));
         xlnt::cell cell = ws[xlnt::cell_reference("A1")];
         xlnt_assert(!cell.has_value());
         xlnt_assert_equals(cell.reference().to_string(), "A1");
@@ -346,7 +346,7 @@ public:
     {
         xlnt::workbook wb;
         const auto ws = wb.active_sheet();
-        xlnt_assert(!ws.has_cell("A12"));
+        xlnt_assert(!ws.has_cell("A1"));
         xlnt_assert_throws(ws[xlnt::cell_reference("A1")], xlnt::invalid_parameter);
     }
 
@@ -355,7 +355,7 @@ public:
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
         xlnt_assert(!ws.has_cell("A12"));
-        xlnt::cell cell = ws[xlnt::cell_reference("A1")];
+        xlnt::cell cell = ws[xlnt::cell_reference("A12")];
         xlnt_assert(!cell.has_value());
         cell.value(5);
         xlnt_assert(cell.has_value());
