@@ -92,6 +92,18 @@ xlsx_producer::xlsx_producer(const workbook &target)
 
 xlsx_producer::~xlsx_producer()
 {
+    if (current_cell_)
+    {
+        delete current_cell_;
+        current_cell_ = nullptr;
+    }
+
+    if (current_worksheet_)
+    {
+        delete current_worksheet_;
+        current_worksheet_ = nullptr;
+    }
+
     end_part();
     archive_.reset();
 }
