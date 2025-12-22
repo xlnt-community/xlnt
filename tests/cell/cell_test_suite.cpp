@@ -1002,8 +1002,19 @@ private:
         xlnt_assert(wb_dest.format_count() > initial_format_count);
         xlnt_assert(cell_dest.has_format());
         xlnt_assert(cell_dest.font().bold());
+        xlnt_assert_delta(cell_dest.font().size(), 14.0, 1E-9);
         xlnt_assert(cell_dest.has_style());
-        xlnt_assert_equals(cell_dest.format().style().name(), "TestStyle");
+
+        auto format = cell_dest.format();
+        xlnt_assert_equals(format.style().name(), "TestStyle");
+        xlnt_assert_equals(format.fill().pattern_fill().type(), xlnt::pattern_fill_type::solid);
+        xlnt_assert_equals(format.fill().pattern_fill().foreground(), xlnt::color::red());
+        xlnt_assert_equals(format.border().side(xlnt::border_side::top).get().style(), xlnt::border_style::thick);
+        xlnt_assert_equals(format.alignment().horizontal(), xlnt::horizontal_alignment::center);
+        xlnt_assert_equals(format.protection().locked(), false);
+        xlnt_assert_equals(format.number_format(), xlnt::number_format::percentage());
+        xlnt_assert_equals(format.pivot_button(), true);
+        xlnt_assert_equals(format.quote_prefix(), true);
 
         // Test 2: Same workbook - no cloning (format_count unchanged)
         xlnt::workbook wb_same;
