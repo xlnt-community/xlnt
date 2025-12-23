@@ -638,9 +638,14 @@ public:
         xlnt::workbook wb;
         xlnt::worksheet ws = wb.active_sheet();
         const auto& ws_const = ws;
-        xlnt_assert_throws(*ws.end(), xlnt::invalid_parameter);
-        xlnt_assert_throws(*ws_const.end(), xlnt::invalid_parameter);
-        xlnt_assert_throws(*ws.cend(), xlnt::invalid_parameter);
+        xlnt_assert(!ws.has_cell("A1"));
+        // Does not throw, but returns the row after the last one,
+        // which is currently the first row (since we don't have any rows yet).
+        // The returned cell_vector only contains the last non-existing cell (here A1).
+        xlnt_assert_equals((*ws.end()).length(), 1);
+        xlnt_assert_equals((*ws_const.end()).length(), 1);
+        xlnt_assert_equals((*ws.cend()).length(), 1);
+        xlnt_assert(!ws.has_cell("A1"));
 
         ws.cell("A1").value("A1");
         xlnt::range rows = ws.rows();
