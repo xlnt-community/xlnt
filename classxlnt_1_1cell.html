@@ -145,7 +145,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a42876d415047f10c8eea4775e8decbe3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the value of this cell to the given value.  <a href="#a42876d415047f10c8eea4775e8decbe3">More...</a><br /></td></tr>
 <tr class="separator:a42876d415047f10c8eea4775e8decbe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a563c707c4687b87823f286d434455b3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a563c707c4687b87823f286d434455b3c">value</a> (const <a class="el" href="classxlnt_1_1cell.html">cell</a> other_cell)</td></tr>
-<tr class="memdesc:a563c707c4687b87823f286d434455b3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the value and formatting of this cell to that of other_cell.  <a href="#a563c707c4687b87823f286d434455b3c">More...</a><br /></td></tr>
+<tr class="memdesc:a563c707c4687b87823f286d434455b3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the value and formatting of this cell to that of other_cell. NOTE: if copying from a different workbook, shared strings are remapped correctly, formulas are copied as text, and formats are deep-copied automatically. External hyperlinks are copied; internal hyperlinks (cell/range references) are not yet implemented. NOTE: style is NOT deep-copied yet; if the destination workbook has a style with the same name it will be used, otherwise only formatting properties (font/fill/border/number format/alignment/protection) are copied assigned to the style name  <a href="#a563c707c4687b87823f286d434455b3c">More...</a><br /></td></tr>
 <tr class="separator:a563c707c4687b87823f286d434455b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d21c11927e92be6fde589c41081d74b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a3d21c11927e92be6fde589c41081d74b">value</a> (const std::string &amp;string_value, bool infer_type)</td></tr>
 <tr class="memdesc:a3d21c11927e92be6fde589c41081d74b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Analyzes string_value to determine its type, convert it to that type, and set the value of this cell to that converted value.  <a href="#a3d21c11927e92be6fde589c41081d74b">More...</a><br /></td></tr>
@@ -217,7 +217,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:acfb815279d783c47cdaf24f97c7cd227"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the format applied to this cell. If this cell has no format, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">invalid_attribute</a> exception will be thrown.  <a href="#acfb815279d783c47cdaf24f97c7cd227">More...</a><br /></td></tr>
 <tr class="separator:acfb815279d783c47cdaf24f97c7cd227"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a304510f70e88e8c4f3a2a24c37c489da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a304510f70e88e8c4f3a2a24c37c489da">format</a> (const class <a class="el" href="classxlnt_1_1format.html">format</a> new_format)</td></tr>
-<tr class="memdesc:a304510f70e88e8c4f3a2a24c37c489da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies the cell-level formatting of new_format to this cell.  <a href="#a304510f70e88e8c4f3a2a24c37c489da">More...</a><br /></td></tr>
+<tr class="memdesc:a304510f70e88e8c4f3a2a24c37c489da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies the cell-level formatting of new_format to this cell. NOTE: when copying from a different workbook: format properties are deep-copied; If new_format has a style, the cloned format is associated with the same style name. NOTE: Deep cloning of the style itself is not yet implemented.  <a href="#a304510f70e88e8c4f3a2a24c37c489da">More...</a><br /></td></tr>
 <tr class="separator:a304510f70e88e8c4f3a2a24c37c489da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05271dc81c862eb36278b54f984439a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a05271dc81c862eb36278b54f984439a0">clear_format</a> ()</td></tr>
 <tr class="memdesc:a05271dc81c862eb36278b54f984439a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the cell-level formatting from this cell. This doesn't affect the style that may also be applied to the cell. Throws an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">invalid_attribute</a> exception if no format is applied.  <a href="#a05271dc81c862eb36278b54f984439a0">More...</a><br /></td></tr>
@@ -1225,7 +1225,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Applies the cell-level formatting of new_format to this cell. </p>
+<p>Applies the cell-level formatting of new_format to this cell. NOTE: when copying from a different workbook: format properties are deep-copied; If new_format has a style, the cloned format is associated with the same style name. NOTE: Deep cloning of the style itself is not yet implemented. </p>
 
 </div>
 </div>
@@ -2266,7 +2266,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Sets the value and formatting of this cell to that of other_cell. </p>
+<p>Sets the value and formatting of this cell to that of other_cell. NOTE: if copying from a different workbook, shared strings are remapped correctly, formulas are copied as text, and formats are deep-copied automatically. External hyperlinks are copied; internal hyperlinks (cell/range references) are not yet implemented. NOTE: style is NOT deep-copied yet; if the destination workbook has a style with the same name it will be used, otherwise only formatting properties (font/fill/border/number format/alignment/protection) are copied assigned to the style name </p>
 
 </div>
 </div>
