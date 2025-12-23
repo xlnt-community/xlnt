@@ -39,8 +39,8 @@
         }                                                                     \
         catch (...)                                                           \
         {                                                                     \
-            throw xlnt::exception("assert throws nothing failed at L:" XLNT_STRINGIFY(__LINE__) "\n" XLNT_STRINGIFY(expression)); \
         }                                                                     \
+        throw xlnt::exception("assert throws nothing failed at L:" XLNT_STRINGIFY(__LINE__) "\n" XLNT_STRINGIFY(expression)); \
     } while (false)
 
 #define xlnt_assert_throws(expression, exception_type)                        \
@@ -60,8 +60,8 @@
         }                                                                     \
         catch (...)                                                           \
         {                                                                     \
-            throw xlnt::exception("assert throws failed at L:" XLNT_STRINGIFY(__LINE__) "\n" XLNT_STRINGIFY(expression)); \
         }                                                                     \
+        throw xlnt::exception("assert throws failed at L:" XLNT_STRINGIFY(__LINE__) "\n" XLNT_STRINGIFY(expression)); \
     } while (false)
 
 #define xlnt_assert_equals(left, right) xlnt_assert((left) == (right))
