@@ -75,7 +75,9 @@ public:
             xlnt_assert_throws(var_vec.get<xlnt::datetime>(), xlnt::bad_variant_access);
         }
 
-        if (!std::is_same<T, std::vector<xlnt::variant>>())
+        // An additional check is unfortunately necessary for vectors because all vectors are currently
+        // represented by variants internally (unfortunately), so we cannot reliably check that it throws.
+        if (!std::is_same<T, std::vector<xlnt::variant>>() && !var_vec.is(xlnt::variant::type::vector))
         {
             xlnt_assert_throws(var_vec.get<std::vector<xlnt::variant>>(), xlnt::bad_variant_access);
         }
@@ -107,7 +109,7 @@ public:
         xlnt_assert_equals(var_vec.value_type(), xlnt::variant::type::vector);
         xlnt_assert(var_vec.is(xlnt::variant::type::vector));
         xlnt_assert_equals(var_vec.get<std::vector<T>>(), vec);
-        test_throw<T>(var_vec);
+        test_throw<std::vector<T>>(var_vec);
     }
 
     template<typename T>
@@ -174,7 +176,7 @@ public:
             vec_str.emplace_back(elem);
         }
         xlnt_assert_equals(var_vec.get<std::vector<std::string>>(), vec_str);
-        test_throw<std::string>(var_vec);
+        test_throw<std::vector<std::string>>(var_vec);
     }
 
     void test_c_string_vector_from_vector()
@@ -190,7 +192,7 @@ public:
             vec_str.emplace_back(elem);
         }
         xlnt_assert_equals(var_vec.get<std::vector<std::string>>(), vec_str);
-        test_throw<std::string>(var_vec);
+        test_throw<std::vector<std::string>>(var_vec);
     }
 
     void test_std_string()
