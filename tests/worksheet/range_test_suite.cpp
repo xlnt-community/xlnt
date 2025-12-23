@@ -296,13 +296,12 @@ public:
     {
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
-        auto range = ws.range("1:5");
+        auto range = ws.range("A1:A5");
         xlnt_assert(!wb.has_style("style1"));
         xlnt_assert_throws(range.style("style1"), xlnt::key_not_found);
         wb.create_style("style1");
         xlnt_assert(wb.has_style("style1"));
-        // TODO FIX: the line below causes an infinite loop.
-        //xlnt_assert_throws_nothing(range.style("style1"));
+        xlnt_assert_throws_nothing(range.style("style1"));
     }
 
     void test_mutable_range_cell_access()
