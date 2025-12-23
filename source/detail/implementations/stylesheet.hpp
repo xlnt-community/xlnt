@@ -569,6 +569,17 @@ struct stylesheet
         return !(*this == rhs);
     }
 
+    stylesheet() = default;
+    stylesheet(const stylesheet &) = default;
+    stylesheet(stylesheet &&) = default;
+    stylesheet &operator=(const stylesheet &) = default;
+    stylesheet &operator=(stylesheet &&) = default;
+
+    ~stylesheet() noexcept
+    {
+        garbage_collection_enabled = false;
+    }
+
     bool garbage_collection_enabled = true;
     bool known_fonts_enabled = false;
 

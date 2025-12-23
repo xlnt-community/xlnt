@@ -48,16 +48,23 @@ jobs:
       image:
         default: PLACEHOLDER_IMAGE(gcc7_cmake3.9.5)
         type: string
+      sanitize:
+        default: "OFF"
+        type: string
     steps:
       - checkout
       - run: git submodule update --init --recursive
-      - run: cmake -D XLNT_ALL_WARNINGS_AS_ERRORS=<< parameters.warnings-as-errors >> -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D XLNT_MICROBENCH_ENABLED=<< parameters.micro-benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> -D XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR=de_DE -D XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR=ps_AF .
+      - run: cmake -D XLNT_SANITIZE=<< parameters.sanitize >> -D XLNT_ALL_WARNINGS_AS_ERRORS=<< parameters.warnings-as-errors >> -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D XLNT_MICROBENCH_ENABLED=<< parameters.micro-benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> -D XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR=de_DE -D XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR=ps_AF .
       - run: cmake --build . -- -j2
       - when:
           condition:
             equal: ["ON", << parameters.tests >>]
           steps:
-            - run: ./tests/xlnt.test
+            - run: |
+                if [ "<< parameters.sanitize >>" = "ON" ]; then
+                  export UBSAN_OPTIONS="suppressions=$PWD/ubsan.supp"
+                fi
+                ./tests/xlnt.test
       - when:
           condition:
             equal: ["ON", << parameters.samples >>]
@@ -175,6 +182,9 @@ jobs:
       cmake-generator:
         default: "Visual Studio 16 2019"
         type: string
+      sanitize:
+        default: "OFF"
+        type: string
     steps:
       - checkout
       - run: git submodule update --init --recursive
@@ -186,13 +196,103 @@ jobs:
           steps:
             - run: choco install visualstudio2017buildtools -y
             - run: choco install visualstudio2017-workload-vctools -y
-      - run: cmake -G "<< parameters.cmake-generator >>" -D CMAKE_GENERATOR_PLATFORM=x64 -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
+      - run: cmake -G "<< parameters.cmake-generator >>" -D XLNT_SANITIZE=<< parameters.sanitize >> -D CMAKE_GENERATOR_PLATFORM=x64 -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
       - run: cmake --build . -j4 --config << parameters.build-type >>
       - when:
           condition:
             equal: ["ON", << parameters.tests >>]
           steps:
-            - run: ./tests/<< parameters.build-type >>/xlnt.test.exe
+            - run: |
+                if [ "<< parameters.sanitize >>" = "ON" ]; then
+                  # CircleCI is using git bash on windows
+                  set -x
+
+                  ASAN_DIR=""
+
+                  #
+                  # 1) Preferred: use vswhere -find (robust across MSVC upgrades)
+                  #
+                  VSWHERE=""
+                  if [ -x "/c/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe" ]; then
+                    VSWHERE="/c/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe"
+                  elif [ -x "/c/Program Files/Microsoft Visual Studio/Installer/vswhere.exe" ]; then
+                    VSWHERE="/c/Program Files/Microsoft Visual Studio/Installer/vswhere.exe"
+                  fi
+
+                  if [ -n "$VSWHERE" ]; then
+                    # Try Hostx64/x64 first (typical for x64 builds)
+                    ASAN_DLL_WIN="$("$VSWHERE" -latest -products '*' \
+                      -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 \
+                      -find 'VC\Tools\MSVC\*\bin\Hostx64\x64\clang_rt.asan_dynamic-x86_64.dll' \
+                      | head -n 1 | tr -d '\r')"
+
+                    # Fallback to Hostx86/x64
+                    if [ -z "$ASAN_DLL_WIN" ]; then
+                      ASAN_DLL_WIN="$("$VSWHERE" -latest -products '*' \
+                        -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 \
+                        -find 'VC\Tools\MSVC\*\bin\Hostx86\x64\clang_rt.asan_dynamic-x86_64.dll' \
+                        | head -n 1 | tr -d '\r')"
+                    fi
+
+                    # If release DLL not found, try debug runtime DLL
+                    if [ -z "$ASAN_DLL_WIN" ]; then
+                      ASAN_DLL_WIN="$("$VSWHERE" -latest -products '*' \
+                        -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 \
+                        -find 'VC\Tools\MSVC\*\bin\Hostx64\x64\clang_rt.asan_dbg_dynamic-x86_64.dll' \
+                        | head -n 1 | tr -d '\r')"
+                    fi
+                    if [ -z "$ASAN_DLL_WIN" ]; then
+                      ASAN_DLL_WIN="$("$VSWHERE" -latest -products '*' \
+                        -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 \
+                        -find 'VC\Tools\MSVC\*\bin\Hostx86\x64\clang_rt.asan_dbg_dynamic-x86_64.dll' \
+                        | head -n 1 | tr -d '\r')"
+                    fi
+
+                    if [ -n "$ASAN_DLL_WIN" ]; then
+                      ASAN_DIR="$(dirname "$(cygpath -u "$ASAN_DLL_WIN")")"
+                    fi
+                  fi
+
+                  #
+                  # 2) Fallback: standard install directories + ls + GNU sort
+                  #
+                  if [ -z "$ASAN_DIR" ]; then
+                    for VSROOT in \
+                      "/c/Program Files (x86)/Microsoft Visual Studio/2019/Community" \
+                      "/c/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools" \
+                      "/c/Program Files/Microsoft Visual Studio/2022/Community" \
+                      "/c/Program Files/Microsoft Visual Studio/2022/BuildTools"
+                    do
+                      if [ -d "$VSROOT/VC/Tools/MSVC" ]; then
+                        TOOLSET_BASE="$VSROOT/VC/Tools/MSVC"
+
+                        # Force GNU sort from Git Bash (avoid Windows sort.exe)
+                        MSVC_VER="$(ls -1 "$TOOLSET_BASE" | /usr/bin/sort -V | tail -n 1)"
+                        TOOLSET="$TOOLSET_BASE/$MSVC_VER"
+
+                        for d in "$TOOLSET/bin/Hostx64/x64" "$TOOLSET/bin/Hostx86/x64"; do
+                          if [ -f "$d/clang_rt.asan_dynamic-x86_64.dll" ] || [ -f "$d/clang_rt.asan_dbg_dynamic-x86_64.dll" ]; then
+                            ASAN_DIR="$d"
+                            break 2
+                          fi
+                        done
+                      fi
+                    done
+                  fi
+
+                  if [ -z "$ASAN_DIR" ]; then
+                    echo "ERROR: Could not locate MSVC ASan runtime DLL directory (clang_rt.asan_*_dynamic-x86_64.dll)." >&2
+                    exit 1
+                  fi
+
+                  export PATH="$ASAN_DIR:$PATH"
+                  echo "MSVC ASan runtime dir added to PATH: $ASAN_DIR"
+
+                  # Optional: validate via Windows loader search
+                  cmd.exe /c "where clang_rt.asan_dynamic-x86_64.dll" || true
+                fi
+
+                ./tests/<< parameters.build-type >>/xlnt.test.exe
       - when:
           condition:
             equal: ["ON", << parameters.samples >>]
@@ -224,13 +324,20 @@ jobs:
       static:
         default: "ON"
         type: string
+      sanitize:
+        default: "OFF"
+        type: string
     steps:
       - checkout
       - run: git submodule update --init --recursive
       - run: brew install cmake
-      - run: cmake -G "Xcode" -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=ON -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
+      - run: cmake -G "Xcode" -D XLNT_SANITIZE=<< parameters.sanitize >> -D STATIC=<< parameters.static >> -D SAMPLES=<< parameters.samples >> -D BENCHMARKS=<< parameters.benchmarks >> -D TESTS=ON -D CMAKE_BUILD_TYPE=<< parameters.build-type >> .
       - run: cmake --build . -j6 --config << parameters.build-type >>
-      - run: ./tests/<< parameters.build-type >>/xlnt.test
+      - run: |
+          if [ "<< parameters.sanitize >>" = "ON" ]; then
+            export UBSAN_OPTIONS="suppressions=$PWD/ubsan.supp"
+          fi
+          ./tests/<< parameters.build-type >>/xlnt.test
       - when:
           condition:
             equal: ["ON", << parameters.samples >>]
@@ -297,6 +404,8 @@ workflows:
               - {static: "ON", skip-internal-tests: "ON", cxx-ver: "11", build-type: Release}
               - {static: "ON", skip-internal-tests: "ON", cxx-ver: "23", build-type: Debug}
               - {static: "ON", skip-internal-tests: "ON", cxx-ver: "23", build-type: Release}
+              # Exclude combination covered by tests-gcc-sanitize job
+              - {cxx-ver: "23", build-type: Debug, static: "OFF", skip-internal-tests: "OFF"}
           filters:
             branches:
               ignore: gh-pages
@@ -309,6 +418,26 @@ workflows:
           tests: "OFF"
           benchmarks: "ON"
           micro-benchmarks: "ON"
+          filters:
+            branches:
+              ignore: gh-pages
+
+      - build-gcc:
+          name: tests-gcc-sanitize
+          image: PLACEHOLDER_IMAGE(gcc_cmake_latest)
+          matrix:
+            alias: tests-gcc-sanitize-all
+            parameters:
+              cxx-ver:
+                - "23"
+              build-type:
+                - Debug
+              static:
+                - "OFF"
+              skip-internal-tests:
+                - "OFF"
+              sanitize:
+                - "ON"
           filters:
             branches:
               ignore: gh-pages
@@ -350,6 +479,20 @@ workflows:
             branches:
               ignore: gh-pages
 
+      - build-msvc:
+          name: tests-msvc-sanitize
+          build-type: Debug
+          static: "OFF"
+          skip-internal-tests: "OFF"
+          sanitize: "ON"
+          samples: "OFF"
+          benchmarks: "OFF"
+          requires:
+            - tests-gcc-sanitize-all # prevent building windows in case of gcc failures, as windows builds are more expensive
+          filters:
+            branches:
+              ignore: gh-pages
+
       - build-macos:
           name: tests-samples-macos
           matrix:
@@ -363,6 +506,18 @@ workflows:
           samples: "ON"
           requires:
             - tests-gcc7-cmake3.2-all # prevent building macos in case of gcc failures, as macos builds are more expensive
+          filters:
+            branches:
+              ignore: gh-pages
+
+      - build-macos:
+          name: tests-macos-sanitize
+          build-type: Debug
+          static: "OFF"
+          samples: "OFF"
+          sanitize: "ON"
+          requires:
+            - tests-gcc-sanitize-all # prevent building macos in case of gcc failures, as macos builds are more expensive
           filters:
             branches:
               ignore: gh-pages
