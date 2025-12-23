@@ -33,6 +33,10 @@
             expression;                                                       \
             break;                                                            \
         }                                                                     \
+        catch (const std::exception& ex)                                      \
+        {                                                                     \
+            throw xlnt::exception("assert throws nothing failed at L:" XLNT_STRINGIFY(__LINE__) "\n" XLNT_STRINGIFY(expression) "\nwith exception message: " + std::string(ex.what())); \
+        }                                                                     \
         catch (...)                                                           \
         {                                                                     \
         }                                                                     \
@@ -49,6 +53,10 @@
         catch (exception_type)                                                \
         {                                                                     \
             break;                                                            \
+        }                                                                     \
+        catch (const std::exception& ex)                                      \
+        {                                                                     \
+            throw xlnt::exception("assert throws failed at L:" XLNT_STRINGIFY(__LINE__) "\n" XLNT_STRINGIFY(expression) "\nwith exception message: " + std::string(ex.what())); \
         }                                                                     \
         catch (...)                                                           \
         {                                                                     \

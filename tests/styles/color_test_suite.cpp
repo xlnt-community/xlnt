@@ -49,15 +49,19 @@ public:
             {xlnt::color::yellow(), "FFFFFF00"},
             {xlnt::color::darkyellow(), "FFCCCC00"}};
 
-        for (auto pair : known_colors)
+        for (const auto& pair : known_colors)
         {
+            xlnt_assert_equals(pair.first.type(), xlnt::color_type::rgb);
             xlnt_assert_equals(pair.first.rgb().hex_string(), pair.second);
+            xlnt_assert_throws(pair.first.theme(), xlnt::invalid_attribute);
+            xlnt_assert_throws(pair.first.indexed(), xlnt::invalid_attribute);
         }
     }
 
     void test_non_rgb_colors()
     {
         xlnt::color indexed = xlnt::indexed_color(1);
+        xlnt_assert_equals(indexed.type(), xlnt::color_type::indexed);
         xlnt_assert(!indexed.auto_());
         xlnt_assert_equals(indexed.indexed().index(), 1);
         indexed.indexed().index(2);
@@ -66,6 +70,7 @@ public:
         xlnt_assert_throws(indexed.rgb(), xlnt::invalid_attribute);
 
         xlnt::color theme = xlnt::theme_color(3);
+        xlnt_assert_equals(theme.type(), xlnt::color_type::theme);
         xlnt_assert(!theme.auto_());
         xlnt_assert_equals(theme.theme().index(), 3);
         theme.theme().index(4);

@@ -112,6 +112,8 @@ public:
 
     /// <summary>
     /// Returns the paper size which should be used to print the worksheet using this page setup.
+    /// Assumes that this page setup has a paper size (please call has_paper_size() to check).
+    /// If this workbook has no paper size, an invalid_attribute exception will be thrown.
     /// </summary>
     xlnt::paper_size paper_size() const;
 
@@ -162,6 +164,7 @@ public:
 
     /// <summary>
     /// Returns the factor by which the page should be scaled during printing.
+    /// If no scale has been set (has_scale() returns false), the default scale of 100 will be returned.
     /// </summary>
     double scale() const;
 

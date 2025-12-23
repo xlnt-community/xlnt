@@ -90,7 +90,11 @@ bool conditional_format::has_border() const
 
 xlnt::border conditional_format::border() const
 {
-    return d_->parent->borders.at(d_->border_id.get());
+    if (d_->border_id.is_set())
+    {
+        return d_->parent->borders.at(d_->border_id.get());
+    }
+    return {};
 }
 
 conditional_format conditional_format::border(const xlnt::border &new_border)
@@ -106,7 +110,11 @@ bool conditional_format::has_fill() const
 
 xlnt::fill conditional_format::fill() const
 {
-    return d_->parent->fills.at(d_->fill_id.get());
+    if (d_->fill_id.is_set())
+    {
+        return d_->parent->fills.at(d_->fill_id.get());
+    }
+    return {};
 }
 
 conditional_format conditional_format::fill(const xlnt::fill &new_fill)
@@ -122,7 +130,11 @@ bool conditional_format::has_font() const
 
 xlnt::font conditional_format::font() const
 {
-    return d_->parent->fonts.at(d_->font_id.get());
+    if (d_->font_id.is_set())
+    {
+        return d_->parent->fonts.at(d_->font_id.get());
+    }
+    return {};
 }
 
 conditional_format conditional_format::font(const xlnt::font &new_font)

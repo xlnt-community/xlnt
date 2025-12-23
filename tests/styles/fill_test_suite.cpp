@@ -45,16 +45,16 @@ public:
         xlnt::fill fill;
 
         xlnt_assert_equals(fill.type(), xlnt::fill_type::pattern);
+        xlnt_assert_throws(fill.gradient_fill(), xlnt::invalid_attribute);
         fill = xlnt::fill(xlnt::gradient_fill());
         xlnt_assert_equals(fill.type(), xlnt::fill_type::gradient);
+        xlnt_assert_throws(fill.pattern_fill(), xlnt::invalid_attribute);
         xlnt_assert_equals(fill.gradient_fill().type(), xlnt::gradient_fill_type::linear);
 
         xlnt_assert_equals(fill.gradient_fill().left(), 0);
         xlnt_assert_equals(fill.gradient_fill().right(), 0);
         xlnt_assert_equals(fill.gradient_fill().top(), 0);
         xlnt_assert_equals(fill.gradient_fill().bottom(), 0);
-
-        xlnt_assert_throws(fill.pattern_fill(), xlnt::invalid_attribute);
 
         xlnt_assert_equals(fill.gradient_fill().degree(), 0);
 		fill = fill.gradient_fill().degree(1);
