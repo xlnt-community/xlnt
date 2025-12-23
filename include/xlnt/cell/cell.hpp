@@ -196,6 +196,13 @@ public:
 
     /// <summary>
     /// Sets the value and formatting of this cell to that of other_cell.
+    /// NOTE: if copying from a different workbook, shared strings are remapped
+    /// correctly, formulas are copied as text, and formats are deep-copied
+    /// automatically. External hyperlinks are copied; internal hyperlinks
+    /// (cell/range references) are not yet implemented.
+    /// NOTE: style is NOT deep-copied yet; if the destination workbook has a style
+    /// with the same name it will be used, otherwise only formatting properties
+    /// (font/fill/border/number format/alignment/protection) are copied assigned to the style name
     /// </summary>
     void value(const cell other_cell);
 
@@ -343,6 +350,9 @@ public:
 
     /// <summary>
     /// Applies the cell-level formatting of new_format to this cell.
+    /// NOTE: when copying from a different workbook: format properties are deep-copied;
+    /// If new_format has a style, the cloned format is associated with the same style name.
+    /// NOTE: Deep cloning of the style itself is not yet implemented.
     /// </summary>
     void format(const class format new_format);
 
@@ -640,6 +650,27 @@ private:
     friend class detail::xlsx_consumer;
     friend class detail::xlsx_producer;
     friend struct detail::cell_impl;
+
+    /// <summary>
+    /// Helper to set rich_text value without calling check_string.
+    /// </summary>
+    void value_no_check(const rich_text &text);
+
+    /// <summary>
+    /// Helper to copy value from cell in different workbook.
+    /// Handles shared_string remapping, formula copying, format deep-copy.
+    /// External hyperlinks are copied; internal hyperlinks (cell/range
+    /// references) are not yet implemented.
+    /// </summary>
+    void copy_from_other_workbook(const cell &source);
+
+    /// <summary>
+    /// Helper to clone format from different workbook.
+    /// Creates deep-copy of format in destination workbook's stylesheet,
+    /// if new_format has a style, the cloned format is associated with the same style name.
+    /// NOTE: Deep cloning of the style itself is not yet implemented.
+    /// </summary>
+    void copy_format_from_other_workbook(const class format &source_format);
 
     /// <summary>
     /// Returns a non-const reference to the format of this cell.
