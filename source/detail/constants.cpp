@@ -71,6 +71,12 @@ size_t constants::max_elements_for_reserve()
     return 10000;
 }
 
+const std::string &constants::empty_str()
+{
+    static const std::string empty;
+    return empty;
+}
+
 // constants
 const path constants::package_properties()
 {

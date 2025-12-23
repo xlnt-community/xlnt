@@ -25,6 +25,7 @@
 
 #include <xlnt/cell/hyperlink.hpp>
 #include <xlnt/utils/exceptions.hpp>
+#include <detail/constants.hpp>
 #include <detail/implementations/hyperlink_impl.hpp>
 
 namespace xlnt {
@@ -88,7 +89,7 @@ const std::string &hyperlink::display() const
 {
     if (!d_->display.is_set())
     {
-        throw xlnt::invalid_attribute("hyperlink has no display");
+        return constants::empty_str();
     }
     return d_->display.get();
 }
@@ -112,7 +113,7 @@ const std::string &hyperlink::tooltip() const
 {
     if (!d_->tooltip.is_set())
     {
-        throw xlnt::invalid_attribute("hyperlink has no tooltip");
+        return constants::empty_str();
     }
     return d_->tooltip.get();
 }
@@ -136,7 +137,7 @@ const std::string &hyperlink::location() const
 {
     if (!d_->location.is_set())
     {
-        throw xlnt::invalid_attribute("hyperlink has no location");
+        return constants::empty_str();
     }
     return d_->location.get();
 }

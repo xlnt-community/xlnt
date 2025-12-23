@@ -78,6 +78,12 @@ struct XLNT_API_INTERNAL constants
     static size_t max_elements_for_reserve();
 
     /// <summary>
+    /// Returns returns a constant reference to an empty string.
+    /// Useful to avoid creating static empty strings all over the code.
+    /// </summary>
+    static const std::string &empty_str();
+
+    /// <summary>
     /// Returns the URI of the directory containing package properties.
     /// </summary>
     static const path package_properties();

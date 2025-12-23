@@ -791,7 +791,7 @@ private:
         xlnt_assert_equals(cell.hyperlink().display(), link1);
         cell.hyperlink().clear_display();
         xlnt_assert(!cell.hyperlink().has_display());
-        xlnt_assert_throws(cell.hyperlink().display(), xlnt::invalid_attribute);
+        xlnt_assert_equals(cell.hyperlink().display(), "");
         // Clearing again should never throw.
         xlnt_assert_throws_nothing(cell.hyperlink().clear_display());
         cell.clear_value();
@@ -809,7 +809,7 @@ private:
         xlnt_assert_throws(cell.hyperlink().target_range(), xlnt::invalid_attribute);
         cell.hyperlink().clear_display();
         xlnt_assert(!cell.hyperlink().has_display());
-        xlnt_assert_throws(cell.hyperlink().display(), xlnt::invalid_attribute);
+        xlnt_assert_equals(cell.hyperlink().display(), "");
         // relative (local) url
         const std::string local("../test_local");
         cell.hyperlink(local);
@@ -889,25 +889,25 @@ private:
         // tooltip
         cell.hyperlink(link1);
         xlnt_assert(!cell.hyperlink().has_tooltip());
-        xlnt_assert_throws(cell.hyperlink().tooltip(), xlnt::invalid_attribute);
+        xlnt_assert_equals(cell.hyperlink().tooltip(), "");
         cell.hyperlink().tooltip("example");
         xlnt_assert(cell.hyperlink().has_tooltip());
         xlnt_assert_equals(cell.hyperlink().tooltip(), "example");
         cell.hyperlink().clear_tooltip();
         xlnt_assert(!cell.hyperlink().has_tooltip());
-        xlnt_assert_throws(cell.hyperlink().tooltip(), xlnt::invalid_attribute);
+        xlnt_assert_equals(cell.hyperlink().tooltip(), "");
         // Clearing again should never throw.
         xlnt_assert_throws_nothing(cell.hyperlink().clear_tooltip());
         // location
         cell.hyperlink(link1);
         xlnt_assert(!cell.hyperlink().has_location());
-        xlnt_assert_throws(cell.hyperlink().location(), xlnt::invalid_attribute);
+        xlnt_assert_equals(cell.hyperlink().location(), "");
         cell.hyperlink().location("location");
         xlnt_assert(cell.hyperlink().has_location());
         xlnt_assert_equals(cell.hyperlink().location(), "location");
         cell.hyperlink().clear_location();
         xlnt_assert(!cell.hyperlink().has_location());
-        xlnt_assert_throws(cell.hyperlink().location(), xlnt::invalid_attribute);
+        xlnt_assert_equals(cell.hyperlink().location(), "");
         // Clearing again should never throw.
         xlnt_assert_throws_nothing(cell.hyperlink().clear_location());
     }

@@ -84,7 +84,7 @@ public:
     /// <summary>
     /// Returns the displayed text of this hyperlink.
     /// Assumes that this hyperlink has a displayed text (please call has_display() to check).
-    /// If this hyperlink does not have a displayed text, an xlnt::invalid_attribute exception will be thrown.
+    /// If this hyperlink does not have a displayed text, an empty string will be returned.
     /// </summary>
     const std::string &display() const;
 
@@ -106,7 +106,7 @@ public:
     /// <summary>
     /// Returns the tooltip of this hyperlink.
     /// Assumes that this hyperlink has a tooltip (please call has_tooltip() to check).
-    /// If this hyperlink does not have a tooltip, an xlnt::invalid_attribute exception will be thrown.
+    /// If this hyperlink does not have a tooltip, an empty string will be returned.
     /// </summary>
     const std::string &tooltip() const;
 
@@ -128,7 +128,7 @@ public:
     /// <summary>
     /// Returns the location of this hyperlink.
     /// Assumes that this hyperlink has a location (please call has_location() to check).
-    /// If this hyperlink does not have a location, an xlnt::invalid_attribute exception will be thrown.
+    /// If this hyperlink does not have a location, an empty string will be returned.
     /// </summary>
     const std::string &location() const;
 
