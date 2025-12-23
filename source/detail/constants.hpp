@@ -47,6 +47,12 @@ struct XLNT_API_INTERNAL constants
     static row_t max_row();
 
     /// <summary>
+    /// Returns the largest row reference index in a worksheet which is allowed by default.
+    /// By default, row references range from 1 to 1048576, but the OOXML specification allows to extend this range.
+    /// </summary>
+    static row_t max_row_reference_default();
+
+    /// <summary>
     /// Returns the lowest allowable column index in a worksheet.
     /// </summary>
     static const column_t min_column();
@@ -55,6 +61,13 @@ struct XLNT_API_INTERNAL constants
     /// Returns the largest allowable column index in a worksheet.
     /// </summary>
     static const column_t max_column();
+
+    /// <summary>
+    /// Returns the largest column reference index in a worksheet which is allowed by default.
+    /// By default, column references range from A to XFD (column indices 1 to 16384), but
+    /// the OOXML specification allows to extend this range.
+    /// </summary>
+    static const column_t max_column_reference_default();
 
     /// <summary>
     /// Returns the maximum amount of elements that functions like std::vector::reserve (or other containers) are allowed to allocate.

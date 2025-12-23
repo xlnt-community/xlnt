@@ -96,11 +96,16 @@ void worksheet::create_named_range(const std::string &name, const range_referenc
     {
         auto temp = cell_reference::split_reference(name);
 
-        // name is a valid reference, make sure it's outside the allowed range
-
-        if (column_t(temp.first).index <= column_t("XFD").index && temp.second <= 1048576)
+        // Citing the OOXML specification:
+        // In SpreadsheetML, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD).
+        // An implementation can extend this range. However, to avoid ambiguities, it is necessary to ensure
+        // that defined names are distinct from cell references, or that one takes precedence over the other.
+        // With this in mind, the following rules apply:
+        // 1. A producer or consumer shall consider a defined name of the form used by cells in the range A1–XFD1048576 to be an error.
+        // 2. All other names outside this range can be defined names and shall override a cell reference if an ambiguity exists.
+        if (column_t(temp.first) <= xlnt::constants::max_column_reference_default() && temp.second <= xlnt::constants::max_row_reference_default())
         {
-            throw invalid_parameter("named range \"" + name + "\" uses a forbidden name (inside the valid cell range A1 - XFD1048576, which is not allowed)");
+            throw invalid_parameter("named range \"" + name + "\" uses a forbidden name (inside the valid cell reference range A1 - XFD1048576, which is not allowed)");
         }
     }
     catch (xlnt::invalid_cell_reference &)

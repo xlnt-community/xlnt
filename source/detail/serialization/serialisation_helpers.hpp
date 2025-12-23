@@ -70,8 +70,11 @@ struct Cell_Reference
         return column < rhs.column;
     }
 
-    xlnt::row_t row; // range:[1, 1048576]
-    xlnt::column_t::index_t column; // range:["A", "ZZZ"] -> [1, 26^3] -> [1, 17576]
+    // According to the OOXML specification:
+    // "In SpreadsheetML, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD).
+    // An implementation can extend this range."
+    xlnt::row_t row; // default range: [1, 1048576] (but can be extended)
+    xlnt::column_t::index_t column; // default range: ["A", "XFD"] -> [1, 16384] (but can be extended)
 };
 
 // <c> inside <row> element

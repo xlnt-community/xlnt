@@ -36,13 +36,16 @@ namespace xlnt {
 
 /// <summary>
 /// All rows should be referred to by an instance of this type.
+/// By default, row references range from 1 to 1048576, but the OOXML specification allows to extend this range.
 /// </summary>
 using row_t = std::uint32_t;
 
 /// <summary>
-/// Columns can be referred to as a string A,B,...Z,AA,AB,..,ZZ,AAA,...,ZZZ
-/// or as a 1-indexed index. This class encapsulates both of these forms of
+/// Columns can be referred to as a string A,B,...Z,AA,AB,..,ZZ,AAA,...,XFD
+/// or as a 1-indexed index (indices 1 to 16384). This class encapsulates both of these forms of
 /// column referencing and allows for conversions between them.
+/// By default, column references range from A to XFD (column indices 1 to 16384), but
+/// the OOXML specification allows to extend this range.
 /// </summary>
 class XLNT_API column_t
 {
@@ -56,7 +59,7 @@ public:
     /// Convert a column letter into a column number (e.g. B -> 2)
     /// </summary>
     /// <remarks>
-    /// Excel only supports 1 - 3 letter column names from A->ZZZ, so we
+    /// Excel only supports 1 - 3 letter column names from A->Z, AA->ZZ, AAA->XFD, so we
     /// restrict our column names to 1 - 3 characters, each in the range A - Z.
     /// Strings outside this range and malformed strings will throw an invalid_column_index exception.
     /// </remarks>

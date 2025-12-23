@@ -55,6 +55,8 @@ struct XLNT_API cell_reference_hash
 /// In Excel, the reference string A1 refers to the top-left-most cell. A cell_reference
 /// can be initialized from a string of this form or a 1-indexed ordered pair of the form
 /// column, row.
+/// By default, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD, column index 16384).
+/// The OOXML specification allows to extend this range.
 /// </summary>
 class XLNT_API cell_reference
 {
@@ -84,16 +86,22 @@ public:
 
     /// <summary>
     /// Constructs a cell_reference from a string reprenting a cell coordinate (e.g. $B14).
+    /// By default, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD, column index 16384).
+    /// The OOXML specification allows to extend this range.
     /// </summary>
     cell_reference(const char *reference_string);
 
     /// <summary>
     /// Constructs a cell_reference from a string reprenting a cell coordinate (e.g. $B14).
+    /// By default, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD, column index 16384).
+    /// The OOXML specification allows to extend this range.
     /// </summary>
     cell_reference(const std::string &reference_string);
 
     /// <summary>
     /// Constructs a cell_reference from a 1-indexed column index and row index.
+    /// By default, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD, column index 16384).
+    /// The OOXML specification allows to extend this range.
     /// </summary>
     cell_reference(column_t column, row_t row);
 
@@ -236,12 +244,15 @@ private:
     /// <summary>
     /// Index of the column. Important: this is one-indexed to conform
     /// with Excel. Column "A", the first column, would have an index of 1.
+    /// By default, column references range from A to XFD (column indices 1 to 16384), but
+    /// the OOXML specification allows to extend this range.
     /// </summary>
     column_t column_;
 
     /// <summary>
     /// Index of the column. Important: this is one-indexed to conform
     /// with Excel. Column "A", the first column, would have an index of 1.
+    /// By default, row references range from 1 to 1048576, but the OOXML specification allows to extend this range.
     /// </summary>
     row_t row_;
 
