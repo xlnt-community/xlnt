@@ -257,8 +257,7 @@ void cell::value(const rich_text &text)
 {
     check_string(text.plain_text());
 
-    d_->type_ = type::shared_string;
-    d_->value_numeric_ = static_cast<double>(workbook().add_shared_string(text));
+    value_no_check(text);
 }
 
 void cell::value(const char *c)
@@ -268,12 +267,65 @@ void cell::value(const char *c)
 
 void cell::value(const cell c)
 {
+    if (c.worksheet().workbook() != worksheet().workbook())
+    {
+        copy_from_other_workbook(c);
+        return;
+    }
+
+    // Same workbook: shallow copy (existing behavior)
     d_->type_ = c.d_->type_;
     d_->value_numeric_ = c.d_->value_numeric_;
     d_->value_text_ = c.d_->value_text_;
     d_->hyperlink_ = c.d_->hyperlink_;
     d_->formula_ = c.d_->formula_;
     d_->format_ = c.d_->format_;
+}
+
+void cell::value_no_check(const rich_text &text)
+{
+    d_->type_ = type::shared_string;
+    d_->value_numeric_ = static_cast<double>(workbook().add_shared_string(text));
+}
+
+void cell::copy_from_other_workbook(const cell &source)
+{
+    d_->type_ = source.d_->type_;
+
+    // Handle shared_string: remap to destination workbook
+    if (source.data_type() == type::shared_string)
+    {
+        value_no_check(source.value<rich_text>());
+    }
+    else
+    {
+        d_->value_numeric_ = source.d_->value_numeric_;
+    }
+
+    d_->value_text_ = source.d_->value_text_;
+    d_->formula_ = source.d_->formula_;
+
+    // Copy external hyperlinks; internal hyperlinks (cell/range references)
+    // are not yet implemented as they would need worksheet title remapping.
+    // TODO: implement internal hyperlink remapping.
+    if (source.has_hyperlink())
+    {
+        auto copy_hyperlink = source.hyperlink();
+
+        if (copy_hyperlink.external())
+        {
+            hyperlink(copy_hyperlink.url(), copy_hyperlink.display());
+        }
+    }
+
+    if (source.has_format())
+    {
+        format(source.format());
+    }
+    else
+    {
+        d_->format_.clear();
+    }
 }
 
 void cell::value(const date &d)
@@ -775,7 +827,23 @@ bool cell::has_format() const
 
 void cell::format(const class format new_format)
 {
+    // Check if format belongs to a different workbook (dangling pointer risk)
+    if (!workbook().owns_format(new_format))
+    {
+        copy_format_from_other_workbook(new_format);
+        return;
+    }
+
+    // Same workbook: direct assignment (original behavior)
     d_->format_ = new_format.d_;
+}
+
+void cell::copy_format_from_other_workbook(const class format &source_format)
+{
+    auto cloned_format = workbook().clone_format_from(source_format);
+
+    // Use the cloned format
+    d_->format_ = cloned_format.d_;
 }
 
 calendar cell::base_date() const

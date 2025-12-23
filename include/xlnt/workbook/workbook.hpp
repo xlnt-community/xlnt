@@ -1122,11 +1122,32 @@ public:
     bool operator!=(const workbook &rhs) const;
 
 private:
+    friend class cell;
     friend class streaming_workbook_reader;
     friend class worksheet;
     friend class detail::xlsx_consumer;
     friend class detail::xlsx_producer;
     friend struct detail::worksheet_impl;
+
+    /// <summary>
+    /// Creates a deep copy of source_format in this workbook's stylesheet.
+    /// All format properties (alignment, border, fill, font, number format, protection)
+    /// are cloned using public API calls to avoid unnecessary duplication.
+    /// Pivot button and quote prefix properties are copied directly.
+    /// If source_format has a style, the cloned format is associated with the same style name.
+    /// NOTE: Deep cloning of the style itself is not yet implemented.
+    /// The cloned format will be assigned the style name from the source format.
+    /// If a style with the same name and properties already exists in the destination workbook,
+    /// it will be reused.
+    /// Returns the newly created format in this workbook.
+    /// </summary>
+    xlnt::format clone_format_from(const xlnt::format &source_format);
+
+    /// <summary>
+    /// Returns true if the given format belongs to this workbook's stylesheet.
+    /// Used internally to detect cross-workbook format references that could cause dangling pointers.
+    /// </summary>
+    bool owns_format(const class format &fmt) const;
 
     /// <summary>
     /// Private constructor. Constructs a workbook from an implementation pointer.

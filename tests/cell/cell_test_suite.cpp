@@ -85,6 +85,10 @@ public:
         register_test(test_hyperlink);
         register_test(test_comment);
         register_test(test_copy_and_compare);
+        register_test(test_copy_value_between_workbooks);
+        register_test(test_copy_inline_string_between_workbooks);
+        register_test(test_copy_formula_string_between_workbooks);
+        register_test(test_format_from_different_workbook);
         register_test(test_cell_phonetic_properties);
     }
 
@@ -953,6 +957,183 @@ private:
         // assign
         cell3 = cell2;
         xlnt_assert_equals(cell2, cell3);
+    }
+
+    void test_copy_value_between_workbooks()
+    {
+        // Test 1: Cross-workbook copy with scope destruction (proves deep copy, not raw pointers)
+        xlnt::workbook wb_dest;
+        auto cell_dest = wb_dest.active_sheet().cell("A1");
+
+        {
+            xlnt::workbook wb_source;
+            auto cell_source = wb_source.active_sheet().cell("A1");
+
+            // Set various value types
+            cell_source.value("Test String");
+            cell_source.formula("=SUM(A1:A10)");
+            cell_source.font(xlnt::font().bold(true).size(14));
+            // External hyperlink should be copied on cross-workbook copy
+            cell_source.hyperlink("https://example.com");
+
+            cell_dest.value(cell_source);
+        }
+        // Source workbook destroyed - if raw pointers were copied, this would crash/corrupt
+
+        xlnt_assert_equals(cell_dest.value<std::string>(), "Test String");
+        xlnt_assert(cell_dest.has_formula());
+        xlnt_assert_equals(cell_dest.formula(), "SUM(A1:A10)");
+        xlnt_assert(cell_dest.has_format());
+        xlnt_assert(cell_dest.font().bold());
+        xlnt_assert_equals(cell_dest.font().size(), 14.0);
+        xlnt_assert(cell_dest.has_hyperlink());
+        xlnt_assert_equals(cell_dest.hyperlink().url(), "https://example.com");
+
+        // Test 2: Shared string deduplication
+        xlnt::workbook wb_a;
+        auto ws_a = wb_a.active_sheet();
+
+        xlnt::workbook wb_b;
+        auto ws_b = wb_b.active_sheet();
+
+        ws_a.cell("A1").value("Duplicate");
+        ws_a.cell("A2").value("Duplicate");
+
+        ws_b.cell("B1").value(ws_a.cell("A1"));
+        auto count_after_first = wb_b.shared_strings().size();
+
+        ws_b.cell("B2").value(ws_a.cell("A2")); // Same string
+        xlnt_assert_equals(wb_b.shared_strings().size(), count_after_first); // Deduplicated
+
+        // Test 3: Same-workbook shallow copy (format_count unchanged, hyperlink preserved)
+        xlnt::workbook wb_same;
+        auto ws_same = wb_same.active_sheet();
+        auto cell_src = ws_same.cell("A1");
+        auto cell_dst = ws_same.cell("A2");
+
+        cell_src.value("Data");
+        cell_src.font(xlnt::font().italic(true));
+        cell_src.hyperlink("https://example.com");
+
+        auto format_count = wb_same.format_count();
+        cell_dst.value(cell_src);
+
+        xlnt_assert_equals(wb_same.format_count(), format_count); // No new format created
+        xlnt_assert(cell_dst.has_hyperlink()); // Hyperlink preserved (same workbook)
+        xlnt_assert_equals(cell_dst.hyperlink().url(), "https://example.com");
+    }
+
+    void test_copy_inline_string_between_workbooks()
+    {
+        xlnt::workbook wb_dest;
+        auto cell_dest = wb_dest.active_sheet().cell("A1");
+        std::string expected_value;
+        xlnt::cell::type expected_type;
+
+        {
+            xlnt::workbook wb_source;
+            wb_source.load(path_helper::test_file("Issue445_inline_str.xlsx"));
+            auto cell_source = wb_source.active_sheet().cell("A1");
+
+            expected_value = cell_source.value<std::string>();
+            expected_type = cell_source.data_type();
+
+            cell_dest.value(cell_source);
+        }
+        // Source workbook destroyed
+
+        xlnt_assert_equals(cell_dest.value<std::string>(), expected_value);
+        xlnt_assert_equals(cell_dest.data_type(), expected_type);
+    }
+
+    void test_copy_formula_string_between_workbooks()
+    {
+        xlnt::workbook wb_dest;
+        auto cell_dest = wb_dest.active_sheet().cell("A1");
+        std::string expected_value;
+        xlnt::cell::type expected_type;
+
+        {
+            xlnt::workbook wb_source;
+            wb_source.load(path_helper::test_file("18_formulae.xlsx"));
+            auto cell_source = wb_source.sheet_by_index(0).cell("D1");
+
+            expected_value = cell_source.value<std::string>();
+            expected_type = cell_source.data_type();
+
+            cell_dest.value(cell_source);
+        }
+        // Source workbook destroyed
+
+        xlnt_assert_equals(cell_dest.value<std::string>(), expected_value);
+        xlnt_assert_equals(cell_dest.data_type(), expected_type);
+    }
+
+    // Test cross-workbook format deep-copy via cell::format()
+    void test_format_from_different_workbook()
+    {
+        // Test 1: Deep copy with scope destruction - proves no dangling pointers
+        xlnt::workbook wb_dest;
+        wb_dest.create_style("TestStyle"); // Pre-create style with same name
+        auto cell_dest = wb_dest.active_sheet().cell("A1");
+
+        auto initial_format_count = wb_dest.format_count();
+
+        {
+            xlnt::workbook wb_source;
+            auto fmt = wb_source.create_format();
+
+            fmt.font(xlnt::font().bold(true).size(14), true);
+            fmt.fill(xlnt::fill(xlnt::pattern_fill()
+                             .type(xlnt::pattern_fill_type::solid)
+                             .foreground(xlnt::color::red())),
+                true);
+            fmt.border(xlnt::border().side(xlnt::border_side::top,
+                           xlnt::border::border_property().style(xlnt::border_style::thick)),
+                true);
+            fmt.alignment(xlnt::alignment().horizontal(xlnt::horizontal_alignment::center), true);
+            fmt.protection(xlnt::protection().locked(false), true);
+            fmt.number_format(xlnt::number_format::percentage(), true);
+            fmt.pivot_button(true);
+            fmt.quote_prefix(true);
+            wb_source.create_style("TestStyle");
+            fmt.style("TestStyle");
+
+            cell_dest.format(fmt);
+        }
+        // Source workbook destroyed - accessing format must not crash
+
+        // Essential checks: format was cloned into destination workbook,
+        // cell has a format, font bold preserved, and style associated by name.
+        xlnt_assert(wb_dest.format_count() > initial_format_count);
+        xlnt_assert(cell_dest.has_format());
+        xlnt_assert(cell_dest.font().bold());
+        xlnt_assert_delta(cell_dest.font().size(), 14.0, 1E-9);
+        xlnt_assert(cell_dest.has_style());
+
+        auto format = cell_dest.format();
+        xlnt_assert_equals(format.style().name(), "TestStyle");
+        xlnt_assert_equals(format.fill().pattern_fill().type(), xlnt::pattern_fill_type::solid);
+        xlnt_assert_equals(format.fill().pattern_fill().foreground(), xlnt::color::red());
+        xlnt_assert_equals(format.border().side(xlnt::border_side::top).get().style(), xlnt::border_style::thick);
+        xlnt_assert_equals(format.alignment().horizontal(), xlnt::horizontal_alignment::center);
+        xlnt_assert_equals(format.protection().locked(), false);
+        xlnt_assert_equals(format.number_format(), xlnt::number_format::percentage());
+        xlnt_assert_equals(format.pivot_button(), true);
+        xlnt_assert_equals(format.quote_prefix(), true);
+
+        // Test 2: Same workbook - no cloning (format_count unchanged)
+        xlnt::workbook wb_same;
+        auto cell_a = wb_same.active_sheet().cell("A1");
+        auto cell_b = wb_same.active_sheet().cell("A2");
+
+        cell_a.font(xlnt::font().italic(true));
+        auto format_count = wb_same.format_count();
+
+        cell_b.format(cell_a.format());
+
+        xlnt_assert_equals(wb_same.format_count(), format_count);
+        xlnt_assert(cell_b.font().italic());
     }
 
     void test_cell_phonetic_properties()
