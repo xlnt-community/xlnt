@@ -244,7 +244,7 @@ public:
     {
         xlnt::workbook wb;
         xlnt_assert(!wb.has_core_property(xlnt::core_property::keywords));
-        xlnt_assert_throws(wb.core_property(xlnt::core_property::keywords), xlnt::invalid_attribute);
+        xlnt_assert(wb.core_property(xlnt::core_property::keywords).is(xlnt::variant::type::null));
 
         wb.core_property(xlnt::core_property::keywords, "keyword1");
 
@@ -256,7 +256,7 @@ public:
     {
         xlnt::workbook wb;
         xlnt_assert(!wb.has_extended_property(xlnt::extended_property::words));
-        xlnt_assert_throws(wb.extended_property(xlnt::extended_property::words), xlnt::invalid_attribute);
+        xlnt_assert(wb.extended_property(xlnt::extended_property::words).is(xlnt::variant::type::null));
 
         wb.extended_property(xlnt::extended_property::words, "word1");
 
@@ -268,7 +268,7 @@ public:
     {
         xlnt::workbook wb;
         xlnt_assert(!wb.has_custom_property("VERY_CUSTOM"));
-        xlnt_assert_throws(wb.custom_property("VERY_CUSTOM"), xlnt::invalid_attribute);
+        xlnt_assert(wb.custom_property("VERY_CUSTOM").is(xlnt::variant::type::null));
 
         wb.custom_property("VERY_CUSTOM", "so custom!");
 
