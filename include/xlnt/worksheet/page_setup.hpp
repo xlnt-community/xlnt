@@ -158,12 +158,13 @@ public:
     void fit_to_width(bool fit_to_width);
 
     /// <summary>
-    /// Sets the factor by which the page should be scaled during printing.
+    /// Sets the value by which the page should be scaled during printing. A value of 150 means 150% scaling.
+    /// Possible values are between 10 and 400. Values outside this range will be ignored.
     /// </summary>
     void scale(unsigned int scale);
 
     /// <summary>
-    /// Returns the factor by which the page should be scaled during printing.
+    /// Returns the value by which the page should be scaled during printing. A value of 150 means 150% scaling.
     /// If no scale has been set (has_scale() returns false), the default scale of 100 will be returned.
     /// </summary>
     unsigned int scale() const;
