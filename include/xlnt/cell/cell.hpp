@@ -345,7 +345,10 @@ public:
     bool has_format() const;
 
     /// <summary>
-    /// Returns a wrapper pointing to the format applied to this cell.
+    /// Returns a const wrapper pointing to the format applied to this cell.
+    /// The returned wrapper cannot be modified directly, but is meant to be modified using the other format-related functions.
+    /// In case the format will be modified later, a new format will be created, while
+    /// this returned format will be left unmodified (lazy copy / copy-on-write).
     /// Assumes that the format exists (please call has_format() to check).
     /// If this cell has no format, an invalid_attribute exception will be thrown.
     /// </summary>
@@ -353,6 +356,8 @@ public:
 
     /// <summary>
     /// Applies the cell-level formatting of new_format to this cell.
+    /// In case the format will be modified later, a new format will be created, while
+    /// this original format will be left unmodified (lazy copy / copy-on-write).
     /// NOTE: when copying from a different workbook: format properties are deep-copied;
     /// If new_format has a style, the cloned format is associated with the same style name.
     /// NOTE: Deep cloning of the style itself is not yet implemented.
