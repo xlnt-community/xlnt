@@ -45,13 +45,13 @@ public:
 
         xlnt_assert(!ps.has_scale());
         xlnt_assert_equals(ps.scale(), 100);
-        // Allowed values are between 10 and 400.
+        // Allowed values are between 10 and 400. Values outside the range will be clipped.
         ps.scale(9);
-        xlnt_assert(!ps.has_scale());
-        xlnt_assert_equals(ps.scale(), 100);
+        xlnt_assert(ps.has_scale());
+        xlnt_assert_equals(ps.scale(), 10);
         ps.scale(401);
-        xlnt_assert(!ps.has_scale());
-        xlnt_assert_equals(ps.scale(), 100);
+        xlnt_assert(ps.has_scale());
+        xlnt_assert_equals(ps.scale(), 400);
         ps.scale(10);
         xlnt_assert(ps.has_scale());
         xlnt_assert_equals(ps.scale(), 10);
@@ -60,7 +60,7 @@ public:
         xlnt_assert_equals(ps.scale(), 400);
         ps.scale(9);
         xlnt_assert(ps.has_scale());
-        xlnt_assert_equals(ps.scale(), 400);
+        xlnt_assert_equals(ps.scale(), 10);
         ps.scale(401);
         xlnt_assert(ps.has_scale());
         xlnt_assert_equals(ps.scale(), 400);
