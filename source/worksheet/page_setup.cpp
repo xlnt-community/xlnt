@@ -105,16 +105,19 @@ void page_setup::fit_to_width(bool fit_to_width)
     fit_to_width_ = fit_to_width;
 }
 
-void page_setup::scale(double scale)
+void page_setup::scale(unsigned int scale)
 {
-    scale_ = scale;
+    if (scale >= 10 && scale <= 400)
+    {
+        scale_ = scale;
+    }
 }
 
-double page_setup::scale() const
+unsigned int page_setup::scale() const
 {
     if (!scale_.is_set())
     {
-        return 100.0;
+        return 100;
     }
     return scale_.get();
 }

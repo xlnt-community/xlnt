@@ -160,13 +160,13 @@ public:
     /// <summary>
     /// Sets the factor by which the page should be scaled during printing.
     /// </summary>
-    void scale(double scale);
+    void scale(unsigned int scale);
 
     /// <summary>
     /// Returns the factor by which the page should be scaled during printing.
     /// If no scale has been set (has_scale() returns false), the default scale of 100 will be returned.
     /// </summary>
-    double scale() const;
+    unsigned int scale() const;
 
     /// <summary>
     /// Check if current paper setting has scale setting
@@ -244,7 +244,7 @@ private:
     /// <summary>
     /// The amount to scale the worksheet
     /// </summary>
-    xlnt::optional<double> scale_;
+    xlnt::optional<unsigned int> scale_;
 };
 
 } // namespace xlnt

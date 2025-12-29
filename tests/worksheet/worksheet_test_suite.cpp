@@ -1014,8 +1014,8 @@ public:
         xlnt::page_setup setup;
         setup.page_break(xlnt::page_break::column);
         xlnt_assert_equals(setup.page_break(), xlnt::page_break::column);
-        setup.scale(1.23);
-        xlnt_assert_equals(setup.scale(), 1.23);
+        setup.scale(123);
+        xlnt_assert_equals(setup.scale(), 123);
         ws.page_setup(setup);
 
         xlnt_assert(ws.has_page_setup());
