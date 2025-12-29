@@ -464,8 +464,8 @@ public:
     const class style style() const;
 
     /// <summary>
-    /// Sets the named style applied to this cell to a style named style_name.
-    /// Equivalent to style(new_style.name()).
+    /// Creates a new format in the workbook, sets its style to the given style,
+    /// and applies the format to this cell to a style. Equivalent to style(new_style.name()).
     /// </summary>
     void style(const class style &new_style);
 

@@ -23,7 +23,6 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <cctype>
 #include <unordered_map>
 #include <vector>
 
@@ -75,7 +74,11 @@ const std::unordered_map<std::size_t, xlnt::number_format> &builtin_formats()
             {46, "[h]:mm:ss"},
             {47, "mmss.0"},
             {48, "##0.0E+0"},
-            {49, "@"}};
+            {49, "@"},
+
+            // Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30).
+            // Note: custom formats have IDs 164 and higher.
+        };
 
         for (const auto &format_string_pair : format_strings)
         {
@@ -274,7 +277,6 @@ std::string number_format::format_string() const
 void number_format::format_string(const std::string &format_string)
 {
     format_string_ = format_string;
-    id_ = 0;
 
     for (const auto &pair : builtin_formats())
     {

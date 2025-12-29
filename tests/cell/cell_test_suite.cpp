@@ -587,6 +587,46 @@ private:
         auto test_style = wb.create_style("test_style");
         test_style.number_format(xlnt::number_format::date_ddmmyyyy(), true);
 
+        // Style for testing all properties
+        auto style_all = wb.create_style("style_all");
+        xlnt::alignment alignment_all;
+        alignment_all.horizontal(xlnt::horizontal_alignment::center_continuous);
+        alignment_all.vertical(xlnt::vertical_alignment::distributed);
+        alignment_all.rotation(45);
+        alignment_all.indent(10);
+        alignment_all.shrink(true);
+        alignment_all.wrap(true);
+        style_all.alignment(alignment_all);
+        xlnt::border border_all;
+        border_all.diagonal(xlnt::diagonal_direction::both);
+        style_all.border(border_all);
+        xlnt::gradient_fill gradient_fill_all;
+        gradient_fill_all.left(5);
+        gradient_fill_all.right(10);
+        gradient_fill_all.add_stop(6.5, xlnt::color::yellow());
+        xlnt::fill fill_all(gradient_fill_all);
+        style_all.fill(fill_all);
+        xlnt::font font_all;
+        font_all.bold(true);
+        font_all.underline(xlnt::font::underline_style::double_accounting);
+        style_all.font(font_all);
+        xlnt::number_format number_format_all;
+        number_format_all.id(999);
+        number_format_all.format_string("yyyy\\mm\\dd"); // cursed date format
+        style_all.number_format(number_format_all);
+        xlnt::protection protection_all;
+        protection_all.hidden(true);
+        protection_all.locked(true);
+        style_all.protection(protection_all);
+        cell.style(style_all);
+        xlnt_assert_equals(cell.style(), style_all);
+        xlnt_assert_equals(cell.alignment(), alignment_all);
+        xlnt_assert_equals(cell.border(), border_all);
+        xlnt_assert_equals(cell.fill(), fill_all);
+        xlnt_assert_equals(cell.font(), font_all);
+        xlnt_assert_equals(cell.number_format(), number_format_all);
+        xlnt_assert_equals(cell.protection(), protection_all);
+
         cell.style(test_style);
         xlnt_assert(cell.has_style());
         xlnt_assert_equals(cell.style().number_format(), xlnt::number_format::date_ddmmyyyy());
