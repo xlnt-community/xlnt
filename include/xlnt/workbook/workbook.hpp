@@ -649,6 +649,7 @@ public:
     /// workbook to match that file.
     /// If the workbook requires a password (which is not provided), an xlnt::invalid_password will be thrown.
     /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     void load(const std::vector<std::uint8_t> &data);
 
@@ -657,6 +658,7 @@ public:
     /// given password and sets the content of this workbook to match that file.
     /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     void load(const std::vector<std::uint8_t> &data, const std::string &password);
 
@@ -666,6 +668,7 @@ public:
     /// given password and sets the content of this workbook to match that file.
     /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     void load(const std::vector<std::uint8_t> &data, std::u8string_view password);
 #endif
@@ -674,6 +677,7 @@ public:
     /// Interprets file with the given filename as an XLSX file and sets
     /// the content of this workbook to match that file.
     /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// If the workbook requires a password (which is not provided), an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(const std::string &filename);
@@ -682,6 +686,7 @@ public:
     /// Interprets file with the given filename as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
     /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(const std::string &filename, const std::string &password);
@@ -691,6 +696,7 @@ public:
     /// Interprets file with the given filename as an XLSX file and sets
     /// the content of this workbook to match that file.
     /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// If the workbook requires a password (which is not provided), an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(std::u8string_view filename);
@@ -699,6 +705,7 @@ public:
     /// Interprets file with the given filename as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
     /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(std::u8string_view filename, std::u8string_view password);
@@ -710,6 +717,7 @@ public:
     /// Interprets file with the given filename as an XLSX file and sets
     /// the content of this workbook to match that file.
     /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// If the workbook requires a password (which is not provided), an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(const std::wstring &filename);
@@ -718,6 +726,7 @@ public:
     /// Interprets file with the given filename as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
     /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(const std::wstring &filename, const std::string &password);
@@ -727,6 +736,7 @@ public:
     /// Interprets file with the given filename as an XLSX file and sets the
     /// content of this workbook to match that file.
     /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// If the workbook requires a password (which is not provided), an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(const xlnt::path &filename);
@@ -735,6 +745,7 @@ public:
     /// Interprets file with the given filename as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
     /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(const xlnt::path &filename, const std::string &password);
@@ -744,6 +755,7 @@ public:
     /// Interprets file with the given filename as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
     /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(const xlnt::path &filename, std::u8string_view password);
@@ -754,6 +766,7 @@ public:
     /// workbook to match that file.
     /// If the workbook requires a password (which is not provided), an xlnt::invalid_password will be thrown.
     /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     void load(std::istream &stream);
 
@@ -762,6 +775,7 @@ public:
     /// and sets the content of this workbook to match that file.
     /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     void load(std::istream &stream, const std::string &password);
 
@@ -771,6 +785,7 @@ public:
     /// and sets the content of this workbook to match that file.
     /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     void load(std::istream &stream, std::u8string_view password);
 #endif
@@ -1218,6 +1233,7 @@ private:
     /// given password and sets the content of this workbook to match that file.
     /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     template <typename T>
     void load_internal(const std::vector<std::uint8_t> &data, const T &password);
@@ -1227,6 +1243,7 @@ private:
     /// the content of this workbook to match that file.
     /// If the workbook requires a password (which is not provided), an xlnt::invalid_password will be thrown.
     /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     template <typename T>
     void load_internal(const T &filename);
@@ -1236,6 +1253,7 @@ private:
     /// given password and sets the content of this workbook to match that file.
     /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     template <typename T>
     void load_internal(const T &filename, const T &password);
@@ -1245,6 +1263,7 @@ private:
     /// given password and sets the content of this workbook to match that file.
     /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     template <typename T>
     void load_internal(const xlnt::path &filename, const T &password);
@@ -1254,6 +1273,7 @@ private:
     /// and sets the content of this workbook to match that file.
     /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     template <typename T>
     void load_internal(std::istream &stream, const T &password);
