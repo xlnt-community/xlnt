@@ -28,6 +28,82 @@
 
 namespace xlnt {
 
+const char * variant::get_type_string(variant::type type)
+{
+    switch (type)
+    {
+    //case variant::type::variant:
+    case variant::type::vector:
+        return "vector";
+    //case variant::type::array:
+    //    return "array";
+    //case variant::type::blob:
+    //    return "blob";
+    //case variant::type::oblob:
+    //    return "oblob";
+    //case variant::type::empty:
+    //    return "empty";
+    case variant::type::null:
+        return "null";
+    //case variant::type::i1:
+    //    return "i1";
+    //case variant::type::i2:
+    //    return "i2";
+    case variant::type::i4:
+        return "i4";
+    //case variant::type::i8:
+    //    return "i8";
+    //case variant::type::integer:
+    //    return "integer";
+    //case variant::type::ui1:
+    //    return "ui1";
+    //case variant::type::ui2:
+    //    return "ui2";
+    //case variant::type::ui4:
+    //    return "ui4";
+    //case variant::type::ui8:
+    //    return "ui8";
+    //case variant::type::uint:
+    //    return "uint";
+    //case variant::type::r4:
+    //    return "r4";
+    //case variant::type::r8:
+    //    return "r8";
+    //case variant::type::decimal:
+    //    return "decimal";
+    case variant::type::lpstr:
+        return "lpstr";
+    //case variant::type::lpwstr:
+    //    return "lpwstr";
+    //case variant::type::bstr:
+    //    return "bstr";
+    case variant::type::date:
+        return "date";
+    //case variant::type::filetime:
+    //    return "filetime";
+    case variant::type::boolean:
+        return "boolean";
+    //case variant::type::cy:
+    //    return "cy";
+    //case variant::type::error:
+    //    return "error";
+    //case variant::type::stream:
+    //    return "stream";
+    //case variant::type::ostream:
+    //    return "ostream";
+    //case variant::type::storage:
+    //    return "storage";
+    //case variant::type::ostorage:
+    //    return "ostorage";
+    //case variant::type::vstream:
+    //    return "vstream";
+    //case variant::type::clsid:
+    //    return "clsid";
+    default:
+        throw xlnt::invalid_parameter("unknown variant type " + std::to_string(static_cast<int>(type)));
+    }
+}
+
 variant::variant()
     : type_(type::null)
 {
@@ -184,7 +260,7 @@ std::string variant::get() const
         return lpstr_value_;
     }
 
-    throw xlnt::bad_variant_access(static_cast<int>(type::lpstr), static_cast<int>(type_));
+    throw xlnt::bad_variant_access(type::lpstr, type_);
 }
 
 template <>
@@ -195,7 +271,7 @@ bool variant::get() const
         return i4_value_ != 0;
     }
 
-    throw xlnt::bad_variant_access(static_cast<int>(type::boolean), static_cast<int>(type_));
+    throw xlnt::bad_variant_access(type::boolean, type_);
 }
 
 template <>
@@ -206,7 +282,7 @@ std::int32_t variant::get() const
         return i4_value_;
     }
 
-    throw xlnt::bad_variant_access(static_cast<int>(type::i4), static_cast<int>(type_));
+    throw xlnt::bad_variant_access(type::i4, type_);
 }
 
 template <>
@@ -217,7 +293,7 @@ datetime variant::get() const
         return datetime::from_iso_string(lpstr_value_);
     }
 
-    throw xlnt::bad_variant_access(static_cast<int>(type::date), static_cast<int>(type_));
+    throw xlnt::bad_variant_access(type::date, type_);
 }
 
 template <>
@@ -228,7 +304,7 @@ std::vector<variant> variant::get() const
         return vector_value_;
     }
 
-    throw xlnt::bad_variant_access(static_cast<int>(type::vector), static_cast<int>(type_));
+    throw xlnt::bad_variant_access(type::vector, type_);
 }
 
 template<typename T>
@@ -236,7 +312,7 @@ std::vector<T> variant::get_vector_internal() const
 {
     if (type_ != type::vector)
     {
-        throw xlnt::bad_variant_access(static_cast<int>(type::vector), static_cast<int>(type_));
+        throw xlnt::bad_variant_access(type::vector, type_);
     }
 
     // According to the OOXML specification, "Vector contents shall be of uniform type"

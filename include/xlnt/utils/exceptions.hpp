@@ -29,6 +29,7 @@
 
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/cell/index_types.hpp>
+#include <xlnt/utils/variant.hpp>
 
 namespace xlnt {
 
@@ -272,7 +273,7 @@ public:
     /// <summary>
     /// Constructs a bad_variant_access exception given the mismatched types.
     /// </summary>
-    explicit bad_variant_access(int expected_type, int actual_type);
+    explicit bad_variant_access(variant::type expected_type, variant::type actual_type);
 };
 
 } // namespace xlnt
