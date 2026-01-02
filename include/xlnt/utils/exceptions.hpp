@@ -222,7 +222,7 @@ public:
     /// <summary>
     /// Constructor taking a switch value as an optional string.
     /// This constructor with an optional message is unfortunately necessary to avoid complexity in default_case.
-    /// If possible, please always provide a switch value (either as value or as astring) instead of leaving it empty!
+    /// If possible, please always provide a switch value (either as a value or as a string) instead of leaving it empty!
     /// </summary>
     explicit unhandled_switch_case(const char *switch_value_optional_string = nullptr);
 };
