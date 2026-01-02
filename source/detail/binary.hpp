@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
@@ -190,10 +191,11 @@ public:
 
     // Make the bytes of the data pointed to by this writer equivalent to those in the given string
     // sizeof(U) should be a multiple of sizeof(T)
+    // append_NUL specifies whether the NUL terminator should be added to the binary representation.
     template<typename U>
-    void assign(const std::basic_string<U> &string)
+    void assign(const std::basic_string<U> &string, bool append_NUL)
     {
-        resize(string.size() * sizeof(U));
+        resize(string.size() * sizeof(U) + (append_NUL ? sizeof(U) : 0));
         std::memcpy(data_->data(), string.data(), bytes());
     }
 
@@ -285,12 +287,13 @@ private:
     std::size_t offset_ = 0;
 };
 
+// append_NUL specifies whether the NUL terminator should be added to the binary representation.
 template<typename T>
-std::vector<byte> string_to_bytes(const std::basic_string<T> &string)
+std::vector<byte> string_to_bytes(const std::basic_string<T> &string, bool append_NUL)
 {
     std::vector<byte> bytes;
     binary_writer<byte> writer(bytes);
-    writer.assign(string);
+    writer.assign(string, append_NUL);
 
     return bytes;
 }
@@ -314,12 +317,19 @@ std::vector<T> read_vector(std::istream &in, std::size_t count)
     return result;
 }
 
+/// contains_NUL specifies whether the count contains the NUL terminator. In that case,
+/// the NUL terminator will be read from the stream, but will be removed before the string will be returned.
 template<typename T>
-std::basic_string<T> read_string(std::istream &in, std::size_t count)
+std::basic_string<T> read_string(std::istream &in, std::size_t count, bool contains_NUL)
 {
     std::basic_string<T> result(count, T());
     in.read(reinterpret_cast<char *>(&result[0]),
         static_cast<std::streamsize>(sizeof(T) * count));
+
+    if (contains_NUL)
+    {
+        result.pop_back();
+    }
 
     return result;
 }

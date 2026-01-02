@@ -32,6 +32,24 @@
 namespace xlnt {
 namespace detail {
 
+struct encryption_header
+{
+    std::uint32_t flags;
+    std::uint32_t alg_id;
+    std::uint32_t alg_id_hash;
+    std::uint32_t key_size;
+    std::uint32_t provider_type;
+    std::u16string csp_name;
+};
+
+struct encryption_verifier
+{
+    std::vector<std::uint8_t> salt;
+    std::vector<std::uint8_t> encrypted_verifier;
+    std::uint32_t verifier_hash_size;
+    std::vector<std::uint8_t> encrypted_verifier_hash;
+};
+
 struct encryption_info
 {
     bool is_agile = true;
@@ -47,9 +65,12 @@ struct encryption_info
         std::size_t hash_size;
         cipher_algorithm cipher;
         cipher_chaining chaining;
-        hash_algorithm hash = hash_algorithm::sha1;
+        hash_algorithm hash;
         std::vector<std::uint8_t> salt;
         std::vector<std::uint8_t> encrypted_verifier;
+        // After decrypting the EncryptedVerifierHash field, only the first VerifierHashSize bytes MUST be used.
+        std::uint32_t verifier_hash_size;
+        // Please check VerifierHashSize after decryption (see above)!
         std::vector<std::uint8_t> encrypted_verifier_hash;
     } standard;
 
