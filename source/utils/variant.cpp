@@ -255,7 +255,9 @@ bool variant::is(type t) const
 template <>
 std::string variant::get() const
 {
-    if (type_ == type::lpstr)
+    if (type_ == type::lpstr ||
+        // DEPRECATED, will be removed in XLNT 2.0
+        type_ == type::date)
     {
         return lpstr_value_;
     }

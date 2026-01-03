@@ -65,7 +65,9 @@ public:
             xlnt_assert_throws(var_vec.get<std::int32_t>(), xlnt::bad_variant_access);
         }
 
-        if (!std::is_same<T, std::string>())
+        if (!std::is_same<T, std::string>() &&
+            // DEPRECATED, will no longer be allowed in a future major version
+            !std::is_same<T, xlnt::datetime>())
         {
             xlnt_assert_throws(var_vec.get<std::string>(), xlnt::bad_variant_access);
         }
@@ -77,6 +79,7 @@ public:
 
         // An additional check is unfortunately necessary for vectors because all vectors are currently
         // represented by variants internally (unfortunately), so we cannot reliably check that it throws.
+        // This is DEPRECATED, will no longer be allowed in a future major version.
         if (!std::is_same<T, std::vector<xlnt::variant>>() && !var_vec.is(xlnt::variant::type::vector))
         {
             xlnt_assert_throws(var_vec.get<std::vector<xlnt::variant>>(), xlnt::bad_variant_access);
@@ -92,7 +95,9 @@ public:
             xlnt_assert_throws(var_vec.get<std::vector<std::int32_t>>(), xlnt::bad_variant_access);
         }
 
-        if (!std::is_same<T, std::vector<std::string>>())
+        if (!std::is_same<T, std::vector<std::string>>() &&
+            // DEPRECATED, will no longer be allowed in a future major version
+            !std::is_same<T, std::vector<xlnt::datetime>>())
         {
             xlnt_assert_throws(var_vec.get<std::vector<std::string>>(), xlnt::bad_variant_access);
         }

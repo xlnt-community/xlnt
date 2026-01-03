@@ -185,7 +185,8 @@ public:
 
     /// <summary>
     /// Returns the value of this variant as type T.
-    /// Assumes that the variant is of type T (please call is() or value_type() to check).
+    /// Assumes that the variant is of type T (please call is() or value_type() to check). For details
+    /// on each type, please see the documentation for each get<T> function below.
     /// An xlnt::bad_variant_access exception will be thrown if the types are not convertible.
     /// </summary>
     template <typename T>
@@ -213,30 +214,85 @@ private:
     std::string lpstr_value_;
 };
 
+/// <summary>
+/// Returns the value of this variant as type bool.
+/// Assumes that the variant is of type::boolean (please call is() or value_type() to check).
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API bool variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type std::int32_t.
+/// Assumes that the variant is of type::i4 (please call is() or value_type() to check).
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API std::int32_t variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type std::string.
+/// Please call is() or value_type() to check the type. The following types are compatible:
+/// - type::lpstr
+/// - type::date (DEPRECATED, will no longer be allowed in a future major version)
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API std::string variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type xlnt::datetime.
+/// Assumes that the variant is of type::date (please call is() or value_type() to check).
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API datetime variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type std::vector<xlnt::variant>.
+/// Please call is() or value_type() to check the type. The following types are compatible:
+/// - type::vector containing elements of type::variant
+/// - type::vector containing any other elements (DEPRECATED, will no longer be allowed in a future major version)
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API std::vector<variant> variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type std::vector<bool>.
+/// Assumes that the variant is of type::vector (please call is() or value_type() to check)
+/// containing elements of type::boolean.
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API std::vector<bool> variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type std::vector<std::int32_t>.
+/// Assumes that the variant is of type::vector (please call is() or value_type() to check)
+/// containing elements of type::i4.
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API std::vector<std::int32_t> variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type std::vector<std::string>.
+/// Assumes that the variant is of type::vector (please call is() or value_type() to check)
+/// containing elements of type:
+/// - type::lpstr
+/// - type::date (DEPRECATED, will no longer be allowed in a future major version)
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API std::vector<std::string> variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type std::vector<xlnt::datetime>.
+/// Assumes that the variant is of type::vector (please call is() or value_type() to check)
+/// containing elements of type::date.
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API std::vector<datetime> variant::get() const;
 
