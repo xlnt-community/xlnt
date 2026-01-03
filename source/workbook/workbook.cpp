@@ -57,6 +57,7 @@
 #include <detail/implementations/worksheet_impl.hpp>
 #include <detail/serialization/excel_thumbnail.hpp>
 #include <detail/serialization/open_stream.hpp>
+#include <detail/serialization/parsers.hpp>
 #include <detail/serialization/vector_streambuf.hpp>
 #include <detail/serialization/xlsx_consumer.hpp>
 #include <detail/serialization/xlsx_producer.hpp>
@@ -418,6 +419,11 @@ workbook workbook::empty()
     wb.extended_property(xlnt::extended_property::app_version, "15.0300");
 
     wb.d_->file_version_ = detail::workbook_impl::file_version_t();
+    auto &file_version = wb.d_->file_version_.get();
+    file_version.app_name = "xl";
+    file_version.last_edited = "6";
+    file_version.lowest_edited = "6";
+    file_version.rup_build = "26709";
 
     xlnt::workbook_view wb_view;
     wb_view.active_tab = 0;
@@ -1827,11 +1833,16 @@ void workbook::clear_file_version()
     d_->file_version_.clear();
 }
 
-std::string workbook::app_name() const
+bool workbook::has_app_name() const
 {
-    if (!d_->file_version_.is_set())
+    return d_->file_version_.is_set() && !d_->file_version_.get().app_name.empty();
+}
+
+const std::string &workbook::app_name() const
+{
+    if (!has_app_name())
     {
-        throw xlnt::invalid_attribute("the workbook has no app name (due to not having a file version)");
+        throw xlnt::invalid_attribute("the workbook has no app name");
     }
     return d_->file_version_.get().app_name;
 }
@@ -1846,16 +1857,38 @@ void workbook::app_name(const std::string &app_name)
     d_->file_version_.get().app_name = app_name;
 }
 
-std::size_t workbook::last_edited() const
+bool workbook::has_last_edited() const
 {
-    if (!d_->file_version_.is_set())
+    return d_->file_version_.is_set() && !d_->file_version_.get().last_edited.empty();
+}
+
+const std::string &workbook::last_edited_str() const
+{
+    if (!has_last_edited())
     {
-        throw xlnt::invalid_attribute("the workbook has no last edited property (due to not having a file version)");
+        throw xlnt::invalid_attribute("the workbook has no last edited property");
     }
     return d_->file_version_.get().last_edited;
 }
 
-void workbook::last_edited(std::size_t last_edited)
+std::size_t workbook::last_edited() const
+{
+    if (!has_last_edited())
+    {
+        throw xlnt::invalid_attribute("the workbook has no last edited property");
+    }
+
+    size_t last_edited = 0;
+    size_t num_parsed_chars = 0;
+    if (detail::parse(d_->file_version_.get().last_edited, last_edited, &num_parsed_chars) != std::errc() ||
+        num_parsed_chars != d_->file_version_.get().last_edited.length())
+    {
+        throw xlnt::invalid_attribute("the last edited property could not be parsed from string \"" + d_->file_version_.get().last_edited + "\"");
+    }
+    return last_edited;
+}
+
+void workbook::last_edited(const std::string &last_edited)
 {
     if (!d_->file_version_.is_set())
     {
@@ -1865,16 +1898,48 @@ void workbook::last_edited(std::size_t last_edited)
     d_->file_version_.get().last_edited = last_edited;
 }
 
-std::size_t workbook::lowest_edited() const
+void workbook::last_edited(std::size_t last_edited)
 {
     if (!d_->file_version_.is_set())
     {
-        throw xlnt::invalid_attribute("the workbook has no lowest edited property (due to not having a file version)");
+        d_->file_version_ = detail::workbook_impl::file_version_t();
+    }
+
+    d_->file_version_.get().last_edited = std::to_string(last_edited);
+}
+
+bool workbook::has_lowest_edited() const
+{
+    return d_->file_version_.is_set() && !d_->file_version_.get().lowest_edited.empty();
+}
+
+const std::string &workbook::lowest_edited_str() const
+{
+    if (!has_lowest_edited())
+    {
+        throw xlnt::invalid_attribute("the workbook has no lowest edited property");
     }
     return d_->file_version_.get().lowest_edited;
 }
 
-void workbook::lowest_edited(std::size_t lowest_edited)
+std::size_t workbook::lowest_edited() const
+{
+    if (!has_lowest_edited())
+    {
+        throw xlnt::invalid_attribute("the workbook has no lowest edited property");
+    }
+
+    size_t lowest_edited = 0;
+    size_t num_parsed_chars = 0;
+    if (detail::parse(d_->file_version_.get().lowest_edited, lowest_edited, &num_parsed_chars) != std::errc() ||
+        num_parsed_chars != d_->file_version_.get().lowest_edited.length())
+    {
+        throw xlnt::invalid_attribute("the lowest edited property could not be parsed from string \"" + d_->file_version_.get().lowest_edited + "\"");
+    }
+    return lowest_edited;
+}
+
+void workbook::lowest_edited(const std::string &lowest_edited)
 {
     if (!d_->file_version_.is_set())
     {
@@ -1884,13 +1949,55 @@ void workbook::lowest_edited(std::size_t lowest_edited)
     d_->file_version_.get().lowest_edited = lowest_edited;
 }
 
-std::size_t workbook::rup_build() const
+void workbook::lowest_edited(std::size_t lowest_edited)
 {
     if (!d_->file_version_.is_set())
     {
-        throw xlnt::invalid_attribute("the workbook has no rup_build property (due to not having a file version)");
+        d_->file_version_ = detail::workbook_impl::file_version_t();
+    }
+
+    d_->file_version_.get().lowest_edited = std::to_string(lowest_edited);
+}
+
+bool workbook::has_rup_build() const
+{
+    return d_->file_version_.is_set() && !d_->file_version_.get().rup_build.empty();
+}
+
+const std::string &workbook::rup_build_str() const
+{
+    if (!has_rup_build())
+    {
+        throw xlnt::invalid_attribute("the workbook has no rup_build property");
     }
     return d_->file_version_.get().rup_build;
+}
+
+std::size_t workbook::rup_build() const
+{
+    if (!has_rup_build())
+    {
+        throw xlnt::invalid_attribute("the workbook has no rup_build property");
+    }
+
+    size_t rup_build = 0;
+    size_t num_parsed_chars = 0;
+    if (detail::parse(d_->file_version_.get().rup_build, rup_build, &num_parsed_chars) != std::errc() ||
+        num_parsed_chars != d_->file_version_.get().rup_build.length())
+    {
+        throw xlnt::invalid_attribute("the rup_build property could not be parsed from string \"" + d_->file_version_.get().rup_build + "\"");
+    }
+    return rup_build;
+}
+
+void workbook::rup_build(const std::string &rup_build)
+{
+    if (!d_->file_version_.is_set())
+    {
+        d_->file_version_ = detail::workbook_impl::file_version_t();
+    }
+
+    d_->file_version_.get().rup_build = rup_build;
 }
 
 void workbook::rup_build(std::size_t rup_build)
@@ -1900,7 +2007,7 @@ void workbook::rup_build(std::size_t rup_build)
         d_->file_version_ = detail::workbook_impl::file_version_t();
     }
 
-    d_->file_version_.get().rup_build = rup_build;
+    d_->file_version_.get().rup_build = std::to_string(rup_build);
 }
 
 bool workbook::has_calculation_properties() const

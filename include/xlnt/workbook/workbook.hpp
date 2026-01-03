@@ -839,11 +839,16 @@ public:
     void clear_file_version();
 
     /// <summary>
-    /// Returns the AppName workbook file property.
-    /// Assumes that this workbook has a file version (please call has_file_version() to check).
-    /// If this workbook has no file version, an invalid_attribute exception will be thrown.
+    /// Returns true if this workbook has a non-empty AppName workbook file property.
     /// </summary>
-    std::string app_name() const;
+    bool has_app_name() const;
+
+    /// <summary>
+    /// Returns the AppName workbook file property.
+    /// Assumes that this workbook has an AppName property (please call has_app_name() to check).
+    /// If this workbook has no AppName property, an invalid_attribute exception will be thrown.
+    /// </summary>
+    const std::string &app_name() const;
 
     /// <summary>
     /// Sets the AppName workbook file property. Creates the file version information if it does not exist yet.
@@ -851,38 +856,98 @@ public:
     void app_name(const std::string &app_name);
 
     /// <summary>
-    /// Returns the LastEdited workbook file property.
-    /// Assumes that this workbook has a file version (please call has_file_version() to check).
-    /// If this workbook has no file version, an invalid_attribute exception will be thrown.
+    /// Returns true if this workbook has a non-empty LastEdited workbook file property.
+    /// </summary>
+    bool has_last_edited() const;
+
+    /// <summary>
+    /// Returns the LastEdited workbook file property, as a string.
+    /// Assumes that this workbook has a LastEdited property (please call has_last_edited() to check).
+    /// If this workbook has no LastEdited property, an invalid_attribute exception will be thrown.
+    /// </summary>
+    const std::string &last_edited_str() const;
+
+    /// <summary>
+    /// Returns the LastEdited workbook file property, parsed from a string to a size_t.
+    /// Assumes that this workbook has a LastEdited property (please call has_last_edited() to check).
+    /// If this workbook has no LastEdited property, an invalid_attribute exception will be thrown.
+    /// If the LastEdited property cannot be parsed as a size_t, an invalid_attribute exception will be thrown.
     /// </summary>
     std::size_t last_edited() const;
 
     /// <summary>
-    /// Sets the LastEdited workbook file property. Creates the file version information if it does not exist yet.
+    /// Sets the LastEdited workbook file property, as a string.
+    /// Creates the file version information if it does not exist yet.
+    /// </summary>
+    void last_edited(const std::string &last_edited);
+
+    /// <summary>
+    /// Sets the LastEdited workbook file property, as a number (internally converted to a string).
+    /// Creates the file version information if it does not exist yet.
     /// </summary>
     void last_edited(std::size_t last_edited);
 
     /// <summary>
-    /// Returns the LowestEdited workbook file property.
-    /// Assumes that this workbook has a file version (please call has_file_version() to check).
-    /// If this workbook has no file version, an invalid_attribute exception will be thrown.
+    /// Returns true if this workbook has a non-empty LowestEdited workbook file property.
+    /// </summary>
+    bool has_lowest_edited() const;
+
+    /// <summary>
+    /// Returns the LowestEdited workbook file property, as a string.
+    /// Assumes that this workbook has a LowestEdited property (please call has_lowest_edited() to check).
+    /// If this workbook has no LowestEdited property, an invalid_attribute exception will be thrown.
+    /// </summary>
+    const std::string &lowest_edited_str() const;
+
+    /// <summary>
+    /// Returns the LowestEdited workbook file property, parsed from a string to size_t.
+    /// Assumes that this workbook has a LowestEdited property (please call has_lowest_edited() to check).
+    /// If this workbook has no LowestEdited property, an invalid_attribute exception will be thrown.
+    /// If the LowestEdited property cannot be parsed as a size_t, an invalid_attribute exception will be thrown.
     /// </summary>
     std::size_t lowest_edited() const;
 
     /// <summary>
-    /// Sets the LowestEdited workbook file property. Creates the file version information if it does not exist yet.
+    /// Sets the LowestEdited workbook file property, as a string.
+    /// Creates the file version information if it does not exist yet.
+    /// </summary>
+    void lowest_edited(const std::string &lowest_edited);
+
+    /// <summary>
+    /// Sets the LowestEdited workbook file property, as a number (internally converted to a string).
+    /// Creates the file version information if it does not exist yet.
     /// </summary>
     void lowest_edited(std::size_t lowest_edited);
 
     /// <summary>
-    /// Returns the RupBuild workbook file property.
-    /// Assumes that this workbook has a file version (please call has_file_version() to check).
-    /// If this workbook has no file version, an invalid_attribute exception will be thrown.
+    /// Returns true if this workbook has a non-empty RupBuild workbook file property.
+    /// </summary>
+    bool has_rup_build() const;
+
+    // <summary>
+    /// Returns the RupBuild workbook file property, as a string.
+    /// Assumes that this workbook has a RupBuild property (please call has_rup_build() to check).
+    /// If this workbook has no RupBuild property, an invalid_attribute exception will be thrown.
+    /// </summary>
+    const std::string &rup_build_str() const;
+
+    /// <summary>
+    /// Returns the RupBuild workbook file property, parsed from a string to size_t.
+    /// Assumes that this workbook has a RupBuild property (please call has_rup_build() to check).
+    /// If this workbook has no RupBuild property, an invalid_attribute exception will be thrown.
+    /// If the RupBuild property cannot be parsed as a size_t, an invalid_attribute exception will be thrown.
     /// </summary>
     std::size_t rup_build() const;
 
     /// <summary>
-    /// Sets the RupBuild workbook file property. Creates the file version information if it does not exist yet.
+    /// Sets the RupBuild workbook file property, as a string.
+    /// Creates the file version information if it does not exist yet.
+    /// </summary>
+    void rup_build(const std::string &rup_build);
+
+    /// <summary>
+    /// Sets the RupBuild workbook file property, as a number (internally converted to a string).
+    /// Creates the file version information if it does not exist yet.
     /// </summary>
     void rup_build(std::size_t rup_build);
 

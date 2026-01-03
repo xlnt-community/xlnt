@@ -1991,30 +1991,38 @@ void xlsx_consumer::read_office_document(const std::string &content_type) // CT_
         if (current_workbook_element == qn("workbook", "fileVersion")) // CT_FileVersion 0-1
         {
             detail::workbook_impl::file_version_t file_version;
+            bool has_any_attribute = false;
 
             if (parser().attribute_present("appName"))
             {
                 file_version.app_name = parser().attribute("appName");
+                has_any_attribute = true;
             }
 
             if (parser().attribute_present("lastEdited"))
             {
-                file_version.last_edited = parser().attribute<std::size_t>("lastEdited");
+                file_version.last_edited = parser().attribute("lastEdited");
+                has_any_attribute = true;
             }
 
             if (parser().attribute_present("lowestEdited"))
             {
-                file_version.lowest_edited = parser().attribute<std::size_t>("lowestEdited");
+                file_version.lowest_edited = parser().attribute("lowestEdited");
+                has_any_attribute = true;
             }
 
-            if (parser().attribute_present("lowestEdited"))
+            if (parser().attribute_present("rupBuild"))
             {
-                file_version.rup_build = parser().attribute<std::size_t>("rupBuild");
+                file_version.rup_build = parser().attribute("rupBuild");
+                has_any_attribute = true;
             }
 
             skip_attribute("codeName");
 
-            target_.d_->file_version_ = file_version;
+            if (has_any_attribute)
+            {
+                target_.d_->file_version_ = std::move(file_version);
+            }
         }
         else if (current_workbook_element == qn("workbook", "fileSharing")) // CT_FileSharing 0-1
         {

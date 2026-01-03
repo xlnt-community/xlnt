@@ -319,11 +319,13 @@ public:
         xlnt::workbook wb;
         wb.clear_file_version();
         xlnt_assert(!wb.has_file_version());
+        xlnt_assert(!wb.has_app_name());
         xlnt_assert_throws(wb.app_name(), xlnt::invalid_attribute);
 
         wb.app_name("xlnt");
 
         xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_app_name());
         xlnt_assert_equals(wb.app_name(), "xlnt");
     }
 
@@ -332,12 +334,29 @@ public:
         xlnt::workbook wb;
         wb.clear_file_version();
         xlnt_assert(!wb.has_file_version());
+        xlnt_assert(!wb.has_last_edited());
         xlnt_assert_throws(wb.last_edited(), xlnt::invalid_attribute);
+        xlnt_assert_throws(wb.last_edited_str(), xlnt::invalid_attribute);
 
         wb.last_edited(5);
-
         xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_last_edited());
+        xlnt_assert_equals(wb.last_edited_str(), "5");
         xlnt_assert_equals(wb.last_edited(), 5);
+
+        // String not beginning with a number.
+        wb.last_edited("v2026 SP3");
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_last_edited());
+        xlnt_assert_equals(wb.last_edited_str(), "v2026 SP3");
+        xlnt_assert_throws(wb.last_edited(), xlnt::invalid_attribute);
+
+        // String beginning with a number.
+        wb.last_edited("2026 SP3");
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_last_edited());
+        xlnt_assert_equals(wb.last_edited_str(), "2026 SP3");
+        xlnt_assert_throws(wb.last_edited(), xlnt::invalid_attribute);
     }
 
     void test_lowest_edited()
@@ -345,12 +364,29 @@ public:
         xlnt::workbook wb;
         wb.clear_file_version();
         xlnt_assert(!wb.has_file_version());
+        xlnt_assert(!wb.has_lowest_edited());
         xlnt_assert_throws(wb.lowest_edited(), xlnt::invalid_attribute);
+        xlnt_assert_throws(wb.lowest_edited_str(), xlnt::invalid_attribute);
 
         wb.lowest_edited(3);
-
         xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_lowest_edited());
+        xlnt_assert_equals(wb.lowest_edited_str(), "3");
         xlnt_assert_equals(wb.lowest_edited(), 3);
+
+        // String not beginning with a number.
+        wb.lowest_edited("v2026 SP1");
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_lowest_edited());
+        xlnt_assert_equals(wb.lowest_edited_str(), "v2026 SP1");
+        xlnt_assert_throws(wb.lowest_edited(), xlnt::invalid_attribute);
+
+        // String beginning with a number.
+        wb.lowest_edited("2026 SP1");
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_lowest_edited());
+        xlnt_assert_equals(wb.lowest_edited_str(), "2026 SP1");
+        xlnt_assert_throws(wb.lowest_edited(), xlnt::invalid_attribute);
     }
 
     void test_rup_build()
@@ -358,12 +394,29 @@ public:
         xlnt::workbook wb;
         wb.clear_file_version();
         xlnt_assert(!wb.has_file_version());
+        xlnt_assert(!wb.has_rup_build());
         xlnt_assert_throws(wb.rup_build(), xlnt::invalid_attribute);
+        xlnt_assert_throws(wb.rup_build_str(), xlnt::invalid_attribute);
 
         wb.rup_build(1234);
-
         xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_rup_build());
+        xlnt_assert_equals(wb.rup_build_str(), "1234");
         xlnt_assert_equals(wb.rup_build(), 1234);
+
+        // String not beginning with a number.
+        wb.rup_build("b1234 nightly");
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_rup_build());
+        xlnt_assert_equals(wb.rup_build_str(), "b1234 nightly");
+        xlnt_assert_throws(wb.rup_build(), xlnt::invalid_attribute);
+
+        // String beginning with a number.
+        wb.rup_build("1234 nightly");
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_rup_build());
+        xlnt_assert_equals(wb.rup_build_str(), "1234 nightly");
+        xlnt_assert_throws(wb.rup_build(), xlnt::invalid_attribute);
     }
 
     void test_calculation_properties()
