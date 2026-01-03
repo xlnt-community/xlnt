@@ -254,28 +254,30 @@ public:
     }
 
     /// <summary>
-    /// Gets the value. If no value has been initialized in this object,
+    /// Gets the value. Assumes that the value exists (please call is_set() to check).
+    /// If no value has been initialized in this object,
     /// an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     T &get()
     {
         if (!has_value_)
         {
-            throw invalid_attribute();
+            throw invalid_attribute("access to empty optional");
         }
 
         return value_ref();
     }
 
     /// <summary>
-    /// Gets the value. If no value has been initialized in this object,
+    /// Gets the value. Assumes that the value exists (please call is_set() to check).
+    /// If no value has been initialized in this object,
     /// an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     const T &get() const
     {
         if (!has_value_)
         {
-            throw invalid_attribute();
+            throw invalid_attribute("access to empty optional");
         }
 
         return value_ref();

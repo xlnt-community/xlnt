@@ -294,7 +294,7 @@ void color::assert_type(color_type t) const
 {
     if (t != type_)
     {
-        throw invalid_attribute();
+        throw invalid_attribute("expected color type " + std::to_string(static_cast<int>(type_)) + " but got type " + std::to_string(static_cast<int>(t)));
     }
 }
 

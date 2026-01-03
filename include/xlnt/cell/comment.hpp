@@ -53,7 +53,7 @@ public:
     comment(const std::string &text, const std::string &author);
 
     /// <summary>
-    /// Returns the text that will be displayed for this comment.
+    /// Returns a copy of the text that will be displayed for this comment.
     /// </summary>
     rich_text text() const;
 

@@ -172,12 +172,17 @@ public:
 
     /// <summary>
     /// Returns true if the given format ID corresponds to a known builtin format.
+    /// Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30).
+    /// Note: custom formats have IDs 164 and higher.
     /// </summary>
     static bool is_builtin_format(std::size_t builtin_id);
 
     /// <summary>
-    /// Returns the format with the given ID. Thows an invalid_parameter exception
-    /// if builtin_id is not a valid ID.
+    /// Returns the known builtin format with the given ID.
+    /// Assumes that the builtin ID is known (please call is_builtin_format() to check).
+    /// Thows an invalid_parameter exception if builtin_id is not a known builtin ID.
+    /// Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30).
+    /// Note: custom formats have IDs 164 and higher.
     /// </summary>
     static const number_format &from_builtin_id(std::size_t builtin_id);
 
@@ -188,18 +193,21 @@ public:
 
     /// <summary>
     /// Constructs a number format equivalent to that returned from number_format::from_builtin_id(builtin_id).
+    /// Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30).
+    /// Note: custom formats have IDs 164 and higher.
     /// </summary>
     number_format(std::size_t builtin_id);
 
     /// <summary>
-    /// Constructs a number format from a code string. If the string matches a builtin ID,
+    /// Constructs a number format from a code string. If the string matches a known builtin ID,
     /// its ID will also be set to match the builtin ID.
     /// </summary>
     number_format(const std::string &code);
 
     /// <summary>
-    /// Constructs a number format from a code string and custom ID. Custom ID should generally
-    /// be >= 164.
+    /// Constructs a number format from a code string and custom ID.
+    /// Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30).
+    /// Note: custom formats have IDs 164 and higher.
     /// </summary>
     number_format(const std::string &code, std::size_t custom_id);
 
@@ -210,6 +218,8 @@ public:
 
     /// <summary>
     /// Sets the format code of this number format to format_code and the ID to custom_id.
+    /// Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30).
+    /// Note: custom formats have IDs 164 and higher.
     /// </summary>
     void format_string(const std::string &format_code, std::size_t custom_id);
 
@@ -225,11 +235,17 @@ public:
 
     /// <summary>
     /// Sets the ID of this number format to id.
+    /// Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30).
+    /// Note: custom formats have IDs 164 and higher.
     /// </summary>
     void id(std::size_t id);
 
     /// <summary>
     /// Returns the ID of this format.
+    /// Assumes that this format has an ID (please call has_id() to check).
+    /// If this format does not have an ID, an xlnt::invalid_attribute exception will be thrown.
+    /// Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30).
+    /// Note: custom formats have IDs 164 and higher.
     /// </summary>
     std::size_t id() const;
 
@@ -262,6 +278,8 @@ public:
 private:
     /// <summary>
     /// The optional ID
+    /// Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30).
+    /// Note: custom formats have IDs 164 and higher.
     /// </summary>
     optional<std::size_t> id_;
 

@@ -37,13 +37,26 @@
 #include <detail/unicode.hpp>
 #include <detail/utils/string_helpers.hpp>
 
+// NOTE: encryption and decryption is not part of the OOXML specification (ECMA-376).
+// This implementation is based on the "[MS-OFFCRYPTO]: Office Document Cryptography Structure" specification.
 namespace {
 
 using xlnt::detail::encryption_info;
 
 encryption_info generate_encryption_info(const std::u16string & /*password*/)
 {
-    encryption_info result;
+    // NOTE:
+    // - in general: Unless otherwise specified, the maximum password length MUST be 255 Unicode characters.
+    // - Office Binary Document:
+    //   - XOR obfuscation: Password MUST NOT be longer than 15 characters.
+    //   - RC4 Encryption: Passwords are limited to 255 Unicode characters.
+    //   - RC4 CryptoAPI Encryption: Passwords are limited to 255 Unicode characters.
+    // - ECMA-376 Document Encryption (applies to the types below): Passwords are limited to 255 Unicode code points.
+    //   - Standard Encryption
+    //   - Extensible Encryption
+    //   - Agile Encryption
+
+    encryption_info result {};
 
     result.is_agile = true;
 
@@ -105,13 +118,16 @@ void write_agile_encryption_info(
     const encryption_info &info,
     std::ostream &info_stream)
 {
+    // EncryptionVersionInfo
+    // Agile Encryption: Version.vMajor MUST be 0x0004 and Version.vMinor MUST be 0x0004
     const auto version_major = std::uint16_t(4);
     const auto version_minor = std::uint16_t(4);
-    const auto encryption_flags = std::uint32_t(0x40);
-
     info_stream.write(reinterpret_cast<const char *>(&version_major), sizeof(std::uint16_t));
     info_stream.write(reinterpret_cast<const char *>(&version_minor), sizeof(std::uint16_t));
-    info_stream.write(reinterpret_cast<const char *>(&encryption_flags), sizeof(std::uint32_t));
+
+    // Reserved - A value that MUST be 0x00000040.
+    const auto reserved = std::uint32_t(0x40);
+    info_stream.write(reinterpret_cast<const char *>(&reserved), sizeof(std::uint32_t));
 
     static const auto &xmlns = xlnt::constants::ns("encryption");
     static const auto &xmlns_p = xlnt::constants::ns("encryption-password");
@@ -174,39 +190,43 @@ void write_standard_encryption_info(const encryption_info &info, std::ostream &i
     auto result = std::vector<std::uint8_t>();
     auto writer = xlnt::detail::binary_writer<std::uint8_t>(result);
 
+    // EncryptionVersionInfo
+    // Standard Encryption: Version.vMajor MUST be 0x0002, 0x0003 or 0x0004, and Version.vMinor MUST be 0x0002
     const auto version_major = std::uint16_t(4);
     const auto version_minor = std::uint16_t(2);
-    const auto encryption_flags = std::uint32_t(0x10 & 0x20);
-
     writer.write(version_major);
     writer.write(version_minor);
+
+    // EncryptionHeader.Flags
+    const auto encryption_flags = std::uint32_t(0x10 & 0x20);
     writer.write(encryption_flags);
 
-    const auto header_length = std::uint32_t(32); // calculate this!
-
-    writer.write(header_length);
-    writer.write(std::uint32_t(0)); // skip_flags
-    writer.write(std::uint32_t(0)); // size_extra
-    writer.write(std::uint32_t(0x0000660E));
-    writer.write(std::uint32_t(0x00008004));
-    writer.write(std::uint32_t(info.standard.key_bits));
-    writer.write(std::uint32_t(0x00000018));
-    writer.write(std::uint32_t(0));
-    writer.write(std::uint32_t(0));
-
+    // EncryptionHeader
     const auto provider = std::u16string(u"Microsoft Enhanced RSA and AES Cryptographic Provider");
-    writer.append(xlnt::detail::string_to_bytes(provider));
+    // 32 bytes for the fields below + the string + NUL terminator
+    const auto header_length = std::uint32_t(32 + provider.length() + 1);
+    writer.write(header_length);
+    writer.write(std::uint32_t(encryption_flags)); // Flags
+    writer.write(std::uint32_t(0)); // SizeExtra
+    writer.write(std::uint32_t(0x0000660E)); // AlgID -> AES-128
+    writer.write(std::uint32_t(0x00008004)); // AlgIDHash -> SHA-1
+    writer.write(std::uint32_t(info.standard.key_bits)); // KeySize
+    writer.write(std::uint32_t(0x00000018)); // ProviderType -> AES
+    writer.write(std::uint32_t(0)); // Reserved1
+    writer.write(std::uint32_t(0)); // Reserved2
+    writer.append(xlnt::detail::string_to_bytes(provider, true)); // CSPName
 
-    writer.write(std::uint32_t(info.standard.salt.size()));
-    writer.append(info.standard.salt);
+    // EncryptionVerifier
+    writer.write(std::uint32_t(info.standard.salt.size())); // SaltSize
+    writer.append(info.standard.salt); // Salt
 
-    writer.append(info.standard.encrypted_verifier);
+    writer.append(info.standard.encrypted_verifier); // EncryptedVerifier
 
-    writer.write(std::uint32_t(20));
+    writer.write(std::uint32_t(20)); // VerifierHashSize -> 20 for AES
     writer.append(info.standard.encrypted_verifier_hash);
 
     info_stream.write(reinterpret_cast<char *>(result.data()),
-        static_cast<std::streamsize>(result.size()));
+        static_cast<std::streamsize>(result.size())); // EncryptedVerifierHash
 }
 
 void encrypt_xlsx_agile(

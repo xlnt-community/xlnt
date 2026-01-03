@@ -83,6 +83,7 @@ public:
         register_test(test_thousands_scale);
         register_test(test_colors);
         register_test(test_bad_format);
+        register_test(test_builtin_format_invalid);
         register_test(test_builtin_format_0);
         register_test(test_builtin_format_1);
         register_test(test_builtin_format_2);
@@ -121,14 +122,17 @@ public:
     void test_basic()
     {
         xlnt::number_format no_id("#\\x\\y\\z");
-        xlnt_assert_throws(no_id.id(), std::runtime_error);
+        xlnt_assert(!no_id.has_id());
+        xlnt_assert_throws(no_id.id(), xlnt::invalid_attribute);
 
         xlnt::number_format id("General", 200);
+        xlnt_assert(id.has_id());
         xlnt_assert_equals(id.id(), 200);
         xlnt_assert_equals(id.format_string(), "General");
 
         xlnt::number_format general(0);
         xlnt_assert_equals(general, xlnt::number_format::general());
+        xlnt_assert(general.has_id());
         xlnt_assert_equals(general.id(), 0);
         xlnt_assert_equals(general.format_string(), "General");
     }
@@ -164,36 +168,28 @@ public:
         xlnt::number_format nf;
 
         nf.format_string("[x]");
-        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900),
-                           std::runtime_error);
+        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("mmmmmm");
-        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900),
-                           std::runtime_error);
+        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("ddddd");
-        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900),
-                           std::runtime_error);
+        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("yyy");
-        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900),
-                           std::runtime_error);
+        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("hhh");
-        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900),
-                           std::runtime_error);
+        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("sss");
-        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900),
-                           std::runtime_error);
+        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("AA");
-        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900),
-                           std::runtime_error);
+        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("q");
-        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900),
-                           std::runtime_error);
+        xlnt_assert_throws(nf.format(date_number, xlnt::calendar::windows_1900), xlnt::exception);
     }
 
     void test_upper_case_date()
@@ -702,16 +698,16 @@ public:
         xlnt::number_format nf;
 
         nf.format_string("[$-]#,##0.00");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("[$-G]#,##0.00");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("[$-4002]#,##0.00");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("[-4001]#,##0.00");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
     }
 
     void test_duplicate_bracket_sections()
@@ -719,13 +715,13 @@ public:
         xlnt::number_format nf;
 
         nf.format_string("[Red][Green]#,##0.00");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("[$-403][$-4001]#,##0.00");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("[>3][>4]#,##0.00");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
     }
 
     void test_escaped_quote_string()
@@ -796,31 +792,31 @@ public:
         xlnt::number_format nf;
 
         nf.format_string("[=1]\"first\"General;[=2]\"second\"General;[=3]\"third\"General");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("\"first\"General;\"second\"General;\"third\"General;\"fourth\"General;\"fifth\"General");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("[");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("[]");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("[Redd]");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("[$1]#");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("Gee");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("!");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
 
         nf.format_string("A/");
-        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), std::runtime_error);
+        xlnt_assert_throws(nf.format(1.2, xlnt::calendar::windows_1900), xlnt::exception);
     }
 
     void format_and_test(const xlnt::number_format &nf, const std::array<std::string, 4> &expect)
@@ -835,6 +831,13 @@ public:
         xlnt_assert_equals(nf.format(negative, calendar), expect[1]);
         xlnt_assert_equals(nf.format(zero, calendar), expect[2]);
         xlnt_assert_equals(nf.format(text), expect[3]);
+    }
+
+    void test_builtin_format_invalid()
+    {
+        auto invalid_builtin_id = std::numeric_limits<std::size_t>::max();
+        xlnt_assert(!xlnt::number_format::is_builtin_format(invalid_builtin_id));
+        xlnt_assert_throws(xlnt::number_format::from_builtin_id(invalid_builtin_id), xlnt::invalid_parameter);
     }
 
     // General
