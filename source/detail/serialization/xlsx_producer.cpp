@@ -530,14 +530,27 @@ void xlsx_producer::write_workbook(const relationship &rel)
         write_attribute(xml::qname(xmlns_mc, "Ignorable"), "x15");
     }
 
-    if (source_.has_file_version())
+    if (source_.has_file_version() &&
+        (source_.has_app_name() || source_.has_last_edited() || source_.has_lowest_edited() || source_.has_rup_build()))
     {
         write_start_element(xmlns, "fileVersion");
 
-        write_attribute("appName", source_.app_name());
-        write_attribute("lastEdited", source_.last_edited());
-        write_attribute("lowestEdited", source_.lowest_edited());
-        write_attribute("rupBuild", source_.rup_build());
+        if (source_.has_app_name())
+        {
+            write_attribute("appName", source_.app_name());
+        }
+        if (source_.has_last_edited())
+        {
+            write_attribute("lastEdited", source_.last_edited_str());
+        }
+        if (source_.has_lowest_edited())
+        {
+            write_attribute("lowestEdited", source_.lowest_edited_str());
+        }
+        if (source_.has_rup_build())
+        {
+            write_attribute("rupBuild", source_.rup_build_str());
+        }
 
         write_end_element(xmlns, "fileVersion");
     }

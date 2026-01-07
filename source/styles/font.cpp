@@ -210,6 +210,10 @@ font &font::charset(std::size_t charset)
 
 std::size_t font::charset() const
 {
+    if (!charset_.is_set())
+    {
+        throw xlnt::invalid_attribute("font has no charset");
+    }
     return charset_.get();
 }
 
@@ -226,16 +230,28 @@ font &font::scheme(const std::string &scheme)
 
 color font::color() const
 {
+    if (!color_.is_set())
+    {
+        throw xlnt::invalid_attribute("font has no color");
+    }
     return color_.get();
 }
 
 std::size_t font::family() const
 {
+    if (!family_.is_set())
+    {
+        throw xlnt::invalid_attribute("font has no family");
+    }
     return family_.get();
 }
 
 const std::string &font::scheme() const
 {
+    if (!scheme_.is_set())
+    {
+        throw xlnt::invalid_attribute("font has no scheme");
+    }
     return scheme_.get();
 }
 

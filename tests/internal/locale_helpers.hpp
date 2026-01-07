@@ -49,7 +49,7 @@ struct SetLocale
             // If failed, please install the locale specified by the CMake variable XLNT_LOCALE_****_DECIMAL_SEPARATOR
             // to correctly run this test *and* make sure that the locale uses the expected decimal separator,
             // or alternatively disable the CMake option XLNT_USE_LOCALE_****_DECIMAL_SEPARATOR.
-            throw xlnt::invalid_parameter(error.c_str());
+            throw xlnt::invalid_parameter(error);
         }
 
     }

@@ -94,6 +94,10 @@ bool phonetic_pr::has_type() const
 
 phonetic_pr::phonetic_type phonetic_pr::type() const
 {
+    if (!type_.is_set())
+    {
+        throw xlnt::invalid_attribute("phonetic property has no type");
+    }
     return type_.get();
 }
 
@@ -109,6 +113,10 @@ bool phonetic_pr::has_alignment() const
 
 phonetic_pr::align phonetic_pr::alignment() const
 {
+    if (!alignment_.is_set())
+    {
+        throw xlnt::invalid_attribute("phonetic property has no alignment");
+    }
     return alignment_.get();
 }
 
