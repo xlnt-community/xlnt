@@ -454,12 +454,6 @@ bool worksheet::has_row_properties(row_t row) const
 
 range worksheet::named_range(const std::string &name)
 {
-    // TODO: is this check necessary?
-    if (!workbook().has_named_range(name))
-    {
-        throw key_not_found(name);
-    }
-
     auto named_range = d_->named_ranges_.find(name);
 
     if (named_range == d_->named_ranges_.end())
@@ -472,12 +466,6 @@ range worksheet::named_range(const std::string &name)
 
 const range worksheet::named_range(const std::string &name) const
 {
-    // TODO: is this check necessary?
-    if (!workbook().has_named_range(name))
-    {
-        throw key_not_found(name);
-    }
-
     auto named_range = d_->named_ranges_.find(name);
 
     if (named_range == d_->named_ranges_.end())
