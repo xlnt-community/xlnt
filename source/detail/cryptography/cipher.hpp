@@ -52,5 +52,5 @@ enum class cipher_direction
     decryption
 };
 
-}; // namespace detail
-}; // namespace xlnt
+} // namespace detail
+} // namespace xlnt

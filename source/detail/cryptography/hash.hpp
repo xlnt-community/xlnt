@@ -49,5 +49,5 @@ enum class hash_algorithm
 void hash(hash_algorithm algorithm, const std::vector<std::uint8_t> &input, std::vector<std::uint8_t> &output);
 std::vector<std::uint8_t> hash(hash_algorithm algorithm, const std::vector<std::uint8_t> &input);
 
-}; // namespace detail
-}; // namespace xlnt
+} // namespace detail
+} // namespace xlnt
