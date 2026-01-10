@@ -31,7 +31,7 @@ namespace {
 bool has_trailing_whitespace(const std::string &s)
 {
     return !s.empty() && (s.front() == ' ' || s.back() == ' ');
-};
+}
 } // namespace
 
 namespace xlnt {

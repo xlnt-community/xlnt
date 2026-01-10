@@ -537,7 +537,7 @@ std::string encode_header_footer(const rich_text &t, header_footer::location whe
     }
 
     return encoded;
-};
+}
 
 } // namespace detail
 } // namespace xlnt
