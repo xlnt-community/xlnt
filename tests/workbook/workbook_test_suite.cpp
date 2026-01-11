@@ -320,7 +320,7 @@ public:
         wb.clear_file_version();
         xlnt_assert(!wb.has_file_version());
         xlnt_assert(!wb.has_app_name());
-        xlnt_assert_throws(wb.app_name(), xlnt::invalid_attribute);
+        xlnt_assert(wb.app_name().empty());
 
         wb.app_name("xlnt");
 
@@ -336,7 +336,7 @@ public:
         xlnt_assert(!wb.has_file_version());
         xlnt_assert(!wb.has_last_edited());
         xlnt_assert_throws(wb.last_edited(), xlnt::invalid_attribute);
-        xlnt_assert_throws(wb.last_edited_str(), xlnt::invalid_attribute);
+        xlnt_assert(wb.last_edited_str().empty());
 
         wb.last_edited(5);
         xlnt_assert(wb.has_file_version());
@@ -366,7 +366,7 @@ public:
         xlnt_assert(!wb.has_file_version());
         xlnt_assert(!wb.has_lowest_edited());
         xlnt_assert_throws(wb.lowest_edited(), xlnt::invalid_attribute);
-        xlnt_assert_throws(wb.lowest_edited_str(), xlnt::invalid_attribute);
+        xlnt_assert(wb.lowest_edited_str().empty());
 
         wb.lowest_edited(3);
         xlnt_assert(wb.has_file_version());
@@ -396,7 +396,7 @@ public:
         xlnt_assert(!wb.has_file_version());
         xlnt_assert(!wb.has_rup_build());
         xlnt_assert_throws(wb.rup_build(), xlnt::invalid_attribute);
-        xlnt_assert_throws(wb.rup_build_str(), xlnt::invalid_attribute);
+        xlnt_assert(wb.rup_build_str().empty());
 
         wb.rup_build(1234);
         xlnt_assert(wb.has_file_version());

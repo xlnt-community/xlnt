@@ -113,7 +113,7 @@ public:
     /// <summary>
     /// Returns the paper size which should be used to print the worksheet using this page setup.
     /// Assumes that this page setup has a paper size (please call has_paper_size() to check).
-    /// If this workbook has no paper size, an invalid_attribute exception will be thrown.
+    /// If this workbook has no paper size, the default paper_size::letter will be returned.
     /// </summary>
     xlnt::paper_size paper_size() const;
 

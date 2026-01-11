@@ -846,7 +846,7 @@ public:
     /// <summary>
     /// Returns the AppName workbook file property.
     /// Assumes that this workbook has an AppName property (please call has_app_name() to check).
-    /// If this workbook has no AppName property, an invalid_attribute exception will be thrown.
+    /// If this workbook has no AppName property, an empty string will be returned.
     /// </summary>
     const std::string &app_name() const;
 
@@ -863,7 +863,7 @@ public:
     /// <summary>
     /// Returns the LastEdited workbook file property, as a string.
     /// Assumes that this workbook has a LastEdited property (please call has_last_edited() to check).
-    /// If this workbook has no LastEdited property, an invalid_attribute exception will be thrown.
+    /// If this workbook has no LastEdited property, an empty string will be returned.
     /// </summary>
     const std::string &last_edited_str() const;
 
@@ -895,7 +895,7 @@ public:
     /// <summary>
     /// Returns the LowestEdited workbook file property, as a string.
     /// Assumes that this workbook has a LowestEdited property (please call has_lowest_edited() to check).
-    /// If this workbook has no LowestEdited property, an invalid_attribute exception will be thrown.
+    /// If this workbook has no LowestEdited property, an empty string will be returned.
     /// </summary>
     const std::string &lowest_edited_str() const;
 
@@ -927,7 +927,7 @@ public:
     // <summary>
     /// Returns the RupBuild workbook file property, as a string.
     /// Assumes that this workbook has a RupBuild property (please call has_rup_build() to check).
-    /// If this workbook has no RupBuild property, an invalid_attribute exception will be thrown.
+    /// If this workbook has no RupBuild property, an empty string will be returned.
     /// </summary>
     const std::string &rup_build_str() const;
 

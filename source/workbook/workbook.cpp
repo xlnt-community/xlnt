@@ -1840,9 +1840,9 @@ bool workbook::has_app_name() const
 
 const std::string &workbook::app_name() const
 {
-    if (!has_app_name())
+    if (!d_->file_version_.is_set())
     {
-        throw xlnt::invalid_attribute("the workbook has no app name");
+        return constants::empty_str();
     }
     return d_->file_version_.get().app_name;
 }
@@ -1864,9 +1864,9 @@ bool workbook::has_last_edited() const
 
 const std::string &workbook::last_edited_str() const
 {
-    if (!has_last_edited())
+    if (!d_->file_version_.is_set())
     {
-        throw xlnt::invalid_attribute("the workbook has no last edited property");
+        return constants::empty_str();
     }
     return d_->file_version_.get().last_edited;
 }
@@ -1915,9 +1915,9 @@ bool workbook::has_lowest_edited() const
 
 const std::string &workbook::lowest_edited_str() const
 {
-    if (!has_lowest_edited())
+    if (!d_->file_version_.is_set())
     {
-        throw xlnt::invalid_attribute("the workbook has no lowest edited property");
+        return constants::empty_str();
     }
     return d_->file_version_.get().lowest_edited;
 }
@@ -1966,9 +1966,9 @@ bool workbook::has_rup_build() const
 
 const std::string &workbook::rup_build_str() const
 {
-    if (!has_rup_build())
+    if (!d_->file_version_.is_set())
     {
-        throw xlnt::invalid_attribute("the workbook has no rup_build property");
+        return constants::empty_str();
     }
     return d_->file_version_.get().rup_build;
 }

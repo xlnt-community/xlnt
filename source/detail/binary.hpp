@@ -197,6 +197,10 @@ public:
     {
         resize(string.size() * sizeof(U) + (append_NUL ? sizeof(U) : 0));
         std::memcpy(data_->data(), string.data(), bytes());
+        if (append_NUL)
+        {
+            data_->back() = U{}; // ensure NUL terminator is always added
+        }
     }
 
     void offset(std::size_t new_offset)

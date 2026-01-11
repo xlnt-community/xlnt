@@ -63,7 +63,7 @@ paper_size page_setup::paper_size() const
 {
     if (!paper_size_.is_set())
     {
-        throw xlnt::invalid_attribute("the page setup has no paper size");
+        return paper_size::letter;
     }
     return paper_size_.get();
 }

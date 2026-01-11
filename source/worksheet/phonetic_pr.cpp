@@ -96,7 +96,7 @@ phonetic_pr::phonetic_type phonetic_pr::type() const
 {
     if (!type_.is_set())
     {
-        throw xlnt::invalid_attribute("phonetic property has no type");
+        return phonetic_type::full_width_katakana;
     }
     return type_.get();
 }
@@ -115,7 +115,7 @@ phonetic_pr::align phonetic_pr::alignment() const
 {
     if (!alignment_.is_set())
     {
-        throw xlnt::invalid_attribute("phonetic property has no alignment");
+        return align::left;
     }
     return alignment_.get();
 }

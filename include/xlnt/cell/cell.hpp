@@ -275,6 +275,7 @@ public:
     /// <summary>
     /// Adds a hyperlink to this cell pointing to the URI of the given value (which must not be empty) and sets
     /// the text value of the cell to the given parameter.
+    /// If the URI is empty, an xlnt::invalid_parameter exception will be thrown.
     /// </summary>
     void hyperlink(const std::string &url, const std::string &display = "");
 
