@@ -33,5 +33,5 @@ namespace detail {
 void sha1(const std::vector<std::uint8_t> &input, std::vector<std::uint8_t> &output);
 void sha512(const std::vector<std::uint8_t> &data, std::vector<std::uint8_t> &output);
 
-}; // namespace detail
-}; // namespace xlnt
+} // namespace detail
+} // namespace xlnt

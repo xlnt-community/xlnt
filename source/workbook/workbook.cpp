@@ -2097,7 +2097,7 @@ bool needs_reorder(const std::unordered_map<std::string, std::string> &title_to_
         }
     }
     return !all_match; // if all are as expected, reorder not required
-};
+}
 
 struct rel_id_sorter
 {
