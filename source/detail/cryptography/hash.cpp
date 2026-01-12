@@ -52,5 +52,5 @@ std::vector<std::uint8_t> hash(hash_algorithm algorithm, const std::vector<std::
     return output;
 }
 
-}; // namespace detail
-}; // namespace xlnt
+} // namespace detail
+} // namespace xlnt
