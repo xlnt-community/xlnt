@@ -178,15 +178,7 @@ if(NOT STATIC)
   set_target_properties(xlnt
     PROPERTIES
     VERSION ${PROJECT_VERSION}
-    SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}
-    INSTALL_NAME_DIR "${XLNT_LIB_DEST_DIR}")
-  if (APPLE)
-    set_target_properties(xlnt
-      PROPERTIES
-      MACOSX_RPATH ON
-      INSTALL_NAME_DIR "@rpath"
-    )
-  endif()
+    SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
 else()
   # Compile static library
   add_library(xlnt STATIC ${XLNT_HEADERS} ${XLNT_SOURCES} $<TARGET_OBJECTS:libstudxml>)
