@@ -1321,6 +1321,56 @@ void worksheet::format_properties(const sheet_format_properties &properties)
     d_->format_properties_ = properties;
 }
 
+void worksheet::outline_settings(bool visible, bool symbols_below, bool symbols_right, bool apply_styles)
+{
+    if (!d_->sheet_properties_.is_set())
+    {
+        d_->sheet_properties_ = sheet_pr();
+    }
+
+    auto &props = d_->sheet_properties_.get();
+    props.show_outline_symbols.set(visible);
+    props.summary_below.set(symbols_below);
+    props.summary_right.set(symbols_right);
+    props.apply_styles.set(apply_styles);
+}
+
+bool worksheet::show_outline_symbols() const
+{
+    if (d_->sheet_properties_.is_set() && d_->sheet_properties_.get().show_outline_symbols.is_set())
+    {
+        return d_->sheet_properties_.get().show_outline_symbols.get();
+    }
+    return true;
+}
+
+bool worksheet::summary_below() const
+{
+    if (d_->sheet_properties_.is_set() && d_->sheet_properties_.get().summary_below.is_set())
+    {
+        return d_->sheet_properties_.get().summary_below.get();
+    }
+    return true;
+}
+
+bool worksheet::summary_right() const
+{
+    if (d_->sheet_properties_.is_set() && d_->sheet_properties_.get().summary_right.is_set())
+    {
+        return d_->sheet_properties_.get().summary_right.get();
+    }
+    return true;
+}
+
+bool worksheet::apply_styles() const
+{
+    if (d_->sheet_properties_.is_set() && d_->sheet_properties_.get().apply_styles.is_set())
+    {
+        return d_->sheet_properties_.get().apply_styles.get();
+    }
+    return false;
+}
+
 bool worksheet::has_drawing() const
 {
     return d_->drawing_.is_set();

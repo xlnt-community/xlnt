@@ -78,6 +78,26 @@ struct XLNT_API sheet_pr
     /// whether the conditional formatting calculations shall be evaluated
     /// </summary>
     optional<bool> enable_format_condition_calculation;
+
+    /// <summary>
+    /// Apply styles in outline
+    /// </summary>
+    optional<bool> apply_styles;
+
+    /// <summary>
+    /// Summary rows below detail
+    /// </summary>
+    optional<bool> summary_below;
+
+    /// <summary>
+    /// Summary columns to right of detail
+    /// </summary>
+    optional<bool> summary_right;
+
+    /// <summary>
+    /// Show outline symbols
+    /// </summary>
+    optional<bool> show_outline_symbols;
 };
 
 inline bool operator==(const sheet_pr &lhs, const sheet_pr &rhs)
@@ -90,7 +110,11 @@ inline bool operator==(const sheet_pr &lhs, const sheet_pr &rhs)
         && lhs.published == rhs.published
         && lhs.code_name == rhs.code_name
         && lhs.filter_mode == rhs.filter_mode
-        && lhs.enable_format_condition_calculation == rhs.enable_format_condition_calculation;
+        && lhs.enable_format_condition_calculation == rhs.enable_format_condition_calculation
+        && lhs.apply_styles == rhs.apply_styles
+        && lhs.summary_below == rhs.summary_below
+        && lhs.summary_right == rhs.summary_right
+        && lhs.show_outline_symbols == rhs.show_outline_symbols;
 }
 
 inline bool operator!=(const sheet_pr &lhs, const sheet_pr &rhs)

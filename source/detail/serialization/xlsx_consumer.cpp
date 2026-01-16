@@ -329,6 +329,15 @@ std::pair<xlnt::row_properties, int> parse_row(xml::parser *parser, std::vector<
         {
             props.first.custom_height = is_true(attr.second.value);
         }
+        else if (string_equal(attr.first.name(), "collapsed"))
+        {
+            props.first.collapsed = is_true(attr.second.value);
+        }
+        else if (string_equal(attr.first.name(), "outlineLevel"))
+        {   
+            props.first.outline_level = 0;
+            xlnt::detail::parse(attr.second.value, props.first.outline_level.get());
+        }
     }
 
     int level = 1;
@@ -610,7 +619,6 @@ std::string xlsx_consumer::read_worksheet_begin(const std::string &rel_id)
             { // optional, boolean, true
                 props.enable_format_condition_calculation.set(parser().attribute<bool>("enableFormatConditionsCalculation"));
             }
-            ws.d_->sheet_properties_.set(props);
             while (in_element(current_worksheet_element))
             {
                 auto sheet_pr_child_element = expect_start_element(xml::content::simple);
@@ -621,10 +629,22 @@ std::string xlsx_consumer::read_worksheet_begin(const std::string &rel_id)
                 }
                 else if (sheet_pr_child_element == qn("spreadsheetml", "outlinePr")) // CT_OutlinePr 0-1
                 {
-                    skip_attribute("applyStyles"); // optional, boolean, false
-                    skip_attribute("summaryBelow"); // optional, boolean, true
-                    skip_attribute("summaryRight"); // optional, boolean, true
-                    skip_attribute("showOutlineSymbols"); // optional, boolean, true
+                    if (parser().attribute_present("applyStyles"))
+                    {
+                        props.apply_styles.set(is_true(parser().attribute("applyStyles")));
+                    }
+                    if (parser().attribute_present("summaryBelow"))
+                    {
+                        props.summary_below.set(is_true(parser().attribute("summaryBelow")));
+                    }
+                    if (parser().attribute_present("summaryRight"))
+                    {
+                        props.summary_right.set(is_true(parser().attribute("summaryRight")));
+                    }
+                    if (parser().attribute_present("showOutlineSymbols"))
+                    {
+                        props.show_outline_symbols.set(is_true(parser().attribute("showOutlineSymbols")));
+                    }
                 }
                 else if (sheet_pr_child_element == qn("spreadsheetml", "pageSetUpPr")) // CT_PageSetUpPr 0-1
                 {
@@ -638,6 +658,7 @@ std::string xlsx_consumer::read_worksheet_begin(const std::string &rel_id)
 
                 expect_end_element(sheet_pr_child_element);
             }
+            ws.d_->sheet_properties_.set(props);
         }
         else if (current_worksheet_element == qn("spreadsheetml", "dimension")) // CT_SheetDimension 0-1
         {
@@ -1477,10 +1498,20 @@ bool xlsx_consumer::has_cell()
         {
             row_properties.spans = parser().attribute("spans");
         }
+        
+        if (parser().attribute_present("outlineLevel"))
+        {
+            row_properties.outline_level = parser().attribute<uint8_t>("outlineLevel");
+        }
+
+        if (parser().attribute_present("collapsed"))
+        {
+            row_properties.collapsed = is_true(parser().attribute("collapsed"));
+        }
+
 
         skip_attributes({"customFormat", "s", "customFont",
-            "outlineLevel", "collapsed", "thickTop", "thickBot",
-            "ph"});
+            "thickTop", "thickBot", "ph"});
     }
 
     if (!streaming_cell_)
