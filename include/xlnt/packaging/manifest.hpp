@@ -66,12 +66,14 @@ public:
 
     /// <summary>
     /// Returns the relationship with "source" as the source and with a type of "type".
+    /// Assumes that such a relationship exists (please call has_relationship() to check).
     /// Throws a key_not_found exception if no such relationship is found.
     /// </summary>
     class relationship relationship(const path &source, relationship_type type) const;
 
     /// <summary>
     /// Returns the relationship with "source" as the source and with an ID of "rel_id".
+    /// Assumes that such a relationship exists (please call has_relationship() to check).
     /// Throws a key_not_found exception if no such relationship is found.
     /// </summary>
     class relationship relationship(const path &source, const std::string &rel_id) const;
@@ -113,7 +115,14 @@ public:
     // Content Types
 
     /// <summary>
+    /// Returns true if a content type for the extension has been registered.
+    /// </summary>
+    bool has_content_type(const path &part) const;
+
+    /// <summary>
     /// Given the path to a part, returns the content type of the part as a string.
+    /// Assumes that there is a content type for the part (please call has_content_type() to check).
+    /// Throws a key_not_found exception if the content type is not found.
     /// </summary>
     std::string content_type(const path &part) const;
 
@@ -131,6 +140,8 @@ public:
 
     /// <summary>
     /// Returns the registered default content type for parts of the given extension.
+    /// Assumes that there is a default content type for the part (please call has_default_type() to check).
+    /// Throws key_not_found exception if no default type was found.
     /// </summary>
     std::string default_type(const std::string &extension) const;
 
@@ -154,6 +165,7 @@ public:
 
     /// <summary>
     /// Returns the override content type registered for the given part.
+    /// Assumes that there is an override content type for the part (please call has_override_type() to check).
     /// Throws key_not_found exception if no override type was found.
     /// </summary>
     std::string override_type(const path &part) const;

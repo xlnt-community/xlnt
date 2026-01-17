@@ -74,9 +74,15 @@ public:
 
     /// <summary>
     /// Returns the cell reference of the active cell.
+    /// Assumes that this selection has an active cell (please call has_active_cell() to check).
+    /// If this selection does not have an active cell, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     cell_reference active_cell() const
     {
+        if (!active_cell_.is_set())
+        {
+            throw xlnt::invalid_attribute("selection has no active cell");
+        }
         return active_cell_.get();
     }
 
@@ -86,6 +92,14 @@ public:
     void active_cell(const cell_reference &ref)
     {
         active_cell_ = ref;
+    }
+
+    /// <summary>
+    /// Clears the active cell.
+    /// </summary>
+    void clear_active_cell()
+    {
+        active_cell_.clear();
     }
 
     /// <summary>
@@ -100,6 +114,8 @@ public:
     /// Returns the range encompassed by this selection.
     /// If the range contains multiple (non-contiguous) regions, the first range is returned.
     /// Use sqrefs to obtain the full selection.
+    /// Assumes that at least one region exists (please call has_sqref() to check).
+    /// If there are no regions, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     /// <deprecated>
     /// Use sqrefs instead.
@@ -107,7 +123,7 @@ public:
     XLNT_DEPRECATED range_reference sqref() const
     {
         if (!has_sqref())
-            throw invalid_attribute();
+            throw invalid_attribute("the selection has no sqref");
 
         return sqref_.front();
     }

@@ -187,6 +187,8 @@ public:
 
     /// <summary>
     /// Returns the color that this font is using.
+    /// Assumes that this font has a color (please call has_color() to check).
+    /// If this font does not have a color, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     xlnt::color color() const;
 
@@ -202,6 +204,8 @@ public:
 
     /// <summary>
     /// Returns the family index for the font.
+    /// Assumes that this font has a family (please call has_family() to check).
+    /// If this font does not have a family, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     std::size_t family() const;
 
@@ -219,6 +223,8 @@ public:
 
     /// <summary>
     /// Returns the charset of the font.
+    /// Assumes that this font has a charset (please call has_charset() to check).
+    /// If this font does not have a charset, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     std::size_t charset() const;
 
@@ -234,6 +240,8 @@ public:
 
     /// <summary>
     /// Returns the scheme of this font.
+    /// Assumes that this font has a scheme (please call has_scheme() to check).
+    /// If this font does not have a scheme, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     const std::string &scheme() const;
 

@@ -127,7 +127,7 @@ time::time(const std::string &time_string)
 
     if (!ok)
     {
-        throw xlnt::invalid_parameter("invalid ISO time");
+        throw xlnt::invalid_parameter("invalid ISO time \"" + time_string + "\"");
     }
 }
 

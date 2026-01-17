@@ -38,7 +38,7 @@ std::vector<std::uint8_t> calculate_standard_key(
 {
     // H_0 = H(salt + password)
     auto salt_plus_password = info.salt;
-    auto password_bytes = xlnt::detail::string_to_bytes(password);
+    auto password_bytes = xlnt::detail::string_to_bytes(password, false);
     std::copy(password_bytes.begin(),
         password_bytes.end(),
         std::back_inserter(salt_plus_password));
@@ -92,11 +92,15 @@ std::vector<std::uint8_t> calculate_standard_key(
         aes_ecb_decrypt(info.encrypted_verifier, key));
     auto decrypted_verifier_hash = aes_ecb_decrypt(
         info.encrypted_verifier_hash, key);
-    decrypted_verifier_hash.resize(calculated_verifier_hash.size());
+
+    if (decrypted_verifier_hash.size() > info.verifier_hash_size)
+    {
+        decrypted_verifier_hash.resize(info.verifier_hash_size);
+    }
 
     if (calculated_verifier_hash != decrypted_verifier_hash)
     {
-        throw xlnt::exception("bad password");
+        throw xlnt::invalid_password("bad password");
     }
 
     return key;
@@ -108,7 +112,7 @@ std::vector<std::uint8_t> calculate_agile_key(
 {
     // H_0 = H(salt + password)
     auto salt_plus_password = info.key_encryptor.salt_value;
-    auto password_bytes = xlnt::detail::string_to_bytes(password);
+    auto password_bytes = xlnt::detail::string_to_bytes(password, false);
     std::copy(password_bytes.begin(),
         password_bytes.end(),
         std::back_inserter(salt_plus_password));
@@ -154,7 +158,7 @@ std::vector<std::uint8_t> calculate_agile_key(
 
     if (calculated_verifier != expected_verifier)
     {
-        throw xlnt::exception("bad password");
+        throw xlnt::invalid_password("bad password");
     }
 
     const std::array<std::uint8_t, block_size> key_value_block_key =
