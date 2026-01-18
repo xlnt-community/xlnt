@@ -141,7 +141,7 @@ encoding_error::encoding_error(const std::string &message)
 }
 
 bad_variant_access::bad_variant_access(variant::type expected_type, variant::type actual_type)
-    : exception(std::string("bad variant access: expected type ") + xlnt::variant::get_type_string(expected_type) +
+    : exception("bad variant access: expected type " + xlnt::variant::get_type_string(expected_type) +
         " but got type " + xlnt::variant::get_type_string(actual_type))
 {
 }

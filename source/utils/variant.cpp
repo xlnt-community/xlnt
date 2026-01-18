@@ -28,7 +28,7 @@
 
 namespace xlnt {
 
-const char * variant::get_type_string(variant::type type)
+std::string variant::get_type_string(variant::type type)
 {
     switch (type)
     {

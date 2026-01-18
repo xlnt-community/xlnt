@@ -86,7 +86,7 @@ public:
     /// <summary>
     /// Returns a displayable string for the specified type.
     /// </summary>
-    static const char * get_type_string(type type);
+    static std::string get_type_string(type type);
 
     /// <summary>
     /// Default constructor. Creates a null-type variant.
