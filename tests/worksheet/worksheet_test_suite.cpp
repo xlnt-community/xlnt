@@ -1185,7 +1185,7 @@ public:
 
         xlnt_assert(!sheet_range.is_single_cell());
         xlnt_assert_equals(sheet_range.width(), 4);
-        xlnt_assert_equals(sheet_range.height(), 35);
+        xlnt_assert_equals(sheet_range.height(), 37);
     }
 
     void test_view_properties_serialization()

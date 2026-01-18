@@ -1501,7 +1501,7 @@ bool xlsx_consumer::has_cell()
         
         if (parser().attribute_present("outlineLevel"))
         {
-            row_properties.outline_level = parser().attribute<uint8_t>("outlineLevel");
+            row_properties.outline_level = parser().attribute<uint16_t>("outlineLevel");
         }
 
         if (parser().attribute_present("collapsed"))
