@@ -497,7 +497,6 @@ workbook workbook::empty()
 
     xlnt::calculation_properties calc_props;
     calc_props.calc_id = 150000;
-    calc_props.concurrent_calc = false;
     wb.calculation_properties(calc_props);
 
     return wb;
