@@ -56,7 +56,8 @@ struct XLNT_API cell_reference_hash
 /// can be initialized from a string of this form or a 1-indexed ordered pair of the form
 /// column, row.
 /// By default, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD, column index 16384).
-/// The OOXML specification allows to extend this range.
+/// The OOXML specification allows to extend this range, and XLNT allows both rows and columns between 1 and 4294967295. Please note that
+/// not all applications might support these extended ranges.
 /// </summary>
 class XLNT_API cell_reference
 {
@@ -87,21 +88,30 @@ public:
     /// <summary>
     /// Constructs a cell_reference from a string reprenting a cell coordinate (e.g. $B14).
     /// By default, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD, column index 16384).
-    /// The OOXML specification allows to extend this range.
+    /// The OOXML specification allows to extend this range, and XLNT allows both rows and columns between 1 and 4294967295. Please note that
+    /// not all applications might support these extended ranges.
+    /// Excel only supports 1 - 3 letter column names from A->Z, AA->ZZ, AAA->XFD,
+    /// so XLNT restricts column names to 1 - 3 characters, each in the range A - Z (columns A to ZZZ).
+    /// Strings outside this range and malformed strings will throw an invalid_column_index exception.
     /// </summary>
     cell_reference(const char *reference_string);
 
     /// <summary>
     /// Constructs a cell_reference from a string reprenting a cell coordinate (e.g. $B14).
     /// By default, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD, column index 16384).
-    /// The OOXML specification allows to extend this range.
+    /// The OOXML specification allows to extend this range, and XLNT allows both rows and columns between 1 and 4294967295. Please note that
+    /// not all applications might support these extended ranges.
+    /// Excel only supports 1 - 3 letter column names from A->Z, AA->ZZ, AAA->XFD,
+    /// so XLNT restricts column names to 1 - 3 characters, each in the range A - Z (columns A to ZZZ).
+    /// Strings outside this range and malformed strings will throw an invalid_column_index exception.
     /// </summary>
     cell_reference(const std::string &reference_string);
 
     /// <summary>
     /// Constructs a cell_reference from a 1-indexed column index and row index.
     /// By default, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD, column index 16384).
-    /// The OOXML specification allows to extend this range.
+    /// The OOXML specification allows to extend this range, and XLNT allows both rows and columns between 1 and 4294967295. Please note that
+    /// not all applications might support these extended ranges.
     /// </summary>
     cell_reference(column_t column, row_t row);
 
@@ -154,6 +164,9 @@ public:
 
     /// <summary>
     /// Sets the column of this reference from a string that identifies a particular column.
+    /// Excel only supports 1 - 3 letter column names from A->Z, AA->ZZ, AAA->XFD,
+    /// so XLNT restricts column names to 1 - 3 characters, each in the range A - Z (columns A to ZZZ).
+    /// Strings outside this range and malformed strings will throw an invalid_column_index exception.
     /// </summary>
     void column(const std::string &column_string);
 
@@ -245,14 +258,17 @@ private:
     /// Index of the column. Important: this is one-indexed to conform
     /// with Excel. Column "A", the first column, would have an index of 1.
     /// By default, column references range from A to XFD (column indices 1 to 16384), but
-    /// the OOXML specification allows to extend this range.
+    /// the OOXML specification allows to extend this range, and XLNT allows columns between 1 and 4294967295. Please note that
+    /// not all applications might support these extended ranges.
     /// </summary>
     column_t column_;
 
     /// <summary>
     /// Index of the column. Important: this is one-indexed to conform
     /// with Excel. Column "A", the first column, would have an index of 1.
-    /// By default, row references range from 1 to 1048576, but the OOXML specification allows to extend this range.
+    /// By default, row references range from 1 to 1048576, but the OOXML specification allows to extend this range,
+    /// and XLNT allows rows between 1 and 4294967295. Please note that
+    /// not all applications might support these extended ranges.
     /// </summary>
     row_t row_;
 
