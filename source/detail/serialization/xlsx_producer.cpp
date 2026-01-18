@@ -709,7 +709,10 @@ void xlsx_producer::write_workbook(const relationship &rel)
     if (source_.has_calculation_properties())
     {
         write_start_element(xmlns, "calcPr");
-        write_attribute("calcId", source_.calculation_properties().calc_id);
+        if (source_.calculation_properties().calc_id.is_set())
+        {
+            write_attribute("calcId", source_.calculation_properties().calc_id.get());
+        }
         //write_attribute("calcMode", "auto");
         //write_attribute("fullCalcOnLoad", "1");
         write_attribute("concurrentCalc", write_bool(source_.calculation_properties().concurrent_calc));
