@@ -12,6 +12,7 @@ var searchData=
   ['optional_3c_20phonetic_5ftype_20_3e',['optional&lt; phonetic_type &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['optional_3c_20std_3a_3asize_5ft_20_3e',['optional&lt; std::size_t &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['optional_3c_20std_3a_3astring_20_3e',['optional&lt; std::string &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
+  ['optional_3c_20std_3a_3auint8_5ft_20_3e',['optional&lt; std::uint8_t &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['optional_3c_20vertical_5falignment_20_3e',['optional&lt; vertical_alignment &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['optional_3c_20xlnt_3a_3aborder_3a_3aborder_5fproperty_20_3e',['optional&lt; xlnt::border::border_property &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['optional_3c_20xlnt_3a_3acell_5freference_20_3e',['optional&lt; xlnt::cell_reference &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],

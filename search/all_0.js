@@ -27,6 +27,7 @@ var searchData=
   ['app_5fname',['app_name',['../classxlnt_1_1workbook.html#a682a585084f7fa8254f19f3f4abc400c',1,'xlnt::workbook']]],
   ['append',['append',['../classxlnt_1_1path.html#adfb1aac9ce279cf94e87233490da20e8',1,'xlnt::path::append(const std::string &amp;to_append) const'],['../classxlnt_1_1path.html#ae22f50a08277330190d9ff01aace9997',1,'xlnt::path::append(const path &amp;to_append) const']]],
   ['apply',['apply',['../classxlnt_1_1range.html#a8df0f556f491fbd957d5ce8913f35b4d',1,'xlnt::range']]],
+  ['apply_5fstyles',['apply_styles',['../structxlnt_1_1sheet__pr.html#a51b13d727cfd4939bbe37d476a6849a7',1,'xlnt::sheet_pr::apply_styles()'],['../classxlnt_1_1worksheet.html#a0342fe0dc926f054b839727cd2772cd0',1,'xlnt::worksheet::apply_styles()']]],
   ['apply_5fto_5fcells',['apply_to_cells',['../classxlnt_1_1workbook.html#a993aa46199d76b4bc24b3b16733cfa13',1,'xlnt::workbook']]],
   ['arch_5fid_5fflags',['arch_id_flags',['../classxlnt_1_1workbook.html#a1ccbb79db2289f31a7c7f4014a4d1b5b',1,'xlnt::workbook']]],
   ['authentication',['authentication',['../classxlnt_1_1uri.html#a61fbf5c45d850a0655c6c06a4dc9de43',1,'xlnt::uri']]],

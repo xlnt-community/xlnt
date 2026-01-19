@@ -484,6 +484,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4150b98504a3fe7523011aa2cb818935"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1worksheet.html#a4150b98504a3fe7523011aa2cb818935">zoom_scale</a> (int scale)</td></tr>
 <tr class="memdesc:a4150b98504a3fe7523011aa2cb818935"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the zoom scale (percent) on the default sheetView.  <a href="#a4150b98504a3fe7523011aa2cb818935">More...</a><br /></td></tr>
 <tr class="separator:a4150b98504a3fe7523011aa2cb818935"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa9ce48e81970300820ec6b8ccb02450"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1worksheet.html#afa9ce48e81970300820ec6b8ccb02450">outline_settings</a> (bool visible, bool symbols_below, bool symbols_right, bool <a class="el" href="classxlnt_1_1worksheet.html#a0342fe0dc926f054b839727cd2772cd0">apply_styles</a>)</td></tr>
+<tr class="memdesc:afa9ce48e81970300820ec6b8ccb02450"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure outline settings for grouping rows and columns. These settings correspond to Excel's Data -&gt; Group and Outline -&gt; Settings menu.  <a href="#afa9ce48e81970300820ec6b8ccb02450">More...</a><br /></td></tr>
+<tr class="separator:afa9ce48e81970300820ec6b8ccb02450"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac642880c0e0aaca1ebbba66d178c218b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1worksheet.html#ac642880c0e0aaca1ebbba66d178c218b">show_outline_symbols</a> () const</td></tr>
+<tr class="memdesc:ac642880c0e0aaca1ebbba66d178c218b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if outline symbols (collapse buttons) are shown. Default is true if not explicitly set.  <a href="#ac642880c0e0aaca1ebbba66d178c218b">More...</a><br /></td></tr>
+<tr class="separator:ac642880c0e0aaca1ebbba66d178c218b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fc248038b2e428641905fb9afa44712"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1worksheet.html#a5fc248038b2e428641905fb9afa44712">summary_below</a> () const</td></tr>
+<tr class="memdesc:a5fc248038b2e428641905fb9afa44712"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if summary rows are below detail rows. When true, the collapse symbol appears below the group. Default is true if not explicitly set.  <a href="#a5fc248038b2e428641905fb9afa44712">More...</a><br /></td></tr>
+<tr class="separator:a5fc248038b2e428641905fb9afa44712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb9cb3321ed72b04252668f4aa34d919"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1worksheet.html#adb9cb3321ed72b04252668f4aa34d919">summary_right</a> () const</td></tr>
+<tr class="memdesc:adb9cb3321ed72b04252668f4aa34d919"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if summary columns are to the right of detail columns. When true, the collapse symbol appears to the right of the group. Default is true if not explicitly set.  <a href="#adb9cb3321ed72b04252668f4aa34d919">More...</a><br /></td></tr>
+<tr class="separator:adb9cb3321ed72b04252668f4aa34d919"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0342fe0dc926f054b839727cd2772cd0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1worksheet.html#a0342fe0dc926f054b839727cd2772cd0">apply_styles</a> () const</td></tr>
+<tr class="memdesc:a0342fe0dc926f054b839727cd2772cd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if automatic styles are applied to outlined groups. Default is false if not explicitly set.  <a href="#a0342fe0dc926f054b839727cd2772cd0">More...</a><br /></td></tr>
+<tr class="separator:a0342fe0dc926f054b839727cd2772cd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -730,6 +745,25 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 </div><div class="memdoc">
 
 <p>Adds new_view to the set of available views for this sheet. </p>
+
+</div>
+</div>
+<a id="a0342fe0dc926f054b839727cd2772cd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0342fe0dc926f054b839727cd2772cd0">&#9670;&nbsp;</a></span>apply_styles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::worksheet::apply_styles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if automatic styles are applied to outlined groups. Default is false if not explicitly set. </p>
 
 </div>
 </div>
@@ -2425,6 +2459,57 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 
 </div>
 </div>
+<a id="afa9ce48e81970300820ec6b8ccb02450"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa9ce48e81970300820ec6b8ccb02450">&#9670;&nbsp;</a></span>outline_settings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void xlnt::worksheet::outline_settings </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>visible</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>symbols_below</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>symbols_right</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>apply_styles</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure outline settings for grouping rows and columns. These settings correspond to Excel's Data -&gt; Group and Outline -&gt; Settings menu. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">visible</td><td>If true, shows collapse buttons for groups (show outline symbols)</td></tr>
+    <tr><td class="paramname">symbols_below</td><td>If true, summary rows appear below detail rows (collapse symbol below group)</td></tr>
+    <tr><td class="paramname">symbols_right</td><td>If true, summary columns appear to the right of detail columns</td></tr>
+    <tr><td class="paramname">apply_styles</td><td>If true, automatic styles are applied to outlined groups</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ae3349851433d5a7754995eb478be8c9a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae3349851433d5a7754995eb478be8c9a">&#9670;&nbsp;</a></span>page_break_at_column()</h2>
 
@@ -2806,18 +2891,18 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 
 </div>
 </div>
-<a id="a1850ab2b0523acba9f9fb72778997016"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1850ab2b0523acba9f9fb72778997016">&#9670;&nbsp;</a></span>range() <span class="overload">[1/4]</span></h2>
+<a id="a48c63d59d4c44d3496d1421f64b15e95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48c63d59d4c44d3496d1421f64b15e95">&#9670;&nbsp;</a></span>range() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const class <a class="el" href="classxlnt_1_1range.html">range</a> xlnt::worksheet::range </td>
+          <td class="memname">class <a class="el" href="classxlnt_1_1range.html">range</a> xlnt::worksheet::range </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>reference_string</em></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -2846,18 +2931,18 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 
 </div>
 </div>
-<a id="a48c63d59d4c44d3496d1421f64b15e95"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a48c63d59d4c44d3496d1421f64b15e95">&#9670;&nbsp;</a></span>range() <span class="overload">[3/4]</span></h2>
+<a id="a1850ab2b0523acba9f9fb72778997016"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1850ab2b0523acba9f9fb72778997016">&#9670;&nbsp;</a></span>range() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">class <a class="el" href="classxlnt_1_1range.html">range</a> xlnt::worksheet::range </td>
+          <td class="memname">const class <a class="el" href="classxlnt_1_1range.html">range</a> xlnt::worksheet::range </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>reference_string</em></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -3005,28 +3090,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 
 </div>
 </div>
-<a id="a8c42924a3007bd35e07d900f1a1aa42f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8c42924a3007bd35e07d900f1a1aa42f">&#9670;&nbsp;</a></span>rows() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">class <a class="el" href="classxlnt_1_1range.html">range</a> xlnt::worksheet::rows </td>
-          <td>(</td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>skip_null</em> = <code>true</code></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns a range encompassing all cells in this sheet which will be iterated upon in row-major order. If skip_null is true (default), the range does not contain empty rows/columns at its boundaries and empty rows and cells will be skipped during iteration of the range. </p>
-
-</div>
-</div>
 <a id="ae2d408ff3f77855cd283635bcef253a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae2d408ff3f77855cd283635bcef253a0">&#9670;&nbsp;</a></span>rows() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2d408ff3f77855cd283635bcef253a0">&#9670;&nbsp;</a></span>rows() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3037,6 +3102,26 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>skip_null</em> = <code>true</code></td><td>)</td>
           <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a range encompassing all cells in this sheet which will be iterated upon in row-major order. If skip_null is true (default), the range does not contain empty rows/columns at its boundaries and empty rows and cells will be skipped during iteration of the range. </p>
+
+</div>
+</div>
+<a id="a8c42924a3007bd35e07d900f1a1aa42f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c42924a3007bd35e07d900f1a1aa42f">&#9670;&nbsp;</a></span>rows() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">class <a class="el" href="classxlnt_1_1range.html">range</a> xlnt::worksheet::rows </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>skip_null</em> = <code>true</code></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -3081,6 +3166,63 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 </div><div class="memdoc">
 
 <p>Sets the sheet state of this sheet. </p>
+
+</div>
+</div>
+<a id="ac642880c0e0aaca1ebbba66d178c218b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac642880c0e0aaca1ebbba66d178c218b">&#9670;&nbsp;</a></span>show_outline_symbols()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::worksheet::show_outline_symbols </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if outline symbols (collapse buttons) are shown. Default is true if not explicitly set. </p>
+
+</div>
+</div>
+<a id="a5fc248038b2e428641905fb9afa44712"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fc248038b2e428641905fb9afa44712">&#9670;&nbsp;</a></span>summary_below()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::worksheet::summary_below </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if summary rows are below detail rows. When true, the collapse symbol appears below the group. Default is true if not explicitly set. </p>
+
+</div>
+</div>
+<a id="adb9cb3321ed72b04252668f4aa34d919"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb9cb3321ed72b04252668f4aa34d919">&#9670;&nbsp;</a></span>summary_right()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::worksheet::summary_right </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if summary columns are to the right of detail columns. When true, the collapse symbol appears to the right of the group. Default is true if not explicitly set. </p>
 
 </div>
 </div>
@@ -3202,27 +3344,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
 
 </div>
 </div>
-<a id="af046a29e1b3a3922a9f5c58a870f1622"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af046a29e1b3a3922a9f5c58a870f1622">&#9670;&nbsp;</a></span>workbook() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">class <a class="el" href="classxlnt_1_1workbook.html">workbook</a> xlnt::worksheet::workbook </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns the workbook this worksheet is owned by. </p>
-
-</div>
-</div>
 <a id="a28eef0587bb704fc2a49ff0bf1640cc3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a28eef0587bb704fc2a49ff0bf1640cc3">&#9670;&nbsp;</a></span>workbook() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a28eef0587bb704fc2a49ff0bf1640cc3">&#9670;&nbsp;</a></span>workbook() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3232,6 +3355,25 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_produce
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the workbook this worksheet is owned by. </p>
+
+</div>
+</div>
+<a id="af046a29e1b3a3922a9f5c58a870f1622"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af046a29e1b3a3922a9f5c58a870f1622">&#9670;&nbsp;</a></span>workbook() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">class <a class="el" href="classxlnt_1_1workbook.html">workbook</a> xlnt::worksheet::workbook </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">

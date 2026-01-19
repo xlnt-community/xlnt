@@ -36,6 +36,7 @@ var searchData=
   ['optional_3c_20phonetic_5ftype_20_3e',['optional&lt; phonetic_type &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['optional_3c_20std_3a_3asize_5ft_20_3e',['optional&lt; std::size_t &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['optional_3c_20std_3a_3astring_20_3e',['optional&lt; std::string &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
+  ['optional_3c_20std_3a_3auint8_5ft_20_3e',['optional&lt; std::uint8_t &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['optional_3c_20vertical_5falignment_20_3e',['optional&lt; vertical_alignment &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['optional_3c_20xlnt_3a_3aborder_3a_3aborder_5fproperty_20_3e',['optional&lt; xlnt::border::border_property &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
   ['optional_3c_20xlnt_3a_3acell_5freference_20_3e',['optional&lt; xlnt::cell_reference &gt;',['../classxlnt_1_1optional.html',1,'xlnt']]],
@@ -48,5 +49,7 @@ var searchData=
   ['orientation',['orientation',['../namespacexlnt.html#a07a837198885833ce68be2e6bad4ffb8',1,'xlnt']]],
   ['orientation_5f',['orientation_',['../structxlnt_1_1page__setup.html#a60c01f0a6da142e5a555e9132e9e2dec',1,'xlnt::page_setup']]],
   ['outline',['outline',['../classxlnt_1_1font.html#a20db974c522ccb77f20e9a36674d9c40',1,'xlnt::font::outline(bool outline)'],['../classxlnt_1_1font.html#af7c1d9bfccf322ec7c933eeb833c8bb4',1,'xlnt::font::outline() const']]],
+  ['outline_5flevel',['outline_level',['../classxlnt_1_1row__properties.html#a43bb98b295b765c4f3ba22e43ecf34c7',1,'xlnt::row_properties']]],
+  ['outline_5fsettings',['outline_settings',['../classxlnt_1_1worksheet.html#afa9ce48e81970300820ec6b8ccb02450',1,'xlnt::worksheet']]],
   ['override_5ftype',['override_type',['../classxlnt_1_1manifest.html#a8f8400ba54883c2391d6d03a49fdb165',1,'xlnt::manifest']]]
 ];
