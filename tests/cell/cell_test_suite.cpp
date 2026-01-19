@@ -268,9 +268,9 @@ private:
         auto ws = wb.active_sheet();
         auto cell = ws.cell(xlnt::cell_reference(1, 1));
         // error string can't be empty
-        xlnt_assert_throws(cell.error(""), xlnt::exception);
+        xlnt_assert_throws(cell.error(""), xlnt::invalid_data_type);
         // error string has to have a leading '#'
-        xlnt_assert_throws(cell.error("not an error"), xlnt::exception);
+        xlnt_assert_throws(cell.error("not an error"), xlnt::invalid_data_type);
 
         for (auto error_code : xlnt::cell::error_codes())
         {

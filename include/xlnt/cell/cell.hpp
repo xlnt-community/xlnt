@@ -553,6 +553,8 @@ public:
 
     /// <summary>
     /// Directly assigns the value of this cell to be the given error.
+    /// Assumes that the given string is an error which begins with '#'.
+    /// If the given string is not an error, an xlnt::invalid_data_type exception will be thrown.
     /// </summary>
     void error(const std::string &error);
 
