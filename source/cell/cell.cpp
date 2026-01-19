@@ -565,7 +565,7 @@ std::string cell::error() const
 {
     if (d_->type_ != type::error)
     {
-        throw xlnt::exception("called error() when cell type is not error, but " + std::to_string(static_cast<int>(d_->type_)));
+        throw xlnt::invalid_attribute("called error() when cell type is not error, but " + std::to_string(static_cast<int>(d_->type_)));
     }
     return value<std::string>();
 }

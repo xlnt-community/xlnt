@@ -75,7 +75,7 @@ void streaming_workbook_reader::begin_worksheet(const std::string &title)
 {
     if (!has_worksheet(title))
     {
-        throw xlnt::exception("sheet \"" + title + "\" not found");
+        throw xlnt::key_not_found(title);
     }
 
     worksheet_rel_id_ = workbook_->impl().sheet_title_rel_id_map_.at(title);
@@ -106,7 +106,7 @@ void streaming_workbook_reader::begin_worksheet(const std::string &title)
 
     if (consumer_->current_worksheet_ == nullptr)
     {
-        throw xlnt::exception("sheet \"" + title + "\" not found");
+        throw xlnt::key_not_found(title);
     }
 
     consumer_->read_worksheet_begin(worksheet_rel_id_);

@@ -266,6 +266,12 @@ public:
         append(reader, data.size() * sizeof(U));
     }
 
+    /// <summary>
+    /// Reads reader_element_count elements from the reader.
+    /// Assumes that so many element can be read.
+    /// If the reader does not contain at least reader_element_count elements,
+    /// an invalid_parameter exception will be thrown.
+    /// </summary>
     template<typename U>
     void append(binary_reader<U> &reader, std::size_t reader_element_count)
     {
@@ -279,7 +285,7 @@ public:
 
         if ((reader.offset() + reader_element_count) * sizeof(U) > reader.bytes())
         {
-            throw xlnt::exception("reading past end (from offset " + std::to_string(reader.offset()) + " reading " + std::to_string(reader_element_count * sizeof(U)) + " bytes, although the reader only has " + std::to_string(reader.bytes()) + " bytes)");
+            throw xlnt::invalid_parameter("reading past end (from offset " + std::to_string(reader.offset()) + " reading " + std::to_string(reader_element_count * sizeof(U)) + " bytes, although the reader only has " + std::to_string(reader.bytes()) + " bytes)");
         }
 
         std::memcpy(data_->data() + offset_, reader.data() + reader.offset(), reader_element_count * sizeof(U));

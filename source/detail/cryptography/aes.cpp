@@ -2680,7 +2680,7 @@ rijndael_key rijndael_setup(const std::vector<std::uint8_t> &key_data)
 
     if (key_data.size() != 16 && key_data.size() != 24 && key_data.size() != 32)
     {
-        throw xlnt::exception("Invalid AES key length ("
+        throw xlnt::invalid_parameter("Invalid AES key length ("
             + std::to_string(key_data.size())
             + " bytes). Must be 16, 24 or 32 bytes.");
     }
@@ -2988,7 +2988,7 @@ std::vector<std::uint8_t> aes_ecb_encrypt(
 
     if (len % 16 != 0)
     {
-        throw xlnt::exception("Invalid ECB plaintext length ("
+        throw xlnt::invalid_parameter("Invalid ECB plaintext length ("
             + std::to_string(len)
             + " bytes). Must be a multiple of 16 bytes.");
     }
@@ -3021,7 +3021,7 @@ std::vector<std::uint8_t> aes_ecb_decrypt(
 
     if (len % 16 != 0)
     {
-        throw xlnt::exception("Invalid ECB ciphertext length ("
+        throw xlnt::invalid_parameter("Invalid ECB ciphertext length ("
             + std::to_string(len)
             + " bytes). Must be a multiple of 16 bytes.");
     }
@@ -3055,7 +3055,7 @@ std::vector<std::uint8_t> aes_cbc_encrypt(
 
     if (len % 16 != 0)
     {
-        throw xlnt::exception("Invalid CBC plaintext length ("
+        throw xlnt::invalid_parameter("Invalid CBC plaintext length ("
             + std::to_string(len)
             + " bytes). Must be a multiple of 16 bytes.");
     }
@@ -3101,7 +3101,7 @@ std::vector<std::uint8_t> aes_cbc_decrypt(
 
     if (ciphertext.size() % 16 != 0)
     {
-        throw xlnt::exception("Invalid ECB ciphertext length ("
+        throw xlnt::invalid_parameter("Invalid ECB ciphertext length ("
             + std::to_string(len)
             + " bytes). Must be a multiple of 16 bytes.");
     }

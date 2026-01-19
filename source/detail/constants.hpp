@@ -165,6 +165,8 @@ struct XLNT_API_INTERNAL constants
 
     /// <summary>
     /// Returns the namespace URI from a namespace name.
+    /// Assumes that id is a known namespace ID (please call namespaces() to check).
+    /// If id is not a known namespace ID, an xlnt::invalid_parameter exception will be thrown.
     /// </summary>
     static const std::string &ns(const std::string &id);
 

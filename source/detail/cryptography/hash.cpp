@@ -40,7 +40,7 @@ void hash(hash_algorithm algorithm, const std::vector<std::uint8_t> &input, std:
     }
     else
     {
-        throw xlnt::exception("unsupported hash algorithm " + std::to_string(static_cast<int>(algorithm)));
+        throw xlnt::unsupported("unsupported hash algorithm " + std::to_string(static_cast<int>(algorithm)));
     }
 }
 

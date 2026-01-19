@@ -45,6 +45,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 #include <detail/xlnt_config_impl.hpp>
 #include <xlnt/utils/path.hpp>
 
+// NOTE: the OOXML specification (ECMA-376) explicitly uses the following ZIP specification:
+// .ZIP File Format Specification from PKWARE, Inc., version 6.2.0 (2004), as specified in
+// http://www.pkware.com/documents/APPNOTE/APPNOTE_6.2.0.txt
 namespace xlnt {
 namespace detail {
 

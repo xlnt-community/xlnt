@@ -282,7 +282,7 @@ private:
             xlnt_assert_equals(error, error_code.first);
             // clearing the value clears the error state
             cell.clear_value();
-            xlnt_assert_throws(cell.error(), xlnt::exception);
+            xlnt_assert_throws(cell.error(), xlnt::invalid_attribute);
             // can explicitly set the error
             xlnt_assert_throws_nothing(cell.error(error_code.first));
             std::string error2;

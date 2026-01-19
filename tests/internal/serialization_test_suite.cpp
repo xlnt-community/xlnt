@@ -727,7 +727,7 @@ public:
 
         reader.open(xlnt::path(path));
 
-        xlnt_assert_throws(reader.begin_worksheet("NON-EXISTING WORKSHEET"), xlnt::exception);
+        xlnt_assert_throws(reader.begin_worksheet("NON-EXISTING WORKSHEET"), xlnt::key_not_found);
 
         for (auto sheet_name : reader.sheet_titles())
         {

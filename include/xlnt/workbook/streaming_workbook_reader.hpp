@@ -79,7 +79,7 @@ public:
     /// Assumes that this workbook has a worksheet with
     /// the given name (please call has_worksheet() to check).
     /// If this workbook does not have a worksheet with the given name,
-    /// an xlnt::exception will be thrown.
+    /// an xlnt::key_not_found exception will be thrown.
     /// </summary>
     void begin_worksheet(const std::string &name);
 

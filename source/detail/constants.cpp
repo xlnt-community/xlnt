@@ -194,7 +194,7 @@ const std::string &constants::ns(const std::string &id)
 
     if (match == namespaces().end())
     {
-        throw xlnt::exception("bad namespace \"" + id + "\"");
+        throw xlnt::invalid_parameter("bad namespace \"" + id + "\"");
     }
 
     return match->second;

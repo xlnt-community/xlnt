@@ -546,6 +546,8 @@ public:
 
     /// <summary>
     /// Returns the error string that is stored in this cell.
+    /// Assumes that the cell type is type::error (please call data_type() to check).
+    /// If the cell is not of type::error, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     std::string error() const;
 
