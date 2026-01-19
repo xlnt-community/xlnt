@@ -126,6 +126,7 @@ public:
         register_test(test_zoom_scale);
         register_test(test_zoom_scale_no_view);
         register_test(test_view);
+        register_test(test_outline_levels_tree_structure);
     }
 
     void test_new_worksheet()
@@ -1289,7 +1290,7 @@ public:
 
         xlnt_assert(!sheet_range.is_single_cell());
         xlnt_assert_equals(sheet_range.width(), 4);
-        xlnt_assert_equals(sheet_range.height(), 35);
+        xlnt_assert_equals(sheet_range.height(), 37);
     }
 
     void test_view_properties_serialization()
@@ -1966,6 +1967,118 @@ public:
         xlnt_assert(!ws.has_view());
         xlnt_assert_equals(ws.views().size(), 0);
         xlnt_assert_throws(ws.view(), xlnt::invalid_parameter);
+    }
+
+    void test_outline_levels_tree_structure()
+    {
+        xlnt::workbook wb;
+        xlnt::worksheet ws = wb.active_sheet();
+
+        // Create a tree-like structure:
+        // Row 1: Root (level 0)
+        // Row 2: Child 1 (level 1)
+        // Row 3: Grandchild 1.1 (level 2)
+        // Row 4: Grandchild 1.2 (level 2)
+        // Row 5: Child 2 (level 1) - COLLAPSED
+        // Row 6: Grandchild 2.1 (level 2) - HIDDEN (child of collapsed node)
+        // Row 7: Grandchild 2.2 (level 2) - HIDDEN (child of collapsed node)
+
+        ws.cell("A1").value("Root");
+        auto props1 = ws.row_properties(1);
+        props1.outline_level = 0;
+        ws.add_row_properties(1, props1);
+
+        ws.cell("A2").value("Child 1");
+        auto props2 = ws.row_properties(2);
+        props2.outline_level = 1;
+        ws.add_row_properties(2, props2);
+
+        ws.cell("A3").value("Grandchild 1.1");
+        auto props3 = ws.row_properties(3);
+        props3.outline_level = 2;
+        ws.add_row_properties(3, props3);
+
+        ws.cell("A4").value("Grandchild 1.2");
+        auto props4 = ws.row_properties(4);
+        props4.outline_level = 2;
+        ws.add_row_properties(4, props4);
+
+        ws.cell("A5").value("Child 2 (Collapsed)");
+        auto props5 = ws.row_properties(5);
+        props5.outline_level = 1;
+        props5.collapsed = true;
+        ws.add_row_properties(5, props5);
+
+        ws.cell("A6").value("Grandchild 2.1 (Hidden)");
+        auto props6 = ws.row_properties(6);
+        props6.outline_level = 2;
+        props6.hidden = true;
+        ws.add_row_properties(6, props6);
+
+        ws.cell("A7").value("Grandchild 2.2 (Hidden)");
+        auto props7 = ws.row_properties(7);
+        props7.outline_level = 2;
+        props7.hidden = true;
+        ws.add_row_properties(7, props7);
+
+        // test default outline settings
+        xlnt_assert_equals(ws.show_outline_symbols(), true);
+        xlnt_assert_equals(ws.summary_below(), true);
+        xlnt_assert_equals(ws.summary_right(), true);
+        xlnt_assert_equals(ws.apply_styles(), false);
+
+        // Configure outline settings
+        ws.outline_settings(true, false, true, false);
+
+        // Save and reload
+        wb.save("temp_outline.xlsx");
+
+        xlnt::workbook wb2;
+        wb2.load("temp_outline.xlsx");
+        xlnt::worksheet ws2 = wb2.active_sheet();
+
+        xlnt_assert(ws2.has_cell("A5"));
+
+        // Verify cell values
+        xlnt_assert_equals(ws2.cell("A1").value<std::string>(), "Root");
+        xlnt_assert_equals(ws2.cell("A2").value<std::string>(), "Child 1");
+        xlnt_assert_equals(ws2.cell("A3").value<std::string>(), "Grandchild 1.1");
+        xlnt_assert_equals(ws2.cell("A4").value<std::string>(), "Grandchild 1.2");
+        xlnt_assert_equals(ws2.cell("A5").value<std::string>(), "Child 2 (Collapsed)");
+        xlnt_assert_equals(ws2.cell("A6").value<std::string>(), "Grandchild 2.1 (Hidden)");
+        xlnt_assert_equals(ws2.cell("A7").value<std::string>(), "Grandchild 2.2 (Hidden)");
+
+        // Verify outline levels
+        xlnt_assert(ws2.has_row_properties(1));
+        xlnt_assert_equals(ws2.row_properties(1).outline_level.get(), 0);
+
+        xlnt_assert(ws2.has_row_properties(2));
+        xlnt_assert_equals(ws2.row_properties(2).outline_level.get(), 1);
+
+        xlnt_assert(ws2.has_row_properties(3));
+        xlnt_assert_equals(ws2.row_properties(3).outline_level.get(), 2);
+
+        xlnt_assert(ws2.has_row_properties(4));
+        xlnt_assert_equals(ws2.row_properties(4).outline_level.get(), 2);
+
+        xlnt_assert(ws2.has_row_properties(5));
+        xlnt_assert_equals(ws2.row_properties(5).outline_level.get(), 1);
+        xlnt_assert(ws2.row_properties(5).collapsed.is_set());
+        xlnt_assert_equals(ws2.row_properties(5).collapsed.get(), true);
+
+        xlnt_assert(ws2.has_row_properties(6));
+        xlnt_assert_equals(ws2.row_properties(6).outline_level.get(), 2);
+        xlnt_assert_equals(ws2.row_properties(6).hidden, true);
+
+        xlnt_assert(ws2.has_row_properties(7));
+        xlnt_assert_equals(ws2.row_properties(7).outline_level.get(), 2);
+        xlnt_assert_equals(ws2.row_properties(7).hidden, true);
+
+        // Verify outline settings
+        xlnt_assert_equals(ws2.show_outline_symbols(), true);
+        xlnt_assert_equals(ws2.summary_below(), false);
+        xlnt_assert_equals(ws2.summary_right(), true);
+        xlnt_assert_equals(ws2.apply_styles(), false);
     }
 };
 

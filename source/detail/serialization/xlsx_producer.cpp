@@ -2376,11 +2376,34 @@ void xlsx_producer::write_worksheet(const relationship &rel)
         {
             write_attribute("enableFormatConditionsCalculation", props.enable_format_condition_calculation.get());
         }
-        // outlinePr is optional in the spec but is being written every time?
-        write_start_element(xmlns, "outlinePr");
-        write_attribute("summaryBelow", "1");
-        write_attribute("summaryRight", "1");
-        write_end_element(xmlns, "outlinePr");
+        
+        if (props.apply_styles.is_set() || props.summary_below.is_set() || 
+            props.summary_right.is_set() || props.show_outline_symbols.is_set())
+        {
+            write_start_element(xmlns, "outlinePr");
+            
+            if (props.apply_styles.is_set())
+            {
+                write_attribute("applyStyles", write_bool(props.apply_styles.get()));
+            }
+            
+            if (props.summary_below.is_set())
+            {
+                write_attribute("summaryBelow", write_bool(props.summary_below.get()));
+            }
+            
+            if (props.summary_right.is_set())
+            {
+                write_attribute("summaryRight", write_bool(props.summary_right.get()));
+            }
+            
+            if (props.show_outline_symbols.is_set())
+            {
+                write_attribute("showOutlineSymbols", write_bool(props.show_outline_symbols.get()));
+            }
+            
+            write_end_element(xmlns, "outlinePr");
+        }
 
         if (ws.has_page_setup())
         {
@@ -2672,6 +2695,16 @@ void xlsx_producer::write_worksheet(const relationship &rel)
             if (props.dy_descent.is_set())
             {
                 write_attribute<double>(xml::qname(xmlns_x14ac, "dyDescent"), props.dy_descent.get());
+            }
+
+            if (props.outline_level.is_set())
+            {
+                write_attribute("outlineLevel", props.outline_level.get());
+            }
+
+            if (props.collapsed.is_set())
+            {
+                write_attribute("collapsed", write_bool(props.collapsed.get()));
             }
         }
 

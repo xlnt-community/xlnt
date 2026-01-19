@@ -884,6 +884,42 @@ public:
     /// </summary>
     void zoom_scale(int scale);
 
+    /// <summary>
+    /// Configure outline settings for grouping rows and columns.
+    /// These settings correspond to Excel's Data -> Group and Outline -> Settings menu.
+    /// </summary>
+    /// <param name="visible">If true, shows collapse buttons for groups (show outline symbols)</param>
+    /// <param name="symbols_below">If true, summary rows appear below detail rows (collapse symbol below group)</param>
+    /// <param name="symbols_right">If true, summary columns appear to the right of detail columns</param>
+    /// <param name="apply_styles">If true, automatic styles are applied to outlined groups</param>
+    void outline_settings(bool visible, bool symbols_below, bool symbols_right, bool apply_styles);
+
+    /// <summary>
+    /// Returns true if outline symbols (collapse buttons) are shown.
+    /// Default is true if not explicitly set.
+    /// </summary>
+    bool show_outline_symbols() const;
+
+    /// <summary>
+    /// Returns true if summary rows are below detail rows.
+    /// When true, the collapse symbol appears below the group.
+    /// Default is true if not explicitly set.
+    /// </summary>
+    bool summary_below() const;
+
+    /// <summary>
+    /// Returns true if summary columns are to the right of detail columns.
+    /// When true, the collapse symbol appears to the right of the group.
+    /// Default is true if not explicitly set.
+    /// </summary>
+    bool summary_right() const;
+
+    /// <summary>
+    /// Returns true if automatic styles are applied to outlined groups.
+    /// Default is false if not explicitly set.
+    /// </summary>
+    bool apply_styles() const;
+
 private:
     friend class cell;
     friend class const_range_iterator;
