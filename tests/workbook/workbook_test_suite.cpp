@@ -50,6 +50,7 @@ public:
         register_test(test_add_correct_sheet);
         register_test(test_add_sheet_from_other_workbook);
         register_test(test_add_sheet_at_index);
+        register_test(test_remove_sheet);
         register_test(test_get_sheet_by_title);
         register_test(test_get_sheet_by_title_const);
         register_test(test_get_sheet_by_index);
@@ -357,6 +358,11 @@ public:
         xlnt_assert(wb.has_last_edited());
         xlnt_assert_equals(wb.last_edited_str(), "2026 SP3");
         xlnt_assert_throws(wb.last_edited(), xlnt::invalid_attribute);
+
+        // Improve code coverage when default-creating file version when setting a string
+        wb.clear_file_version();
+        wb.last_edited("v2026 SP3");
+        xlnt_assert_equals(wb.last_edited_str(), "v2026 SP3");
     }
 
     void test_lowest_edited()
@@ -387,6 +393,11 @@ public:
         xlnt_assert(wb.has_lowest_edited());
         xlnt_assert_equals(wb.lowest_edited_str(), "2026 SP1");
         xlnt_assert_throws(wb.lowest_edited(), xlnt::invalid_attribute);
+
+        // Improve code coverage when default-creating file version when setting a string
+        wb.clear_file_version();
+        wb.lowest_edited("v2026 SP1");
+        xlnt_assert_equals(wb.lowest_edited_str(), "v2026 SP1");
     }
 
     void test_rup_build()
@@ -417,6 +428,11 @@ public:
         xlnt_assert(wb.has_rup_build());
         xlnt_assert_equals(wb.rup_build_str(), "1234 nightly");
         xlnt_assert_throws(wb.rup_build(), xlnt::invalid_attribute);
+
+        // Improve code coverage when default-creating file version when setting a string
+        wb.clear_file_version();
+        wb.rup_build("b1234 nightly");
+        xlnt_assert_equals(wb.rup_build_str(), "b1234 nightly");
     }
 
     void test_calculation_properties()
@@ -634,6 +650,7 @@ public:
         xlnt_assert_throws(wb2_shallow_copy.sheet_by_title("NEW_CHANGED_AGAIN"), xlnt::key_not_found);
         xlnt_assert(!wb1.contains("NEW_CHANGED_AGAIN"));
         xlnt_assert_throws(wb1.sheet_by_title("NEW_CHANGED_AGAIN"), xlnt::key_not_found);
+        xlnt_assert_throws(wb1.clone(static_cast<xlnt::workbook::clone_method>(-123456789)), xlnt::invalid_parameter);
     }
 
     void test_copy_constructor()
@@ -698,6 +715,19 @@ public:
         xlnt_assert(!m.has_relationship(xlnt::path("/"), "test123"));
         xlnt_assert_throws(m.relationship(xlnt::path("/"), "test123"), xlnt::key_not_found);
         xlnt_assert(m.relationships(xlnt::path("xl/workbook.xml")).empty());
+        m.register_default_type("xml", "my default type");
+        xlnt_assert(m.has_content_type(xlnt::path("/xl/example.xml")));
+        m.register_override_type(xlnt::path("/xl/example.xml"), "my override type");
+        xlnt_assert(m.has_content_type(xlnt::path("/xl/example.xml")));
+        xlnt_assert(!m.has_relationship(xlnt::path("/"), xlnt::relationship_type::thumbnail));
+        m.register_relationship(xlnt::uri("/"), xlnt::relationship_type::thumbnail,
+            xlnt::uri("docProps/thumbnail.jpeg"), xlnt::target_mode::internal);
+        xlnt_assert(m.has_relationship(xlnt::path("/"), xlnt::relationship_type::thumbnail));
+        xlnt_assert(!m.has_relationship(xlnt::path("/"), xlnt::relationship_type::office_document));
+        xlnt::relationship rel_thumbnail = m.relationship(xlnt::path("/"), xlnt::relationship_type::thumbnail);
+        xlnt_assert(m.has_relationship(xlnt::path("/"), rel_thumbnail.id()));
+        xlnt_assert_throws(m.relationship(xlnt::path("/"), "test123"), xlnt::key_not_found);
+        xlnt_assert_throws(m.unregister_relationship(xlnt::uri("/"), "?"), xlnt::invalid_parameter);
     }
 
     void test_memory()
@@ -905,6 +935,7 @@ public:
     void test_load_file_non_existent()
     {
         xlnt::path file = path_helper::test_file("SHOULD NEVER EVER EXIST");
+        const auto invalid_password = u8"INVALID"; // password shouldn't make a difference, but it's good for test coverage
 #ifdef __cpp_lib_char8_t
         // The reinterpret_cast is ugly as hell, but I'm not sure if duplicating
         // the path_helper and xlnt::path functionality is worth it...
@@ -919,18 +950,22 @@ public:
         // load with string
         xlnt::workbook wb_load1;
         xlnt_assert_throws(wb_load1.load(file_as_string), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load1.load(file_as_string, invalid_password), xlnt::invalid_file);
 #ifdef _MSC_VER
         // load with wstring
         xlnt::workbook wb_load2;
         xlnt_assert_throws(wb_load2.load(file.wstring()), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load2.load(file.wstring(), invalid_password), xlnt::invalid_file);
 #endif
         // load with path
         xlnt::workbook wb_load3;
         xlnt_assert_throws(wb_load3.load(file), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load3.load(file, invalid_password), xlnt::invalid_file);
         // load with istream
         xlnt::workbook wb_load4;
         std::ifstream file_reader2(file.string(), std::ios::binary);
         xlnt_assert_throws(wb_load4.load(file_reader2), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load4.load(file_reader2, invalid_password), xlnt::invalid_file);
         // load with vector
         std::ifstream file_reader3(file.string(), std::ios::binary);
         file_reader3.unsetf(std::ios::skipws);
@@ -938,9 +973,11 @@ public:
             std::istream_iterator<uint8_t>());
         xlnt::workbook wb_load5;
         xlnt_assert_throws(wb_load5.load(data), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load5.load(data, invalid_password), xlnt::invalid_file);
         // load vector with empty data
         xlnt::workbook wb_load6;
         xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}, invalid_password), xlnt::invalid_file);
     }
 
     void test_Issue279()

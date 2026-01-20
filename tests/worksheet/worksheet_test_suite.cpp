@@ -207,6 +207,16 @@ public:
         xlnt_assert_equals(1, xlrange2.length());
         xlnt_assert_equals(1, xlrange2[0].length());
         xlnt_assert_equals(6, xlrange2[0][0].row());
+
+        xlnt_assert(!wb.has_named_range("test_const_range"));
+        xlnt_assert(!ws.has_named_range("test_const_range"));
+        wb.create_named_range("test_const_range", ws, "C7");
+        xlnt_assert(wb.has_named_range("test_const_range"));
+        xlnt_assert(ws.has_named_range("test_const_range"));
+        auto xlrange_const = ws.named_range("test_const_range");
+        xlnt_assert_equals(1, xlrange_const.length());
+        xlnt_assert_equals(1, xlrange_const[0].length());
+        xlnt_assert_equals(7, xlrange_const[0][0].row());
     }
 
     void test_get_bad_named_range()

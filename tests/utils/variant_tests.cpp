@@ -50,6 +50,7 @@ public:
         register_test(test_bool_vector_from_vector);
         register_test(test_variant_vector_from_initializer_list);
         register_test(test_variant_vector_from_vector);
+        register_test(test_variant_get_type_string);
     }
 
     template<typename T>
@@ -312,6 +313,22 @@ public:
             xlnt::variant(std::vector<xlnt::datetime>{xlnt::datetime(1975, 2, 14), xlnt::datetime(2007, 12, 24), xlnt::datetime(2019, 3, 7)}),
             xlnt::variant(std::vector<bool>{true, false, false, true, true})
         });
+    }
+
+    void test_variant_get_type_string()
+    {
+        for (int type = 0; type <= 32; ++type)
+        {
+            if (type == 1 || type == 6 || type == 9 || type == 20 || type == 23 || type == 25)
+            {
+                xlnt_assert_throws_nothing(xlnt::variant::get_type_string(static_cast<xlnt::variant::type>(type)));
+            }
+            else
+            {
+                xlnt_assert_throws(xlnt::variant::get_type_string(static_cast<xlnt::variant::type>(type)), xlnt::invalid_parameter);
+            }
+        }
+        xlnt_assert_throws(xlnt::variant::get_type_string(static_cast<xlnt::variant::type>(-123456789)), xlnt::invalid_parameter);
     }
 };
 static variant_test_suite x;

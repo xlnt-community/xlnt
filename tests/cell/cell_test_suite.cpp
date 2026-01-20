@@ -580,9 +580,11 @@ private:
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
         auto cell = ws.cell("A1");
+        const auto cell_const = ws.cell("A1");
 
         xlnt_assert(!cell.has_style());
         xlnt_assert_throws(cell.style(), xlnt::invalid_attribute);
+        xlnt_assert_throws(cell_const.style(), xlnt::invalid_attribute);
 
         auto test_style = wb.create_style("test_style");
         test_style.number_format(xlnt::number_format::date_ddmmyyyy(), true);
@@ -620,6 +622,7 @@ private:
         style_all.protection(protection_all);
         cell.style(style_all);
         xlnt_assert_equals(cell.style(), style_all);
+        xlnt_assert_equals(cell_const.style(), style_all);
         xlnt_assert_equals(cell.alignment(), alignment_all);
         xlnt_assert_equals(cell.border(), border_all);
         xlnt_assert_equals(cell.fill(), fill_all);
@@ -631,6 +634,7 @@ private:
         xlnt_assert(cell.has_style());
         xlnt_assert_equals(cell.style().number_format(), xlnt::number_format::date_ddmmyyyy());
         xlnt_assert_equals(cell.style(), test_style);
+        xlnt_assert_equals(cell_const.style(), test_style);
 
         auto other_style = wb.create_style("other_style");
         other_style.number_format(xlnt::number_format::date_time2(), true);
@@ -638,6 +642,7 @@ private:
         cell.style("other_style");
         xlnt_assert_equals(cell.style().number_format(), xlnt::number_format::date_time2());
         xlnt_assert_equals(cell.style(), other_style);
+        xlnt_assert_equals(cell_const.style(), other_style);
 
         auto last_style = wb.create_style("last_style");
         last_style.number_format(xlnt::number_format::percentage(), true);
@@ -645,6 +650,7 @@ private:
         cell.style(last_style);
         xlnt_assert_equals(cell.style().number_format(), xlnt::number_format::percentage());
         xlnt_assert_equals(cell.style(), last_style);
+        xlnt_assert_equals(cell_const.style(), last_style);
 
         xlnt_assert(!wb.has_style("doesn't exist"));
         xlnt_assert_throws(cell.style("doesn't exist"), xlnt::key_not_found);
@@ -653,6 +659,7 @@ private:
 
         xlnt_assert(!cell.has_style());
         xlnt_assert_throws(cell.style(), xlnt::invalid_attribute);
+        xlnt_assert_throws(cell_const.style(), xlnt::invalid_attribute);
         // Clearing again should never throw.
         xlnt_assert_throws_nothing(cell.clear_style());
     }

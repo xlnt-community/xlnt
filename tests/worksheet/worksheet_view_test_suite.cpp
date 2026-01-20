@@ -40,14 +40,17 @@ public:
         xlnt::workbook wb;
         xlnt::worksheet ws = wb.active_sheet();
         xlnt::sheet_view& view = ws.view();
+        const xlnt::sheet_view& view_const = ws.view();
         xlnt_assert(!view.has_pane());
         xlnt_assert_throws(view.pane(), xlnt::invalid_attribute);
+        xlnt_assert_throws(view_const.pane(), xlnt::invalid_attribute);
 
         xlnt::pane pane;
         view.pane(pane);
 
         xlnt_assert(view.has_pane());
         xlnt_assert_equals(view.pane(), pane);
+        xlnt_assert_equals(view_const.pane(), pane);
     }
 
     void test_top_left_cell()

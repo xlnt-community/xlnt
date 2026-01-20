@@ -42,6 +42,7 @@ public:
     serialization_test_suite()
     {
         register_test(test_produce_empty);
+        register_test(test_read_non_existing);
         register_test(test_produce_simple_excel);
         register_test(test_save_after_sheet_deletion);
         register_test(test_write_comments_hyperlinks_formulae);
@@ -108,6 +109,18 @@ public:
         xlnt::workbook wb;
         const auto path = path_helper::test_file("3_default.xlsx");
         xlnt_assert(workbook_matches_file(wb, path));
+    }
+
+    void test_read_non_existing()
+    {
+        xlnt::workbook wb;
+        #define DOES_NOT_EXIST "DOES NOT EXIST.xlsx"
+        LSTRING_LITERAL(DOES_NOT_EXIST);
+        xlnt_assert_throws(wb.load(DOES_NOT_EXIST), xlnt::invalid_file);
+        xlnt_assert_throws(wb.load(U8STRING_LITERAL(DOES_NOT_EXIST)), xlnt::invalid_file);
+#ifdef _MSC_VER
+        xlnt_assert_throws(wb.load(LSTRING_LITERAL(DOES_NOT_EXIST)), xlnt::invalid_file);
+#endif
     }
 
     void test_produce_simple_excel()

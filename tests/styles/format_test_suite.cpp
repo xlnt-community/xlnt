@@ -140,17 +140,21 @@ public:
     {
         xlnt::workbook wb;
         xlnt::format format = wb.create_format();
+        const auto &format_const = format;
         xlnt_assert(!format.has_style());
         xlnt_assert_throws(format.style(), xlnt::invalid_attribute);
+        xlnt_assert_throws(format_const.style(), xlnt::invalid_attribute);
 
         xlnt::style style = wb.create_style("test_style");
         format.style(style);
 
         xlnt_assert(format.has_style());
         xlnt_assert_throws_nothing(format.style());
+        xlnt_assert_throws_nothing(format_const.style());
         format.clear_style();
         xlnt_assert(!format.has_style());
         xlnt_assert_throws(format.style(), xlnt::invalid_attribute);
+        xlnt_assert_throws(format_const.style(), xlnt::invalid_attribute);
         // Clearing again should never throw.
         xlnt_assert_throws_nothing(format.clear_style());
     }
