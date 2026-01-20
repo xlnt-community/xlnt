@@ -208,15 +208,17 @@ public:
         xlnt_assert_equals(1, xlrange2[0].length());
         xlnt_assert_equals(6, xlrange2[0][0].row());
 
-        xlnt_assert(!wb.has_named_range("test_const_range"));
-        xlnt_assert(!ws.has_named_range("test_const_range"));
+        const xlnt::workbook &wb_const = wb;
+        const xlnt::worksheet &ws_const = ws;
+        xlnt_assert(!wb_const.has_named_range("test_const_range"));
+        xlnt_assert(!ws_const.has_named_range("test_const_range"));
         wb.create_named_range("test_const_range", ws, "C7");
-        xlnt_assert(wb.has_named_range("test_const_range"));
-        xlnt_assert(ws.has_named_range("test_const_range"));
-        auto xlrange_const = ws.named_range("test_const_range");
+        xlnt_assert(wb_const.has_named_range("test_const_range"));
+        xlnt_assert(ws_const.has_named_range("test_const_range"));
+        const auto xlrange_const = ws_const.named_range("test_const_range");
         xlnt_assert_equals(1, xlrange_const.length());
         xlnt_assert_equals(1, xlrange_const[0].length());
-        xlnt_assert_equals(7, xlrange_const[0][0].row());
+        xlnt_assert_throws(xlrange_const[0][0].row(), xlnt::invalid_parameter);
     }
 
     void test_get_bad_named_range()

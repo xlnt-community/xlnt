@@ -724,6 +724,7 @@ public:
             xlnt::uri("docProps/thumbnail.jpeg"), xlnt::target_mode::internal);
         xlnt_assert(m.has_relationship(xlnt::path("/"), xlnt::relationship_type::thumbnail));
         xlnt_assert(!m.has_relationship(xlnt::path("/"), xlnt::relationship_type::office_document));
+        xlnt_assert_throws(m.relationship(xlnt::path("/"), xlnt::relationship_type::office_document), xlnt::key_not_found);
         xlnt::relationship rel_thumbnail = m.relationship(xlnt::path("/"), xlnt::relationship_type::thumbnail);
         xlnt_assert(m.has_relationship(xlnt::path("/"), rel_thumbnail.id()));
         xlnt_assert_throws(m.relationship(xlnt::path("/"), "test123"), xlnt::key_not_found);
