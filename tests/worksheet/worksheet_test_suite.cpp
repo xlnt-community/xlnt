@@ -225,8 +225,11 @@ public:
     {
         xlnt::workbook wb;
         auto ws = wb.active_sheet();
+        const auto &ws_const = ws;
         xlnt_assert(!ws.has_named_range("bad_range"));
+        xlnt_assert(!ws_const.has_named_range("bad_range"));
         xlnt_assert_throws(ws.named_range("bad_range"), xlnt::key_not_found);
+        xlnt_assert_throws(ws_const.named_range("bad_range"), xlnt::key_not_found);
     }
 
     void test_get_named_range_wrong_sheet()
@@ -236,14 +239,21 @@ public:
         wb.create_sheet();
         auto ws1 = wb[0];
         auto ws2 = wb[1];
+        const auto ws1_const = wb[0];
+        const auto ws2_const = wb[1];
         xlnt_assert(!wb.has_named_range("wrong_sheet_range"));
         xlnt_assert(!ws1.has_named_range("wrong_sheet_range"));
         xlnt_assert(!ws2.has_named_range("wrong_sheet_range"));
+        xlnt_assert(!ws1_const.has_named_range("wrong_sheet_range"));
+        xlnt_assert(!ws2_const.has_named_range("wrong_sheet_range"));
         wb.create_named_range("wrong_sheet_range", ws1, "C5");
         xlnt_assert(wb.has_named_range("wrong_sheet_range"));
         xlnt_assert(ws1.has_named_range("wrong_sheet_range"));
         xlnt_assert(!ws2.has_named_range("wrong_sheet_range"));
+        xlnt_assert(ws1_const.has_named_range("wrong_sheet_range"));
+        xlnt_assert(!ws2_const.has_named_range("wrong_sheet_range"));
         xlnt_assert_throws(ws2.named_range("wrong_sheet_range"), xlnt::key_not_found);
+        xlnt_assert_throws(ws2_const.named_range("wrong_sheet_range"), xlnt::key_not_found);
     }
 
     void test_remove_named_range_bad()
