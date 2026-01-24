@@ -836,7 +836,7 @@ std::string xlsx_consumer::read_worksheet_begin(const std::string &rel_id)
 #endif
 
                 // avoid uninitialised warnings in GCC by using a lambda to make the conditional initialisation
-                optional<double> width = [](xml::parser &p) -> xlnt::optional<double> {
+                optional<double> width = [this](xml::parser &p) -> xlnt::optional<double> {
                     if (p.attribute_present("width"))
                     {
                         return (xlnt::detail::deserialise(p.attribute("width")) * 7 - 5) / 7;
@@ -2216,7 +2216,7 @@ void xlsx_consumer::read_office_document(const std::string &content_type) // CT_
             xlnt::calculation_properties calc_props;
             if (parser().attribute_present("calcId"))
             {
-                calc_props.calc_id = parser().attribute<unsigned int>("calcId");
+                calc_props.calc_id = parser().attribute<std::size_t>("calcId");
             }
             if (parser().attribute_present("concurrentCalc"))
             {

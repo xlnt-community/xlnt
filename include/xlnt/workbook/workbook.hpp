@@ -1145,7 +1145,7 @@ public:
     /// <summary>
     /// Returns the a copy of the calculation properties used in this workbook.
     /// Assumes that this workbook has calculation properties (please call has_calculation_properties() to check).
-    /// If this workbook has no calculation properties, a default-constructed calculation_properties object will be returned.
+    /// If this workbook has no calculation properties, an invalid_attribute exception will be thrown.
     /// </summary>
     class calculation_properties calculation_properties() const;
 

@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include <xlnt/utils/optional.hpp>
+#include <cstddef>
 
 #include <xlnt/xlnt_config.hpp>
 
@@ -40,9 +40,8 @@ public:
     /// The version of calculation engine used to calculate cell formula values.
     /// If this is older than the version of the Excel calculation engine opening
     /// the workbook, cell values will be recalculated.
-    /// Note: this field is required by OOXML, but LibreOffice Calc does not add it by default (which still works in Excel).
     /// </summary>
-    optional<unsigned int> calc_id;
+    std::size_t calc_id = 0;
 
     /// <summary>
     /// If this is true, concurrent calculation will be enabled for the workbook.
