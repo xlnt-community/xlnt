@@ -90,7 +90,7 @@ jobs:
           steps:
             - run: apt-get update -y
             - run: apt-get install -y --no-install-recommends perl libcapture-tiny-perl libdatetime-perl libtimedate-perl libjson-perl libperlio-gzip-perl libjson-xs-perl
-            - run: git clone https://github.com/linux-test-project/lcov.git --depth 1 --branch v2.3.2
+            - run: git clone https://github.com/linux-test-project/lcov.git --depth 1 --branch v2.4
             - run: cd lcov && make -j2 install
             - run: lcov --directory . --capture --output-file coverage.info --base-directory . --no-external --include "$PWD/include/*" --include "$PWD/source/*" --branch-coverage --rc no_exception_branch=1 -j 2
             - run: curl -sfL https://coveralls.io/coveralls-linux.tar.gz | tar -xz && ./coveralls report coverage.info
@@ -400,12 +400,37 @@ workflows:
                 - "OFF"
             exclude:
               # Exclude {static: ON, skip-internal-tests: ON} subset
-              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "11", build-type: Debug}
-              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "11", build-type: Release}
-              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "23", build-type: Debug}
-              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "23", build-type: Release}
+              - {
+                  static: "ON",
+                  skip-internal-tests: "ON",
+                  cxx-ver: "11",
+                  build-type: Debug,
+                }
+              - {
+                  static: "ON",
+                  skip-internal-tests: "ON",
+                  cxx-ver: "11",
+                  build-type: Release,
+                }
+              - {
+                  static: "ON",
+                  skip-internal-tests: "ON",
+                  cxx-ver: "23",
+                  build-type: Debug,
+                }
+              - {
+                  static: "ON",
+                  skip-internal-tests: "ON",
+                  cxx-ver: "23",
+                  build-type: Release,
+                }
               # Exclude combination covered by tests-gcc-sanitize job
-              - {cxx-ver: "23", build-type: Debug, static: "OFF", skip-internal-tests: "OFF"}
+              - {
+                  cxx-ver: "23",
+                  build-type: Debug,
+                  static: "OFF",
+                  skip-internal-tests: "OFF",
+                }
           filters:
             branches:
               ignore: gh-pages
