@@ -641,9 +641,9 @@ public:
     /// <summary>
     /// Returns the phonetic properties of this sheet.
     /// Assumes that this sheet has phonetic properties (please call has_phonetic_properties() to check).
-    /// If this sheet has no phonetic properties, an invalid_attribute exception will be thrown.
+    /// If this sheet has no phonetic properties, a default-constructed phonetic_pr object will be returned.
     /// </summary>
-    const phonetic_pr &phonetic_properties() const;
+    phonetic_pr phonetic_properties() const;
 
     /// <summary>
     /// Sets the phonetic properties of this sheet to phonetic_props

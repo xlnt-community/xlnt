@@ -1464,7 +1464,7 @@ public:
         xlnt::workbook wb;
         xlnt::worksheet ws = wb.active_sheet();
         xlnt_assert(!ws.has_phonetic_properties());
-        xlnt_assert_throws(ws.phonetic_properties(), xlnt::invalid_attribute);
+        xlnt_assert_equals(ws.phonetic_properties(), xlnt::phonetic_pr());
 
         xlnt::phonetic_pr pr;
         ws.phonetic_properties(pr);

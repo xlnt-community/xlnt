@@ -1274,11 +1274,11 @@ bool worksheet::has_phonetic_properties() const
     return d_->phonetic_properties_.is_set();
 }
 
-const phonetic_pr &worksheet::phonetic_properties() const
+phonetic_pr worksheet::phonetic_properties() const
 {
     if (!d_->phonetic_properties_.is_set())
     {
-        throw xlnt::invalid_attribute("worksheet \"" + d_->title_ + "\" has no phonetic properties");
+        return {};
     }
     return d_->phonetic_properties_.get();
 }
