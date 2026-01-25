@@ -27,6 +27,7 @@
 
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/utils/optional.hpp>
+#include <xlnt/utils/value_with_default.h>
 
 namespace xlnt {
 
@@ -245,7 +246,7 @@ private:
     /// <summary>
     /// The amount to scale the worksheet
     /// </summary>
-    xlnt::optional<unsigned int> scale_;
+    xlnt::value_with_default<unsigned int, 100> scale_;
 };
 
 } // namespace xlnt
