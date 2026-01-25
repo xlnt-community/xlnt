@@ -258,7 +258,7 @@ void worksheet::title(const std::string &title)
 
     try
     {
-        // excel limits worksheet titles to 31 characters
+        // excel limits worksheet titles to 31 Unicode characters
         if (title.empty() || detail::string_length(title) > 31)
         {
             throw invalid_sheet_title(title);

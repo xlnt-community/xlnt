@@ -144,7 +144,7 @@ public:
     /// Sets the title of this sheet.
     /// An invalid_sheet_title exception will be thrown if the new title:
     /// - is empty
-    /// - is longer than 31 characters
+    /// - is longer than 31 Unicode characters
     /// - contains any of the forbidden characters *:/\?[]
     /// - contains any characters that are not encoded as UTF-8 and or are invalid UTF-8
     /// </summary>
