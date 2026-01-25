@@ -440,7 +440,7 @@ public:
         xlnt::workbook wb;
         wb.clear_calculation_properties();
         xlnt_assert(!wb.has_calculation_properties());
-        xlnt_assert_throws(wb.calculation_properties(), xlnt::invalid_attribute);
+        xlnt_assert_equals(wb.calculation_properties(), xlnt::calculation_properties());
         // Clearing again should never throw.
         xlnt_assert_throws_nothing(wb.clear_calculation_properties());
 

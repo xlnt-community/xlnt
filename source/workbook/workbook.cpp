@@ -2023,7 +2023,7 @@ class calculation_properties workbook::calculation_properties() const
 {
     if (!d_->calculation_properties_.is_set())
     {
-        throw xlnt::invalid_attribute("the workbook has no calculation properties");
+        return {};
     }
     return d_->calculation_properties_.get();
 }
