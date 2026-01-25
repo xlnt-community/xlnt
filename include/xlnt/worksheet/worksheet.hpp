@@ -142,8 +142,11 @@ public:
 
     /// <summary>
     /// Sets the title of this sheet.
-    /// If the worksheet title is empty, longer than 31 characters, or contains any of the forbidden
-    /// characters *:/\?[] then an invalid_sheet_title exception will be thrown.
+    /// An invalid_sheet_title exception will be thrown if the new title:
+    /// - is empty
+    /// - is longer than 31 characters
+    /// - contains any of the forbidden characters *:/\?[]
+    /// - contains any characters that are not encoded as UTF-8 and or are invalid UTF-8
     /// </summary>
     void title(const std::string &title);
 
