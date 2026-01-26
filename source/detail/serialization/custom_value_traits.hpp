@@ -168,7 +168,7 @@ relationship_type from_string(const std::string &string)
     else if (string == "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")
         return relationship_type::image;
 
-    // ECMA 376-4 Part 1 Section 9.1.7 says consumers shall not fail to load
+    // ECMA-376 5th edition Part 1 Section 9.1.7 says consumers shall not fail to load
     // a document with unknown relationships.
     return relationship_type::unknown;
 }

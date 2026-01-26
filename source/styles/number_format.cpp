@@ -64,7 +64,7 @@ const std::unordered_map<std::size_t, xlnt::number_format> &builtin_formats()
             {39, "#,##0.00;(#,##0.00)"},
             {40, "#,##0.00;[Red](#,##0.00)"},
 
-            // 41-44 aren't in the ECMA 376 v4 standard, but Libre Office uses them
+            // 41-44 aren't in the ECMA-376 5th edition, but Libre Office uses them
             {41, "_(* #,##0_);_(* \\(#,##0\\);_(* \"-\"_);_(@_)"},
             {42, "_(\"$\"* #,##0_);_(\"$\"* \\(#,##0\\);_(\"$\"* \"-\"_);_(@_)"},
             {43, "_(* #,##0.00_);_(* \\(#,##0.00\\);_(* \"-\"??_);_(@_)"},
