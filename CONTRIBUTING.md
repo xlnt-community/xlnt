@@ -10,8 +10,10 @@ The XLSX format is described in [ECMA-376 5th edition](https://ecma-internationa
 
  - A PDF with all information, especially section "18. SpreadsheetML Reference Material" may be useful. Using the outline of this section allows you to navigate to all the relevant parts of the XLSX format.
  - OfficeOpenXml-XMLSCHEMA-Strict.zip > sml.xsd: contains the xsd specification of the XLSX format. This information is also available in the PDF in annex A.2 SpreadsheetML.
+
+## Specifications
  
-There are some further specifications that are not part of ECMA-376, but are relevant for specific features:
+In addition to ECMA-376 (see [Getting Started](#Getting-Started)), there are some further specifications that are relevant for specific features:
 
  - [.ZIP File Format Specification from PKWARE, Inc., version 6.2.0 (2004)](http://www.pkware.com/documents/APPNOTE/APPNOTE_6.2.0.txt) for zipping and unzipping the contents of XLSX files.
  - [[MS-OFFCRYPTO]: Office Document Cryptography Structure](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-offcrypto/3c34d72a-1a61-4b52-a893-196f9157f083), for encrypted XLSX files.
@@ -21,7 +23,7 @@ There are some further specifications that are not part of ECMA-376, but are rel
  - [[MS-OFFMACRO]: Office Macro-Enabled File Format](https://learn.microsoft.com/en-us/openspecs/office_standards/ms-offmacro/86fa5ba8-69cf-4164-8559-c5af66d2990e), for macro-enabled XLSM files.
  - [[MS-OFFMACRO2]: Office Macro-Enabled File Format Version 2](https://learn.microsoft.com/en-us/openspecs/office_standards/ms-offmacro2/802a7c98-c802-41c6-8a13-987457098d8f), for macro-enabled XLSM files.
 
-Some further specifications that are not implemented, in case anyone wants to contribute them to XLNT:
+There are some further specifications that have not yet been implemented in XLNT, in case anyone wants to contribute:
 
  - ISO/IEC 29500, the ISO and IEC standardized version of ECMA-376. Exists in two versions:
    - ISO/IEC 29500 Transitional, fully supported since Microsoft Excel 2010
