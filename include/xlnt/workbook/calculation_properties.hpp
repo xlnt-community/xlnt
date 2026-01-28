@@ -46,7 +46,7 @@ public:
     /// <summary>
     /// If this is true, concurrent calculation will be enabled for the workbook.
     /// </summary>
-    bool concurrent_calc = false;
+    bool concurrent_calc = true;
 };
 
 inline bool operator==(const calculation_properties &lhs, const calculation_properties &rhs)

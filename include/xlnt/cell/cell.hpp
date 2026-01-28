@@ -266,13 +266,16 @@ public:
     // hyperlink
 
     /// <summary>
-    /// Returns the relationship of this cell's hyperlink.
+    /// Returns a wrapper pointing to the relationship of this cell's hyperlink.
+    /// Assumes that this cell has a hyperlink (please call has_hyperlink() to check).
+    /// If this cell does not have a hyperlink, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class hyperlink hyperlink() const;
 
     /// <summary>
-    /// Adds a hyperlink to this cell pointing to the URI of the given value and sets
+    /// Adds a hyperlink to this cell pointing to the URI of the given value (which must not be empty) and sets
     /// the text value of the cell to the given parameter.
+    /// If the URI is empty, an xlnt::invalid_parameter exception will be thrown.
     /// </summary>
     void hyperlink(const std::string &url, const std::string &display = "");
 
@@ -343,13 +346,19 @@ public:
     bool has_format() const;
 
     /// <summary>
-    /// Returns the format applied to this cell. If this cell has no
-    /// format, an invalid_attribute exception will be thrown.
+    /// Returns a const wrapper pointing to the format applied to this cell.
+    /// The returned wrapper cannot be modified directly, but is meant to be modified using the other format-related functions.
+    /// In case the format will be modified later, a new format will be created, while
+    /// this returned format will be left unmodified (lazy copy / copy-on-write).
+    /// Assumes that the format exists (please call has_format() to check).
+    /// If this cell has no format, an invalid_attribute exception will be thrown.
     /// </summary>
     const class format format() const;
 
     /// <summary>
     /// Applies the cell-level formatting of new_format to this cell.
+    /// In case the format will be modified later, a new format will be created, while
+    /// this original format will be left unmodified (lazy copy / copy-on-write).
     /// NOTE: when copying from a different workbook: format properties are deep-copied;
     /// If new_format has a style, the cloned format is associated with the same style name.
     /// NOTE: Deep cloning of the style itself is not yet implemented.
@@ -357,14 +366,14 @@ public:
     void format(const class format new_format);
 
     /// <summary>
-    /// Removes the cell-level formatting from this cell.
+    /// Removes the cell-level formatting from this cell, if the cell has a format.
     /// This doesn't affect the style that may also be applied to the cell.
-    /// Throws an invalid_attribute exception if no format is applied.
     /// </summary>
     void clear_format();
 
     /// <summary>
-    /// Returns the number format of this cell.
+    /// Returns a copy of the number format of this cell. If no number format has been set (has_format() returns false,
+    /// or format().has_number_format() returns false), a default-constructed number format will be returned.
     /// </summary>
     class number_format number_format() const;
 
@@ -375,7 +384,8 @@ public:
     void number_format(const class number_format &format);
 
     /// <summary>
-    /// Returns the font applied to the text in this cell.
+    /// Returns a copy of the font applied to the text in this cell. If no font has been set (has_format() returns false,
+    /// or format().has_font() returns false), a default-constructed font will be returned.
     /// </summary>
     class font font() const;
 
@@ -386,7 +396,8 @@ public:
     void font(const class font &font_);
 
     /// <summary>
-    /// Returns the fill applied to this cell.
+    /// Returns a copy of the fill applied to this cell. If no fill has been set (has_format() returns false,
+    /// or format().has_fill() returns false), a default-constructed fill will be returned.
     /// </summary>
     class fill fill() const;
 
@@ -397,7 +408,8 @@ public:
     void fill(const class fill &fill_);
 
     /// <summary>
-    /// Returns the border of this cell.
+    /// Returns a copy of the border of this cell. If no border has been set (has_format() returns false,
+    /// or format().has_border() returns false), a default-constructed border will be returned.
     /// </summary>
     class border border() const;
 
@@ -408,7 +420,8 @@ public:
     void border(const class border &border_);
 
     /// <summary>
-    /// Returns the alignment of the text in this cell.
+    /// Returns a copy of the alignment of the text in this cell. If no alignment has been set (has_format() returns false,
+    /// or format().has_alignment() returns false), a default-constructed alignment will be returned.
     /// </summary>
     class alignment alignment() const;
 
@@ -419,7 +432,8 @@ public:
     void alignment(const class alignment &alignment_);
 
     /// <summary>
-    /// Returns the protection of this cell.
+    /// Returns a copy of the protection of this cell. If no protection has been set (has_format() returns false,
+    /// or format().has_protection() returns false), a default-constructed protection will be returned.
     /// </summary>
     class protection protection() const;
 
@@ -438,30 +452,34 @@ public:
 
     /// <summary>
     /// Returns a wrapper pointing to the named style applied to this cell.
+    /// Assumes that the style exists (please call has_style() to check).
+    /// If this cell does not have a style, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class style style();
 
     /// <summary>
     /// Returns a wrapper pointing to the named style applied to this cell.
+    /// Assumes that the style exists (please call has_style() to check).
+    /// If this cell does not have a style, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     const class style style() const;
 
     /// <summary>
-    /// Sets the named style applied to this cell to a style named style_name.
-    /// Equivalent to style(new_style.name()).
+    /// Creates a new format in the workbook, sets its style to the given style,
+    /// and applies the format to this cell to a style. Equivalent to style(new_style.name()).
     /// </summary>
     void style(const class style &new_style);
 
     /// <summary>
     /// Sets the named style applied to this cell to a style named style_name.
+    /// Assumes that the style already exists in the workbook (please call workbook::has_style() to check).
     /// If this style has not been previously created in the workbook, a
     /// key_not_found exception will be thrown.
     /// </summary>
     void style(const std::string &style_name);
 
     /// <summary>
-    /// Removes the named style from this cell.
-    /// An invalid_attribute exception will be thrown if this cell has no style.
+    /// Removes the named style from this cell, if the cell has a style.
     /// This will not affect the cell format of the cell.
     /// </summary>
     void clear_style();
@@ -470,6 +488,8 @@ public:
 
     /// <summary>
     /// Returns the string representation of the formula applied to this cell.
+    /// Assumes that cell view has a formula (please call has_formula() to check).
+    /// If this cell does not have a formula, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     std::string formula() const;
 
@@ -526,42 +546,46 @@ public:
 
     /// <summary>
     /// Returns the error string that is stored in this cell.
+    /// Assumes that the cell type is type::error (please call data_type() to check).
+    /// If the cell is not of type::error, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     std::string error() const;
 
     /// <summary>
     /// Directly assigns the value of this cell to be the given error.
+    /// Assumes that the given string is an error which begins with '#'.
+    /// If the given string is not an error, an xlnt::invalid_data_type exception will be thrown.
     /// </summary>
     void error(const std::string &error);
 
     /// <summary>
-    /// Returns a cell from this cell's parent workbook at
+    /// Returns a wrapper pointing to the cell from this cell's parent workbook at
     /// a relative offset given by the parameters.
     /// </summary>
     cell offset(int column, int row);
 
     /// <summary>
-    /// Returns the worksheet that owns this cell.
+    /// Returns a wrapper pointing to the worksheet that owns this cell.
     /// </summary>
     class worksheet worksheet();
 
     /// <summary>
-    /// Returns the worksheet that owns this cell.
+    /// Returns a wrapper pointing to the worksheet that owns this cell.
     /// </summary>
     const class worksheet worksheet() const;
 
     /// <summary>
-    /// Returns the workbook of the worksheet that owns this cell.
+    /// Returns a wrapper pointing to the workbook of the worksheet that owns this cell.
     /// </summary>
     class workbook workbook();
 
     /// <summary>
-    /// Returns the workbook of the worksheet that owns this cell.
+    /// Returns a wrapper pointing to the workbook of the worksheet that owns this cell.
     /// </summary>
     const class workbook workbook() const;
 
     /// <summary>
-    /// Returns the base date of the parent workbook.
+    /// Returns a copy of the base date of the parent workbook.
     /// </summary>
     calendar base_date() const;
 
@@ -583,7 +607,9 @@ public:
     void clear_comment();
 
     /// <summary>
-    /// Gets the comment applied to this cell.
+    /// Returns a copy of the comment applied to this cell.
+    /// Assumes that the comment exists (please call has_comment() to check).
+    /// If this cell does not have a comment, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class comment comment() const;
 
@@ -673,8 +699,10 @@ private:
     void copy_format_from_other_workbook(const class format &source_format);
 
     /// <summary>
-    /// Returns a non-const reference to the format of this cell.
+    /// Returns a non-const wrapper pointing to the format of this cell.
     /// This is for internal use only.
+    /// Assumes that this cell has a format (please call has_format() to check).
+    /// If this cell does not have a format, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     class format modifiable_format();
 

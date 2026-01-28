@@ -96,11 +96,16 @@ void worksheet::create_named_range(const std::string &name, const range_referenc
     {
         auto temp = cell_reference::split_reference(name);
 
-        // name is a valid reference, make sure it's outside the allowed range
-
-        if (column_t(temp.first).index <= column_t("XFD").index && temp.second <= 1048576)
+        // Citing the OOXML specification:
+        // In SpreadsheetML, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD).
+        // An implementation can extend this range. However, to avoid ambiguities, it is necessary to ensure
+        // that defined names are distinct from cell references, or that one takes precedence over the other.
+        // With this in mind, the following rules apply:
+        // 1. A producer or consumer shall consider a defined name of the form used by cells in the range A1–XFD1048576 to be an error.
+        // 2. All other names outside this range can be defined names and shall override a cell reference if an ambiguity exists.
+        if (column_t(temp.first) <= xlnt::constants::max_column_reference_default() && temp.second <= xlnt::constants::max_row_reference_default())
         {
-            throw invalid_parameter(); //("named range name must be outside the range A1-XFD1048576");
+            throw invalid_parameter("named range \"" + name + "\" uses a forbidden name (inside the valid cell reference range A1 - XFD1048576, which is not allowed)");
         }
     }
     catch (xlnt::invalid_cell_reference &)
@@ -136,12 +141,21 @@ bool worksheet::has_page_setup() const
 
 page_margins worksheet::page_margins() const
 {
+    if (!d_->page_margins_.is_set())
+    {
+        throw xlnt::invalid_attribute("worksheet \"" + d_->title_ + "\" has no page margins");
+    }
     return d_->page_margins_.get();
 }
 
 void worksheet::page_margins(const class page_margins &margins)
 {
     d_->page_margins_ = margins;
+}
+
+void worksheet::clear_page_margins()
+{
+    d_->page_margins_.clear();
 }
 
 void worksheet::auto_filter(const std::string &reference_string)
@@ -161,6 +175,10 @@ void worksheet::auto_filter(const xlnt::range &range)
 
 range_reference worksheet::auto_filter() const
 {
+    if (!d_->auto_filter_.is_set())
+    {
+        throw xlnt::invalid_attribute("worksheet \"" + d_->title_ + "\" has no auto-filter");
+    }
     return d_->auto_filter_.get();
 }
 
@@ -181,12 +199,11 @@ void worksheet::page_setup(const struct page_setup &setup)
 
 page_setup worksheet::page_setup() const
 {
-    if (!has_page_setup())
+    if (d_->page_setup_.is_set())
     {
-        throw invalid_attribute();
+        return d_->page_setup_.get();
     }
-
-    return d_->page_setup_.get();
+    return {};
 }
 
 workbook worksheet::workbook()
@@ -238,11 +255,20 @@ void worksheet::title(const std::string &title)
     {
         return;
     }
-    // excel limits worksheet titles to 31 characters
-    if (title.empty() || detail::string_length(title) > 31)
+
+    try
+    {
+        // excel limits worksheet titles to 31 Unicode characters
+        if (title.empty() || detail::string_length(title) > 31)
+        {
+            throw invalid_sheet_title(title);
+        }
+    }
+    catch (const xlnt::encoding_error& ex)
     {
         throw invalid_sheet_title(title);
     }
+
     // invalid characters in a worksheet name
     if (title.find_first_of("*:/\\?[]") != std::string::npos)
     {
@@ -268,7 +294,7 @@ cell_reference worksheet::frozen_panes() const
 {
     if (!has_frozen_panes())
     {
-        throw xlnt::invalid_attribute();
+        throw xlnt::invalid_attribute("worksheet \"" + d_->title_ + "\" has no frozen panes");
     }
 
     return d_->views_.front().pane().top_left_cell.get();
@@ -367,14 +393,14 @@ cell_reference worksheet::active_cell() const
 {
     if (!has_view())
     {
-        throw xlnt::exception("Worksheet has no view.");
+        throw xlnt::invalid_attribute("Worksheet \"" + d_->title_ + "\" has no view.");
     }
 
     auto &primary_view = d_->views_.front();
 
     if (!primary_view.has_selections())
     {
-        throw xlnt::exception("Default worksheet view has no selections.");
+        throw xlnt::invalid_attribute("Default worksheet view of worksheet \"" + d_->title_ + "\" has no selections.");
     }
 
     return primary_view.selection(0).active_cell();
@@ -400,7 +426,7 @@ const cell worksheet::cell(const cell_reference &reference) const
     const auto match = d_->cell_map_.find(reference);
     if (match == d_->cell_map_.end())
     {
-        throw xlnt::invalid_parameter("Requested cell doesn't exist.");
+        throw xlnt::invalid_parameter("Requested cell " + reference.to_string() + " doesn't exist.");
     }
     return xlnt::cell(&match->second);
 }
@@ -428,32 +454,26 @@ bool worksheet::has_row_properties(row_t row) const
 
 range worksheet::named_range(const std::string &name)
 {
-    if (!workbook().has_named_range(name))
+    auto named_range = d_->named_ranges_.find(name);
+
+    if (named_range == d_->named_ranges_.end())
     {
-        throw key_not_found();
+        throw key_not_found(name);
     }
 
-    if (!has_named_range(name))
-    {
-        throw key_not_found();
-    }
-
-    return range(d_->named_ranges_[name].targets()[0].second);
+    return range(named_range->second.targets()[0].second);
 }
 
 const range worksheet::named_range(const std::string &name) const
 {
-    if (!workbook().has_named_range(name))
+    auto named_range = d_->named_ranges_.find(name);
+
+    if (named_range == d_->named_ranges_.end())
     {
-        throw key_not_found();
+        throw key_not_found(name);
     }
 
-    if (!has_named_range(name))
-    {
-        throw key_not_found();
-    }
-
-    return range(d_->named_ranges_[name].targets()[0].second);
+    return range(named_range->second.targets()[0].second);
 }
 
 column_t worksheet::lowest_column() const
@@ -704,7 +724,7 @@ void worksheet::unmerge_cells(const range_reference &reference)
 
     if (match == d_->merged_cells_.end())
     {
-        throw invalid_parameter();
+        throw invalid_parameter("cell " + reference.to_string() + " has not been merged, so it cannot be unmerged");
     }
 
     d_->merged_cells_.erase(match);
@@ -813,12 +833,12 @@ void worksheet::move_cells(std::uint32_t min_index, std::uint32_t amount, row_or
 {
     if (reverse && amount > min_index)
     {
-        throw xlnt::invalid_parameter();
+        throw xlnt::invalid_parameter("Cannot move cells before the minimum index");
     }
 
     if ((!reverse && row_or_col == row_or_col_t::row && min_index > constants::max_row() - amount) || (!reverse && row_or_col == row_or_col_t::column && min_index > constants::max_column() - amount))
     {
-        throw xlnt::exception("Cannot move cells as they would be outside the maximum bounds of the spreadsheet");
+        throw xlnt::invalid_parameter("Cannot move cells as they would be outside the maximum bounds of the spreadsheet");
     }
 
     std::vector<detail::cell_impl> cells_to_move;
@@ -836,7 +856,7 @@ void worksheet::move_cells(std::uint32_t min_index, std::uint32_t amount, row_or
             current_index = cell_iter->first.column().index;
             break;
         default:
-            throw xlnt::unhandled_switch_case();
+            throw xlnt::unhandled_switch_case(static_cast<long long>(row_or_col));
         }
 
         if (current_index >= min_index) // extract cells to be moved
@@ -1010,12 +1030,14 @@ bool worksheet::has_named_range(const std::string &name) const
 
 void worksheet::remove_named_range(const std::string &name)
 {
-    if (!has_named_range(name))
+    auto named_range = d_->named_ranges_.find(name);
+
+    if (named_range == d_->named_ranges_.end())
     {
-        throw key_not_found();
+        throw key_not_found(name);
     }
 
-    d_->named_ranges_.erase(name);
+    d_->named_ranges_.erase(named_range);
 }
 
 void worksheet::reserve(std::size_t n)
@@ -1025,6 +1047,10 @@ void worksheet::reserve(std::size_t n)
 
 class header_footer worksheet::header_footer() const
 {
+    if (!d_->header_footer_.is_set())
+    {
+        throw xlnt::invalid_attribute("worksheet \"" + d_->title_ + "\" has no header/footer");
+    }
     return d_->header_footer_.get();
 }
 
@@ -1076,7 +1102,14 @@ column_properties &worksheet::column_properties(column_t column)
 
 const column_properties &worksheet::column_properties(column_t column) const
 {
-    return d_->column_properties_.at(column);
+    auto property = d_->column_properties_.find(column);
+
+    if (property == d_->column_properties_.end())
+    {
+        throw xlnt::key_not_found(std::to_string(column.index));
+    }
+
+    return property->second;
 }
 
 row_properties &worksheet::row_properties(row_t row)
@@ -1086,7 +1119,14 @@ row_properties &worksheet::row_properties(row_t row)
 
 const row_properties &worksheet::row_properties(row_t row) const
 {
-    return d_->row_properties_.at(row);
+    auto property = d_->row_properties_.find(row);
+
+    if (property == d_->row_properties_.end())
+    {
+        throw xlnt::key_not_found(std::to_string(row));
+    }
+
+    return property->second;
 }
 
 void worksheet::add_row_properties(row_t row, const xlnt::row_properties &props)
@@ -1162,6 +1202,10 @@ void worksheet::print_area(const std::string &print_area)
 
 range_reference worksheet::print_area() const
 {
+    if (!d_->print_area_.is_set())
+    {
+        throw xlnt::invalid_attribute("worksheet \"" + d_->title_ + "\" has no print area");
+    }
     return d_->print_area_.get();
 }
 
@@ -1180,14 +1224,39 @@ bool worksheet::has_view() const
     return !d_->views_.empty();
 }
 
+const std::vector<sheet_view> & worksheet::views() const
+{
+    return d_->views_;
+}
+
 sheet_view &worksheet::view(std::size_t index) const
 {
+    if (index >= d_->views_.size())
+    {
+        throw xlnt::invalid_parameter("sheet_view index " + std::to_string(index) + " out of range for worksheet \"" + d_->title_ + "\" which only has " + std::to_string(d_->views_.size()) + " views");
+    }
+
     return d_->views_.at(index);
 }
 
 void worksheet::add_view(const sheet_view &new_view)
 {
     d_->views_.push_back(new_view);
+}
+
+void worksheet::remove_view(std::size_t index)
+{
+    if (index >= d_->views_.size())
+    {
+        throw xlnt::invalid_parameter("sheet_view index " + std::to_string(index) + " out of range for worksheet \"" + d_->title_ + "\" which only has " + std::to_string(d_->views_.size()) + " views");
+    }
+
+    d_->views_.erase(d_->views_.begin() + index);
+}
+
+void worksheet::clear_views()
+{
+    d_->views_.clear();
 }
 
 void worksheet::register_comments_in_manifest()
@@ -1205,8 +1274,12 @@ bool worksheet::has_phonetic_properties() const
     return d_->phonetic_properties_.is_set();
 }
 
-const phonetic_pr &worksheet::phonetic_properties() const
+phonetic_pr worksheet::phonetic_properties() const
 {
+    if (!d_->phonetic_properties_.is_set())
+    {
+        return {};
+    }
     return d_->phonetic_properties_.get();
 }
 
@@ -1387,7 +1460,7 @@ int worksheet::zoom_scale() const
     {
         return 100;
     }
-    
+
     return view(0).zoom_scale();
 }
 

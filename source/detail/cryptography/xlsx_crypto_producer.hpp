@@ -34,6 +34,8 @@
   #include <string_view>
 #endif
 
+// NOTE: encryption and decryption is not part of the OOXML specification (ECMA-376).
+// This implementation is based on the "[MS-OFFCRYPTO]: Office Document Cryptography Structure" specification.
 namespace xlnt {
 namespace detail {
 

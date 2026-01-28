@@ -33,8 +33,10 @@
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/styles/format.hpp>
 #include <xlnt/styles/style.hpp>
+#include <xlnt/workbook/calculation_properties.hpp>
 #include <xlnt/workbook/workbook.hpp>
 #include <xlnt/workbook/worksheet_iterator.hpp>
+#include <xlnt/workbook/workbook_view.hpp>
 #include <xlnt/worksheet/range.hpp>
 #include <xlnt/worksheet/worksheet.hpp>
 
@@ -48,12 +50,26 @@ public:
         register_test(test_add_correct_sheet);
         register_test(test_add_sheet_from_other_workbook);
         register_test(test_add_sheet_at_index);
+        register_test(test_remove_sheet);
         register_test(test_get_sheet_by_title);
         register_test(test_get_sheet_by_title_const);
         register_test(test_get_sheet_by_index);
         register_test(test_get_sheet_by_index_const);
+        register_test(test_get_sheet_by_id);
         register_test(test_index_operator);
         register_test(test_contains);
+        register_test(test_core_properties);
+        register_test(test_extended_properties);
+        register_test(test_custom_properties);
+        register_test(test_title);
+        register_test(test_view);
+        register_test(test_code_name);
+        register_test(test_file_version);
+        register_test(test_app_name);
+        register_test(test_last_edited);
+        register_test(test_lowest_edited);
+        register_test(test_rup_build);
+        register_test(test_calculation_properties);
         register_test(test_iter);
         register_test(test_const_iter);
         register_test(test_get_index);
@@ -70,15 +86,20 @@ public:
         register_test(test_memory);
         register_test(test_clear);
         register_test(test_comparison);
+        register_test(test_theme);
         register_test(test_id_gen);
         register_test(test_load_file);
         register_test(test_load_file_encrypted);
+        register_test(test_load_file_encrypted_invalid_password);
+        register_test(test_load_file_non_existent);
         register_test(test_Issue279);
         register_test(test_Issue353);
         register_test(test_Issue494);
         register_test(test_Issue90);
         register_test(test_Issue109);
         register_test(test_style);
+        register_test(test_builtin_style);
+        register_test(test_thumbnail);
         register_test(test_sheet_moving)
     }
 
@@ -118,7 +139,7 @@ public:
         xlnt::workbook wb1, wb2;
         auto new_sheet = wb1.active_sheet();
         xlnt_assert_throws(wb2.copy_sheet(new_sheet), xlnt::invalid_parameter);
-        xlnt_assert_throws(wb2.index(new_sheet), std::runtime_error);
+        xlnt_assert_throws(wb2.index(new_sheet), xlnt::invalid_parameter);
     }
 
     void test_add_sheet_at_index()
@@ -141,7 +162,7 @@ public:
         new_sheet.title("removed");
         wb.remove_sheet(new_sheet);
         xlnt_assert(!wb.contains("removed"));
-        xlnt_assert_throws(wb.remove_sheet(wb2.active_sheet()), std::runtime_error);
+        xlnt_assert_throws(wb.remove_sheet(wb2.active_sheet()), xlnt::invalid_parameter);
     }
 
     void test_get_sheet_by_title()
@@ -152,6 +173,7 @@ public:
         new_sheet.title(title);
         auto found_sheet = wb.sheet_by_title(title);
         xlnt_assert_equals(new_sheet, found_sheet);
+        xlnt_assert(!wb.contains("error"));
         xlnt_assert_throws(wb.sheet_by_title("error"), xlnt::key_not_found);
         const auto &wb_const = wb;
         xlnt_assert_throws(wb_const.sheet_by_title("error"), xlnt::key_not_found);
@@ -172,6 +194,7 @@ public:
     {
         xlnt::workbook wb;
         auto new_sheet = wb.create_sheet();
+        xlnt_assert_equals(wb.sheet_count(), 2);
         xlnt_assert_equals(new_sheet, wb.sheet_by_index(1)); // in range
         xlnt_assert_throws(wb.sheet_by_index(2), xlnt::invalid_parameter); // out of range
     }
@@ -181,8 +204,24 @@ public:
         xlnt::workbook wb;
         auto new_sheet = wb.create_sheet();
         const auto &wb_const = wb;
+        xlnt_assert_equals(wb_const.sheet_count(), 2);
         xlnt_assert_equals(new_sheet, wb_const.sheet_by_index(1)); // in range
         xlnt_assert_throws(wb_const.sheet_by_index(2), xlnt::invalid_parameter); // out of range
+    }
+
+    void test_get_sheet_by_id()
+    {
+        xlnt::workbook wb;
+        auto new_sheet = wb.create_sheet();
+        const auto &wb_const = wb;
+        xlnt_assert(wb.has_sheet_id(2));
+        xlnt_assert_equals(new_sheet, wb.sheet_by_id(2));
+        xlnt_assert(!wb.has_sheet_id(3));
+        xlnt_assert_throws(wb.sheet_by_id(3), xlnt::key_not_found);
+        xlnt_assert(wb_const.has_sheet_id(2));
+        xlnt_assert_equals(new_sheet, wb_const.sheet_by_id(2));
+        xlnt_assert(!wb_const.has_sheet_id(3));
+        xlnt_assert_throws(wb_const.sheet_by_id(3), xlnt::key_not_found);
     }
 
     void test_index_operator() // test_getitem
@@ -190,6 +229,9 @@ public:
         xlnt::workbook wb;
         xlnt_assert_throws_nothing(wb["Sheet1"]);
         xlnt_assert_throws(wb["NotThere"], xlnt::key_not_found);
+        xlnt_assert_equals(wb.sheet_count(), 1);
+        xlnt_assert_throws_nothing(wb[0]);
+        xlnt_assert_throws(wb[1], xlnt::invalid_parameter);
     }
 
     void test_contains()
@@ -199,14 +241,229 @@ public:
         xlnt_assert(!wb.contains("NotThere"));
     }
 
+    void test_core_properties()
+    {
+        xlnt::workbook wb;
+        xlnt_assert(!wb.has_core_property(xlnt::core_property::keywords));
+        xlnt_assert(wb.core_property(xlnt::core_property::keywords).is(xlnt::variant::type::null));
+
+        wb.core_property(xlnt::core_property::keywords, "keyword1");
+
+        xlnt_assert(wb.has_core_property(xlnt::core_property::keywords));
+        xlnt_assert_equals(wb.core_property(xlnt::core_property::keywords), "keyword1");
+    }
+
+    void test_extended_properties()
+    {
+        xlnt::workbook wb;
+        xlnt_assert(!wb.has_extended_property(xlnt::extended_property::words));
+        xlnt_assert(wb.extended_property(xlnt::extended_property::words).is(xlnt::variant::type::null));
+
+        wb.extended_property(xlnt::extended_property::words, "word1");
+
+        xlnt_assert(wb.has_extended_property(xlnt::extended_property::words));
+        xlnt_assert_equals(wb.extended_property(xlnt::extended_property::words), "word1");
+    }
+
+    void test_custom_properties()
+    {
+        xlnt::workbook wb;
+        xlnt_assert(!wb.has_custom_property("VERY_CUSTOM"));
+        xlnt_assert(wb.custom_property("VERY_CUSTOM").is(xlnt::variant::type::null));
+
+        wb.custom_property("VERY_CUSTOM", "so custom!");
+
+        xlnt_assert(wb.has_custom_property("VERY_CUSTOM"));
+        xlnt_assert_equals(wb.custom_property("VERY_CUSTOM"), "so custom!");
+    }
+
+    void test_title()
+    {
+        xlnt::workbook wb;
+        xlnt_assert(!wb.has_title());
+        xlnt_assert_throws(wb.title(), xlnt::invalid_attribute);
+
+        wb.title("Title");
+
+        xlnt_assert(wb.has_title());
+        xlnt_assert_equals(wb.title(), "Title");
+    }
+
+    void test_view()
+    {
+        xlnt::workbook wb;
+        xlnt_assert(wb.has_view());
+        xlnt_assert_throws_nothing(wb.view());
+    }
+
+    void test_code_name()
+    {
+        xlnt::workbook wb;
+        xlnt_assert(!wb.has_code_name());
+        xlnt_assert_throws(wb.code_name(), xlnt::invalid_attribute);
+
+        wb.code_name("codename_xlnt");
+
+        xlnt_assert(wb.has_code_name());
+        xlnt_assert_equals(wb.code_name(), "codename_xlnt");
+    }
+
+    void test_file_version()
+    {
+        xlnt::workbook wb;
+        wb.clear_file_version();
+        xlnt_assert(!wb.has_file_version());
+    }
+
+    void test_app_name()
+    {
+        xlnt::workbook wb;
+        wb.clear_file_version();
+        xlnt_assert(!wb.has_file_version());
+        xlnt_assert(!wb.has_app_name());
+        xlnt_assert(wb.app_name().empty());
+
+        wb.app_name("xlnt");
+
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_app_name());
+        xlnt_assert_equals(wb.app_name(), "xlnt");
+    }
+
+    void test_last_edited()
+    {
+        xlnt::workbook wb;
+        wb.clear_file_version();
+        xlnt_assert(!wb.has_file_version());
+        xlnt_assert(!wb.has_last_edited());
+        xlnt_assert_throws(wb.last_edited(), xlnt::invalid_attribute);
+        xlnt_assert(wb.last_edited_str().empty());
+
+        wb.last_edited(5);
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_last_edited());
+        xlnt_assert_equals(wb.last_edited_str(), "5");
+        xlnt_assert_equals(wb.last_edited(), 5);
+
+        // String not beginning with a number.
+        wb.last_edited("v2026 SP3");
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_last_edited());
+        xlnt_assert_equals(wb.last_edited_str(), "v2026 SP3");
+        xlnt_assert_throws(wb.last_edited(), xlnt::invalid_attribute);
+
+        // String beginning with a number.
+        wb.last_edited("2026 SP3");
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_last_edited());
+        xlnt_assert_equals(wb.last_edited_str(), "2026 SP3");
+        xlnt_assert_throws(wb.last_edited(), xlnt::invalid_attribute);
+
+        // Improve code coverage when default-creating file version when setting a string
+        wb.clear_file_version();
+        wb.last_edited("v2026 SP3");
+        xlnt_assert_equals(wb.last_edited_str(), "v2026 SP3");
+    }
+
+    void test_lowest_edited()
+    {
+        xlnt::workbook wb;
+        wb.clear_file_version();
+        xlnt_assert(!wb.has_file_version());
+        xlnt_assert(!wb.has_lowest_edited());
+        xlnt_assert_throws(wb.lowest_edited(), xlnt::invalid_attribute);
+        xlnt_assert(wb.lowest_edited_str().empty());
+
+        wb.lowest_edited(3);
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_lowest_edited());
+        xlnt_assert_equals(wb.lowest_edited_str(), "3");
+        xlnt_assert_equals(wb.lowest_edited(), 3);
+
+        // String not beginning with a number.
+        wb.lowest_edited("v2026 SP1");
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_lowest_edited());
+        xlnt_assert_equals(wb.lowest_edited_str(), "v2026 SP1");
+        xlnt_assert_throws(wb.lowest_edited(), xlnt::invalid_attribute);
+
+        // String beginning with a number.
+        wb.lowest_edited("2026 SP1");
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_lowest_edited());
+        xlnt_assert_equals(wb.lowest_edited_str(), "2026 SP1");
+        xlnt_assert_throws(wb.lowest_edited(), xlnt::invalid_attribute);
+
+        // Improve code coverage when default-creating file version when setting a string
+        wb.clear_file_version();
+        wb.lowest_edited("v2026 SP1");
+        xlnt_assert_equals(wb.lowest_edited_str(), "v2026 SP1");
+    }
+
+    void test_rup_build()
+    {
+        xlnt::workbook wb;
+        wb.clear_file_version();
+        xlnt_assert(!wb.has_file_version());
+        xlnt_assert(!wb.has_rup_build());
+        xlnt_assert_throws(wb.rup_build(), xlnt::invalid_attribute);
+        xlnt_assert(wb.rup_build_str().empty());
+
+        wb.rup_build(1234);
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_rup_build());
+        xlnt_assert_equals(wb.rup_build_str(), "1234");
+        xlnt_assert_equals(wb.rup_build(), 1234);
+
+        // String not beginning with a number.
+        wb.rup_build("b1234 nightly");
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_rup_build());
+        xlnt_assert_equals(wb.rup_build_str(), "b1234 nightly");
+        xlnt_assert_throws(wb.rup_build(), xlnt::invalid_attribute);
+
+        // String beginning with a number.
+        wb.rup_build("1234 nightly");
+        xlnt_assert(wb.has_file_version());
+        xlnt_assert(wb.has_rup_build());
+        xlnt_assert_equals(wb.rup_build_str(), "1234 nightly");
+        xlnt_assert_throws(wb.rup_build(), xlnt::invalid_attribute);
+
+        // Improve code coverage when default-creating file version when setting a string
+        wb.clear_file_version();
+        wb.rup_build("b1234 nightly");
+        xlnt_assert_equals(wb.rup_build_str(), "b1234 nightly");
+    }
+
+    void test_calculation_properties()
+    {
+        xlnt::workbook wb;
+        wb.clear_calculation_properties();
+        xlnt_assert(!wb.has_calculation_properties());
+        xlnt_assert_equals(wb.calculation_properties(), xlnt::calculation_properties());
+        // Clearing again should never throw.
+        xlnt_assert_throws_nothing(wb.clear_calculation_properties());
+
+        xlnt::calculation_properties calc_props;
+        wb.calculation_properties(calc_props);
+
+        xlnt_assert(wb.has_calculation_properties());
+        xlnt_assert_equals(wb.calculation_properties(), calc_props);
+    }
+
     void test_iter()
     {
         xlnt::workbook wb;
+        const auto& wb_const = wb;
 
         for (auto ws : wb)
         {
             xlnt_assert_equals(ws.title(), "Sheet1");
         }
+
+        xlnt_assert_throws(*wb.end(), xlnt::invalid_parameter);
+        xlnt_assert_throws(*wb_const.end(), xlnt::invalid_parameter);
+        xlnt_assert_throws(*wb.cend(), xlnt::invalid_parameter);
 
         xlnt::workbook wb2;
         auto iter = wb.begin();
@@ -326,18 +583,21 @@ public:
         wb.create_named_range("test_nr", new_sheet, "A1");
         xlnt_assert(new_sheet.has_named_range("test_nr"));
         xlnt_assert(wb.has_named_range("test_nr"));
-        xlnt_assert_throws(wb2.create_named_range("test_nr", new_sheet, "A1"), std::runtime_error);
+        xlnt_assert_throws(wb2.create_named_range("test_nr", new_sheet, "A1"), xlnt::key_not_found);
     }
 
     void test_get_named_range()
     {
         xlnt::workbook wb;
         auto new_sheet = wb.create_sheet();
+        xlnt_assert(!wb.has_named_range("test_nr"));
         wb.create_named_range("test_nr", new_sheet, "A1");
+        xlnt_assert(wb.has_named_range("test_nr"));
         auto found_range = wb.named_range("test_nr");
         auto expected_range = new_sheet.range("A1");
         xlnt_assert_equals(expected_range, found_range);
-        xlnt_assert_throws(wb.named_range("test_nr2"), std::runtime_error);
+        xlnt_assert(!wb.has_named_range("test_nr2"));
+        xlnt_assert_throws(wb.named_range("test_nr2"), xlnt::key_not_found);
     }
 
     void test_remove_named_range()
@@ -348,7 +608,8 @@ public:
         wb.remove_named_range("test_nr");
         xlnt_assert(!new_sheet.has_named_range("test_nr"));
         xlnt_assert(!wb.has_named_range("test_nr"));
-        xlnt_assert_throws(wb.remove_named_range("test_nr2"), std::runtime_error);
+        xlnt_assert_throws(wb.remove_named_range("test_nr"), xlnt::key_not_found);
+        xlnt_assert_throws(wb.remove_named_range("test_nr2"), xlnt::key_not_found);
     }
 
     void test_post_increment_iterator()
@@ -381,11 +642,15 @@ public:
         wb1.create_sheet().title("NEW1");
         xlnt::workbook wb2_shallow_copy = wb1.clone(xlnt::workbook::clone_method::shallow_copy);
         wb1.sheet_by_title("NEW1").title("NEW_CHANGED");
+        xlnt_assert(wb2_shallow_copy.contains("NEW_CHANGED"));
         xlnt_assert_throws_nothing(wb2_shallow_copy.sheet_by_title("NEW_CHANGED"));
         xlnt::workbook wb3_deep_copy = wb2_shallow_copy.clone(xlnt::workbook::clone_method::deep_copy);
         wb3_deep_copy.sheet_by_title("NEW_CHANGED").title("NEW_CHANGED_AGAIN");
+        xlnt_assert(!wb2_shallow_copy.contains("NEW_CHANGED_AGAIN"));
         xlnt_assert_throws(wb2_shallow_copy.sheet_by_title("NEW_CHANGED_AGAIN"), xlnt::key_not_found);
+        xlnt_assert(!wb1.contains("NEW_CHANGED_AGAIN"));
         xlnt_assert_throws(wb1.sheet_by_title("NEW_CHANGED_AGAIN"), xlnt::key_not_found);
+        xlnt_assert_throws(wb1.clone(static_cast<xlnt::workbook::clone_method>(-123456789)), xlnt::invalid_parameter);
     }
 
     void test_copy_constructor()
@@ -441,8 +706,29 @@ public:
         xlnt::manifest m;
         xlnt_assert(!m.has_default_type("xml"));
         xlnt_assert_throws(m.default_type("xml"), xlnt::key_not_found);
+        xlnt_assert(!m.has_content_type(xlnt::path("/")));
+        xlnt_assert_throws(m.content_type(xlnt::path("/")), xlnt::key_not_found);
+        xlnt_assert(!m.has_override_type(xlnt::path("/")));
+        xlnt_assert_throws(m.override_type(xlnt::path("/")), xlnt::key_not_found);
         xlnt_assert(!m.has_relationship(xlnt::path("/"), xlnt::relationship_type::office_document));
+        xlnt_assert_throws(m.relationship(xlnt::path("/"), xlnt::relationship_type::office_document), xlnt::key_not_found);
+        xlnt_assert(!m.has_relationship(xlnt::path("/"), "test123"));
+        xlnt_assert_throws(m.relationship(xlnt::path("/"), "test123"), xlnt::key_not_found);
         xlnt_assert(m.relationships(xlnt::path("xl/workbook.xml")).empty());
+        m.register_default_type("xml", "my default type");
+        xlnt_assert(m.has_content_type(xlnt::path("/xl/example.xml")));
+        m.register_override_type(xlnt::path("/xl/example.xml"), "my override type");
+        xlnt_assert(m.has_content_type(xlnt::path("/xl/example.xml")));
+        xlnt_assert(!m.has_relationship(xlnt::path("/"), xlnt::relationship_type::thumbnail));
+        m.register_relationship(xlnt::uri("/"), xlnt::relationship_type::thumbnail,
+            xlnt::uri("docProps/thumbnail.jpeg"), xlnt::target_mode::internal);
+        xlnt_assert(m.has_relationship(xlnt::path("/"), xlnt::relationship_type::thumbnail));
+        xlnt_assert(!m.has_relationship(xlnt::path("/"), xlnt::relationship_type::office_document));
+        xlnt_assert_throws(m.relationship(xlnt::path("/"), xlnt::relationship_type::office_document), xlnt::key_not_found);
+        xlnt::relationship rel_thumbnail = m.relationship(xlnt::path("/"), xlnt::relationship_type::thumbnail);
+        xlnt_assert(m.has_relationship(xlnt::path("/"), rel_thumbnail.id()));
+        xlnt_assert_throws(m.relationship(xlnt::path("/"), "test123"), xlnt::key_not_found);
+        xlnt_assert_throws(m.unregister_relationship(xlnt::uri("/"), "?"), xlnt::invalid_parameter);
     }
 
     void test_memory()
@@ -489,15 +775,14 @@ public:
         xlnt_assert(!wb.compare(wb2, true));
         xlnt_assert(wb.compare(wb2, false));
 
-        const auto &wb_const = wb;
-        //TODO these aren't tests...
-        wb_const.manifest();
 
+    }
+
+    void test_theme()
+    {
+        xlnt::workbook wb;
         xlnt_assert(wb.has_theme());
-
-        wb.create_style("style1");
-        wb.style("style1");
-        wb_const.style("style1");
+        xlnt_assert_throws_nothing(wb.theme());
     }
 
     void test_id_gen()
@@ -522,10 +807,12 @@ public:
         xlnt_assert_differs(wb_path, wb_load1);
         wb_load1.load(file.string());
         xlnt_assert(wb_path.compare(wb_load1, false));
+#ifdef _MSC_VER
         // load with wstring
         xlnt::workbook wb_load2;
-        wb_load2.load(file.string());
+        wb_load2.load(file.wstring());
         xlnt_assert(wb_path.compare(wb_load2, false));
+#endif
         // load with path
         xlnt::workbook wb_load3;
         wb_load3.load(file);
@@ -543,6 +830,9 @@ public:
         xlnt::workbook wb_load5;
         wb_load5.load(data);
         xlnt_assert(wb_path.compare(wb_load5, false));
+        // load vector with empty data
+        xlnt::workbook wb_load6;
+        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}), xlnt::invalid_file);
     }
 
     void test_load_file_encrypted()
@@ -565,10 +855,12 @@ public:
         xlnt_assert_differs(wb_path, wb_load1);
         wb_load1.load(file_as_string, password);
         xlnt_assert(wb_path.compare(wb_load1, false));
+#ifdef _MSC_VER
         // load with wstring
         xlnt::workbook wb_load2;
-        wb_load2.load(file_as_string, password);
+        wb_load2.load(file.wstring(), password);
         xlnt_assert(wb_path.compare(wb_load2, false));
+#endif
         // load with path
         xlnt::workbook wb_load3;
         wb_load3.load(file, password);
@@ -586,6 +878,107 @@ public:
         xlnt::workbook wb_load5;
         wb_load5.load(data, password);
         xlnt_assert(wb_path.compare(wb_load5, false));
+        // load vector with empty data
+        xlnt::workbook wb_load6;
+        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}, password), xlnt::invalid_file);
+    }
+
+    void test_load_file_encrypted_invalid_password()
+    {
+        const auto invalid_password = u8"INVALID";
+        xlnt::path file = path_helper::test_file("6_encrypted_libre.xlsx");
+#ifdef __cpp_lib_char8_t
+        // The reinterpret_cast is ugly as hell, but I'm not sure if duplicating
+        // the path_helper and xlnt::path functionality is worth it...
+        std::u8string file_as_string = reinterpret_cast<const char8_t *>(file.string().c_str());
+#else
+        std::string file_as_string = file.string();
+#endif
+        xlnt_assert_throws(xlnt::workbook(file, invalid_password), xlnt::invalid_password);
+        xlnt_assert_throws(xlnt::workbook{file}, xlnt::invalid_password); // also invalid with no password
+        // ctor from ifstream
+        std::ifstream file_reader(file.string(), std::ios::binary);
+        xlnt_assert_throws(xlnt::workbook(file_reader, invalid_password), xlnt::invalid_password);
+        xlnt_assert_throws(xlnt::workbook{file_reader}, xlnt::invalid_password); // also invalid with no password
+        // load with string
+        xlnt::workbook wb_load1;
+        xlnt_assert_throws(wb_load1.load(file_as_string, invalid_password), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load1.load(file_as_string), xlnt::invalid_password); // also invalid with no password
+#ifdef _MSC_VER
+        // load with wstring
+        xlnt::workbook wb_load2;
+        xlnt_assert_throws(wb_load2.load(file.wstring(), invalid_password), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load2.load(file.wstring()), xlnt::invalid_password); // also invalid with no password
+#endif
+        // load with path
+        xlnt::workbook wb_load3;
+        xlnt_assert_throws(wb_load3.load(file, invalid_password), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load3.load(file), xlnt::invalid_password); // also invalid with no password
+        // load with istream
+        xlnt::workbook wb_load4;
+        std::ifstream file_reader2(file.string(), std::ios::binary);
+        xlnt_assert_throws(wb_load4.load(file_reader2, invalid_password), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load4.load(file_reader2), xlnt::invalid_password); // also invalid with no password
+        // load with vector
+        std::ifstream file_reader3(file.string(), std::ios::binary);
+        file_reader3.unsetf(std::ios::skipws);
+        std::vector<uint8_t> data(std::istream_iterator<uint8_t>{file_reader3},
+            std::istream_iterator<uint8_t>());
+        xlnt::workbook wb_load5;
+        xlnt_assert_throws(wb_load5.load(data, invalid_password), xlnt::invalid_password);
+        xlnt_assert_throws(wb_load5.load(data), xlnt::invalid_password); // also invalid with no password
+        // load vector with empty data
+        xlnt::workbook wb_load6;
+        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}, invalid_password), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}), xlnt::invalid_file); // also invalid with no password
+    }
+
+    void test_load_file_non_existent()
+    {
+        xlnt::path file = path_helper::test_file("SHOULD NEVER EVER EXIST");
+        const auto invalid_password = u8"INVALID"; // password shouldn't make a difference, but it's good for test coverage
+#ifdef __cpp_lib_char8_t
+        // The reinterpret_cast is ugly as hell, but I'm not sure if duplicating
+        // the path_helper and xlnt::path functionality is worth it...
+        std::u8string file_as_string = reinterpret_cast<const char8_t *>(file.string().c_str());
+#else
+        std::string file_as_string = file.string();
+#endif
+        xlnt_assert_throws(xlnt::workbook{file}, xlnt::invalid_file);
+        // ctor from ifstream
+        std::ifstream file_reader(file.string(), std::ios::binary);
+        xlnt_assert_throws(xlnt::workbook{file_reader}, xlnt::invalid_file);
+        // load with string
+        xlnt::workbook wb_load1;
+        xlnt_assert_throws(wb_load1.load(file_as_string), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load1.load(file_as_string, invalid_password), xlnt::invalid_file);
+#ifdef _MSC_VER
+        // load with wstring
+        xlnt::workbook wb_load2;
+        xlnt_assert_throws(wb_load2.load(file.wstring()), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load2.load(file.wstring(), invalid_password), xlnt::invalid_file);
+#endif
+        // load with path
+        xlnt::workbook wb_load3;
+        xlnt_assert_throws(wb_load3.load(file), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load3.load(file, invalid_password), xlnt::invalid_file);
+        // load with istream
+        xlnt::workbook wb_load4;
+        std::ifstream file_reader2(file.string(), std::ios::binary);
+        xlnt_assert_throws(wb_load4.load(file_reader2), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load4.load(file_reader2, invalid_password), xlnt::invalid_file);
+        // load with vector
+        std::ifstream file_reader3(file.string(), std::ios::binary);
+        file_reader3.unsetf(std::ios::skipws);
+        std::vector<uint8_t> data(std::istream_iterator<uint8_t>{file_reader3},
+            std::istream_iterator<uint8_t>());
+        xlnt::workbook wb_load5;
+        xlnt_assert_throws(wb_load5.load(data), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load5.load(data, invalid_password), xlnt::invalid_file);
+        // load vector with empty data
+        xlnt::workbook wb_load6;
+        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}), xlnt::invalid_file);
+        xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}, invalid_password), xlnt::invalid_file);
     }
 
     void test_Issue279()
@@ -669,9 +1062,27 @@ public:
     void test_style()
     {
         xlnt::workbook wb;
-        xlnt_assert_equals(wb.has_style("my_custom_style"), false);
+        const auto &wb_const = wb;
+        xlnt_assert(!wb.has_style("my_custom_style"));
+        xlnt_assert_throws(wb.style("my_custom_style"), xlnt::key_not_found);
+        xlnt_assert_throws(wb_const.style("my_custom_style"), xlnt::key_not_found);
         wb.create_style("my_custom_style");
-        xlnt_assert_equals(wb.has_style("my_custom_style"), true);
+        xlnt_assert(wb.has_style("my_custom_style"));
+        xlnt_assert_throws_nothing(wb.style("my_custom_style"));
+        xlnt_assert_throws_nothing(wb_const.style("my_custom_style"));
+    }
+
+    void test_builtin_style()
+    {
+        xlnt::workbook wb;
+        xlnt_assert_throws(wb.create_builtin_style(std::numeric_limits<std::size_t>::max()), xlnt::invalid_parameter);
+    }
+
+    void test_thumbnail()
+    {
+        xlnt::workbook wb;
+        xlnt_assert(wb.has_thumbnail());
+        xlnt_assert_throws_nothing(wb.thumbnail());
     }
 
     void test_sheet_moving()

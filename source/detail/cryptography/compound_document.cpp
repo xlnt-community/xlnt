@@ -36,6 +36,8 @@
 #include <detail/cryptography/compound_document.hpp>
 #include <detail/unicode.hpp>
 
+// NOTE: compound files are not part of the OOXML specification (ECMA-376).
+// This implementation is based on the "[MS-CFB]: Compound File Binary File Format" specification.
 namespace {
 
 using namespace xlnt::detail;
@@ -542,7 +544,7 @@ std::istream &compound_document::open_read_stream(const std::string &name)
 {
     if (!contains_entry(name, compound_document_entry::entry_type::UserStream))
     {
-        throw xlnt::exception("not found");
+        throw xlnt::exception("compound document entry of type UserStream not found at path: " + name);
     }
 
     const auto entry_id = find_entry(name, compound_document_entry::entry_type::UserStream);
@@ -866,11 +868,12 @@ directory_id compound_document::insert_entry(
 
     if (split.size() > 1)
     {
-        parent_id = find_entry(join_path(split), compound_document_entry::entry_type::UserStorage);
+        auto joined_path = join_path(split);
+        parent_id = find_entry(joined_path, compound_document_entry::entry_type::UserStorage);
 
         if (parent_id < 0)
         {
-            throw xlnt::exception("bad path");
+            throw xlnt::exception("compound document entry of type UserStorage not found at path: " + joined_path);
         }
 
         parent_storage_[entry_id] = parent_id;

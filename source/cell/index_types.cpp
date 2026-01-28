@@ -34,7 +34,7 @@ column_t::index_t column_t::column_index_from_string(const std::string &column_s
 {
     if (column_string.length() > 3 || column_string.empty())
     {
-        throw invalid_column_index();
+        throw invalid_column_index(column_string);
     }
 
     column_t::index_t column_index = 0;
@@ -44,7 +44,7 @@ column_t::index_t column_t::column_index_from_string(const std::string &column_s
     {
         if (!std::isalpha(column_string[static_cast<std::size_t>(i)]))
         {
-            throw invalid_column_index();
+            throw invalid_column_index(column_string[static_cast<std::size_t>(i)]);
         }
 
         auto char_index = std::toupper(column_string[static_cast<std::size_t>(i)]) - 'A';
@@ -62,15 +62,16 @@ column_t::index_t column_t::column_index_from_string(const std::string &column_s
 // ordinals by adding 64.
 std::string column_t::column_string_from_index(column_t::index_t column_index)
 {
-    // these indicies corrospond to A->ZZZ and include all allowed
-    // columns
+    // According to the OOXML specification:
+    // "In SpreadsheetML, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD).
+    // An implementation can extend this range."
     if (column_index < constants::min_column() || column_index > constants::max_column())
     {
-        throw invalid_column_index();
+        throw invalid_column_index(column_index);
     }
 
     int temp = static_cast<int>(column_index);
-    std::string column_letter = "";
+    std::string column_letter;
 
     while (temp > 0)
     {

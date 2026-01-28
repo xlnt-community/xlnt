@@ -47,6 +47,12 @@ struct XLNT_API_INTERNAL constants
     static row_t max_row();
 
     /// <summary>
+    /// Returns the largest row reference index in a worksheet which is allowed by default.
+    /// By default, row references range from 1 to 1048576, but the OOXML specification allows to extend this range.
+    /// </summary>
+    static row_t max_row_reference_default();
+
+    /// <summary>
     /// Returns the lowest allowable column index in a worksheet.
     /// </summary>
     static const column_t min_column();
@@ -57,12 +63,25 @@ struct XLNT_API_INTERNAL constants
     static const column_t max_column();
 
     /// <summary>
+    /// Returns the largest column reference index in a worksheet which is allowed by default.
+    /// By default, column references range from A to XFD (column indices 1 to 16384), but
+    /// the OOXML specification allows to extend this range.
+    /// </summary>
+    static const column_t max_column_reference_default();
+
+    /// <summary>
     /// Returns the maximum amount of elements that functions like std::vector::reserve (or other containers) are allowed to allocate.
     /// Information like a "count" is often saved in XLSX files and can be used by std::vector::reserve (or other containers)
     /// to allocate the memory right away and thus improve performance. However, malicious or broken files
     /// might then cause XLNT to allocate extreme amounts of memory. This function sets a limit to protect against such issues.
     /// </summary>
     static size_t max_elements_for_reserve();
+
+    /// <summary>
+    /// Returns returns a constant reference to an empty string.
+    /// Useful to avoid creating static empty strings all over the code.
+    /// </summary>
+    static const std::string &empty_str();
 
     /// <summary>
     /// Returns the URI of the directory containing package properties.
@@ -146,6 +165,8 @@ struct XLNT_API_INTERNAL constants
 
     /// <summary>
     /// Returns the namespace URI from a namespace name.
+    /// Assumes that id is a known namespace ID (please call namespaces() to check).
+    /// If id is not a known namespace ID, an xlnt::invalid_parameter exception will be thrown.
     /// </summary>
     static const std::string &ns(const std::string &id);
 

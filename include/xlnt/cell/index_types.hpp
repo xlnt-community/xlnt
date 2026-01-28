@@ -36,13 +36,19 @@ namespace xlnt {
 
 /// <summary>
 /// All rows should be referred to by an instance of this type.
+/// By default, row references range from 1 to 1048576, but the OOXML specification allows to extend this range,
+/// and XLNT allows rows between 1 and 4294967295. Please note that
+/// not all applications might support these extended ranges.
 /// </summary>
 using row_t = std::uint32_t;
 
 /// <summary>
-/// Columns can be referred to as a string A,B,...Z,AA,AB,..,ZZ,AAA,...,ZZZ
-/// or as a 1-indexed index. This class encapsulates both of these forms of
+/// Columns can be referred to as a string A,B,...Z,AA,AB,..,ZZ,AAA,...,XFD
+/// or as a 1-indexed index (indices 1 to 16384). This class encapsulates both of these forms of
 /// column referencing and allows for conversions between them.
+/// By default, column references range from A to XFD (column indices 1 to 16384), but
+/// the OOXML specification allows to extend this range, and XLNT allows columns between 1 and 4294967295. Please note that
+/// not all applications might support these extended ranges.
 /// </summary>
 class XLNT_API column_t
 {
@@ -56,9 +62,9 @@ public:
     /// Convert a column letter into a column number (e.g. B -> 2)
     /// </summary>
     /// <remarks>
-    /// Excel only supports 1 - 3 letter column names from A->ZZZ, so we
-    /// restrict our column names to 1 - 3 characters, each in the range A - Z.
-    /// Strings outside this range and malformed strings will throw column_string_index_exception.
+    /// Excel only supports 1 - 3 letter column names from A->Z, AA->ZZ, AAA->XFD,
+    /// so XLNT restricts column names to 1 - 3 characters, each in the range A - Z (columns A to ZZZ).
+    /// Strings outside this range and malformed strings will throw an invalid_column_index exception.
     /// </remarks>
     static index_t column_index_from_string(const std::string &column_string);
 
@@ -84,11 +90,17 @@ public:
 
     /// <summary>
     /// Constructs a column from a string.
+    /// Excel only supports 1 - 3 letter column names from A->Z, AA->ZZ, AAA->XFD,
+    /// so XLNT restricts column names to 1 - 3 characters, each in the range A - Z (columns A to ZZZ).
+    /// Strings outside this range and malformed strings will throw an invalid_column_index exception.
     /// </summary>
     column_t(const std::string &column_string);
 
     /// <summary>
     /// Constructs a column from a string.
+    /// Excel only supports 1 - 3 letter column names from A->Z, AA->ZZ, AAA->XFD,
+    /// so XLNT restricts column names to 1 - 3 characters, each in the range A - Z (columns A to ZZZ).
+    /// Strings outside this range and malformed strings will throw an invalid_column_index exception.
     /// </summary>
     column_t(const char *column_string);
 

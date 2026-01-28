@@ -95,11 +95,14 @@ public:
 
     /// <summary>
     /// Dereferences this iterator to return the cell it points to.
+    /// If the cell doesn't exist, an empty cell will be created,
+    /// added to the worksheet, and a reference to it will be returned.
     /// </summary>
     reference operator*();
 
     /// <summary>
     /// Dereferences this iterator to return the cell it points to.
+    /// Assumes that the cell exists. If the iterator points to a non-existing cell, an invalid_parameter exception will be thrown.
     /// </summary>
     const reference operator*() const;
 
@@ -234,6 +237,7 @@ public:
 
     /// <summary>
     /// Dereferences this iterator to return the cell it points to.
+    /// Assumes that the cell exists. If the iterator points to a non-existing cell, an invalid_parameter exception will be thrown.
     /// </summary>
     const reference operator*() const;
 

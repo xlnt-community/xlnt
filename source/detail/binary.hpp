@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
@@ -190,11 +191,16 @@ public:
 
     // Make the bytes of the data pointed to by this writer equivalent to those in the given string
     // sizeof(U) should be a multiple of sizeof(T)
+    // append_NUL specifies whether the NUL terminator should be added to the binary representation.
     template<typename U>
-    void assign(const std::basic_string<U> &string)
+    void assign(const std::basic_string<U> &string, bool append_NUL)
     {
-        resize(string.size() * sizeof(U));
+        resize(string.size() * sizeof(U) + (append_NUL ? sizeof(U) : 0));
         std::memcpy(data_->data(), string.data(), bytes());
+        if (append_NUL)
+        {
+            data_->back() = U{}; // ensure NUL terminator is always added
+        }
     }
 
     void offset(std::size_t new_offset)
@@ -260,6 +266,12 @@ public:
         append(reader, data.size() * sizeof(U));
     }
 
+    /// <summary>
+    /// Reads reader_element_count elements from the reader.
+    /// Assumes that so many element can be read.
+    /// If the reader does not contain at least reader_element_count elements,
+    /// an invalid_parameter exception will be thrown.
+    /// </summary>
     template<typename U>
     void append(binary_reader<U> &reader, std::size_t reader_element_count)
     {
@@ -273,7 +285,7 @@ public:
 
         if ((reader.offset() + reader_element_count) * sizeof(U) > reader.bytes())
         {
-            throw xlnt::exception("reading past end");
+            throw xlnt::invalid_parameter("reading past end (from offset " + std::to_string(reader.offset()) + " reading " + std::to_string(reader_element_count * sizeof(U)) + " bytes, although the reader only has " + std::to_string(reader.bytes()) + " bytes)");
         }
 
         std::memcpy(data_->data() + offset_, reader.data() + reader.offset(), reader_element_count * sizeof(U));
@@ -285,12 +297,13 @@ private:
     std::size_t offset_ = 0;
 };
 
+// append_NUL specifies whether the NUL terminator should be added to the binary representation.
 template<typename T>
-std::vector<byte> string_to_bytes(const std::basic_string<T> &string)
+std::vector<byte> string_to_bytes(const std::basic_string<T> &string, bool append_NUL)
 {
     std::vector<byte> bytes;
     binary_writer<byte> writer(bytes);
-    writer.assign(string);
+    writer.assign(string, append_NUL);
 
     return bytes;
 }
@@ -314,12 +327,19 @@ std::vector<T> read_vector(std::istream &in, std::size_t count)
     return result;
 }
 
+/// contains_NUL specifies whether the count contains the NUL terminator. In that case,
+/// the NUL terminator will be read from the stream, but will be removed before the string will be returned.
 template<typename T>
-std::basic_string<T> read_string(std::istream &in, std::size_t count)
+std::basic_string<T> read_string(std::istream &in, std::size_t count, bool contains_NUL)
 {
     std::basic_string<T> result(count, T());
     in.read(reinterpret_cast<char *>(&result[0]),
         static_cast<std::streamsize>(sizeof(T) * count));
+
+    if (contains_NUL)
+    {
+        result.pop_back();
+    }
 
     return result;
 }

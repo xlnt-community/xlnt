@@ -66,13 +66,13 @@ public:
     /// <summary>
     /// Writes a cell to the currently active worksheet at the position given by
     /// ref and with the given value. ref should be to the right of or below
-    /// the previously written cell.
+    /// the previously written cell. Returns a wrapper pointing to the cell.
     /// </summary>
     cell add_cell(const cell_reference &ref);
 
     /// <summary>
     /// Ends writing of data to the current sheet and begins writing a new sheet
-    /// with the given title.
+    /// with the given title. Returns a wrapper pointing to this new sheet.
     /// </summary>
     worksheet add_worksheet(const std::string &title);
 

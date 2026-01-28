@@ -253,38 +253,44 @@ public:
     void auto_(bool value);
 
     /// <summary>
-    /// Returns the internal indexed color representing this color. If this is not an RGB color,
-    /// an invalid_attribute exception will be thrown.
+    /// Returns the internal indexed color representing this color.
+    /// Assumes that this is an RGB color (to check, please call type() == xlnt::color_type::rgb).
+    /// If this is not an RGB color, an invalid_attribute exception will be thrown.
     /// </summary>
     const rgb_color &rgb() const;
 
     /// <summary>
-    /// Returns the internal indexed color representing this color. If this is not an RGB color,
-    /// an invalid_attribute exception will be thrown.
+    /// Returns the internal indexed color representing this color.
+    /// Assumes that this is an RGB color (to check, please call type() == xlnt::color_type::rgb).
+    /// If this is not an RGB color, an invalid_attribute exception will be thrown.
     /// </summary>
     rgb_color &rgb();
 
     /// <summary>
-    /// Returns the internal indexed color representing this color. If this is not an indexed color,
-    /// an invalid_attribute exception will be thrown.
+    /// Returns the internal indexed color representing this color.
+    /// Assumes that this is an indexed color (to check, please call type() == xlnt::color_type::indexed).
+    /// If this is not an indexed color, an invalid_attribute exception will be thrown.
     /// </summary>
     const indexed_color &indexed() const;
 
     /// <summary>
-    /// Returns the internal indexed color representing this color. If this is not an indexed color,
-    /// an invalid_attribute exception will be thrown.
+    /// Returns the internal indexed color representing this color.
+    /// Assumes that this is an indexed color (to check, please call type() == xlnt::color_type::indexed).
+    /// If this is not an indexed color, an invalid_attribute exception will be thrown.
     /// </summary>
     indexed_color &indexed();
 
     /// <summary>
-    /// Returns the internal indexed color representing this color. If this is not a theme color,
-    /// an invalid_attribute exception will be thrown.
+    /// Returns the internal indexed color representing this color.
+    /// Assumes that this is a theme color (to check, please call type() == xlnt::color_type::theme).
+    /// If this is not a theme color, an invalid_attribute exception will be thrown.
     /// </summary>
     const theme_color &theme() const;
 
     /// <summary>
-    /// Returns the internal indexed color representing this color. If this is not a theme color,
-    /// an invalid_attribute exception will be thrown.
+    /// Returns the internal indexed color representing this color.
+    /// Assumes that this is a theme color (to check, please call type() == xlnt::color_type::theme).
+    /// If this is not a theme color, an invalid_attribute exception will be thrown.
     /// </summary>
     theme_color &theme();
 

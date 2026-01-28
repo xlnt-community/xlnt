@@ -90,14 +90,14 @@ public:
 
     /// <summary>
     /// Dereferences the iterator to return the worksheet it is pointing to.
-    /// If the iterator points to one-past-the-end of the workbook, an invalid_parameter
+    /// If the iterator points to a non-existing worksheet, an invalid_parameter
     /// exception will be thrown.
     /// </summary>
     reference operator*();
 
     /// <summary>
     /// Dereferences the iterator to return the worksheet it is pointing to.
-    /// If the iterator points to one-past-the-end of the workbook, an invalid_parameter
+    /// If the iterator points to a non-existing worksheet, an invalid_parameter
     /// exception will be thrown.
     /// </summary>
     const reference operator*() const;

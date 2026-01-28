@@ -142,6 +142,11 @@ public:
 
     /// <summary>
     /// Sets the title of this sheet.
+    /// An invalid_sheet_title exception will be thrown if the new title:
+    /// - is empty
+    /// - is longer than 31 Unicode characters
+    /// - contains any of the forbidden characters *:/\?[]
+    /// - contains any characters that are not encoded as UTF-8 and or are invalid UTF-8
     /// </summary>
     void title(const std::string &title);
 
@@ -149,6 +154,8 @@ public:
 
     /// <summary>
     /// Returns the top left corner of the region above and to the left of which panes are frozen.
+    /// Assumes that this sheet has frozen panes (please call has_frozen_panes() to check).
+    /// If this sheet does not have frozen panes, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     cell_reference frozen_panes() const;
 
@@ -180,26 +187,30 @@ public:
     bool has_cell(const cell_reference &reference) const;
 
     /// <summary>
-    /// Returns the cell at the given reference. If the cell doesn't exist, it
-    /// will be initialized to null before being returned.
+    /// Returns a wrapper pointing to the cell at the given reference.
+    /// If the cell doesn't exist (has_cell() returns false), an empty cell will be created,
+    /// added to the worksheet (has_cell() will return true afterwards), and returned.
     /// </summary>
     class cell cell(const cell_reference &reference);
 
     /// <summary>
-    /// Returns the cell at the given reference. If the cell doesn't exist, an
-    /// invalid_parameter exception will be thrown.
+    /// Returns a wrapper pointing to the cell at the given reference.
+    /// Assumes that the cell exists (please call has_cell() to check).
+    /// If the cell doesn't exist, an invalid_parameter exception will be thrown.
     /// </summary>
     const class cell cell(const cell_reference &reference) const;
 
     /// <summary>
-    /// Returns the cell at the given column and row. If the cell doesn't exist, it
-    /// will be initialized to null before being returned.
+    /// Returns a wrapper pointing to the cell at the given column and row.
+    /// If the cell doesn't exist (has_cell() returns false), an empty cell will be created,
+    /// added to the worksheet (has_cell() will return true afterwards), and returned.
     /// </summary>
     class cell cell(column_t column, row_t row);
 
     /// <summary>
-    /// Returns the cell at the given column and row. If the cell doesn't exist, an
-    /// invalid_parameter exception will be thrown.
+    /// Returns a wrapper pointing to the cell at the given column and row.
+    /// Assumes that the cell exists (please call has_cell() to check).
+    /// If the cell doesn't exist, an invalid_parameter exception will be thrown.
     /// </summary>
     const class cell cell(column_t column, row_t row) const;
 
@@ -275,33 +286,45 @@ public:
 
     /// <summary>
     /// Insert empty rows before the given row index
+    /// If the rows are inserted out of bounds (before the minimum or after the maximum allowed indices),
+    /// an invalid_parameter exception will be thrown.
     /// </summary>
     void insert_rows(row_t row, std::uint32_t amount);
 
     /// <summary>
     /// Insert empty columns before the given column index
+    /// If the columns are inserted out of bounds (before the minimum or after the maximum allowed indices),
+    /// an invalid_parameter exception will be thrown.
     /// </summary>
     void insert_columns(column_t column, std::uint32_t amount);
 
     /// <summary>
     /// Delete rows before the given row index
+    /// If the rows are deleted out of bounds (before the minimum or after the maximum allowed indices),
+    /// an invalid_parameter exception will be thrown.
     /// </summary>
     void delete_rows(row_t row, std::uint32_t amount);
 
     /// <summary>
     /// Delete columns before the given column index
+    /// If the columns are deleted out of bounds (before the minimum or after the maximum allowed indices),
+    /// an invalid_parameter exception will be thrown.
     /// </summary>
     void delete_columns(column_t column, std::uint32_t amount);
 
     // properties
 
     /// <summary>
-    /// Returns the column properties for the given column.
+    /// Returns a reference to the column properties for the given column.
+    /// If the given column does not have properties (has_column_properties() returns false),
+    /// default column properties will be created and returned.
     /// </summary>
     xlnt::column_properties &column_properties(column_t column);
 
     /// <summary>
-    /// Returns the column properties for the given column.
+    /// Returns a reference to the column properties for the given column.
+    /// If the given column does not have properties (has_column_properties() returns false),
+    /// a key_not_found exception will be thrown.
     /// </summary>
     const xlnt::column_properties &column_properties(column_t column) const;
 
@@ -322,12 +345,16 @@ public:
     double column_width(column_t column) const;
 
     /// <summary>
-    /// Returns the row properties for the given row.
+    /// Returns a reference to the row properties for the given row.
+    /// If the given row does not have properties (has_row_properties() returns false),
+    /// default row properties will be created and returned.
     /// </summary>
     xlnt::row_properties &row_properties(row_t row);
 
     /// <summary>
-    /// Returns the row properties for the given row.
+    /// Returns a reference to the row properties for the given row.
+    /// If the given row does not have properties (has_row_properties() returns false),
+    /// a key_not_found exception will be thrown.
     /// </summary>
     const xlnt::row_properties &row_properties(row_t row) const;
 
@@ -372,19 +399,23 @@ public:
     bool has_named_range(const std::string &name) const;
 
     /// <summary>
-    /// Returns the named range with the given name. Throws key_not_found
-    /// exception if the named range doesn't exist.
+    /// Returns the named range with the given name.
+    /// Assumes that the named range exists (please call has_named_range() to check).
+    /// Throws key_not_found exception if the named range doesn't exist.
     /// </summary>
     class range named_range(const std::string &name);
 
     /// <summary>
-    /// Returns the named range with the given name. Throws key_not_found
-    /// exception if the named range doesn't exist.
+    /// Returns the named range with the given name.
+    /// Assumes that the named range exists (please call has_named_range() to check).
+    /// Throws key_not_found exception if the named range doesn't exist.
     /// </summary>
     const class range named_range(const std::string &name) const;
 
     /// <summary>
     /// Removes a named range with the given name.
+    /// Assumes that the named range exists (please call has_named_range() to check).
+    /// Throws key_not_found exception if the named range doesn't exist.
     /// </summary>
     void remove_named_range(const std::string &name);
 
@@ -457,11 +488,15 @@ public:
 
     /// <summary>
     /// Removes the merging of the cells in the range represented by the given string.
+    /// Assumes that the cells in the range have been merged (please call merged_ranges() to get all merged ranges).
+    /// If the cell has not been merged, an invalid_parameter exception will be thrown.
     /// </summary>
     void unmerge_cells(const std::string &reference_string);
 
     /// <summary>
     /// Removes the merging of the cells in the given range.
+    /// Assumes that the cells in the range have been merged (please call merged_ranges() to get all merged ranges).
+    /// If the cell has not been merged, an invalid_parameter exception will be thrown.
     /// </summary>
     void unmerge_cells(const range_reference &reference);
 
@@ -499,11 +534,17 @@ public:
 
     /// <summary>
     /// Convenience method for worksheet::cell method.
+    /// Returns a wrapper pointing to the cell at the given reference.
+    /// If the cell doesn't exist (has_cell() returns false), an empty cell will be created,
+    /// added to the worksheet (has_cell() will return true afterwards), and returned.
     /// </summary>
     class cell operator[](const cell_reference &reference);
 
     /// <summary>
     /// Convenience method for worksheet::cell method.
+    /// Returns a wrapper pointing to the cell at the given reference.
+    /// Assumes that the cell exists (please call has_cell() to check).
+    /// If the cell doesn't exist, an invalid_parameter exception will be thrown.
     /// </summary>
     const class cell operator[](const cell_reference &reference) const;
 
@@ -522,7 +563,9 @@ public:
     bool has_page_setup() const;
 
     /// <summary>
-    /// Returns the page setup for this sheet.
+    /// Returns a copy of the page setup for this sheet.
+    /// If no page setup has been set (has_page_setup() returns false),
+    /// a default-constructed page setup will be returned.
     /// </summary>
     xlnt::page_setup page_setup() const;
 
@@ -537,7 +580,9 @@ public:
     bool has_page_margins() const;
 
     /// <summary>
-    /// Returns the margins of this sheet.
+    /// Returns a copy of the margins of this sheet.
+    /// Assumes that this sheet has page margins (please call has_page_margins() to check).
+    /// If this sheet has no page margins, an invalid_attribute exception will be thrown.
     /// </summary>
     xlnt::page_margins page_margins() const;
 
@@ -546,10 +591,17 @@ public:
     /// </summary>
     void page_margins(const class page_margins &margins);
 
+    /// <summary>
+    /// Clears the margins of this sheet (has_page_margins() will return false afterwards).
+    /// </summary>
+    void clear_page_margins();
+
     // auto filter
 
     /// <summary>
     /// Returns the current auto-filter of this sheet.
+    /// Assumes that this sheet has an auto-filter (please call has_auto_filter() to check).
+    /// If this sheet has no auto-filter, an invalid_attribute exception will be thrown.
     /// </summary>
     range_reference auto_filter() const;
 
@@ -591,8 +643,10 @@ public:
 
     /// <summary>
     /// Returns the phonetic properties of this sheet.
+    /// Assumes that this sheet has phonetic properties (please call has_phonetic_properties() to check).
+    /// If this sheet has no phonetic properties, a default-constructed phonetic_pr object will be returned.
     /// </summary>
-    const phonetic_pr &phonetic_properties() const;
+    phonetic_pr phonetic_properties() const;
 
     /// <summary>
     /// Sets the phonetic properties of this sheet to phonetic_props
@@ -605,7 +659,9 @@ public:
     bool has_header_footer() const;
 
     /// <summary>
-    /// Returns the header/footer of this sheet.
+    /// Returns a copy of the header/footer of this sheet.
+    /// Assumes that this sheet has a header/footer (please call has_header_footer() to check).
+    /// If this sheet has no header/footer, an invalid_attribute exception will be thrown.
     /// </summary>
     class header_footer header_footer() const;
 
@@ -696,6 +752,8 @@ public:
 
     /// <summary>
     /// Returns the print area defined for this sheet.
+    /// Assumes that this sheet has a print area (please call has_print_area() to check).
+    /// If this sheet has no print area, an invalid_attribute exception will be thrown.
     /// </summary>
     range_reference print_area() const;
 
@@ -710,7 +768,14 @@ public:
     bool has_view() const;
 
     /// <summary>
+    /// Returns the views.
+    /// </summary>
+    const std::vector<sheet_view> & views() const;
+
+    /// <summary>
     /// Returns the view at the given index.
+    /// Assumes that the index is valid (please call views().size() to check).
+    /// If the index is out of range, an invalid_parameter exception is thrown.
     /// </summary>
     sheet_view &view(std::size_t index = 0) const;
 
@@ -718,6 +783,18 @@ public:
     /// Adds new_view to the set of available views for this sheet.
     /// </summary>
     void add_view(const sheet_view &new_view);
+
+    /// <summary>
+    /// Removes the view at the given index.
+    /// Assumes that the index is valid (please call views().size() to check).
+    /// If the index is out of range, an invalid_parameter exception is thrown.
+    /// </summary>
+    void remove_view(std::size_t index);
+
+    /// <summary>
+    /// Clears all views.
+    /// </summary>
+    void clear_views();
 
     /// <summary>
     /// Set the active cell on the default worksheet view to the given reference.
@@ -731,6 +808,8 @@ public:
 
     /// <summary>
     /// Returns the active cell on the default worksheet view.
+    /// Assumes that this worksheet has an active cell (please call has_active_cell() to check).
+    /// If this worksheet does not have an active cell, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     cell_reference active_cell() const;
 
@@ -763,7 +842,7 @@ public:
     void page_break_at_column(column_t column);
 
     /// <summary>
-    /// Creates a conditional format for the given range with the given condition.
+    /// Creates a conditional format for the given range with the given condition and returns a wrapper pointing to it.
     /// </summary>
     xlnt::conditional_format conditional_format(const range_reference &ref, const condition &when);
 
@@ -778,7 +857,7 @@ public:
     relationship referring_relationship() const;
 
     /// <summary>
-    /// Returns the current formatting properties.
+    /// Returns a copy of the current formatting properties.
     /// </summary>
     sheet_format_properties format_properties() const;
 
@@ -880,6 +959,7 @@ private:
     /// <summary>
     /// Move cells after index down or right by a given amount. The direction is decided by row_or_col.
     /// If reverse is true, the cells will be moved up or left, depending on row_or_col.
+    /// If the cells are moved out of bounds (before the minimum or after the maximum allowed indices), an invalid_parameter exception will be thrown.
     /// </summary>
     void move_cells(std::uint32_t index, std::uint32_t amount, row_or_col_t row_or_col, bool reverse = false);
 

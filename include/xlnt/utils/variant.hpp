@@ -47,40 +47,46 @@ public:
     /// </summary>
     enum class type
     {
-        vector,
-        //array,
-        //blob,
-        //oblob,
-        //empty,
-        null,
-        //i1,
-        //i2,
-        i4,
-        //i8,
-        //integer,
-        //ui1,
-        //ui2,
-        //ui4,
-        //ui8,
-        //uint,
-        //r4,
-        //r8,
-        //decimal,
-        lpstr, // TODO: how does this differ from lpwstr?
-        //lpwstr,
-        //bstr,
-        date,
-        //filetime,
-        boolean,
-        //cy,
-        //error,
-        //stream,
-        //ostream,
-        //storage,
-        //ostorage,
-        //vstream,
-        //clsid
+        //variant = 0, // this variant type
+        vector = 1,
+        //array = 2,
+        //blob = 3, // XSD type xsd:base64Binary
+        //oblob = 4, // XSD type xsd:base64Binary
+        //empty = 5,
+        null = 6,
+        //i1 = 7, // XSD type xsd:byte (8-bit signed integer)
+        //i2 = 8, // XSD type xsd:short (16-bit signed integer)
+        i4 = 9, // XSD type xsd:int (32-bit signed integer)
+        //i8 = 10, // XSD type xsd:long (64-bit signed integer)
+        //integer = 11, // XSD type xsd:int (32-bit signed integer)
+        //ui1 = 12, // XSD type xsd:unsignedByte (8-bit unsigned integer)
+        //ui2 = 13, // XSD type xsd:unsignedShort (16-bit unsigned integer)
+        //ui4 = 14, // XSD type xsd:unsignedInt (32-bit unsigned integer)
+        //ui8 = 15, // XSD type xsd:unsignedLong (64-bit unsigned integer)
+        //uint = 16, // XSD type xsd:unsignedInt (32-bit unsigned integer)
+        //r4 = 17, // XSD type xsd:float (32-bit floating point number)
+        //r8 = 18, // XSD type xsd:double (64-bit floating point number)
+        //decimal = 19, XSD type xsd:decimal
+        lpstr = 20, // XSD type xsd:string. OOXML says: "This element specifies a string variant type."
+        //lpwstr = 21, // XSD type xsd:string. OOXML says: "This element specifies a string variant type."
+        //bstr = 22, // XSD type xsd:string. OOXML says: "This element defines a binary basic string variant type, which can store any valid Unicode character."
+        date = 23, // XSD type xsd:dateTime
+        //filetime = 24, // XSD type xsd:dateTime
+        boolean = 25, // XSD type xsd:boolean (any of: 'true', 'false', '1', '0')
+        //cy = 26,
+        //error = 27,
+        //stream = 28, // XSD type xsd:base64Binary
+        //ostream = 29, // XSD type xsd:base64Binary
+        //storage = 30, // XSD type xsd:base64Binary
+        //ostorage = 31, // XSD type xsd:base64Binary
+        //vstream = 32,
+        //clsid = 33
     };
+
+    /// <summary>
+    /// Returns a displayable string for the specified type.
+    /// </summary>
+    static std::string get_type_string(type type);
 
     /// <summary>
     /// Default constructor. Creates a null-type variant.
@@ -165,6 +171,11 @@ public:
     /// <summary>
     /// Creates a vector_variant-type variant with the given value.
     /// </summary>
+    variant(const std::initializer_list<variant> &value);
+
+    /// <summary>
+    /// Creates a vector_variant-type variant with the given value.
+    /// </summary>
     variant(const std::vector<variant> &value);
 
     /// <summary>
@@ -173,8 +184,10 @@ public:
     bool is(type t) const;
 
     /// <summary>
-    /// Returns the value of this variant as type T. An exception will
-    /// be thrown if the types are not convertible.
+    /// Returns the value of this variant as type T.
+    /// Assumes that the variant is of type T (please call is() or value_type() to check). For details
+    /// on each type, please see the documentation for each get<T> function below.
+    /// An xlnt::bad_variant_access exception will be thrown if the types are not convertible.
     /// </summary>
     template <typename T>
     T get() const;
@@ -201,30 +214,85 @@ private:
     std::string lpstr_value_;
 };
 
+/// <summary>
+/// Returns the value of this variant as type bool.
+/// Assumes that the variant is of type::boolean (please call is() or value_type() to check).
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API bool variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type std::int32_t.
+/// Assumes that the variant is of type::i4 (please call is() or value_type() to check).
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API std::int32_t variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type std::string.
+/// Please call is() or value_type() to check the type. The following types are compatible:
+/// - type::lpstr
+/// - type::date (DEPRECATED, will no longer be allowed in a future major version)
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API std::string variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type xlnt::datetime.
+/// Assumes that the variant is of type::date (please call is() or value_type() to check).
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API datetime variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type std::vector<xlnt::variant>.
+/// Please call is() or value_type() to check the type. The following types are compatible:
+/// - type::vector containing elements of type::variant
+/// - type::vector containing any other elements (DEPRECATED, will no longer be allowed in a future major version)
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API std::vector<variant> variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type std::vector<bool>.
+/// Assumes that the variant is of type::vector (please call is() or value_type() to check)
+/// containing elements of type::boolean.
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API std::vector<bool> variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type std::vector<std::int32_t>.
+/// Assumes that the variant is of type::vector (please call is() or value_type() to check)
+/// containing elements of type::i4.
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API std::vector<std::int32_t> variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type std::vector<std::string>.
+/// Assumes that the variant is of type::vector (please call is() or value_type() to check)
+/// containing elements of type:
+/// - type::lpstr
+/// - type::date (DEPRECATED, will no longer be allowed in a future major version)
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API std::vector<std::string> variant::get() const;
 
+/// <summary>
+/// Returns the value of this variant as type std::vector<xlnt::datetime>.
+/// Assumes that the variant is of type::vector (please call is() or value_type() to check)
+/// containing elements of type::date.
+/// An xlnt::bad_variant_access exception will be thrown if the types are not compatible.
+/// </summary>
 template <>
 XLNT_API std::vector<datetime> variant::get() const;
 

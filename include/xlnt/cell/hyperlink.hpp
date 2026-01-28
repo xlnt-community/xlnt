@@ -44,22 +44,92 @@ class XLNT_API hyperlink
 {
 public:
     bool external() const;
+
+    /// <summary>
+    /// Returns the relationship of this hyperlink.
+    /// If this hyperlink does not have a relationship because it is internal (external() returns false),
+    /// an xlnt::invalid_attribute exception will be thrown.
+    /// </summary>
     class relationship relationship() const;
-    // external target
+
+    /// <summary>
+    /// Returns the URL (external target) of this hyperlink.
+    /// If this hyperlink does not have a URL because it is internal (external() returns false),
+    /// an xlnt::invalid_attribute exception will be thrown.
+    /// </summary>
     std::string url() const;
-    // internal target
+
+    /// <summary>
+    /// Returns the target range (internal target) of this hyperlink.
+    /// If this hyperlink does not have a target range because it is external (external() returns true),
+    /// an xlnt::invalid_attribute exception will be thrown.
+    /// </summary>
     std::string target_range() const;
 
+    /// <summary>
+    /// Returns whether this hyperlink has a displayed text.
+    /// </summary>
     bool has_display() const;
+
+    /// <summary>
+    /// Sets the displayed text of this hyperlink.
+    /// </summary>
     void display(const std::string &value);
+
+    /// <summary>
+    /// Clears the displayed text of this hyperlink (has_display() will return false afterwards).
+    /// </summary>
+    void clear_display();
+
+    /// <summary>
+    /// Returns the displayed text of this hyperlink.
+    /// Assumes that this hyperlink has a displayed text (please call has_display() to check).
+    /// If this hyperlink does not have a displayed text, an empty string will be returned.
+    /// </summary>
     const std::string &display() const;
 
+    /// <summary>
+    /// Returns true if this hyperlink has a tooltip.
+    /// </summary>
     bool has_tooltip() const;
+
+    /// <summary>
+    /// Sets the tooltip of this hyperlink.
+    /// </summary>
     void tooltip(const std::string &value);
+
+    /// <summary>
+    /// Clears the tooltip of this hyperlink (has_tooltip() will return false afterwards).
+    /// </summary>
+    void clear_tooltip();
+
+    /// <summary>
+    /// Returns the tooltip of this hyperlink.
+    /// Assumes that this hyperlink has a tooltip (please call has_tooltip() to check).
+    /// If this hyperlink does not have a tooltip, an empty string will be returned.
+    /// </summary>
     const std::string &tooltip() const;
 
+    /// <summary>
+    /// Returns whether this hyperlink has a location.
+    /// </summary>
     bool has_location() const;
+
+    /// <summary>
+    /// Sets the location of this hyperlink.
+    /// </summary>
     void location(const std::string &value);
+
+    /// <summary>
+    /// Clears the location of this hyperlink (has_location() will return false afterwards).
+    /// </summary>
+    void clear_location();
+
+    /// <summary>
+    /// Returns the location of this hyperlink.
+    /// Assumes that this hyperlink has a location (please call has_location() to check).
+    /// If this hyperlink does not have a location, an empty string will be returned.
+    /// </summary>
     const std::string &location() const;
 
 private:

@@ -152,13 +152,9 @@ struct workbook_impl
     struct file_version_t
     {
         std::string app_name;
-        std::size_t last_edited;
-        std::size_t lowest_edited;
-        std::size_t rup_build;
-
-        file_version_t(): last_edited(0), lowest_edited(0), rup_build(0) {
-
-        }
+        std::string last_edited;
+        std::string lowest_edited;
+        std::string rup_build;
 
         bool operator==(const file_version_t& rhs) const
         {

@@ -206,34 +206,42 @@ public:
     // Worksheets
 
     /// <summary>
-    /// Creates and returns a sheet after the last sheet in this workbook.
+    /// Creates a sheet after the last sheet in this workbook and returns a wrapper pointing to it.
     /// </summary>
     worksheet create_sheet();
 
     /// <summary>
-    /// Creates and returns a sheet at the specified index.
+    /// Creates a sheet at the specified index and returns a wrapper pointing to it.
     /// </summary>
     worksheet create_sheet(std::size_t index);
 
     /// <summary>
+    /// Creates a sheet wit the specified title and relationship
+    /// and returns a wrapper pointing to it.
     /// TODO: This should be private...
     /// </summary>
     worksheet create_sheet_with_rel(const std::string &title, const relationship &rel);
 
     /// <summary>
-    /// Creates and returns a new sheet after the last sheet initializing it
+    /// Creates a new sheet after the last sheet initializing it
     /// with all of the data from the provided worksheet.
+    /// Returns a wrapper pointing to the copied sheet.
+    /// The worksheet to be copied needs to be part of the same workbook (have the same parent)
+    /// as this workbook - otherwise, an invalid_parameter exception will be thrown.
     /// </summary>
     worksheet copy_sheet(worksheet worksheet);
 
     /// <summary>
-    /// Creates and returns a new sheet at the specified index initializing it
+    /// Creates a new sheet at the specified index initializing it
     /// with all of the data from the provided worksheet.
+    /// Returns a wrapper pointing to the copied sheet.
+    /// The worksheet to be copied needs to be part of the same workbook (have the same parent)
+    /// as this workbook - otherwise, an invalid_parameter exception will be thrown.
     /// </summary>
     worksheet copy_sheet(worksheet worksheet, std::size_t index);
 
     /// <summary>
-    /// Returns the worksheet that is determined to be active. An active
+    /// Returns a wrapper pointing to the worksheet that is determined to be active. An active
     /// sheet is that which is initially shown by the spreadsheet editor.
     /// </summary>
     worksheet active_sheet();
@@ -245,46 +253,58 @@ public:
     void active_sheet(std::size_t index);
 
     /// <summary>
-    /// Returns the worksheet with the given name. This may throw an exception
+    /// Returns a wrapper pointing to the worksheet with the given name. This will throw a key_not_found exception
     /// if the sheet isn't found. Use workbook::contains(const std::string &)
     /// to make sure the sheet exists before calling this method.
     /// </summary>
     worksheet sheet_by_title(const std::string &title);
 
     /// <summary>
-    /// Returns the worksheet with the given name. This may throw an exception
+    /// Returns a wrapper pointing to the worksheet with the given name. This will throw a key_not_found exception
     /// if the sheet isn't found. Use workbook::contains(const std::string &)
     /// to make sure the sheet exists before calling this method.
     /// </summary>
     const worksheet sheet_by_title(const std::string &title) const;
 
     /// <summary>
-    /// Returns the worksheet at the given index. This will throw an exception
-    /// if index is greater than or equal to the number of sheets in this workbook.
+    /// Returns a wrapper pointing to the worksheet at the given index. Assumes that the index is valid (please call sheet_count() to check).
+    /// This method will throw an invalid_parameter exception if index is greater than or equal to the number of sheets in this workbook.
     /// </summary>
     worksheet sheet_by_index(std::size_t index);
 
     /// <summary>
-    /// Returns the worksheet at the given index. This will throw an exception
-    /// if index is greater than or equal to the number of sheets in this workbook.
+    /// Returns a wrapper pointing to the worksheet at the given index. Assumes that the index is valid (please call sheet_count() to check).
+    /// This method will throw an invalid_parameter exception if index is greater than or equal to the number of sheets in this workbook.
     /// </summary>
     const worksheet sheet_by_index(std::size_t index) const;
 
     /// <summary>
-    /// Returns the worksheet with a sheetId of id. Sheet IDs are arbitrary numbers
-    /// that uniquely identify a sheet. Most users won't need this.
+    /// Returns whether this workbook has a sheet with the specified ID.
+    /// Most users won't need this.
+    /// </summary>
+    bool has_sheet_id(std::size_t id) const;
+
+    /// <summary>
+    /// Returns a wrapper pointing to the worksheet with a sheetId of id. Sheet IDs are arbitrary numbers
+    /// that uniquely identify a sheet.
+    /// Assumes that the ID is valid (please call has_sheet_id() to check). If the ID is invalid,
+    /// a key_not_found exception will be thrown.
+    /// Most users won't need this.
     /// </summary>
     worksheet sheet_by_id(std::size_t id);
 
     /// <summary>
-    /// Returns the worksheet with a sheetId of id. Sheet IDs are arbitrary numbers
-    /// that uniquely identify a sheet. Most users won't need this.
+    /// Returns a wrapper pointing to the worksheet with a sheetId of id. Sheet IDs are arbitrary numbers
+    /// that uniquely identify a sheet.
+    /// Assumes that the ID is valid (please call has_sheet_id() to check). If the ID is invalid,
+    /// a key_not_found exception will be thrown.
+    /// Most users won't need this.
     /// </summary>
     const worksheet sheet_by_id(std::size_t id) const;
 
     /// <summary>
-    /// Returns the hidden identifier of the worksheet at the given index.
-    /// This will throw an exception if index is greater than or equal to the
+    /// Returns the hidden identifier of the worksheet at the given index. Assumes that the index is valid (please call sheet_count() to check).
+    /// This will throw an invalid_parameter exception if index is greater than or equal to the
     /// number of sheets in this workbook.
     /// </summary>
     bool sheet_hidden_by_index(std::size_t index) const;
@@ -296,18 +316,23 @@ public:
 
     /// <summary>
     /// Returns the index of the given worksheet. The worksheet must be owned by this workbook.
+    /// If the worksheet is not owned by this workbook, an invalid_parameter exception will be thrown.
     /// </summary>
     std::size_t index(worksheet worksheet) const;
 
     /// <summary>
     /// Moves a sheet to a new position defined. The worksheet must be owned by this workbook.
+    /// Assumes that the index is valid (please call sheet_count() to check).
+    /// This method will throw an invalid_parameter exception if index is greater than or equal to the number of sheets in this workbook,
+    /// or if the worksheet is not part of (not owned by) this workbook.
     /// </summary>
     void move_sheet(worksheet worksheet, std::size_t newIndex);
 
     // remove worksheets
 
     /// <summary>
-    /// Removes the given worksheet from this workbook.
+    /// Removes the given worksheet from this workbook. The worksheet must be owned by this workbook.
+    /// If the worksheet is not part of (not owned by) this workbook, an invalid_parameter exception will be thrown.
     /// </summary>
     void remove_sheet(worksheet worksheet);
 
@@ -326,8 +351,8 @@ public:
 
     /// <summary>
     /// Returns an iterator to the worksheet following the last worksheet of the workbook.
-    /// This worksheet acts as a placeholder; attempting to access it will cause an
-    /// exception to be thrown.
+    /// This worksheet acts as a placeholder; attempting to access it will cause
+    /// an xlnt::invalid_parameter exception to be thrown.
     /// </summary>
     iterator end();
 
@@ -338,8 +363,8 @@ public:
 
     /// <summary>
     /// Returns a const iterator to the worksheet following the last worksheet of the workbook.
-    /// This worksheet acts as a placeholder; attempting to access it will cause an
-    /// exception to be thrown.
+    /// This worksheet acts as a placeholder; attempting to access it will cause
+    /// an xlnt::invalid_parameter exception to be thrown.
     /// </summary>
     const_iterator end() const;
 
@@ -350,8 +375,8 @@ public:
 
     /// <summary>
     /// Returns a const iterator to the worksheet following the last worksheet of the workbook.
-    /// This worksheet acts as a placeholder; attempting to access it will cause an
-    /// exception to be thrown.
+    /// This worksheet acts as a placeholder; attempting to access it will cause
+    /// an xlnt::invalid_parameter exception to be thrown.
     /// </summary>
     const_iterator cend() const;
 
@@ -385,7 +410,9 @@ public:
     std::vector<xlnt::core_property> core_properties() const;
 
     /// <summary>
-    /// Returns the value of the given core property.
+    /// Returns a copy of the value of the given core property.
+    /// Assumes that the specified core_property exists (please call has_core_property() to check).
+    /// If the specified core_property does not exist, a null variant will be returned.
     /// </summary>
     variant core_property(xlnt::core_property type) const;
 
@@ -406,7 +433,9 @@ public:
     std::vector<xlnt::extended_property> extended_properties() const;
 
     /// <summary>
-    /// Returns the value of the given extended property.
+    /// Returns a copy of the value of the given extended property.
+    /// Assumes that the specified extended_property exists (please call has_extended_property() to check).
+    /// If the specified extended_property does not exist, a null variant will be returned.
     /// </summary>
     variant extended_property(xlnt::extended_property type) const;
 
@@ -427,7 +456,9 @@ public:
     std::vector<std::string> custom_properties() const;
 
     /// <summary>
-    /// Returns the value of the given custom property.
+    /// Returns a copy of the value of the given custom property.
+    /// Assumes that the specified custom_property exists (please call has_custom_property() to check).
+    /// If the specified custom_property does not exist, a null variant will be returned.
     /// </summary>
     variant custom_property(const std::string &property_name) const;
 
@@ -456,6 +487,8 @@ public:
 
     /// <summary>
     /// Returns the title of this workbook.
+    /// Assumes that this workbook has a title (please call has_title() to check).
+    /// If this workbook has no title, an invalid_attribute exception will be thrown.
     /// </summary>
     std::string title() const;
 
@@ -487,7 +520,7 @@ public:
     void create_named_range(const std::string &name, worksheet worksheet, const range_reference &reference);
 
     /// <summary>
-    /// Creates a new names range.
+    /// Creates a new named range.
     /// </summary>
     void create_named_range(const std::string &name, worksheet worksheet, const std::string &reference_string);
 
@@ -498,11 +531,15 @@ public:
 
     /// <summary>
     /// Returns the named range with the given name.
+    /// Assumes that the specified named_range exists (please call has_named_range() to check).
+    /// If the specified named_range does not exist, an xlnt::key_not_found exception will be thrown.
     /// </summary>
     class range named_range(const std::string &name);
 
     /// <summary>
     /// Deletes the named range with the given name.
+    /// Assumes that the specified named_range exists (please call has_named_range() to check).
+    /// If the specified named_range does not exist, an xlnt::key_not_found exception will be thrown.
     /// </summary>
     void remove_named_range(const std::string &name);
 
@@ -610,12 +647,18 @@ public:
     /// <summary>
     /// Interprets byte vector data as an XLSX file and sets the content of this
     /// workbook to match that file.
+    /// If the workbook requires a password (which is not provided), an xlnt::invalid_password will be thrown.
+    /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     void load(const std::vector<std::uint8_t> &data);
 
     /// <summary>
     /// Interprets byte vector data as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
+    /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
+    /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     void load(const std::vector<std::uint8_t> &data, const std::string &password);
 
@@ -623,6 +666,9 @@ public:
     /// <summary>
     /// Interprets byte vector data as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
+    /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
+    /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     void load(const std::vector<std::uint8_t> &data, std::u8string_view password);
 #endif
@@ -630,12 +676,18 @@ public:
     /// <summary>
     /// Interprets file with the given filename as an XLSX file and sets
     /// the content of this workbook to match that file.
+    /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
+    /// If the workbook requires a password (which is not provided), an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(const std::string &filename);
 
     /// <summary>
     /// Interprets file with the given filename as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
+    /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
+    /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(const std::string &filename, const std::string &password);
 
@@ -643,12 +695,18 @@ public:
     /// <summary>
     /// Interprets file with the given filename as an XLSX file and sets
     /// the content of this workbook to match that file.
+    /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
+    /// If the workbook requires a password (which is not provided), an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(std::u8string_view filename);
 
     /// <summary>
     /// Interprets file with the given filename as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
+    /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
+    /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(std::u8string_view filename, std::u8string_view password);
 #endif
@@ -658,12 +716,18 @@ public:
     /// <summary>
     /// Interprets file with the given filename as an XLSX file and sets
     /// the content of this workbook to match that file.
+    /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
+    /// If the workbook requires a password (which is not provided), an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(const std::wstring &filename);
 
     /// <summary>
     /// Interprets file with the given filename as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
+    /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
+    /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(const std::wstring &filename, const std::string &password);
 #endif
@@ -671,12 +735,18 @@ public:
     /// <summary>
     /// Interprets file with the given filename as an XLSX file and sets the
     /// content of this workbook to match that file.
+    /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
+    /// If the workbook requires a password (which is not provided), an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(const xlnt::path &filename);
 
     /// <summary>
     /// Interprets file with the given filename as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
+    /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
+    /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(const xlnt::path &filename, const std::string &password);
 
@@ -684,6 +754,9 @@ public:
     /// <summary>
     /// Interprets file with the given filename as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
+    /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
+    /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
     /// </summary>
     void load(const xlnt::path &filename, std::u8string_view password);
 #endif
@@ -691,12 +764,18 @@ public:
     /// <summary>
     /// Interprets data in stream as an XLSX file and sets the content of this
     /// workbook to match that file.
+    /// If the workbook requires a password (which is not provided), an xlnt::invalid_password will be thrown.
+    /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     void load(std::istream &stream);
 
     /// <summary>
     /// Interprets data in stream as an XLSX file encrypted with the given password
     /// and sets the content of this workbook to match that file.
+    /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
+    /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     void load(std::istream &stream, const std::string &password);
 
@@ -704,6 +783,9 @@ public:
     /// <summary>
     /// Interprets data in stream as an XLSX file encrypted with the given password
     /// and sets the content of this workbook to match that file.
+    /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
+    /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     void load(std::istream &stream, std::u8string_view password);
 #endif
@@ -716,7 +798,9 @@ public:
     bool has_view() const;
 
     /// <summary>
-    /// Returns the view.
+    /// Returns a copy of the view.
+    /// Assumes that the view exists (please call has_view() to check).
+    /// If the view does not exist, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     workbook_view view() const;
 
@@ -734,6 +818,8 @@ public:
 
     /// <summary>
     /// Returns the code name that was set for this workbook.
+    /// Assumes that the code_name exists (please call has_code_name() to check).
+    /// If the code_name does not exist, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     std::string code_name() const;
 
@@ -748,24 +834,122 @@ public:
     bool has_file_version() const;
 
     /// <summary>
-    /// Returns the AppName workbook file property.
+    /// Clears the information contained by the file version (e.g. AppName, LastEdited, LowestEdited, RupBuild).
     /// </summary>
-    std::string app_name() const;
+    void clear_file_version();
 
     /// <summary>
-    /// Returns the LastEdited workbook file property.
+    /// Returns true if this workbook has a non-empty AppName workbook file property.
+    /// </summary>
+    bool has_app_name() const;
+
+    /// <summary>
+    /// Returns the AppName workbook file property.
+    /// Assumes that this workbook has an AppName property (please call has_app_name() to check).
+    /// If this workbook has no AppName property, an empty string will be returned.
+    /// </summary>
+    const std::string &app_name() const;
+
+    /// <summary>
+    /// Sets the AppName workbook file property. Creates the file version information if it does not exist yet.
+    /// </summary>
+    void app_name(const std::string &app_name);
+
+    /// <summary>
+    /// Returns true if this workbook has a non-empty LastEdited workbook file property.
+    /// </summary>
+    bool has_last_edited() const;
+
+    /// <summary>
+    /// Returns the LastEdited workbook file property, as a string.
+    /// Assumes that this workbook has a LastEdited property (please call has_last_edited() to check).
+    /// If this workbook has no LastEdited property, an empty string will be returned.
+    /// </summary>
+    const std::string &last_edited_str() const;
+
+    /// <summary>
+    /// Returns the LastEdited workbook file property, parsed from a string to a size_t.
+    /// Assumes that this workbook has a LastEdited property (please call has_last_edited() to check).
+    /// If this workbook has no LastEdited property, an invalid_attribute exception will be thrown.
+    /// If the LastEdited property cannot be parsed as a size_t, an invalid_attribute exception will be thrown.
     /// </summary>
     std::size_t last_edited() const;
 
     /// <summary>
-    /// Returns the LowestEdited workbook file property.
+    /// Sets the LastEdited workbook file property, as a string.
+    /// Creates the file version information if it does not exist yet.
+    /// </summary>
+    void last_edited(const std::string &last_edited);
+
+    /// <summary>
+    /// Sets the LastEdited workbook file property, as a number (internally converted to a string).
+    /// Creates the file version information if it does not exist yet.
+    /// </summary>
+    void last_edited(std::size_t last_edited);
+
+    /// <summary>
+    /// Returns true if this workbook has a non-empty LowestEdited workbook file property.
+    /// </summary>
+    bool has_lowest_edited() const;
+
+    /// <summary>
+    /// Returns the LowestEdited workbook file property, as a string.
+    /// Assumes that this workbook has a LowestEdited property (please call has_lowest_edited() to check).
+    /// If this workbook has no LowestEdited property, an empty string will be returned.
+    /// </summary>
+    const std::string &lowest_edited_str() const;
+
+    /// <summary>
+    /// Returns the LowestEdited workbook file property, parsed from a string to size_t.
+    /// Assumes that this workbook has a LowestEdited property (please call has_lowest_edited() to check).
+    /// If this workbook has no LowestEdited property, an invalid_attribute exception will be thrown.
+    /// If the LowestEdited property cannot be parsed as a size_t, an invalid_attribute exception will be thrown.
     /// </summary>
     std::size_t lowest_edited() const;
 
     /// <summary>
-    /// Returns the RupBuild workbook file property.
+    /// Sets the LowestEdited workbook file property, as a string.
+    /// Creates the file version information if it does not exist yet.
+    /// </summary>
+    void lowest_edited(const std::string &lowest_edited);
+
+    /// <summary>
+    /// Sets the LowestEdited workbook file property, as a number (internally converted to a string).
+    /// Creates the file version information if it does not exist yet.
+    /// </summary>
+    void lowest_edited(std::size_t lowest_edited);
+
+    /// <summary>
+    /// Returns true if this workbook has a non-empty RupBuild workbook file property.
+    /// </summary>
+    bool has_rup_build() const;
+
+    // <summary>
+    /// Returns the RupBuild workbook file property, as a string.
+    /// Assumes that this workbook has a RupBuild property (please call has_rup_build() to check).
+    /// If this workbook has no RupBuild property, an empty string will be returned.
+    /// </summary>
+    const std::string &rup_build_str() const;
+
+    /// <summary>
+    /// Returns the RupBuild workbook file property, parsed from a string to size_t.
+    /// Assumes that this workbook has a RupBuild property (please call has_rup_build() to check).
+    /// If this workbook has no RupBuild property, an invalid_attribute exception will be thrown.
+    /// If the RupBuild property cannot be parsed as a size_t, an invalid_attribute exception will be thrown.
     /// </summary>
     std::size_t rup_build() const;
+
+    /// <summary>
+    /// Sets the RupBuild workbook file property, as a string.
+    /// Creates the file version information if it does not exist yet.
+    /// </summary>
+    void rup_build(const std::string &rup_build);
+
+    /// <summary>
+    /// Sets the RupBuild workbook file property, as a number (internally converted to a string).
+    /// Creates the file version information if it does not exist yet.
+    /// </summary>
+    void rup_build(std::size_t rup_build);
 
     // Theme
 
@@ -776,6 +960,8 @@ public:
 
     /// <summary>
     /// Returns a const reference to this workbook's theme.
+    /// Assumes that this workbook has a theme (please call has_theme() to check).
+    /// If this workbook has no theme, an invalid_attribute exception will be thrown.
     /// </summary>
     const xlnt::theme &theme() const;
 
@@ -787,7 +973,7 @@ public:
     // Formats
 
     /// <summary>
-    /// Returns the cell format at the given index. The index is the position of
+    /// Returns a wrapper pointing to the cell format at the given index. The index is the position of
     /// the format in xl/styles.xml.
     /// </summary>
     xlnt::format format(std::size_t format_index);
@@ -799,7 +985,7 @@ public:
     const xlnt::format format(std::size_t format_index) const;
 
     /// <summary>
-    /// Creates a new format and returns it.
+    /// Creates a new format and returns a wrapper pointing to it.
     /// </summary>
     xlnt::format create_format(bool default_format = false);
 
@@ -817,27 +1003,33 @@ public:
     // Styles
 
     /// <summary>
-    /// Returns true if this workbook has a style with a name of name.
+    /// Returns true if this workbook has a style with the given name.
     /// </summary>
     bool has_style(const std::string &name) const;
 
     /// <summary>
-    /// Returns the named style with the given name.
+    /// Returns a wrapper pointing to the named style with the given name.
+    /// Assumes that this workbook has a style with the given name (please call has_style() to check).
+    /// If this workbook has no style with the given name, a key_not_found exception will be thrown.
     /// </summary>
     class style style(const std::string &name);
 
     /// <summary>
-    /// Returns the named style with the given name.
+    /// Returns a wrapper pointing to the named style with the given name.
+    /// Assumes that this workbook has a style with the given name (please call has_style() to check).
+    /// If this workbook has no style with the given name, a key_not_found exception will be thrown.
     /// </summary>
     const class style style(const std::string &name) const;
 
     /// <summary>
-    /// Creates a new style and returns it.
+    /// Creates a new style and returns a wrapper pointing to it.
     /// </summary>
     class style create_style(const std::string &name);
 
     /// <summary>
-    /// Creates a new style and returns it.
+    /// Creates a new style and returns a wrapper pointing to it.
+    /// Assumes that the builtin ID exists.
+    /// If the builtin ID does not exist, an invalid_parameter exception will be thrown.
     /// </summary>
     class style create_builtin_style(std::size_t builtin_id);
 
@@ -922,7 +1114,14 @@ public:
         const std::string &extension, const std::string &content_type);
 
     /// <summary>
+    /// Returns true if this workbook has a thumbnail.
+    /// </summary>
+    bool has_thumbnail() const;
+
+    /// <summary>
     /// Returns a vector of bytes representing the workbook's thumbnail.
+    /// Assumes that this workbook has a thumbnail (please call has_thumbnail() to check).
+    /// If the workbook has no thumbnail, an invalid_attribute exception will be thrown.
     /// </summary>
     const std::vector<std::uint8_t> &thumbnail() const;
 
@@ -939,7 +1138,14 @@ public:
     bool has_calculation_properties() const;
 
     /// <summary>
-    /// Returns the calculation properties used in this workbook.
+    /// Clears the calculation properties of this workbook.
+    /// </summary>
+    void clear_calculation_properties();
+
+    /// <summary>
+    /// Returns the a copy of the calculation properties used in this workbook.
+    /// Assumes that this workbook has calculation properties (please call has_calculation_properties() to check).
+    /// If this workbook has no calculation properties, a default-constructed calculation_properties object will be returned.
     /// </summary>
     class calculation_properties calculation_properties() const;
 
@@ -970,12 +1176,16 @@ public:
     workbook &operator=(workbook &&other) = default;
 
     /// <summary>
-    /// Return the worksheet with a title of "name".
+    /// Returns a wrapper pointing to the worksheet with a title of "name". This will throw a key_not_found exception
+    /// if the sheet isn't found. Use workbook::contains(const std::string &)
+    /// to make sure the sheet exists before calling this method.
     /// </summary>
     worksheet operator[](const std::string &name);
 
     /// <summary>
-    /// Return the worksheet at "index".
+    /// Returns a wrapper pointing to the worksheet at "index".
+    /// This method will throw an invalid_parameter exception if index is greater than or equal to
+    /// the number of sheets in this workbook (call sheet_count() to check).
     /// </summary>
     worksheet operator[](std::size_t index);
 
@@ -1086,6 +1296,9 @@ private:
     /// <summary>
     /// Interprets byte vector data as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
+    /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
+    /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     template <typename T>
     void load_internal(const std::vector<std::uint8_t> &data, const T &password);
@@ -1093,6 +1306,9 @@ private:
     /// <summary>
     /// Interprets file with the given filename as an XLSX file and sets
     /// the content of this workbook to match that file.
+    /// If the workbook requires a password (which is not provided), an xlnt::invalid_password will be thrown.
+    /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     template <typename T>
     void load_internal(const T &filename);
@@ -1100,6 +1316,9 @@ private:
     /// <summary>
     /// Interprets file with the given filename as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
+    /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
+    /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     template <typename T>
     void load_internal(const T &filename, const T &password);
@@ -1107,6 +1326,9 @@ private:
     /// <summary>
     /// Interprets file with the given filename as an XLSX file encrypted with the
     /// given password and sets the content of this workbook to match that file.
+    /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
+    /// If the file does not exist at the specified path, or is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     template <typename T>
     void load_internal(const xlnt::path &filename, const T &password);
@@ -1114,6 +1336,9 @@ private:
     /// <summary>
     /// Interprets data in stream as an XLSX file encrypted with the given password
     /// and sets the content of this workbook to match that file.
+    /// If the specified password is invalid, an xlnt::invalid_password will be thrown.
+    /// If the file is empty/malformed, an xlnt::invalid_file exception will be thrown.
+    /// If the file is valid but uses features not yet supported by XLNT which cannot be ignored/skipped, an xlnt::unsupported exception will be thrown.
     /// </summary>
     template <typename T>
     void load_internal(std::istream &stream, const T &password);

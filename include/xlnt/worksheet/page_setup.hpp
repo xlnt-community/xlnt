@@ -112,6 +112,8 @@ public:
 
     /// <summary>
     /// Returns the paper size which should be used to print the worksheet using this page setup.
+    /// Assumes that this page setup has a paper size (please call has_paper_size() to check).
+    /// If this workbook has no paper size, the default paper_size::letter will be returned.
     /// </summary>
     xlnt::paper_size paper_size() const;
 
@@ -156,14 +158,16 @@ public:
     void fit_to_width(bool fit_to_width);
 
     /// <summary>
-    /// Sets the factor by which the page should be scaled during printing.
+    /// Sets the scale percentage by which the page should be scaled during printing. A value of 150 means 150% scaling.
+    /// Possible values are between 10 and 400. Values outside this range will be clipped to the range limits.
     /// </summary>
-    void scale(double scale);
+    void scale(unsigned int scale);
 
     /// <summary>
-    /// Returns the factor by which the page should be scaled during printing.
+    /// Returns the scale percentage by which the page should be scaled during printing. A value of 150 means 150% scaling.
+    /// If no scale has been set (has_scale() returns false), the default scale of 100 will be returned.
     /// </summary>
-    double scale() const;
+    unsigned int scale() const;
 
     /// <summary>
     /// Check if current paper setting has scale setting
@@ -241,7 +245,7 @@ private:
     /// <summary>
     /// The amount to scale the worksheet
     /// </summary>
-    xlnt::optional<double> scale_;
+    xlnt::optional<unsigned int> scale_;
 };
 
 } // namespace xlnt

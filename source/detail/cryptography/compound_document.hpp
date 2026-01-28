@@ -35,6 +35,8 @@
 #include <detail/binary.hpp>
 #include <detail/unicode.hpp>
 
+// NOTE: compound files are not part of the OOXML specification (ECMA-376).
+// This implementation is based on the "[MS-CFB]: Compound File Binary File Format" specification.
 namespace xlnt {
 namespace detail {
 

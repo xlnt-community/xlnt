@@ -84,9 +84,9 @@ void sample_read_into_vector_example()
     }
     std::clog << "Processing complete" << std::endl;
     std::clog << "Reading the vector and printing output to the screen" << std::endl;
-    for (int rowInt = 0; rowInt < theWholeSpreadSheet.size(); rowInt++)
+    for (size_t rowInt = 0; rowInt < theWholeSpreadSheet.size(); rowInt++)
     {
-        for (int colInt = 0; colInt < theWholeSpreadSheet.at(rowInt).size(); colInt++)
+        for (size_t colInt = 0; colInt < theWholeSpreadSheet.at(rowInt).size(); colInt++)
         {
             std::cout << theWholeSpreadSheet.at(rowInt).at(colInt) << std::endl;
         }
@@ -128,10 +128,10 @@ void sample_write_sheet_to_file_example()
     //We will now be looping through the 2 dimensional vector which we created above
     //In this case we have two iterators one for the outer loop (row) and one for the inner loop (column)
     std::clog << "Looping through vector and writing to spread sheet" << std::endl;
-    for (int fOut = 0; fOut < wholeWorksheet.size(); fOut++)
+    for (size_t fOut = 0; fOut < wholeWorksheet.size(); fOut++)
     {
         std::clog << "Row" << fOut << std::endl;
-        for (int fIn = 0; fIn < wholeWorksheet.at(fOut).size(); fIn++)
+        for (size_t fIn = 0; fIn < wholeWorksheet.at(fOut).size(); fIn++)
         {
             //Take notice of the difference between accessing the vector and accessing the work sheet
             //As you may already know Excel spread sheets start at row 1 and column 1 (not row 0 and column 0 like you would expect from a C++ vector)

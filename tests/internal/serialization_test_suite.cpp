@@ -42,6 +42,7 @@ public:
     serialization_test_suite()
     {
         register_test(test_produce_empty);
+        register_test(test_read_non_existing);
         register_test(test_produce_simple_excel);
         register_test(test_save_after_sheet_deletion);
         register_test(test_write_comments_hyperlinks_formulae);
@@ -108,6 +109,18 @@ public:
         xlnt::workbook wb;
         const auto path = path_helper::test_file("3_default.xlsx");
         xlnt_assert(workbook_matches_file(wb, path));
+    }
+
+    void test_read_non_existing()
+    {
+        xlnt::workbook wb;
+        #define DOES_NOT_EXIST "DOES NOT EXIST.xlsx"
+        LSTRING_LITERAL(DOES_NOT_EXIST);
+        xlnt_assert_throws(wb.load(DOES_NOT_EXIST), xlnt::invalid_file);
+        xlnt_assert_throws(wb.load(U8STRING_LITERAL(DOES_NOT_EXIST)), xlnt::invalid_file);
+#ifdef _MSC_VER
+        xlnt_assert_throws(wb.load(LSTRING_LITERAL(DOES_NOT_EXIST)), xlnt::invalid_file);
+#endif
     }
 
     void test_produce_simple_excel()
@@ -326,7 +339,7 @@ public:
     {
         xlnt::workbook wb;
         const auto path = path_helper::test_file("5_encrypted_agile.xlsx");
-        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(wb.load(path, "secret"));
     }
 
@@ -334,14 +347,14 @@ public:
     {
         xlnt::workbook wb;
         const auto path = path_helper::test_file("6_encrypted_libre.xlsx");
-        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(wb.load(path, u8"\u043F\u0430\u0440\u043E\u043B\u044C")); // u8"пароль"
     }
 
     void test_decrypt_libre_office_constructor()
     {
         const auto path = path_helper::test_file("6_encrypted_libre.xlsx");
-        xlnt_assert_throws(xlnt::workbook(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(xlnt::workbook(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(xlnt::workbook(path, u8"\u043F\u0430\u0440\u043E\u043B\u044C")); // u8"пароль"
     }
 
@@ -349,7 +362,7 @@ public:
     {
         xlnt::workbook wb;
         const auto path = path_helper::test_file("7_encrypted_standard.xlsx");
-        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(wb.load(path, "password"));
     }
 
@@ -357,7 +370,7 @@ public:
     {
         xlnt::workbook wb;
         const auto path = path_helper::test_file("8_encrypted_numbers.xlsx");
-        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(wb.load(path, "secret"));
     }
 
@@ -726,6 +739,8 @@ public:
         xlnt::streaming_workbook_reader reader;
 
         reader.open(xlnt::path(path));
+
+        xlnt_assert_throws(reader.begin_worksheet("NON-EXISTING WORKSHEET"), xlnt::key_not_found);
 
         for (auto sheet_name : reader.sheet_titles())
         {

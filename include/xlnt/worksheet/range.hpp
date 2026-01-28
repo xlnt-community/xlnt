@@ -107,12 +107,15 @@ public:
     const cell_vector vector(std::size_t n) const;
 
     /// <summary>
-    /// Returns a cell in the range relative to its top left cell.
+    /// Returns a wrapper pointing to the cell in the range relative to its top left cell.
+    /// If the cell doesn't exist, an empty cell will be created, added to the worksheet, and returned.
     /// </summary>
     class cell cell(const cell_reference &ref);
 
     /// <summary>
-    /// Returns a cell in the range relative to its top left cell.
+    /// Returns a wrapper pointing to the cell in the range relative to its top left cell.
+    /// Assumes that the cell exists.
+    /// If the cell doesn't exist, an invalid_parameter exception will be thrown.
     /// </summary>
     const class cell cell(const cell_reference &ref) const;
 
@@ -174,13 +177,14 @@ public:
 
     /// <summary>
     /// Sets the named style applied to all cells in this range to a style named style_name.
+    /// Assumes that the style has been previously created in the workbook (please call workbook::has_style() to check).
     /// If this style has not been previously created in the workbook, a
     /// key_not_found exception will be thrown.
     /// </summary>
     range style(const std::string &style_name);
 
     /// <summary>
-    ///
+    /// Creates a conditional format for the given condition and returns a wrapper pointing to it.
     /// </summary>
     xlnt::conditional_format conditional_format(const condition &when);
 

@@ -79,5 +79,5 @@
      (XLNT_C_99 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_11)) || \
      (XLNT_C_11 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_17)) || \
      (XLNT_C_17 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_20)) /*|| \
-     (CLNT_C_23 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_26))*/ \
+     (XLNT_C_23 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_26))*/ \
      ))

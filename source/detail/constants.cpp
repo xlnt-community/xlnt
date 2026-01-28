@@ -40,6 +40,14 @@ row_t constants::max_row()
     return std::numeric_limits<row_t>::max();
 }
 
+row_t constants::max_row_reference_default()
+{
+    // According to the OOXML specification:
+    // "In SpreadsheetML, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD).
+    // An implementation can extend this range."
+    return 1048576;
+}
+
 const column_t constants::min_column()
 {
     return column_t(1);
@@ -50,9 +58,23 @@ const column_t constants::max_column()
     return column_t(std::numeric_limits<column_t::index_t>::max());
 }
 
+const column_t constants::max_column_reference_default()
+{
+    // According to the OOXML specification:
+    // "In SpreadsheetML, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD).
+    // An implementation can extend this range."
+    return column_t(16384); // column XFD
+}
+
 size_t constants::max_elements_for_reserve()
 {
     return 10000;
+}
+
+const std::string &constants::empty_str()
+{
+    static const std::string empty;
+    return empty;
 }
 
 // constants
@@ -172,7 +194,7 @@ const std::string &constants::ns(const std::string &id)
 
     if (match == namespaces().end())
     {
-        throw xlnt::exception("bad namespace");
+        throw xlnt::invalid_parameter("bad namespace \"" + id + "\"");
     }
 
     return match->second;

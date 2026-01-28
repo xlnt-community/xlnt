@@ -22,8 +22,11 @@
 //
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
+
 #include <xlnt/utils/numeric.hpp>
 #include <xlnt/worksheet/page_setup.hpp>
+
+#include <algorithm>
 
 namespace xlnt {
 
@@ -58,6 +61,10 @@ void page_setup::sheet_state(xlnt::sheet_state sheet_state)
 
 paper_size page_setup::paper_size() const
 {
+    if (!paper_size_.is_set())
+    {
+        return paper_size::letter;
+    }
     return paper_size_.get();
 }
 
@@ -101,13 +108,19 @@ void page_setup::fit_to_width(bool fit_to_width)
     fit_to_width_ = fit_to_width;
 }
 
-void page_setup::scale(double scale)
+void page_setup::scale(unsigned int scale)
 {
+    scale = std::min(scale, 400u);
+    scale = std::max(scale, 10u);
     scale_ = scale;
 }
 
-double page_setup::scale() const
+unsigned int page_setup::scale() const
 {
+    if (!scale_.is_set())
+    {
+        return 100;
+    }
     return scale_.get();
 }
 

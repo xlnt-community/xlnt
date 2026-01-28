@@ -284,7 +284,7 @@ gradient_fill fill::gradient_fill() const
 {
     if (type_ != fill_type::gradient)
     {
-        throw invalid_attribute();
+        throw invalid_attribute("the fill is not a gradient fill, but of type " + std::to_string(static_cast<int>(type_)));
     }
 
     return gradient_;
@@ -294,7 +294,7 @@ pattern_fill fill::pattern_fill() const
 {
     if (type_ != fill_type::pattern)
     {
-        throw invalid_attribute();
+        throw invalid_attribute("the fill is not a pattern fill, but of type " + std::to_string(static_cast<int>(type_)));
     }
 
     return pattern_;

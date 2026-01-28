@@ -7,7 +7,9 @@
 #include <xlnt/utils/path.hpp>
 #include <xlnt/internal/features.hpp>
 
-#define XLNT_TEST_U8STRING_LITERAL(a) u8##a
+#define XLNT_TEST_U8STRING_LITERAL2(a) u8##a
+
+#define XLNT_TEST_U8STRING_LITERAL(a) XLNT_TEST_U8STRING_LITERAL2(a)
 
 #ifdef __cpp_char8_t
 /// Casts const char8_t arrays from C++20 to const char arrays.
@@ -112,7 +114,7 @@ public:
     {
         if(!overwrite && destination.exists())
         {
-            throw xlnt::exception("destination file already exists and overwrite==false");
+            throw xlnt::exception("destination file already exists and overwrite==false for file at path \"" + destination.string() + "\"");
         }
 
         std::ifstream src(source.string(), std::ios::binary);
