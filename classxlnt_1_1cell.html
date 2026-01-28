@@ -163,7 +163,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a3d2f3a9977020883ce088e30037c1af9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true iff this cell's number format matches a date format.  <a href="#a3d2f3a9977020883ce088e30037c1af9">More...</a><br /></td></tr>
 <tr class="separator:a3d2f3a9977020883ce088e30037c1af9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac03ebad679cd76a97f60c66ee82751f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1cell__reference.html">cell_reference</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#ac03ebad679cd76a97f60c66ee82751f8">reference</a> () const</td></tr>
-<tr class="memdesc:ac03ebad679cd76a97f60c66ee82751f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a <a class="el" href="classxlnt_1_1cell__reference.html" title="An object used to refer to a cell. References have two parts, the column and the row. In Excel, the reference string A1 refers to the top-left-most cell. A cell_reference can be initialized from a string of this form or a 1-indexed ordered pair of the form column, row. ">cell_reference</a> that points to the location of this cell.  <a href="#ac03ebad679cd76a97f60c66ee82751f8">More...</a><br /></td></tr>
+<tr class="memdesc:ac03ebad679cd76a97f60c66ee82751f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a <a class="el" href="classxlnt_1_1cell__reference.html" title="An object used to refer to a cell. References have two parts, the column and the row. In Excel, the reference string A1 refers to the top-left-most cell. A cell_reference can be initialized from a string of this form or a 1-indexed ordered pair of the form column, row. By default, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD, column index 16384). The OOXML specification allows to extend this range, and XLNT allows both rows and columns between 1 and 4294967295. Please note that not all applications might support these extended ranges. ">cell_reference</a> that points to the location of this cell.  <a href="#ac03ebad679cd76a97f60c66ee82751f8">More...</a><br /></td></tr>
 <tr class="separator:ac03ebad679cd76a97f60c66ee82751f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad24f50cc05ad1c32cb231533e2db6b84"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1column__t.html">column_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#ad24f50cc05ad1c32cb231533e2db6b84">column</a> () const</td></tr>
 <tr class="memdesc:ad24f50cc05ad1c32cb231533e2db6b84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the column of this cell.  <a href="#ad24f50cc05ad1c32cb231533e2db6b84">More...</a><br /></td></tr>
@@ -178,10 +178,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a69964f0c388da7097fbf9d1e1dfc60bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the location of this cell as an ordered pair (left, top).  <a href="#a69964f0c388da7097fbf9d1e1dfc60bf">More...</a><br /></td></tr>
 <tr class="separator:a69964f0c388da7097fbf9d1e1dfc60bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c57dfb520beec68991ba4e888dc44e7"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1hyperlink.html">hyperlink</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a0c57dfb520beec68991ba4e888dc44e7">hyperlink</a> () const</td></tr>
-<tr class="memdesc:a0c57dfb520beec68991ba4e888dc44e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the relationship of this cell's hyperlink.  <a href="#a0c57dfb520beec68991ba4e888dc44e7">More...</a><br /></td></tr>
+<tr class="memdesc:a0c57dfb520beec68991ba4e888dc44e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a wrapper pointing to the relationship of this cell's hyperlink. Assumes that this cell has a hyperlink (please call <a class="el" href="classxlnt_1_1cell.html#a8f8406a91f1a45fa49392bf3900a58af" title="Returns true if this cell has a hyperlink set. ">has_hyperlink()</a> to check). If this cell does not have a hyperlink, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a0c57dfb520beec68991ba4e888dc44e7">More...</a><br /></td></tr>
 <tr class="separator:a0c57dfb520beec68991ba4e888dc44e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aada130e6847d32ff24ccdb0c2914e567"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#aada130e6847d32ff24ccdb0c2914e567">hyperlink</a> (const std::string &amp;url, const std::string &amp;display=&quot;&quot;)</td></tr>
-<tr class="memdesc:aada130e6847d32ff24ccdb0c2914e567"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a hyperlink to this cell pointing to the URI of the given value and sets the text value of the cell to the given parameter.  <a href="#aada130e6847d32ff24ccdb0c2914e567">More...</a><br /></td></tr>
+<tr class="memdesc:aada130e6847d32ff24ccdb0c2914e567"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a hyperlink to this cell pointing to the URI of the given value (which must not be empty) and sets the text value of the cell to the given parameter. If the URI is empty, an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">xlnt::invalid_parameter</a> exception will be thrown.  <a href="#aada130e6847d32ff24ccdb0c2914e567">More...</a><br /></td></tr>
 <tr class="separator:aada130e6847d32ff24ccdb0c2914e567"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95c6180b7138f2de90d2bceeb64fc414"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a95c6180b7138f2de90d2bceeb64fc414">hyperlink</a> (<a class="el" href="classxlnt_1_1cell.html">xlnt::cell</a> target, const std::string &amp;display=&quot;&quot;)</td></tr>
 <tr class="memdesc:a95c6180b7138f2de90d2bceeb64fc414"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an internal hyperlink to this cell pointing to the given cell.  <a href="#a95c6180b7138f2de90d2bceeb64fc414">More...</a><br /></td></tr>
@@ -214,46 +214,46 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a2a1cb642a98314cba30ccd23d44d158b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this cell has had a format applied to it.  <a href="#a2a1cb642a98314cba30ccd23d44d158b">More...</a><br /></td></tr>
 <tr class="separator:a2a1cb642a98314cba30ccd23d44d158b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acfb815279d783c47cdaf24f97c7cd227"><td class="memItemLeft" align="right" valign="top">const class <a class="el" href="classxlnt_1_1format.html">format</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#acfb815279d783c47cdaf24f97c7cd227">format</a> () const</td></tr>
-<tr class="memdesc:acfb815279d783c47cdaf24f97c7cd227"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the format applied to this cell. If this cell has no format, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">invalid_attribute</a> exception will be thrown.  <a href="#acfb815279d783c47cdaf24f97c7cd227">More...</a><br /></td></tr>
+<tr class="memdesc:acfb815279d783c47cdaf24f97c7cd227"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a const wrapper pointing to the format applied to this cell. The returned wrapper cannot be modified directly, but is meant to be modified using the other format-related functions. In case the format will be modified later, a new format will be created, while this returned format will be left unmodified (lazy copy / copy-on-write). Assumes that the format exists (please call <a class="el" href="classxlnt_1_1cell.html#a2a1cb642a98314cba30ccd23d44d158b" title="Returns true if this cell has had a format applied to it. ">has_format()</a> to check). If this cell has no format, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">invalid_attribute</a> exception will be thrown.  <a href="#acfb815279d783c47cdaf24f97c7cd227">More...</a><br /></td></tr>
 <tr class="separator:acfb815279d783c47cdaf24f97c7cd227"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a304510f70e88e8c4f3a2a24c37c489da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a304510f70e88e8c4f3a2a24c37c489da">format</a> (const class <a class="el" href="classxlnt_1_1format.html">format</a> new_format)</td></tr>
-<tr class="memdesc:a304510f70e88e8c4f3a2a24c37c489da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies the cell-level formatting of new_format to this cell. NOTE: when copying from a different workbook: format properties are deep-copied; If new_format has a style, the cloned format is associated with the same style name. NOTE: Deep cloning of the style itself is not yet implemented.  <a href="#a304510f70e88e8c4f3a2a24c37c489da">More...</a><br /></td></tr>
+<tr class="memdesc:a304510f70e88e8c4f3a2a24c37c489da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies the cell-level formatting of new_format to this cell. In case the format will be modified later, a new format will be created, while this original format will be left unmodified (lazy copy / copy-on-write). NOTE: when copying from a different workbook: format properties are deep-copied; If new_format has a style, the cloned format is associated with the same style name. NOTE: Deep cloning of the style itself is not yet implemented.  <a href="#a304510f70e88e8c4f3a2a24c37c489da">More...</a><br /></td></tr>
 <tr class="separator:a304510f70e88e8c4f3a2a24c37c489da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05271dc81c862eb36278b54f984439a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a05271dc81c862eb36278b54f984439a0">clear_format</a> ()</td></tr>
-<tr class="memdesc:a05271dc81c862eb36278b54f984439a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the cell-level formatting from this cell. This doesn't affect the style that may also be applied to the cell. Throws an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">invalid_attribute</a> exception if no format is applied.  <a href="#a05271dc81c862eb36278b54f984439a0">More...</a><br /></td></tr>
+<tr class="memdesc:a05271dc81c862eb36278b54f984439a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the cell-level formatting from this cell, if the cell has a format. This doesn't affect the style that may also be applied to the cell.  <a href="#a05271dc81c862eb36278b54f984439a0">More...</a><br /></td></tr>
 <tr class="separator:a05271dc81c862eb36278b54f984439a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af70332c744950b82c1bac2181a9f1073"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1number__format.html">number_format</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#af70332c744950b82c1bac2181a9f1073">number_format</a> () const</td></tr>
-<tr class="memdesc:af70332c744950b82c1bac2181a9f1073"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number format of this cell.  <a href="#af70332c744950b82c1bac2181a9f1073">More...</a><br /></td></tr>
+<tr class="memdesc:af70332c744950b82c1bac2181a9f1073"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the number format of this cell. If no number format has been set (<a class="el" href="classxlnt_1_1cell.html#a2a1cb642a98314cba30ccd23d44d158b" title="Returns true if this cell has had a format applied to it. ">has_format()</a> returns false, or <a class="el" href="classxlnt_1_1cell.html#acfb815279d783c47cdaf24f97c7cd227" title="Returns a const wrapper pointing to the format applied to this cell. The returned wrapper cannot be m...">format()</a>.has_number_format() returns false), a default-constructed number format will be returned.  <a href="#af70332c744950b82c1bac2181a9f1073">More...</a><br /></td></tr>
 <tr class="separator:af70332c744950b82c1bac2181a9f1073"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8414e8ee56aceb5d7dee1030c6278ace"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a8414e8ee56aceb5d7dee1030c6278ace">number_format</a> (const class <a class="el" href="classxlnt_1_1number__format.html">number_format</a> &amp;<a class="el" href="classxlnt_1_1format.html">format</a>)</td></tr>
 <tr class="memdesc:a8414e8ee56aceb5d7dee1030c6278ace"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new format in the workbook, sets its <a class="el" href="classxlnt_1_1number__format.html" title="Describes the number formatting applied to text and numbers within a certain cell. ">number_format</a> to the given format, and applies the format to this cell.  <a href="#a8414e8ee56aceb5d7dee1030c6278ace">More...</a><br /></td></tr>
 <tr class="separator:a8414e8ee56aceb5d7dee1030c6278ace"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad27eef31dbd503c31e17eebeb49526aa"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1font.html">font</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#ad27eef31dbd503c31e17eebeb49526aa">font</a> () const</td></tr>
-<tr class="memdesc:ad27eef31dbd503c31e17eebeb49526aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the font applied to the text in this cell.  <a href="#ad27eef31dbd503c31e17eebeb49526aa">More...</a><br /></td></tr>
+<tr class="memdesc:ad27eef31dbd503c31e17eebeb49526aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the font applied to the text in this cell. If no font has been set (<a class="el" href="classxlnt_1_1cell.html#a2a1cb642a98314cba30ccd23d44d158b" title="Returns true if this cell has had a format applied to it. ">has_format()</a> returns false, or <a class="el" href="classxlnt_1_1cell.html#acfb815279d783c47cdaf24f97c7cd227" title="Returns a const wrapper pointing to the format applied to this cell. The returned wrapper cannot be m...">format()</a>.has_font() returns false), a default-constructed font will be returned.  <a href="#ad27eef31dbd503c31e17eebeb49526aa">More...</a><br /></td></tr>
 <tr class="separator:ad27eef31dbd503c31e17eebeb49526aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b8e726a7b16e50763e966521ac07583"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a6b8e726a7b16e50763e966521ac07583">font</a> (const class <a class="el" href="classxlnt_1_1font.html">font</a> &amp;font_)</td></tr>
 <tr class="memdesc:a6b8e726a7b16e50763e966521ac07583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new format in the workbook, sets its font to the given font, and applies the format to this cell.  <a href="#a6b8e726a7b16e50763e966521ac07583">More...</a><br /></td></tr>
 <tr class="separator:a6b8e726a7b16e50763e966521ac07583"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02e314ed31a6b68f0a88ac1fc1ea46a8"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1fill.html">fill</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a02e314ed31a6b68f0a88ac1fc1ea46a8">fill</a> () const</td></tr>
-<tr class="memdesc:a02e314ed31a6b68f0a88ac1fc1ea46a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the fill applied to this cell.  <a href="#a02e314ed31a6b68f0a88ac1fc1ea46a8">More...</a><br /></td></tr>
+<tr class="memdesc:a02e314ed31a6b68f0a88ac1fc1ea46a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the fill applied to this cell. If no fill has been set (<a class="el" href="classxlnt_1_1cell.html#a2a1cb642a98314cba30ccd23d44d158b" title="Returns true if this cell has had a format applied to it. ">has_format()</a> returns false, or <a class="el" href="classxlnt_1_1cell.html#acfb815279d783c47cdaf24f97c7cd227" title="Returns a const wrapper pointing to the format applied to this cell. The returned wrapper cannot be m...">format()</a>.has_fill() returns false), a default-constructed fill will be returned.  <a href="#a02e314ed31a6b68f0a88ac1fc1ea46a8">More...</a><br /></td></tr>
 <tr class="separator:a02e314ed31a6b68f0a88ac1fc1ea46a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f5192f1ed23883920e0093444ee464c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a8f5192f1ed23883920e0093444ee464c">fill</a> (const class <a class="el" href="classxlnt_1_1fill.html">fill</a> &amp;fill_)</td></tr>
 <tr class="memdesc:a8f5192f1ed23883920e0093444ee464c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new format in the workbook, sets its fill to the given fill, and applies the format to this cell.  <a href="#a8f5192f1ed23883920e0093444ee464c">More...</a><br /></td></tr>
 <tr class="separator:a8f5192f1ed23883920e0093444ee464c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac35193645133a3ecd58a232b758d9f3b"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1border.html">border</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#ac35193645133a3ecd58a232b758d9f3b">border</a> () const</td></tr>
-<tr class="memdesc:ac35193645133a3ecd58a232b758d9f3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the border of this cell.  <a href="#ac35193645133a3ecd58a232b758d9f3b">More...</a><br /></td></tr>
+<tr class="memdesc:ac35193645133a3ecd58a232b758d9f3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the border of this cell. If no border has been set (<a class="el" href="classxlnt_1_1cell.html#a2a1cb642a98314cba30ccd23d44d158b" title="Returns true if this cell has had a format applied to it. ">has_format()</a> returns false, or <a class="el" href="classxlnt_1_1cell.html#acfb815279d783c47cdaf24f97c7cd227" title="Returns a const wrapper pointing to the format applied to this cell. The returned wrapper cannot be m...">format()</a>.has_border() returns false), a default-constructed border will be returned.  <a href="#ac35193645133a3ecd58a232b758d9f3b">More...</a><br /></td></tr>
 <tr class="separator:ac35193645133a3ecd58a232b758d9f3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a76847b5e342344b6cfd36245b9a4d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a8a76847b5e342344b6cfd36245b9a4d4">border</a> (const class <a class="el" href="classxlnt_1_1border.html">border</a> &amp;border_)</td></tr>
 <tr class="memdesc:a8a76847b5e342344b6cfd36245b9a4d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new format in the workbook, sets its border to the given border, and applies the format to this cell.  <a href="#a8a76847b5e342344b6cfd36245b9a4d4">More...</a><br /></td></tr>
 <tr class="separator:a8a76847b5e342344b6cfd36245b9a4d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30d3baab30dfe5041afc01a9e0759744"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1alignment.html">alignment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a30d3baab30dfe5041afc01a9e0759744">alignment</a> () const</td></tr>
-<tr class="memdesc:a30d3baab30dfe5041afc01a9e0759744"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the alignment of the text in this cell.  <a href="#a30d3baab30dfe5041afc01a9e0759744">More...</a><br /></td></tr>
+<tr class="memdesc:a30d3baab30dfe5041afc01a9e0759744"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the alignment of the text in this cell. If no alignment has been set (<a class="el" href="classxlnt_1_1cell.html#a2a1cb642a98314cba30ccd23d44d158b" title="Returns true if this cell has had a format applied to it. ">has_format()</a> returns false, or <a class="el" href="classxlnt_1_1cell.html#acfb815279d783c47cdaf24f97c7cd227" title="Returns a const wrapper pointing to the format applied to this cell. The returned wrapper cannot be m...">format()</a>.has_alignment() returns false), a default-constructed alignment will be returned.  <a href="#a30d3baab30dfe5041afc01a9e0759744">More...</a><br /></td></tr>
 <tr class="separator:a30d3baab30dfe5041afc01a9e0759744"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bb316e1085b8d0b2e3c1c2d5af222f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a5bb316e1085b8d0b2e3c1c2d5af222f7">alignment</a> (const class <a class="el" href="classxlnt_1_1alignment.html">alignment</a> &amp;alignment_)</td></tr>
 <tr class="memdesc:a5bb316e1085b8d0b2e3c1c2d5af222f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new format in the workbook, sets its alignment to the given alignment, and applies the format to this cell.  <a href="#a5bb316e1085b8d0b2e3c1c2d5af222f7">More...</a><br /></td></tr>
 <tr class="separator:a5bb316e1085b8d0b2e3c1c2d5af222f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d4c5449a57a345d00f3911a2ea268b3"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1protection.html">protection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a1d4c5449a57a345d00f3911a2ea268b3">protection</a> () const</td></tr>
-<tr class="memdesc:a1d4c5449a57a345d00f3911a2ea268b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the protection of this cell.  <a href="#a1d4c5449a57a345d00f3911a2ea268b3">More...</a><br /></td></tr>
+<tr class="memdesc:a1d4c5449a57a345d00f3911a2ea268b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the protection of this cell. If no protection has been set (<a class="el" href="classxlnt_1_1cell.html#a2a1cb642a98314cba30ccd23d44d158b" title="Returns true if this cell has had a format applied to it. ">has_format()</a> returns false, or <a class="el" href="classxlnt_1_1cell.html#acfb815279d783c47cdaf24f97c7cd227" title="Returns a const wrapper pointing to the format applied to this cell. The returned wrapper cannot be m...">format()</a>.has_protection() returns false), a default-constructed protection will be returned.  <a href="#a1d4c5449a57a345d00f3911a2ea268b3">More...</a><br /></td></tr>
 <tr class="separator:a1d4c5449a57a345d00f3911a2ea268b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5cf761d67c2d0246d3c2a50c67525d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#ab5cf761d67c2d0246d3c2a50c67525d0">protection</a> (const class <a class="el" href="classxlnt_1_1protection.html">protection</a> &amp;protection_)</td></tr>
 <tr class="memdesc:ab5cf761d67c2d0246d3c2a50c67525d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new format in the workbook, sets its protection to the given protection, and applies the format to this cell.  <a href="#ab5cf761d67c2d0246d3c2a50c67525d0">More...</a><br /></td></tr>
@@ -262,22 +262,22 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ae3be365cd7ae0343d7cc70e25d573000"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this cell has had a style applied to it.  <a href="#ae3be365cd7ae0343d7cc70e25d573000">More...</a><br /></td></tr>
 <tr class="separator:ae3be365cd7ae0343d7cc70e25d573000"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af42d85dad3ef6a495e0610854dd0fe92"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1style.html">style</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#af42d85dad3ef6a495e0610854dd0fe92">style</a> ()</td></tr>
-<tr class="memdesc:af42d85dad3ef6a495e0610854dd0fe92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a wrapper pointing to the named style applied to this cell.  <a href="#af42d85dad3ef6a495e0610854dd0fe92">More...</a><br /></td></tr>
+<tr class="memdesc:af42d85dad3ef6a495e0610854dd0fe92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a wrapper pointing to the named style applied to this cell. Assumes that the style exists (please call <a class="el" href="classxlnt_1_1cell.html#ae3be365cd7ae0343d7cc70e25d573000" title="Returns true if this cell has had a style applied to it. ">has_style()</a> to check). If this cell does not have a style, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#af42d85dad3ef6a495e0610854dd0fe92">More...</a><br /></td></tr>
 <tr class="separator:af42d85dad3ef6a495e0610854dd0fe92"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1816f8b66ac0058846317c0344b83d9a"><td class="memItemLeft" align="right" valign="top">const class <a class="el" href="classxlnt_1_1style.html">style</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a1816f8b66ac0058846317c0344b83d9a">style</a> () const</td></tr>
-<tr class="memdesc:a1816f8b66ac0058846317c0344b83d9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a wrapper pointing to the named style applied to this cell.  <a href="#a1816f8b66ac0058846317c0344b83d9a">More...</a><br /></td></tr>
+<tr class="memdesc:a1816f8b66ac0058846317c0344b83d9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a wrapper pointing to the named style applied to this cell. Assumes that the style exists (please call <a class="el" href="classxlnt_1_1cell.html#ae3be365cd7ae0343d7cc70e25d573000" title="Returns true if this cell has had a style applied to it. ">has_style()</a> to check). If this cell does not have a style, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a1816f8b66ac0058846317c0344b83d9a">More...</a><br /></td></tr>
 <tr class="separator:a1816f8b66ac0058846317c0344b83d9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3563a972df331c60e3b626c4d7b0e4d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a3563a972df331c60e3b626c4d7b0e4d3">style</a> (const class <a class="el" href="classxlnt_1_1style.html">style</a> &amp;new_style)</td></tr>
-<tr class="memdesc:a3563a972df331c60e3b626c4d7b0e4d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the named style applied to this cell to a style named style_name. Equivalent to style(new_style.name()).  <a href="#a3563a972df331c60e3b626c4d7b0e4d3">More...</a><br /></td></tr>
+<tr class="memdesc:a3563a972df331c60e3b626c4d7b0e4d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new format in the workbook, sets its style to the given style, and applies the format to this cell to a style. Equivalent to style(new_style.name()).  <a href="#a3563a972df331c60e3b626c4d7b0e4d3">More...</a><br /></td></tr>
 <tr class="separator:a3563a972df331c60e3b626c4d7b0e4d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d23e41acba4e34b5f6925f0133cfff4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a8d23e41acba4e34b5f6925f0133cfff4">style</a> (const std::string &amp;style_name)</td></tr>
-<tr class="memdesc:a8d23e41acba4e34b5f6925f0133cfff4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the named style applied to this cell to a style named style_name. If this style has not been previously created in the workbook, a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception will be thrown.  <a href="#a8d23e41acba4e34b5f6925f0133cfff4">More...</a><br /></td></tr>
+<tr class="memdesc:a8d23e41acba4e34b5f6925f0133cfff4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the named style applied to this cell to a style named style_name. Assumes that the style already exists in the workbook (please call <a class="el" href="classxlnt_1_1workbook.html#a21ddb585620af57719db5d1299dbaab1" title="Returns true if this workbook has a style with the given name. ">workbook::has_style()</a> to check). If this style has not been previously created in the workbook, a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception will be thrown.  <a href="#a8d23e41acba4e34b5f6925f0133cfff4">More...</a><br /></td></tr>
 <tr class="separator:a8d23e41acba4e34b5f6925f0133cfff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35e6af229185a1e491752a719aed4c8b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a35e6af229185a1e491752a719aed4c8b">clear_style</a> ()</td></tr>
-<tr class="memdesc:a35e6af229185a1e491752a719aed4c8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the named style from this cell. An <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">invalid_attribute</a> exception will be thrown if this cell has no style. This will not affect the cell format of the cell.  <a href="#a35e6af229185a1e491752a719aed4c8b">More...</a><br /></td></tr>
+<tr class="memdesc:a35e6af229185a1e491752a719aed4c8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the named style from this cell, if the cell has a style. This will not affect the cell format of the cell.  <a href="#a35e6af229185a1e491752a719aed4c8b">More...</a><br /></td></tr>
 <tr class="separator:a35e6af229185a1e491752a719aed4c8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff964405ba8223edfd826ca46d89cc12"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#aff964405ba8223edfd826ca46d89cc12">formula</a> () const</td></tr>
-<tr class="memdesc:aff964405ba8223edfd826ca46d89cc12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the string representation of the formula applied to this cell.  <a href="#aff964405ba8223edfd826ca46d89cc12">More...</a><br /></td></tr>
+<tr class="memdesc:aff964405ba8223edfd826ca46d89cc12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the string representation of the formula applied to this cell. Assumes that cell view has a formula (please call <a class="el" href="classxlnt_1_1cell.html#a45d43fff14aec3eebf2d7622ed9c9af3" title="Returns true if this cell has had a formula applied to it. ">has_formula()</a> to check). If this cell does not have a formula, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#aff964405ba8223edfd826ca46d89cc12">More...</a><br /></td></tr>
 <tr class="separator:aff964405ba8223edfd826ca46d89cc12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab92332bdae0340d44869ba3d8f832c37"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#ab92332bdae0340d44869ba3d8f832c37">formula</a> (const std::string &amp;formula)</td></tr>
 <tr class="memdesc:ab92332bdae0340d44869ba3d8f832c37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the formula of this cell to the given value. This formula string should begin with '='.  <a href="#ab92332bdae0340d44869ba3d8f832c37">More...</a><br /></td></tr>
@@ -304,28 +304,28 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a5f4648ceda902ce86e5458e2303dc791"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables the display of phonetic information on this cell.  <a href="#a5f4648ceda902ce86e5458e2303dc791">More...</a><br /></td></tr>
 <tr class="separator:a5f4648ceda902ce86e5458e2303dc791"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa12568f71475cebf23aceb97b83273a4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#aa12568f71475cebf23aceb97b83273a4">error</a> () const</td></tr>
-<tr class="memdesc:aa12568f71475cebf23aceb97b83273a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the error string that is stored in this cell.  <a href="#aa12568f71475cebf23aceb97b83273a4">More...</a><br /></td></tr>
+<tr class="memdesc:aa12568f71475cebf23aceb97b83273a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the error string that is stored in this cell. Assumes that the cell type is <a class="el" href="namespacexlnt.html#a7084345eee5edf2d4cca71f3c3c04cb2acb5e100e5a9a3e7f6d1fd97512215282" title="value is a known error code such as #VALUE! ">type::error</a> (please call <a class="el" href="classxlnt_1_1cell.html#a8a71514692ea80ac32093ae5e1830812" title="Returns the type of this cell. ">data_type()</a> to check). If the cell is not of <a class="el" href="namespacexlnt.html#a7084345eee5edf2d4cca71f3c3c04cb2acb5e100e5a9a3e7f6d1fd97512215282" title="value is a known error code such as #VALUE! ">type::error</a>, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#aa12568f71475cebf23aceb97b83273a4">More...</a><br /></td></tr>
 <tr class="separator:aa12568f71475cebf23aceb97b83273a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a645651a217d2da307f97b9c11743a00d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a645651a217d2da307f97b9c11743a00d">error</a> (const std::string &amp;error)</td></tr>
-<tr class="memdesc:a645651a217d2da307f97b9c11743a00d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directly assigns the value of this cell to be the given error.  <a href="#a645651a217d2da307f97b9c11743a00d">More...</a><br /></td></tr>
+<tr class="memdesc:a645651a217d2da307f97b9c11743a00d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directly assigns the value of this cell to be the given error. Assumes that the given string is an error which begins with '#'. If the given string is not an error, an <a class="el" href="classxlnt_1_1invalid__data__type.html" title="Exception for any data type inconsistencies. ">xlnt::invalid_data_type</a> exception will be thrown.  <a href="#a645651a217d2da307f97b9c11743a00d">More...</a><br /></td></tr>
 <tr class="separator:a645651a217d2da307f97b9c11743a00d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac3b7ae6981db3d944a4ee6d7aab6cfe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1cell.html">cell</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#aac3b7ae6981db3d944a4ee6d7aab6cfe">offset</a> (int <a class="el" href="classxlnt_1_1cell.html#ad24f50cc05ad1c32cb231533e2db6b84">column</a>, int <a class="el" href="classxlnt_1_1cell.html#a97138f1360c3eed05feeccd338dc773d">row</a>)</td></tr>
-<tr class="memdesc:aac3b7ae6981db3d944a4ee6d7aab6cfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a cell from this cell's parent workbook at a relative offset given by the parameters.  <a href="#aac3b7ae6981db3d944a4ee6d7aab6cfe">More...</a><br /></td></tr>
+<tr class="memdesc:aac3b7ae6981db3d944a4ee6d7aab6cfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a wrapper pointing to the cell from this cell's parent workbook at a relative offset given by the parameters.  <a href="#aac3b7ae6981db3d944a4ee6d7aab6cfe">More...</a><br /></td></tr>
 <tr class="separator:aac3b7ae6981db3d944a4ee6d7aab6cfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36c0be4d8df81b2664ffe2b4084a1409"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1worksheet.html">worksheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a36c0be4d8df81b2664ffe2b4084a1409">worksheet</a> ()</td></tr>
-<tr class="memdesc:a36c0be4d8df81b2664ffe2b4084a1409"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the worksheet that owns this cell.  <a href="#a36c0be4d8df81b2664ffe2b4084a1409">More...</a><br /></td></tr>
+<tr class="memdesc:a36c0be4d8df81b2664ffe2b4084a1409"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a wrapper pointing to the worksheet that owns this cell.  <a href="#a36c0be4d8df81b2664ffe2b4084a1409">More...</a><br /></td></tr>
 <tr class="separator:a36c0be4d8df81b2664ffe2b4084a1409"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a606880529f78beacb4a62024728acaf0"><td class="memItemLeft" align="right" valign="top">const class <a class="el" href="classxlnt_1_1worksheet.html">worksheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a606880529f78beacb4a62024728acaf0">worksheet</a> () const</td></tr>
-<tr class="memdesc:a606880529f78beacb4a62024728acaf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the worksheet that owns this cell.  <a href="#a606880529f78beacb4a62024728acaf0">More...</a><br /></td></tr>
+<tr class="memdesc:a606880529f78beacb4a62024728acaf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a wrapper pointing to the worksheet that owns this cell.  <a href="#a606880529f78beacb4a62024728acaf0">More...</a><br /></td></tr>
 <tr class="separator:a606880529f78beacb4a62024728acaf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f1645f177e067fdd0b729a93ec2ac16"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1workbook.html">workbook</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a0f1645f177e067fdd0b729a93ec2ac16">workbook</a> ()</td></tr>
-<tr class="memdesc:a0f1645f177e067fdd0b729a93ec2ac16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the workbook of the worksheet that owns this cell.  <a href="#a0f1645f177e067fdd0b729a93ec2ac16">More...</a><br /></td></tr>
+<tr class="memdesc:a0f1645f177e067fdd0b729a93ec2ac16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a wrapper pointing to the workbook of the worksheet that owns this cell.  <a href="#a0f1645f177e067fdd0b729a93ec2ac16">More...</a><br /></td></tr>
 <tr class="separator:a0f1645f177e067fdd0b729a93ec2ac16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0be36afab02deee83f22026b51e0a3a"><td class="memItemLeft" align="right" valign="top">const class <a class="el" href="classxlnt_1_1workbook.html">workbook</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#af0be36afab02deee83f22026b51e0a3a">workbook</a> () const</td></tr>
-<tr class="memdesc:af0be36afab02deee83f22026b51e0a3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the workbook of the worksheet that owns this cell.  <a href="#af0be36afab02deee83f22026b51e0a3a">More...</a><br /></td></tr>
+<tr class="memdesc:af0be36afab02deee83f22026b51e0a3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a wrapper pointing to the workbook of the worksheet that owns this cell.  <a href="#af0be36afab02deee83f22026b51e0a3a">More...</a><br /></td></tr>
 <tr class="separator:af0be36afab02deee83f22026b51e0a3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab081cc6a30847fe3a55ba9793b8e4e74"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacexlnt.html#aaddbb735c8ac3a2d09f660fab73b0bb9">calendar</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#ab081cc6a30847fe3a55ba9793b8e4e74">base_date</a> () const</td></tr>
-<tr class="memdesc:ab081cc6a30847fe3a55ba9793b8e4e74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the base date of the parent workbook.  <a href="#ab081cc6a30847fe3a55ba9793b8e4e74">More...</a><br /></td></tr>
+<tr class="memdesc:ab081cc6a30847fe3a55ba9793b8e4e74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the base date of the parent workbook.  <a href="#ab081cc6a30847fe3a55ba9793b8e4e74">More...</a><br /></td></tr>
 <tr class="separator:ab081cc6a30847fe3a55ba9793b8e4e74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd23530085a7c0bd5f4637a555cd1cbe"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#acd23530085a7c0bd5f4637a555cd1cbe">check_string</a> (const std::string &amp;to_check)</td></tr>
 <tr class="memdesc:acd23530085a7c0bd5f4637a555cd1cbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns to_check after verifying and fixing encoding, size, and illegal characters.  <a href="#acd23530085a7c0bd5f4637a555cd1cbe">More...</a><br /></td></tr>
@@ -337,7 +337,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a408755a29c60e1710372d25038278dd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the comment applied to this cell if it exists.  <a href="#a408755a29c60e1710372d25038278dd4">More...</a><br /></td></tr>
 <tr class="separator:a408755a29c60e1710372d25038278dd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ababd120b845a716995721dbd388f41ec"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1comment.html">comment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#ababd120b845a716995721dbd388f41ec">comment</a> () const</td></tr>
-<tr class="memdesc:ababd120b845a716995721dbd388f41ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the comment applied to this cell.  <a href="#ababd120b845a716995721dbd388f41ec">More...</a><br /></td></tr>
+<tr class="memdesc:ababd120b845a716995721dbd388f41ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the comment applied to this cell. Assumes that the comment exists (please call <a class="el" href="classxlnt_1_1cell.html#af721f9e150c02259eae5f61d79921de6" title="Returns true if this cell has a comment applied. ">has_comment()</a> to check). If this cell does not have a comment, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#ababd120b845a716995721dbd388f41ec">More...</a><br /></td></tr>
 <tr class="separator:ababd120b845a716995721dbd388f41ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a194ed5db9b5c8e2f7d7357248af66b3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell.html#a194ed5db9b5c8e2f7d7357248af66b3c">comment</a> (const std::string &amp;text, const std::string &amp;author=&quot;Microsoft Office User&quot;)</td></tr>
 <tr class="memdesc:a194ed5db9b5c8e2f7d7357248af66b3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new comment with the given text and optional author and applies it to the cell.  <a href="#a194ed5db9b5c8e2f7d7357248af66b3c">More...</a><br /></td></tr>
@@ -504,7 +504,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns the alignment of the text in this cell. </p>
+<p>Returns a copy of the alignment of the text in this cell. If no alignment has been set (<a class="el" href="classxlnt_1_1cell.html#a2a1cb642a98314cba30ccd23d44d158b" title="Returns true if this cell has had a format applied to it. ">has_format()</a> returns false, or <a class="el" href="classxlnt_1_1cell.html#acfb815279d783c47cdaf24f97c7cd227" title="Returns a const wrapper pointing to the format applied to this cell. The returned wrapper cannot be m...">format()</a>.has_alignment() returns false), a default-constructed alignment will be returned. </p>
 
 </div>
 </div>
@@ -562,7 +562,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns the base date of the parent workbook. </p>
+<p>Returns a copy of the base date of the parent workbook. </p>
 
 </div>
 </div>
@@ -581,7 +581,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns the border of this cell. </p>
+<p>Returns a copy of the border of this cell. If no border has been set (<a class="el" href="classxlnt_1_1cell.html#a2a1cb642a98314cba30ccd23d44d158b" title="Returns true if this cell has had a format applied to it. ">has_format()</a> returns false, or <a class="el" href="classxlnt_1_1cell.html#acfb815279d783c47cdaf24f97c7cd227" title="Returns a const wrapper pointing to the format applied to this cell. The returned wrapper cannot be m...">format()</a>.has_border() returns false), a default-constructed border will be returned. </p>
 
 </div>
 </div>
@@ -659,7 +659,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Removes the cell-level formatting from this cell. This doesn't affect the style that may also be applied to the cell. Throws an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">invalid_attribute</a> exception if no format is applied. </p>
+<p>Removes the cell-level formatting from this cell, if the cell has a format. This doesn't affect the style that may also be applied to the cell. </p>
 
 </div>
 </div>
@@ -697,7 +697,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Removes the named style from this cell. An <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">invalid_attribute</a> exception will be thrown if this cell has no style. This will not affect the cell format of the cell. </p>
+<p>Removes the named style from this cell, if the cell has a style. This will not affect the cell format of the cell. </p>
 
 </div>
 </div>
@@ -773,7 +773,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Gets the comment applied to this cell. </p>
+<p>Returns a copy of the comment applied to this cell. Assumes that the comment exists (please call <a class="el" href="classxlnt_1_1cell.html#af721f9e150c02259eae5f61d79921de6" title="Returns true if this cell has a comment applied. ">has_comment()</a> to check). If this cell does not have a comment, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -1061,7 +1061,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns the error string that is stored in this cell. </p>
+<p>Returns the error string that is stored in this cell. Assumes that the cell type is <a class="el" href="namespacexlnt.html#a7084345eee5edf2d4cca71f3c3c04cb2acb5e100e5a9a3e7f6d1fd97512215282" title="value is a known error code such as #VALUE! ">type::error</a> (please call <a class="el" href="classxlnt_1_1cell.html#a8a71514692ea80ac32093ae5e1830812" title="Returns the type of this cell. ">data_type()</a> to check). If the cell is not of <a class="el" href="namespacexlnt.html#a7084345eee5edf2d4cca71f3c3c04cb2acb5e100e5a9a3e7f6d1fd97512215282" title="value is a known error code such as #VALUE! ">type::error</a>, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -1081,7 +1081,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Directly assigns the value of this cell to be the given error. </p>
+<p>Directly assigns the value of this cell to be the given error. Assumes that the given string is an error which begins with '#'. If the given string is not an error, an <a class="el" href="classxlnt_1_1invalid__data__type.html" title="Exception for any data type inconsistencies. ">xlnt::invalid_data_type</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -1127,7 +1127,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns the fill applied to this cell. </p>
+<p>Returns a copy of the fill applied to this cell. If no fill has been set (<a class="el" href="classxlnt_1_1cell.html#a2a1cb642a98314cba30ccd23d44d158b" title="Returns true if this cell has had a format applied to it. ">has_format()</a> returns false, or <a class="el" href="classxlnt_1_1cell.html#acfb815279d783c47cdaf24f97c7cd227" title="Returns a const wrapper pointing to the format applied to this cell. The returned wrapper cannot be m...">format()</a>.has_fill() returns false), a default-constructed fill will be returned. </p>
 
 </div>
 </div>
@@ -1166,7 +1166,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns the font applied to the text in this cell. </p>
+<p>Returns a copy of the font applied to the text in this cell. If no font has been set (<a class="el" href="classxlnt_1_1cell.html#a2a1cb642a98314cba30ccd23d44d158b" title="Returns true if this cell has had a format applied to it. ">has_format()</a> returns false, or <a class="el" href="classxlnt_1_1cell.html#acfb815279d783c47cdaf24f97c7cd227" title="Returns a const wrapper pointing to the format applied to this cell. The returned wrapper cannot be m...">format()</a>.has_font() returns false), a default-constructed font will be returned. </p>
 
 </div>
 </div>
@@ -1205,7 +1205,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns the format applied to this cell. If this cell has no format, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">invalid_attribute</a> exception will be thrown. </p>
+<p>Returns a const wrapper pointing to the format applied to this cell. The returned wrapper cannot be modified directly, but is meant to be modified using the other format-related functions. In case the format will be modified later, a new format will be created, while this returned format will be left unmodified (lazy copy / copy-on-write). Assumes that the format exists (please call <a class="el" href="classxlnt_1_1cell.html#a2a1cb642a98314cba30ccd23d44d158b" title="Returns true if this cell has had a format applied to it. ">has_format()</a> to check). If this cell has no format, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -1225,7 +1225,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Applies the cell-level formatting of new_format to this cell. NOTE: when copying from a different workbook: format properties are deep-copied; If new_format has a style, the cloned format is associated with the same style name. NOTE: Deep cloning of the style itself is not yet implemented. </p>
+<p>Applies the cell-level formatting of new_format to this cell. In case the format will be modified later, a new format will be created, while this original format will be left unmodified (lazy copy / copy-on-write). NOTE: when copying from a different workbook: format properties are deep-copied; If new_format has a style, the cloned format is associated with the same style name. NOTE: Deep cloning of the style itself is not yet implemented. </p>
 
 </div>
 </div>
@@ -1244,7 +1244,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns the string representation of the formula applied to this cell. </p>
+<p>Returns the string representation of the formula applied to this cell. Assumes that cell view has a formula (please call <a class="el" href="classxlnt_1_1cell.html#a45d43fff14aec3eebf2d7622ed9c9af3" title="Returns true if this cell has had a formula applied to it. ">has_formula()</a> to check). If this cell does not have a formula, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -1435,7 +1435,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns the relationship of this cell's hyperlink. </p>
+<p>Returns a wrapper pointing to the relationship of this cell's hyperlink. Assumes that this cell has a hyperlink (please call <a class="el" href="classxlnt_1_1cell.html#a8f8406a91f1a45fa49392bf3900a58af" title="Returns true if this cell has a hyperlink set. ">has_hyperlink()</a> to check). If this cell does not have a hyperlink, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -1465,7 +1465,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Adds a hyperlink to this cell pointing to the URI of the given value and sets the text value of the cell to the given parameter. </p>
+<p>Adds a hyperlink to this cell pointing to the URI of the given value (which must not be empty) and sets the text value of the cell to the given parameter. If the URI is empty, an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">xlnt::invalid_parameter</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -1602,7 +1602,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns the number format of this cell. </p>
+<p>Returns a copy of the number format of this cell. If no number format has been set (<a class="el" href="classxlnt_1_1cell.html#a2a1cb642a98314cba30ccd23d44d158b" title="Returns true if this cell has had a format applied to it. ">has_format()</a> returns false, or <a class="el" href="classxlnt_1_1cell.html#acfb815279d783c47cdaf24f97c7cd227" title="Returns a const wrapper pointing to the format applied to this cell. The returned wrapper cannot be m...">format()</a>.has_number_format() returns false), a default-constructed number format will be returned. </p>
 
 </div>
 </div>
@@ -1652,7 +1652,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns a cell from this cell's parent workbook at a relative offset given by the parameters. </p>
+<p>Returns a wrapper pointing to the cell from this cell's parent workbook at a relative offset given by the parameters. </p>
 
 </div>
 </div>
@@ -1750,7 +1750,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns the protection of this cell. </p>
+<p>Returns a copy of the protection of this cell. If no protection has been set (<a class="el" href="classxlnt_1_1cell.html#a2a1cb642a98314cba30ccd23d44d158b" title="Returns true if this cell has had a format applied to it. ">has_format()</a> returns false, or <a class="el" href="classxlnt_1_1cell.html#acfb815279d783c47cdaf24f97c7cd227" title="Returns a const wrapper pointing to the format applied to this cell. The returned wrapper cannot be m...">format()</a>.has_protection() returns false), a default-constructed protection will be returned. </p>
 
 </div>
 </div>
@@ -1789,7 +1789,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns a <a class="el" href="classxlnt_1_1cell__reference.html" title="An object used to refer to a cell. References have two parts, the column and the row. In Excel, the reference string A1 refers to the top-left-most cell. A cell_reference can be initialized from a string of this form or a 1-indexed ordered pair of the form column, row. ">cell_reference</a> that points to the location of this cell. </p>
+<p>Returns a <a class="el" href="classxlnt_1_1cell__reference.html" title="An object used to refer to a cell. References have two parts, the column and the row. In Excel, the reference string A1 refers to the top-left-most cell. A cell_reference can be initialized from a string of this form or a 1-indexed ordered pair of the form column, row. By default, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD, column index 16384). The OOXML specification allows to extend this range, and XLNT allows both rows and columns between 1 and 4294967295. Please note that not all applications might support these extended ranges. ">cell_reference</a> that points to the location of this cell. </p>
 
 </div>
 </div>
@@ -1847,7 +1847,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns a wrapper pointing to the named style applied to this cell. </p>
+<p>Returns a wrapper pointing to the named style applied to this cell. Assumes that the style exists (please call <a class="el" href="classxlnt_1_1cell.html#ae3be365cd7ae0343d7cc70e25d573000" title="Returns true if this cell has had a style applied to it. ">has_style()</a> to check). If this cell does not have a style, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -1866,7 +1866,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Returns a wrapper pointing to the named style applied to this cell. </p>
+<p>Returns a wrapper pointing to the named style applied to this cell. Assumes that the style exists (please call <a class="el" href="classxlnt_1_1cell.html#ae3be365cd7ae0343d7cc70e25d573000" title="Returns true if this cell has had a style applied to it. ">has_style()</a> to check). If this cell does not have a style, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -1886,7 +1886,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Sets the named style applied to this cell to a style named style_name. Equivalent to style(new_style.name()). </p>
+<p>Creates a new format in the workbook, sets its style to the given style, and applies the format to this cell to a style. Equivalent to style(new_style.name()). </p>
 
 </div>
 </div>
@@ -1906,7 +1906,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>detail::cell_impl</
       </table>
 </div><div class="memdoc">
 
-<p>Sets the named style applied to this cell to a style named style_name. If this style has not been previously created in the workbook, a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception will be thrown. </p>
+<p>Sets the named style applied to this cell to a style named style_name. Assumes that the style already exists in the workbook (please call <a class="el" href="classxlnt_1_1workbook.html#a21ddb585620af57719db5d1299dbaab1" title="Returns true if this workbook has a style with the given name. ">workbook::has_style()</a> to check). If this style has not been previously created in the workbook, a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -2334,7 +2334,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the workbook of the worksheet that owns this cell. </p>
+<p>Returns a wrapper pointing to the workbook of the worksheet that owns this cell. </p>
 
 </div>
 </div>
@@ -2353,7 +2353,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the workbook of the worksheet that owns this cell. </p>
+<p>Returns a wrapper pointing to the workbook of the worksheet that owns this cell. </p>
 
 </div>
 </div>
@@ -2372,7 +2372,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the worksheet that owns this cell. </p>
+<p>Returns a wrapper pointing to the worksheet that owns this cell. </p>
 
 </div>
 </div>
@@ -2391,7 +2391,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the worksheet that owns this cell. </p>
+<p>Returns a wrapper pointing to the worksheet that owns this cell. </p>
 
 </div>
 </div>

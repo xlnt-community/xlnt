@@ -84,16 +84,16 @@ Public Member Functions</h2></td></tr>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_cell</b> ()</td></tr>
 <tr class="separator:af6ac8c4819f00c29acf64b1f011d709e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2fd38f1e42516466b1a5e4fddbbbe4b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1cell.html">cell</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1streaming__workbook__reader.html#a2fd38f1e42516466b1a5e4fddbbbe4b9">read_cell</a> ()</td></tr>
-<tr class="memdesc:a2fd38f1e42516466b1a5e4fddbbbe4b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the next cell in the current worksheet and optionally returns it if the last cell in the sheet has not yet been read.  <a href="#a2fd38f1e42516466b1a5e4fddbbbe4b9">More...</a><br /></td></tr>
+<tr class="memdesc:a2fd38f1e42516466b1a5e4fddbbbe4b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the next cell in the current worksheet and returns a wrapper pointing to it if the last cell in the sheet has not yet been read.  <a href="#a2fd38f1e42516466b1a5e4fddbbbe4b9">More...</a><br /></td></tr>
 <tr class="separator:a2fd38f1e42516466b1a5e4fddbbbe4b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adad4163898d9f5a54b6725c2f945cdfc"><td class="memItemLeft" align="right" valign="top"><a id="adad4163898d9f5a54b6725c2f945cdfc"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_worksheet</b> (const std::string &amp;name)</td></tr>
 <tr class="separator:adad4163898d9f5a54b6725c2f945cdfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada181daac2887630587c772a660f3dd0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1streaming__workbook__reader.html#ada181daac2887630587c772a660f3dd0">begin_worksheet</a> (const std::string &amp;name)</td></tr>
-<tr class="memdesc:ada181daac2887630587c772a660f3dd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Beings reading of the next worksheet in the workbook and optionally returns its title if the last worksheet has not yet been read.  <a href="#ada181daac2887630587c772a660f3dd0">More...</a><br /></td></tr>
+<tr class="memdesc:ada181daac2887630587c772a660f3dd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begins reading of the next worksheet in the workbook. Assumes that this workbook has a worksheet with the given name (please call has_worksheet() to check). If this workbook does not have a worksheet with the given name, an <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">xlnt::key_not_found</a> exception will be thrown.  <a href="#ada181daac2887630587c772a660f3dd0">More...</a><br /></td></tr>
 <tr class="separator:ada181daac2887630587c772a660f3dd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6662cc065f8aa379d094a651e7ae392"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1worksheet.html">worksheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1streaming__workbook__reader.html#aa6662cc065f8aa379d094a651e7ae392">end_worksheet</a> ()</td></tr>
-<tr class="memdesc:aa6662cc065f8aa379d094a651e7ae392"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ends reading of the current worksheet in the workbook and optionally returns a worksheet object corresponding to the worksheet with the title returned by <a class="el" href="classxlnt_1_1streaming__workbook__reader.html#ada181daac2887630587c772a660f3dd0" title="Beings reading of the next worksheet in the workbook and optionally returns its title if the last wor...">begin_worksheet()</a>.  <a href="#aa6662cc065f8aa379d094a651e7ae392">More...</a><br /></td></tr>
+<tr class="memdesc:aa6662cc065f8aa379d094a651e7ae392"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ends reading of the current worksheet in the workbook and returns a wrapper pointing to the worksheet with the title returned by <a class="el" href="classxlnt_1_1streaming__workbook__reader.html#ada181daac2887630587c772a660f3dd0" title="Begins reading of the next worksheet in the workbook. Assumes that this workbook has a worksheet with...">begin_worksheet()</a>.  <a href="#aa6662cc065f8aa379d094a651e7ae392">More...</a><br /></td></tr>
 <tr class="separator:aa6662cc065f8aa379d094a651e7ae392"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e21819e0c10f7aacc52e9cd84e7a1a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1streaming__workbook__reader.html#a5e21819e0c10f7aacc52e9cd84e7a1a8">open</a> (const std::vector&lt; std::uint8_t &gt; &amp;data)</td></tr>
 <tr class="memdesc:a5e21819e0c10f7aacc52e9cd84e7a1a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interprets byte vector data as an XLSX file and sets the content of this workbook to match that file.  <a href="#a5e21819e0c10f7aacc52e9cd84e7a1a8">More...</a><br /></td></tr>
@@ -133,7 +133,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_worksheet</b> (co
       </table>
 </div><div class="memdoc">
 
-<p>Beings reading of the next worksheet in the workbook and optionally returns its title if the last worksheet has not yet been read. </p>
+<p>Begins reading of the next worksheet in the workbook. Assumes that this workbook has a worksheet with the given name (please call has_worksheet() to check). If this workbook does not have a worksheet with the given name, an <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">xlnt::key_not_found</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -171,7 +171,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_worksheet</b> (co
       </table>
 </div><div class="memdoc">
 
-<p>Ends reading of the current worksheet in the workbook and optionally returns a worksheet object corresponding to the worksheet with the title returned by <a class="el" href="classxlnt_1_1streaming__workbook__reader.html#ada181daac2887630587c772a660f3dd0" title="Beings reading of the next worksheet in the workbook and optionally returns its title if the last wor...">begin_worksheet()</a>. </p>
+<p>Ends reading of the current worksheet in the workbook and returns a wrapper pointing to the worksheet with the title returned by <a class="el" href="classxlnt_1_1streaming__workbook__reader.html#ada181daac2887630587c772a660f3dd0" title="Begins reading of the next worksheet in the workbook. Assumes that this workbook has a worksheet with...">begin_worksheet()</a>. </p>
 
 </div>
 </div>
@@ -290,7 +290,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_worksheet</b> (co
       </table>
 </div><div class="memdoc">
 
-<p>Reads the next cell in the current worksheet and optionally returns it if the last cell in the sheet has not yet been read. </p>
+<p>Reads the next cell in the current worksheet and returns a wrapper pointing to it if the last cell in the sheet has not yet been read. </p>
 
 </div>
 </div>

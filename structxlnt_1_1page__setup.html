@@ -94,7 +94,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a966978ee9821d2638118a11d70cc5ec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the sheet state to sheet_state.  <a href="#a966978ee9821d2638118a11d70cc5ec0">More...</a><br /></td></tr>
 <tr class="separator:a966978ee9821d2638118a11d70cc5ec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08dd347343ca6e7bfe6bb23be75cce81"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacexlnt.html#a689e2d5699b2d84184b349ae8c4fc0f4">xlnt::paper_size</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1page__setup.html#a08dd347343ca6e7bfe6bb23be75cce81">paper_size</a> () const</td></tr>
-<tr class="memdesc:a08dd347343ca6e7bfe6bb23be75cce81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the paper size which should be used to print the worksheet using this page setup.  <a href="#a08dd347343ca6e7bfe6bb23be75cce81">More...</a><br /></td></tr>
+<tr class="memdesc:a08dd347343ca6e7bfe6bb23be75cce81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the paper size which should be used to print the worksheet using this page setup. Assumes that this page setup has a paper size (please call <a class="el" href="structxlnt_1_1page__setup.html#a61d84ea7d6d8cd378f8a470924214a93" title="Check if current paper setting has paper size setting ">has_paper_size()</a> to check). If this workbook has no paper size, the default paper_size::letter will be returned.  <a href="#a08dd347343ca6e7bfe6bb23be75cce81">More...</a><br /></td></tr>
 <tr class="separator:a08dd347343ca6e7bfe6bb23be75cce81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a043d359f96be69d3f6bcc292e23eac24"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1page__setup.html#a043d359f96be69d3f6bcc292e23eac24">paper_size</a> (<a class="el" href="namespacexlnt.html#a689e2d5699b2d84184b349ae8c4fc0f4">xlnt::paper_size</a> <a class="el" href="namespacexlnt.html#a689e2d5699b2d84184b349ae8c4fc0f4">paper_size</a>)</td></tr>
 <tr class="memdesc:a043d359f96be69d3f6bcc292e23eac24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the paper size of this page setup.  <a href="#a043d359f96be69d3f6bcc292e23eac24">More...</a><br /></td></tr>
@@ -120,12 +120,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a48de8fc4890568b7bd7dad2b1e8fc128"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1page__setup.html#a48de8fc4890568b7bd7dad2b1e8fc128">fit_to_width</a> (bool fit_to_width)</td></tr>
 <tr class="memdesc:a48de8fc4890568b7bd7dad2b1e8fc128"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets whether the width of the page should be scaled to fit on a printed page.  <a href="#a48de8fc4890568b7bd7dad2b1e8fc128">More...</a><br /></td></tr>
 <tr class="separator:a48de8fc4890568b7bd7dad2b1e8fc128"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48e879040ee46f89b2e2bed5476ab715"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1page__setup.html#a48e879040ee46f89b2e2bed5476ab715">scale</a> (double scale)</td></tr>
-<tr class="memdesc:a48e879040ee46f89b2e2bed5476ab715"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the factor by which the page should be scaled during printing.  <a href="#a48e879040ee46f89b2e2bed5476ab715">More...</a><br /></td></tr>
-<tr class="separator:a48e879040ee46f89b2e2bed5476ab715"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a623575dcbc3d7028a84df36f9d61bd8f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1page__setup.html#a623575dcbc3d7028a84df36f9d61bd8f">scale</a> () const</td></tr>
-<tr class="memdesc:a623575dcbc3d7028a84df36f9d61bd8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the factor by which the page should be scaled during printing.  <a href="#a623575dcbc3d7028a84df36f9d61bd8f">More...</a><br /></td></tr>
-<tr class="separator:a623575dcbc3d7028a84df36f9d61bd8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f7e7b655f82e415fef17a40348e59ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1page__setup.html#a7f7e7b655f82e415fef17a40348e59ff">scale</a> (unsigned int scale)</td></tr>
+<tr class="memdesc:a7f7e7b655f82e415fef17a40348e59ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the scale percentage by which the page should be scaled during printing. A value of 150 means 150% scaling. Possible values are between 10 and 400. Values outside this range will be clipped to the range limits.  <a href="#a7f7e7b655f82e415fef17a40348e59ff">More...</a><br /></td></tr>
+<tr class="separator:a7f7e7b655f82e415fef17a40348e59ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9002fdf50c1b9da59774c0ecd5a88642"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1page__setup.html#a9002fdf50c1b9da59774c0ecd5a88642">scale</a> () const</td></tr>
+<tr class="memdesc:a9002fdf50c1b9da59774c0ecd5a88642"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the scale percentage by which the page should be scaled during printing. A value of 150 means 150% scaling. If no scale has been set (<a class="el" href="structxlnt_1_1page__setup.html#a8eec35e3798ea1039d63a9b23a871feb" title="Check if current paper setting has scale setting ">has_scale()</a> returns false), the default scale of 100 will be returned.  <a href="#a9002fdf50c1b9da59774c0ecd5a88642">More...</a><br /></td></tr>
+<tr class="separator:a9002fdf50c1b9da59774c0ecd5a88642"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8eec35e3798ea1039d63a9b23a871feb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1page__setup.html#a8eec35e3798ea1039d63a9b23a871feb">has_scale</a> () const</td></tr>
 <tr class="memdesc:a8eec35e3798ea1039d63a9b23a871feb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if current paper setting has scale setting  <a href="#a8eec35e3798ea1039d63a9b23a871feb">More...</a><br /></td></tr>
 <tr class="separator:a8eec35e3798ea1039d63a9b23a871feb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -408,7 +408,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the paper size which should be used to print the worksheet using this page setup. </p>
+<p>Returns the paper size which should be used to print the worksheet using this page setup. Assumes that this page setup has a paper size (please call <a class="el" href="structxlnt_1_1page__setup.html#a61d84ea7d6d8cd378f8a470924214a93" title="Check if current paper setting has paper size setting ">has_paper_size()</a> to check). If this workbook has no paper size, the default paper_size::letter will be returned. </p>
 
 </div>
 </div>
@@ -471,8 +471,8 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a48e879040ee46f89b2e2bed5476ab715"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a48e879040ee46f89b2e2bed5476ab715">&#9670;&nbsp;</a></span>scale() <span class="overload">[1/2]</span></h2>
+<a id="a7f7e7b655f82e415fef17a40348e59ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f7e7b655f82e415fef17a40348e59ff">&#9670;&nbsp;</a></span>scale() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -480,25 +480,25 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">void xlnt::page_setup::scale </td>
           <td>(</td>
-          <td class="paramtype">double&#160;</td>
+          <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>scale</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Sets the factor by which the page should be scaled during printing. </p>
+<p>Sets the scale percentage by which the page should be scaled during printing. A value of 150 means 150% scaling. Possible values are between 10 and 400. Values outside this range will be clipped to the range limits. </p>
 
 </div>
 </div>
-<a id="a623575dcbc3d7028a84df36f9d61bd8f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a623575dcbc3d7028a84df36f9d61bd8f">&#9670;&nbsp;</a></span>scale() <span class="overload">[2/2]</span></h2>
+<a id="a9002fdf50c1b9da59774c0ecd5a88642"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9002fdf50c1b9da59774c0ecd5a88642">&#9670;&nbsp;</a></span>scale() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double xlnt::page_setup::scale </td>
+          <td class="memname">unsigned int xlnt::page_setup::scale </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -506,7 +506,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the factor by which the page should be scaled during printing. </p>
+<p>Returns the scale percentage by which the page should be scaled during printing. A value of 150 means 150% scaling. If no scale has been set (<a class="el" href="structxlnt_1_1page__setup.html#a8eec35e3798ea1039d63a9b23a871feb" title="Check if current paper setting has scale setting ">has_scale()</a> returns false), the default scale of 100 will be returned. </p>
 
 </div>
 </div>

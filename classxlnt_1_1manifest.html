@@ -90,10 +90,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aff71c2d2f7ad97100c9c79cd68699776"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the manifest contains a relationship with the given type with part as the source.  <a href="#aff71c2d2f7ad97100c9c79cd68699776">More...</a><br /></td></tr>
 <tr class="separator:aff71c2d2f7ad97100c9c79cd68699776"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf053fd0dfdc37f962b63c9111311875"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1relationship.html">relationship</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1manifest.html#aaf053fd0dfdc37f962b63c9111311875">relationship</a> (const <a class="el" href="classxlnt_1_1path.html">path</a> &amp;source, <a class="el" href="namespacexlnt.html#af5691f6683b8080f5833962b1fd0cb06">relationship_type</a> type) const</td></tr>
-<tr class="memdesc:aaf053fd0dfdc37f962b63c9111311875"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the relationship with "source" as the source and with a type of "type". Throws a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if no such relationship is found.  <a href="#aaf053fd0dfdc37f962b63c9111311875">More...</a><br /></td></tr>
+<tr class="memdesc:aaf053fd0dfdc37f962b63c9111311875"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the relationship with "source" as the source and with a type of "type". Assumes that such a relationship exists (please call <a class="el" href="classxlnt_1_1manifest.html#aa3b15806378006db18e6d7304d5160c4" title="Returns true if the manifest contains a relationship with the given type with part as the source...">has_relationship()</a> to check). Throws a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if no such relationship is found.  <a href="#aaf053fd0dfdc37f962b63c9111311875">More...</a><br /></td></tr>
 <tr class="separator:aaf053fd0dfdc37f962b63c9111311875"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17f504a5e74702ea6c8ad65401e8ac4c"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1relationship.html">relationship</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1manifest.html#a17f504a5e74702ea6c8ad65401e8ac4c">relationship</a> (const <a class="el" href="classxlnt_1_1path.html">path</a> &amp;source, const std::string &amp;rel_id) const</td></tr>
-<tr class="memdesc:a17f504a5e74702ea6c8ad65401e8ac4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the relationship with "source" as the source and with an ID of "rel_id". Throws a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if no such relationship is found.  <a href="#a17f504a5e74702ea6c8ad65401e8ac4c">More...</a><br /></td></tr>
+<tr class="memdesc:a17f504a5e74702ea6c8ad65401e8ac4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the relationship with "source" as the source and with an ID of "rel_id". Assumes that such a relationship exists (please call <a class="el" href="classxlnt_1_1manifest.html#aa3b15806378006db18e6d7304d5160c4" title="Returns true if the manifest contains a relationship with the given type with part as the source...">has_relationship()</a> to check). Throws a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if no such relationship is found.  <a href="#a17f504a5e74702ea6c8ad65401e8ac4c">More...</a><br /></td></tr>
 <tr class="separator:a17f504a5e74702ea6c8ad65401e8ac4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acaa5e0f66e8a01bbf1beafee7ae09e53"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classxlnt_1_1relationship.html">xlnt::relationship</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1manifest.html#acaa5e0f66e8a01bbf1beafee7ae09e53">relationships</a> (const <a class="el" href="classxlnt_1_1path.html">path</a> &amp;source) const</td></tr>
 <tr class="memdesc:acaa5e0f66e8a01bbf1beafee7ae09e53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all relationship with "source" as the source.  <a href="#acaa5e0f66e8a01bbf1beafee7ae09e53">More...</a><br /></td></tr>
@@ -113,8 +113,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aee3de9f17ba2cf9dadd813a7be51f8de"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1manifest.html#aee3de9f17ba2cf9dadd813a7be51f8de">unregister_relationship</a> (const <a class="el" href="classxlnt_1_1uri.html">uri</a> &amp;source, const std::string &amp;rel_id)</td></tr>
 <tr class="memdesc:aee3de9f17ba2cf9dadd813a7be51f8de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the relationship with the given id from source part. Returns a mapping of relationship IDs since IDs are shifted down. For example, if there are three relationships for part a.xml like [rId1, rId2, rId3] and rId2 is deleted, the resulting map would look like [rId3-&gt;rId2].  <a href="#aee3de9f17ba2cf9dadd813a7be51f8de">More...</a><br /></td></tr>
 <tr class="separator:aee3de9f17ba2cf9dadd813a7be51f8de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c5ec293fa7c6e8d6845831c22f2e463"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1manifest.html#a8c5ec293fa7c6e8d6845831c22f2e463">has_content_type</a> (const <a class="el" href="classxlnt_1_1path.html">path</a> &amp;part) const</td></tr>
+<tr class="memdesc:a8c5ec293fa7c6e8d6845831c22f2e463"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if a content type for the extension has been registered.  <a href="#a8c5ec293fa7c6e8d6845831c22f2e463">More...</a><br /></td></tr>
+<tr class="separator:a8c5ec293fa7c6e8d6845831c22f2e463"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1cffaac41ad585535e389fb0f872929"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1manifest.html#ae1cffaac41ad585535e389fb0f872929">content_type</a> (const <a class="el" href="classxlnt_1_1path.html">path</a> &amp;part) const</td></tr>
-<tr class="memdesc:ae1cffaac41ad585535e389fb0f872929"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given the path to a part, returns the content type of the part as a string.  <a href="#ae1cffaac41ad585535e389fb0f872929">More...</a><br /></td></tr>
+<tr class="memdesc:ae1cffaac41ad585535e389fb0f872929"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given the path to a part, returns the content type of the part as a string. Assumes that there is a content type for the part (please call <a class="el" href="classxlnt_1_1manifest.html#a8c5ec293fa7c6e8d6845831c22f2e463" title="Returns true if a content type for the extension has been registered. ">has_content_type()</a> to check). Throws a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if the content type is not found.  <a href="#ae1cffaac41ad585535e389fb0f872929">More...</a><br /></td></tr>
 <tr class="separator:ae1cffaac41ad585535e389fb0f872929"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56e02d02403b73482a8b9362f9be314e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1manifest.html#a56e02d02403b73482a8b9362f9be314e">has_default_type</a> (const std::string &amp;extension) const</td></tr>
 <tr class="memdesc:a56e02d02403b73482a8b9362f9be314e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if a default content type for the extension has been registered.  <a href="#a56e02d02403b73482a8b9362f9be314e">More...</a><br /></td></tr>
@@ -123,7 +126,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a1be55d99a342d893da0c633e9ff887d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector of all extensions with registered default content types.  <a href="#a1be55d99a342d893da0c633e9ff887d8">More...</a><br /></td></tr>
 <tr class="separator:a1be55d99a342d893da0c633e9ff887d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a278940484f977f13b554a29483ae0acb"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1manifest.html#a278940484f977f13b554a29483ae0acb">default_type</a> (const std::string &amp;extension) const</td></tr>
-<tr class="memdesc:a278940484f977f13b554a29483ae0acb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the registered default content type for parts of the given extension.  <a href="#a278940484f977f13b554a29483ae0acb">More...</a><br /></td></tr>
+<tr class="memdesc:a278940484f977f13b554a29483ae0acb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the registered default content type for parts of the given extension. Assumes that there is a default content type for the part (please call <a class="el" href="classxlnt_1_1manifest.html#a56e02d02403b73482a8b9362f9be314e" title="Returns true if a default content type for the extension has been registered. ">has_default_type()</a> to check). Throws <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if no default type was found.  <a href="#a278940484f977f13b554a29483ae0acb">More...</a><br /></td></tr>
 <tr class="separator:a278940484f977f13b554a29483ae0acb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a696f9d51dcfca5af3c39d3fda40f8a8c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1manifest.html#a696f9d51dcfca5af3c39d3fda40f8a8c">register_default_type</a> (const std::string &amp;extension, const std::string &amp;type)</td></tr>
 <tr class="memdesc:a696f9d51dcfca5af3c39d3fda40f8a8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Associates the given extension with the given content type.  <a href="#a696f9d51dcfca5af3c39d3fda40f8a8c">More...</a><br /></td></tr>
@@ -135,7 +138,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aef8c17dfe1cfdcadccb977db1b57fbf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if a content type overriding the default content type has been registered for the given part.  <a href="#aef8c17dfe1cfdcadccb977db1b57fbf2">More...</a><br /></td></tr>
 <tr class="separator:aef8c17dfe1cfdcadccb977db1b57fbf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f8400ba54883c2391d6d03a49fdb165"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1manifest.html#a8f8400ba54883c2391d6d03a49fdb165">override_type</a> (const <a class="el" href="classxlnt_1_1path.html">path</a> &amp;part) const</td></tr>
-<tr class="memdesc:a8f8400ba54883c2391d6d03a49fdb165"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the override content type registered for the given part. Throws <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if no override type was found.  <a href="#a8f8400ba54883c2391d6d03a49fdb165">More...</a><br /></td></tr>
+<tr class="memdesc:a8f8400ba54883c2391d6d03a49fdb165"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the override content type registered for the given part. Assumes that there is an override content type for the part (please call <a class="el" href="classxlnt_1_1manifest.html#aef8c17dfe1cfdcadccb977db1b57fbf2" title="Returns true if a content type overriding the default content type has been registered for the given ...">has_override_type()</a> to check). Throws <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if no override type was found.  <a href="#a8f8400ba54883c2391d6d03a49fdb165">More...</a><br /></td></tr>
 <tr class="separator:a8f8400ba54883c2391d6d03a49fdb165"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a450e1bcff1082d22944268e4cca0c2cc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classxlnt_1_1path.html">path</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1manifest.html#a450e1bcff1082d22944268e4cca0c2cc">parts_with_overriden_types</a> () const</td></tr>
 <tr class="memdesc:a450e1bcff1082d22944268e4cca0c2cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the path of every part in this manifest with an overriden content type.  <a href="#a450e1bcff1082d22944268e4cca0c2cc">More...</a><br /></td></tr>
@@ -211,7 +214,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
       </table>
 </div><div class="memdoc">
 
-<p>Given the path to a part, returns the content type of the part as a string. </p>
+<p>Given the path to a part, returns the content type of the part as a string. Assumes that there is a content type for the part (please call <a class="el" href="classxlnt_1_1manifest.html#a8c5ec293fa7c6e8d6845831c22f2e463" title="Returns true if a content type for the extension has been registered. ">has_content_type()</a> to check). Throws a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if the content type is not found. </p>
 
 </div>
 </div>
@@ -231,7 +234,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
       </table>
 </div><div class="memdoc">
 
-<p>Returns the registered default content type for parts of the given extension. </p>
+<p>Returns the registered default content type for parts of the given extension. Assumes that there is a default content type for the part (please call <a class="el" href="classxlnt_1_1manifest.html#a56e02d02403b73482a8b9362f9be314e" title="Returns true if a default content type for the extension has been registered. ">has_default_type()</a> to check). Throws <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if no default type was found. </p>
 
 </div>
 </div>
@@ -251,6 +254,26 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
 </div><div class="memdoc">
 
 <p>Returns a vector of all extensions with registered default content types. </p>
+
+</div>
+</div>
+<a id="a8c5ec293fa7c6e8d6845831c22f2e463"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c5ec293fa7c6e8d6845831c22f2e463">&#9670;&nbsp;</a></span>has_content_type()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::manifest::has_content_type </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classxlnt_1_1path.html">path</a> &amp;&#160;</td>
+          <td class="paramname"><em>part</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if a content type for the extension has been registered. </p>
 
 </div>
 </div>
@@ -370,7 +393,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
       </table>
 </div><div class="memdoc">
 
-<p>Returns the override content type registered for the given part. Throws <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if no override type was found. </p>
+<p>Returns the override content type registered for the given part. Assumes that there is an override content type for the part (please call <a class="el" href="classxlnt_1_1manifest.html#aef8c17dfe1cfdcadccb977db1b57fbf2" title="Returns true if a content type overriding the default content type has been registered for the given ...">has_override_type()</a> to check). Throws <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if no override type was found. </p>
 
 </div>
 </div>
@@ -560,7 +583,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
       </table>
 </div><div class="memdoc">
 
-<p>Returns the relationship with "source" as the source and with an ID of "rel_id". Throws a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if no such relationship is found. </p>
+<p>Returns the relationship with "source" as the source and with an ID of "rel_id". Assumes that such a relationship exists (please call <a class="el" href="classxlnt_1_1manifest.html#aa3b15806378006db18e6d7304d5160c4" title="Returns true if the manifest contains a relationship with the given type with part as the source...">has_relationship()</a> to check). Throws a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if no such relationship is found. </p>
 
 </div>
 </div>
@@ -590,7 +613,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
       </table>
 </div><div class="memdoc">
 
-<p>Returns the relationship with "source" as the source and with a type of "type". Throws a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if no such relationship is found. </p>
+<p>Returns the relationship with "source" as the source and with a type of "type". Assumes that such a relationship exists (please call <a class="el" href="classxlnt_1_1manifest.html#aa3b15806378006db18e6d7304d5160c4" title="Returns true if the manifest contains a relationship with the given type with part as the source...">has_relationship()</a> to check). Throws a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception if no such relationship is found. </p>
 
 </div>
 </div>

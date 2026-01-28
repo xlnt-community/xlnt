@@ -78,7 +78,7 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a49f5c4cf6635c69092bd7652ac339251"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1cell__reference__hash.html#a49f5c4cf6635c69092bd7652ac339251">operator()</a> (const <a class="el" href="classxlnt_1_1cell__reference.html">cell_reference</a> &amp;k) const</td></tr>
-<tr class="memdesc:a49f5c4cf6635c69092bd7652ac339251"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a hash representing a particular <a class="el" href="classxlnt_1_1cell__reference.html" title="An object used to refer to a cell. References have two parts, the column and the row. In Excel, the reference string A1 refers to the top-left-most cell. A cell_reference can be initialized from a string of this form or a 1-indexed ordered pair of the form column, row. ">cell_reference</a>.  <a href="#a49f5c4cf6635c69092bd7652ac339251">More...</a><br /></td></tr>
+<tr class="memdesc:a49f5c4cf6635c69092bd7652ac339251"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a hash representing a particular <a class="el" href="classxlnt_1_1cell__reference.html" title="An object used to refer to a cell. References have two parts, the column and the row. In Excel, the reference string A1 refers to the top-left-most cell. A cell_reference can be initialized from a string of this form or a 1-indexed ordered pair of the form column, row. By default, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD, column index 16384). The OOXML specification allows to extend this range, and XLNT allows both rows and columns between 1 and 4294967295. Please note that not all applications might support these extended ranges. ">cell_reference</a>.  <a href="#a49f5c4cf6635c69092bd7652ac339251">More...</a><br /></td></tr>
 <tr class="separator:a49f5c4cf6635c69092bd7652ac339251"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -100,7 +100,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns a hash representing a particular <a class="el" href="classxlnt_1_1cell__reference.html" title="An object used to refer to a cell. References have two parts, the column and the row. In Excel, the reference string A1 refers to the top-left-most cell. A cell_reference can be initialized from a string of this form or a 1-indexed ordered pair of the form column, row. ">cell_reference</a>. </p>
+<p>Returns a hash representing a particular <a class="el" href="classxlnt_1_1cell__reference.html" title="An object used to refer to a cell. References have two parts, the column and the row. In Excel, the reference string A1 refers to the top-left-most cell. A cell_reference can be initialized from a string of this form or a 1-indexed ordered pair of the form column, row. By default, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD, column index 16384). The OOXML specification allows to extend this range, and XLNT allows both rows and columns between 1 and 4294967295. Please note that not all applications might support these extended ranges. ">cell_reference</a>. </p>
 
 </div>
 </div>

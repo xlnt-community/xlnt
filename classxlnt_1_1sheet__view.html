@@ -87,10 +87,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8e1298ffdc346a9e157ec1ceff534f96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this view has a pane defined.  <a href="#a8e1298ffdc346a9e157ec1ceff534f96">More...</a><br /></td></tr>
 <tr class="separator:a8e1298ffdc346a9e157ec1ceff534f96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab21d19f431588481db0782b1e07f3758"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structxlnt_1_1pane.html">pane</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1sheet__view.html#ab21d19f431588481db0782b1e07f3758">pane</a> ()</td></tr>
-<tr class="memdesc:ab21d19f431588481db0782b1e07f3758"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a reference to this view's pane.  <a href="#ab21d19f431588481db0782b1e07f3758">More...</a><br /></td></tr>
+<tr class="memdesc:ab21d19f431588481db0782b1e07f3758"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a reference to this view's pane. Assumes that this view has a pane (please call <a class="el" href="classxlnt_1_1sheet__view.html#a8e1298ffdc346a9e157ec1ceff534f96" title="Returns true if this view has a pane defined. ">has_pane()</a> to check). If this view does not have a pane, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#ab21d19f431588481db0782b1e07f3758">More...</a><br /></td></tr>
 <tr class="separator:ab21d19f431588481db0782b1e07f3758"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a1116a8a72b9a8a05d694d5eb5c5c97"><td class="memItemLeft" align="right" valign="top">const struct <a class="el" href="structxlnt_1_1pane.html">pane</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1sheet__view.html#a1a1116a8a72b9a8a05d694d5eb5c5c97">pane</a> () const</td></tr>
-<tr class="memdesc:a1a1116a8a72b9a8a05d694d5eb5c5c97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a reference to this view's pane.  <a href="#a1a1116a8a72b9a8a05d694d5eb5c5c97">More...</a><br /></td></tr>
+<tr class="memdesc:a1a1116a8a72b9a8a05d694d5eb5c5c97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a reference to this view's pane. Assumes that this view has a pane (please call <a class="el" href="classxlnt_1_1sheet__view.html#a8e1298ffdc346a9e157ec1ceff534f96" title="Returns true if this view has a pane defined. ">has_pane()</a> to check). If this view does not have a pane, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a1a1116a8a72b9a8a05d694d5eb5c5c97">More...</a><br /></td></tr>
 <tr class="separator:a1a1116a8a72b9a8a05d694d5eb5c5c97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe846874f13c6aa28b1a3aa63e2956fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1sheet__view.html#afe846874f13c6aa28b1a3aa63e2956fd">clear_pane</a> ()</td></tr>
 <tr class="memdesc:afe846874f13c6aa28b1a3aa63e2956fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the defined pane from this view.  <a href="#afe846874f13c6aa28b1a3aa63e2956fd">More...</a><br /></td></tr>
@@ -111,7 +111,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a2ad7a3bf27a054bf91976eb5909268c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the collection of selections as a vector.  <a href="#a2ad7a3bf27a054bf91976eb5909268c6">More...</a><br /></td></tr>
 <tr class="separator:a2ad7a3bf27a054bf91976eb5909268c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbf0ff8696bcf45e783c7dac005940d6"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1selection.html">xlnt::selection</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1sheet__view.html#adbf0ff8696bcf45e783c7dac005940d6">selection</a> (std::size_t index)</td></tr>
-<tr class="memdesc:adbf0ff8696bcf45e783c7dac005940d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the selection at the given index.  <a href="#adbf0ff8696bcf45e783c7dac005940d6">More...</a><br /></td></tr>
+<tr class="memdesc:adbf0ff8696bcf45e783c7dac005940d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the selection at the given index (please call <a class="el" href="classxlnt_1_1sheet__view.html#a2ad7a3bf27a054bf91976eb5909268c6" title="Returns the collection of selections as a vector. ">selections()</a>.size() if the number of selections is unknown). If the index is out of bounds, an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">invalid_parameter</a> exception will be thrown.  <a href="#adbf0ff8696bcf45e783c7dac005940d6">More...</a><br /></td></tr>
 <tr class="separator:adbf0ff8696bcf45e783c7dac005940d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f53c4def36756edf0f1851deab447ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1sheet__view.html#a0f53c4def36756edf0f1851deab447ec">show_grid_lines</a> (bool show)</td></tr>
 <tr class="memdesc:a0f53c4def36756edf0f1851deab447ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">If show is true, grid lines will be shown for sheets using this view.  <a href="#a0f53c4def36756edf0f1851deab447ec">More...</a><br /></td></tr>
@@ -138,7 +138,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a4ba62d4aea73a818bcea11ef9a0278f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the top left cell of this view.  <a href="#a4ba62d4aea73a818bcea11ef9a0278f4">More...</a><br /></td></tr>
 <tr class="separator:a4ba62d4aea73a818bcea11ef9a0278f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4fada4cecd527e02aacf3f4c9b2258d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1cell__reference.html">cell_reference</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1sheet__view.html#a4fada4cecd527e02aacf3f4c9b2258d0">top_left_cell</a> () const</td></tr>
-<tr class="memdesc:a4fada4cecd527e02aacf3f4c9b2258d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the top left cell of this view.  <a href="#a4fada4cecd527e02aacf3f4c9b2258d0">More...</a><br /></td></tr>
+<tr class="memdesc:a4fada4cecd527e02aacf3f4c9b2258d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the top left cell of this view. Assumes that this view has a top left (please call <a class="el" href="classxlnt_1_1sheet__view.html#a5a3a818d8c00fa5344029a7472a1863e" title="has a top left cell? ">has_top_left_cell()</a> to check). If this view does not have a top left cell, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a4fada4cecd527e02aacf3f4c9b2258d0">More...</a><br /></td></tr>
 <tr class="separator:a4fada4cecd527e02aacf3f4c9b2258d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3d65cfd1bedfa5ce418d870cd4653a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1sheet__view.html#af3d65cfd1bedfa5ce418d870cd4653a9">zoom_scale</a> (int scale)</td></tr>
 <tr class="memdesc:af3d65cfd1bedfa5ce418d870cd4653a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the zoom scale (percentage) for this view.  <a href="#af3d65cfd1bedfa5ce418d870cd4653a9">More...</a><br /></td></tr>
@@ -508,7 +508,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns a reference to this view's pane. </p>
+<p>Returns a reference to this view's pane. Assumes that this view has a pane (please call <a class="el" href="classxlnt_1_1sheet__view.html#a8e1298ffdc346a9e157ec1ceff534f96" title="Returns true if this view has a pane defined. ">has_pane()</a> to check). If this view does not have a pane, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -535,7 +535,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns a reference to this view's pane. </p>
+<p>Returns a reference to this view's pane. Assumes that this view has a pane (please call <a class="el" href="classxlnt_1_1sheet__view.html#a8e1298ffdc346a9e157ec1ceff534f96" title="Returns true if this view has a pane defined. ">has_pane()</a> to check). If this view does not have a pane, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -591,7 +591,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the selection at the given index. </p>
+<p>Returns the selection at the given index (please call <a class="el" href="classxlnt_1_1sheet__view.html#a2ad7a3bf27a054bf91976eb5909268c6" title="Returns the collection of selections as a vector. ">selections()</a>.size() if the number of selections is unknown). If the index is out of bounds, an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">invalid_parameter</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -728,7 +728,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the top left cell of this view. </p>
+<p>Returns the top left cell of this view. Assumes that this view has a top left (please call <a class="el" href="classxlnt_1_1sheet__view.html#a5a3a818d8c00fa5344029a7472a1863e" title="has a top left cell? ">has_top_left_cell()</a> to check). If this view does not have a top left cell, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>

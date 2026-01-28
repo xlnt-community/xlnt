@@ -118,10 +118,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a295ceec95ff8ff8279cc735d65a58f1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">destructor for <a class="el" href="classxlnt_1_1const__cell__iterator.html" title="A cell iterator iterates over a 1D range by row or by column. ">const_cell_iterator</a>  <a href="#a295ceec95ff8ff8279cc735d65a58f1e">More...</a><br /></td></tr>
 <tr class="separator:a295ceec95ff8ff8279cc735d65a58f1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0601c4400359bf41f8fe9763e82b55e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1cell.html">reference</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell__iterator.html#aa0601c4400359bf41f8fe9763e82b55e">operator*</a> ()</td></tr>
-<tr class="memdesc:aa0601c4400359bf41f8fe9763e82b55e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dereferences this iterator to return the cell it points to.  <a href="#aa0601c4400359bf41f8fe9763e82b55e">More...</a><br /></td></tr>
+<tr class="memdesc:aa0601c4400359bf41f8fe9763e82b55e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dereferences this iterator to return the cell it points to. If the cell doesn't exist, an empty cell will be created, added to the worksheet, and a reference to it will be returned.  <a href="#aa0601c4400359bf41f8fe9763e82b55e">More...</a><br /></td></tr>
 <tr class="separator:aa0601c4400359bf41f8fe9763e82b55e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abba1360800f3d041f7ce7df86d85f704"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classxlnt_1_1cell.html">reference</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell__iterator.html#abba1360800f3d041f7ce7df86d85f704">operator*</a> () const</td></tr>
-<tr class="memdesc:abba1360800f3d041f7ce7df86d85f704"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dereferences this iterator to return the cell it points to.  <a href="#abba1360800f3d041f7ce7df86d85f704">More...</a><br /></td></tr>
+<tr class="memdesc:abba1360800f3d041f7ce7df86d85f704"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dereferences this iterator to return the cell it points to. Assumes that the cell exists. If the iterator points to a non-existing cell, an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">invalid_parameter</a> exception will be thrown.  <a href="#abba1360800f3d041f7ce7df86d85f704">More...</a><br /></td></tr>
 <tr class="separator:abba1360800f3d041f7ce7df86d85f704"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69698d9443b33c80746a5eb11a7f3d99"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell__iterator.html#a69698d9443b33c80746a5eb11a7f3d99">operator==</a> (const <a class="el" href="classxlnt_1_1cell__iterator.html">cell_iterator</a> &amp;other) const</td></tr>
 <tr class="memdesc:a69698d9443b33c80746a5eb11a7f3d99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this iterator is equivalent to other.  <a href="#a69698d9443b33c80746a5eb11a7f3d99">More...</a><br /></td></tr>
@@ -142,7 +142,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a6180e6404bafb6e375bc95778a55701b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Post-increments the iterator to point to the previous cell and return a copy of the iterator before the decrement.  <a href="#a6180e6404bafb6e375bc95778a55701b">More...</a><br /></td></tr>
 <tr class="separator:a6180e6404bafb6e375bc95778a55701b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e76d4e89185658ec894405dbf32eea9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell__iterator.html#a8e76d4e89185658ec894405dbf32eea9">has_value</a> () const</td></tr>
-<tr class="memdesc:a8e76d4e89185658ec894405dbf32eea9"><td class="mdescLeft">&#160;</td><td class="mdescRight">When iterating over a range that doesn't ignore null cells, <a class="el" href="classxlnt_1_1cell__iterator.html#aa0601c4400359bf41f8fe9763e82b55e" title="Dereferences this iterator to return the cell it points to. ">operator*()</a> will throw when trying to access the cells that are null. This method checks the existence of a cell.  <a href="#a8e76d4e89185658ec894405dbf32eea9">More...</a><br /></td></tr>
+<tr class="memdesc:a8e76d4e89185658ec894405dbf32eea9"><td class="mdescLeft">&#160;</td><td class="mdescRight">When iterating over a range that doesn't ignore null cells, <a class="el" href="classxlnt_1_1cell__iterator.html#aa0601c4400359bf41f8fe9763e82b55e" title="Dereferences this iterator to return the cell it points to. If the cell doesn&#39;t exist, an empty cell will be created, added to the worksheet, and a reference to it will be returned. ">operator*()</a> will throw when trying to access the cells that are null. This method checks the existence of a cell.  <a href="#a8e76d4e89185658ec894405dbf32eea9">More...</a><br /></td></tr>
 <tr class="separator:a8e76d4e89185658ec894405dbf32eea9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -345,7 +345,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>When iterating over a range that doesn't ignore null cells, <a class="el" href="classxlnt_1_1cell__iterator.html#aa0601c4400359bf41f8fe9763e82b55e" title="Dereferences this iterator to return the cell it points to. ">operator*()</a> will throw when trying to access the cells that are null. This method checks the existence of a cell. </p>
+<p>When iterating over a range that doesn't ignore null cells, <a class="el" href="classxlnt_1_1cell__iterator.html#aa0601c4400359bf41f8fe9763e82b55e" title="Dereferences this iterator to return the cell it points to. If the cell doesn&#39;t exist, an empty cell will be created, added to the worksheet, and a reference to it will be returned. ">operator*()</a> will throw when trying to access the cells that are null. This method checks the existence of a cell. </p>
 
 </div>
 </div>
@@ -384,7 +384,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Dereferences this iterator to return the cell it points to. </p>
+<p>Dereferences this iterator to return the cell it points to. If the cell doesn't exist, an empty cell will be created, added to the worksheet, and a reference to it will be returned. </p>
 
 </div>
 </div>
@@ -403,7 +403,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Dereferences this iterator to return the cell it points to. </p>
+<p>Dereferences this iterator to return the cell it points to. Assumes that the cell exists. If the iterator points to a non-existing cell, an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">invalid_parameter</a> exception will be thrown. </p>
 
 </div>
 </div>

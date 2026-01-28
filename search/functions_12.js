@@ -2,6 +2,7 @@ var searchData=
 [
   ['target',['target',['../classxlnt_1_1relationship.html#a01987dda4b02398d99d74f9e4e48edfd',1,'xlnt::relationship']]],
   ['target_5fmode',['target_mode',['../classxlnt_1_1relationship.html#ac81028a79055a0727ee0b6f163e62ca8',1,'xlnt::relationship']]],
+  ['target_5frange',['target_range',['../classxlnt_1_1hyperlink.html#a5db012df3c97f60409deee6ad6e303db',1,'xlnt::hyperlink']]],
   ['target_5fworksheet',['target_worksheet',['../classxlnt_1_1range.html#a08a7f43c12ac57acdb08f5486dec3d7d',1,'xlnt::range']]],
   ['targets',['targets',['../classxlnt_1_1named__range.html#a003f137ae5266755c7d674d2a9b0b66d',1,'xlnt::named_range']]],
   ['text',['text',['../classxlnt_1_1comment.html#a07332297ef8e70ed3338619eff519980',1,'xlnt::comment::text()'],['../classxlnt_1_1number__format.html#a71e3128aeee72bfae3c6b845b40715b0',1,'xlnt::number_format::text()']]],
@@ -17,6 +18,7 @@ var searchData=
   ['to_5frange',['to_range',['../classxlnt_1_1cell__reference.html#a4612bcfb2c51d44c529d50ab3bb0ffcb',1,'xlnt::cell_reference']]],
   ['to_5fstring',['to_string',['../classxlnt_1_1cell.html#a7a51abb90f9e716f242512a9f53cf09a',1,'xlnt::cell::to_string()'],['../classxlnt_1_1cell__reference.html#ac79e961a120faa927fb6d1e7827886ff',1,'xlnt::cell_reference::to_string()'],['../classxlnt_1_1uri.html#a6ccfabb6971665c571bad03b2d52ce56',1,'xlnt::uri::to_string()'],['../structxlnt_1_1datetime.html#a244c0b83e2b245a826338c453c0b6660',1,'xlnt::datetime::to_string()'],['../classxlnt_1_1range__reference.html#affa8b84b395b54992604404d6c529f37',1,'xlnt::range_reference::to_string()']]],
   ['today',['today',['../structxlnt_1_1date.html#ad9bc11f9ec9c7558a06ee08da8334c7b',1,'xlnt::date::today()'],['../structxlnt_1_1datetime.html#ae7fd9da2129eb124c38e143b4485fab3',1,'xlnt::datetime::today()']]],
+  ['tooltip',['tooltip',['../classxlnt_1_1hyperlink.html#ad2c99481c54b2c26dc482155b86d27e5',1,'xlnt::hyperlink::tooltip(const std::string &amp;value)'],['../classxlnt_1_1hyperlink.html#a29e92c319eabd0eec486e3bec8911ce8',1,'xlnt::hyperlink::tooltip() const']]],
   ['top',['top',['../classxlnt_1_1comment.html#a2864eb7775a8eafbd19c9c9aff7f7042',1,'xlnt::comment::top()'],['../classxlnt_1_1gradient__fill.html#a6a5fd51b1492a6bfb56d65619aa6fe44',1,'xlnt::gradient_fill::top() const'],['../classxlnt_1_1gradient__fill.html#ac46dade36b7f906250d72b43f844c776',1,'xlnt::gradient_fill::top(double value)'],['../classxlnt_1_1page__margins.html#a235332633fe353e3f2765899d0c57845',1,'xlnt::page_margins::top() const'],['../classxlnt_1_1page__margins.html#a5d6179c09dfbd0a128ca101aaa8a4ae5',1,'xlnt::page_margins::top(double top)']]],
   ['top_5fleft',['top_left',['../classxlnt_1_1range__reference.html#aa94c37f786825b5ba1ebf7a0b30df366',1,'xlnt::range_reference']]],
   ['top_5fleft_5fcell',['top_left_cell',['../classxlnt_1_1sheet__view.html#a4ba62d4aea73a818bcea11ef9a0278f4',1,'xlnt::sheet_view::top_left_cell(const cell_reference &amp;ref)'],['../classxlnt_1_1sheet__view.html#a4fada4cecd527e02aacf3f4c9b2258d0',1,'xlnt::sheet_view::top_left_cell() const']]],

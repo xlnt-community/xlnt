@@ -21,7 +21,7 @@ var searchData=
   ['all_5fsides',['all_sides',['../classxlnt_1_1border.html#a621b8937429f3814b3dfd0c4e7085101',1,'xlnt::border']]],
   ['alpha',['alpha',['../classxlnt_1_1rgb__color.html#ab30c9e7dc50473e3eba768a9d9b6eff4',1,'xlnt::rgb_color']]],
   ['anchor',['anchor',['../classxlnt_1_1cell.html#a69964f0c388da7097fbf9d1e1dfc60bf',1,'xlnt::cell']]],
-  ['app_5fname',['app_name',['../classxlnt_1_1workbook.html#a682a585084f7fa8254f19f3f4abc400c',1,'xlnt::workbook']]],
+  ['app_5fname',['app_name',['../classxlnt_1_1workbook.html#a6c35d4b4b9a92419bd26e98ab519473f',1,'xlnt::workbook::app_name() const'],['../classxlnt_1_1workbook.html#abd907d6ede85cdc52a7efa5a0e6f21f6',1,'xlnt::workbook::app_name(const std::string &amp;app_name)']]],
   ['append',['append',['../classxlnt_1_1path.html#adfb1aac9ce279cf94e87233490da20e8',1,'xlnt::path::append(const std::string &amp;to_append) const'],['../classxlnt_1_1path.html#ae22f50a08277330190d9ff01aace9997',1,'xlnt::path::append(const path &amp;to_append) const']]],
   ['apply',['apply',['../classxlnt_1_1range.html#a8df0f556f491fbd957d5ce8913f35b4d',1,'xlnt::range']]],
   ['apply_5fstyles',['apply_styles',['../classxlnt_1_1worksheet.html#a0342fe0dc926f054b839727cd2772cd0',1,'xlnt::worksheet']]],

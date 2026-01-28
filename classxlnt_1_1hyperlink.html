@@ -81,41 +81,50 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a03a02ed1aa44840762747fad16f3c9ab"><td class="memItemLeft" align="right" valign="top"><a id="a03a02ed1aa44840762747fad16f3c9ab"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>external</b> () const</td></tr>
 <tr class="separator:a03a02ed1aa44840762747fad16f3c9ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa29bd9ea53b0626ed76f8723e5407b80"><td class="memItemLeft" align="right" valign="top"><a id="aa29bd9ea53b0626ed76f8723e5407b80"></a>
-class <a class="el" href="classxlnt_1_1relationship.html">relationship</a>&#160;</td><td class="memItemRight" valign="bottom"><b>relationship</b> () const</td></tr>
+<tr class="memitem:aa29bd9ea53b0626ed76f8723e5407b80"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1relationship.html">relationship</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#aa29bd9ea53b0626ed76f8723e5407b80">relationship</a> () const</td></tr>
+<tr class="memdesc:aa29bd9ea53b0626ed76f8723e5407b80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the relationship of this hyperlink. If this hyperlink does not have a relationship because it is internal (external() returns false), an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#aa29bd9ea53b0626ed76f8723e5407b80">More...</a><br /></td></tr>
 <tr class="separator:aa29bd9ea53b0626ed76f8723e5407b80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22a8ec0c1df8a16fb9c778f941a11618"><td class="memItemLeft" align="right" valign="top"><a id="a22a8ec0c1df8a16fb9c778f941a11618"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>url</b> () const</td></tr>
+<tr class="memitem:a22a8ec0c1df8a16fb9c778f941a11618"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#a22a8ec0c1df8a16fb9c778f941a11618">url</a> () const</td></tr>
+<tr class="memdesc:a22a8ec0c1df8a16fb9c778f941a11618"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the URL (external target) of this hyperlink. If this hyperlink does not have a URL because it is internal (external() returns false), an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a22a8ec0c1df8a16fb9c778f941a11618">More...</a><br /></td></tr>
 <tr class="separator:a22a8ec0c1df8a16fb9c778f941a11618"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5db012df3c97f60409deee6ad6e303db"><td class="memItemLeft" align="right" valign="top"><a id="a5db012df3c97f60409deee6ad6e303db"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>target_range</b> () const</td></tr>
+<tr class="memitem:a5db012df3c97f60409deee6ad6e303db"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#a5db012df3c97f60409deee6ad6e303db">target_range</a> () const</td></tr>
+<tr class="memdesc:a5db012df3c97f60409deee6ad6e303db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the target range (internal target) of this hyperlink. If this hyperlink does not have a target range because it is external (external() returns true), an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a5db012df3c97f60409deee6ad6e303db">More...</a><br /></td></tr>
 <tr class="separator:a5db012df3c97f60409deee6ad6e303db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1456294f13febb4909021a6573601cf1"><td class="memItemLeft" align="right" valign="top"><a id="a1456294f13febb4909021a6573601cf1"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_display</b> () const</td></tr>
+<tr class="memitem:a1456294f13febb4909021a6573601cf1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#a1456294f13febb4909021a6573601cf1">has_display</a> () const</td></tr>
+<tr class="memdesc:a1456294f13febb4909021a6573601cf1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether this hyperlink has a displayed text.  <a href="#a1456294f13febb4909021a6573601cf1">More...</a><br /></td></tr>
 <tr class="separator:a1456294f13febb4909021a6573601cf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af47fccf3b6b9ce88a74af0b09becefdb"><td class="memItemLeft" align="right" valign="top"><a id="af47fccf3b6b9ce88a74af0b09becefdb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>display</b> (const std::string &amp;value)</td></tr>
+<tr class="memitem:af47fccf3b6b9ce88a74af0b09becefdb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#af47fccf3b6b9ce88a74af0b09becefdb">display</a> (const std::string &amp;value)</td></tr>
+<tr class="memdesc:af47fccf3b6b9ce88a74af0b09becefdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the displayed text of this hyperlink.  <a href="#af47fccf3b6b9ce88a74af0b09becefdb">More...</a><br /></td></tr>
 <tr class="separator:af47fccf3b6b9ce88a74af0b09becefdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab66278ca35e1d56fd4fbb11b814cb713"><td class="memItemLeft" align="right" valign="top"><a id="ab66278ca35e1d56fd4fbb11b814cb713"></a>
-const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>display</b> () const</td></tr>
+<tr class="memitem:a026643b695fc0ca0afc2c748b604a887"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#a026643b695fc0ca0afc2c748b604a887">clear_display</a> ()</td></tr>
+<tr class="memdesc:a026643b695fc0ca0afc2c748b604a887"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the displayed text of this hyperlink (<a class="el" href="classxlnt_1_1hyperlink.html#a1456294f13febb4909021a6573601cf1" title="Returns whether this hyperlink has a displayed text. ">has_display()</a> will return false afterwards).  <a href="#a026643b695fc0ca0afc2c748b604a887">More...</a><br /></td></tr>
+<tr class="separator:a026643b695fc0ca0afc2c748b604a887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab66278ca35e1d56fd4fbb11b814cb713"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#ab66278ca35e1d56fd4fbb11b814cb713">display</a> () const</td></tr>
+<tr class="memdesc:ab66278ca35e1d56fd4fbb11b814cb713"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the displayed text of this hyperlink. Assumes that this hyperlink has a displayed text (please call <a class="el" href="classxlnt_1_1hyperlink.html#a1456294f13febb4909021a6573601cf1" title="Returns whether this hyperlink has a displayed text. ">has_display()</a> to check). If this hyperlink does not have a displayed text, an empty string will be returned.  <a href="#ab66278ca35e1d56fd4fbb11b814cb713">More...</a><br /></td></tr>
 <tr class="separator:ab66278ca35e1d56fd4fbb11b814cb713"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e2fa88219c9f1f99199fe72e03632e5"><td class="memItemLeft" align="right" valign="top"><a id="a3e2fa88219c9f1f99199fe72e03632e5"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_tooltip</b> () const</td></tr>
+<tr class="memitem:a3e2fa88219c9f1f99199fe72e03632e5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#a3e2fa88219c9f1f99199fe72e03632e5">has_tooltip</a> () const</td></tr>
+<tr class="memdesc:a3e2fa88219c9f1f99199fe72e03632e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this hyperlink has a tooltip.  <a href="#a3e2fa88219c9f1f99199fe72e03632e5">More...</a><br /></td></tr>
 <tr class="separator:a3e2fa88219c9f1f99199fe72e03632e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2c99481c54b2c26dc482155b86d27e5"><td class="memItemLeft" align="right" valign="top"><a id="ad2c99481c54b2c26dc482155b86d27e5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>tooltip</b> (const std::string &amp;value)</td></tr>
+<tr class="memitem:ad2c99481c54b2c26dc482155b86d27e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#ad2c99481c54b2c26dc482155b86d27e5">tooltip</a> (const std::string &amp;value)</td></tr>
+<tr class="memdesc:ad2c99481c54b2c26dc482155b86d27e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the tooltip of this hyperlink.  <a href="#ad2c99481c54b2c26dc482155b86d27e5">More...</a><br /></td></tr>
 <tr class="separator:ad2c99481c54b2c26dc482155b86d27e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29e92c319eabd0eec486e3bec8911ce8"><td class="memItemLeft" align="right" valign="top"><a id="a29e92c319eabd0eec486e3bec8911ce8"></a>
-const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>tooltip</b> () const</td></tr>
+<tr class="memitem:aa2b619a14ec6a4f80a14db49f7300ac1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#aa2b619a14ec6a4f80a14db49f7300ac1">clear_tooltip</a> ()</td></tr>
+<tr class="memdesc:aa2b619a14ec6a4f80a14db49f7300ac1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the tooltip of this hyperlink (<a class="el" href="classxlnt_1_1hyperlink.html#a3e2fa88219c9f1f99199fe72e03632e5" title="Returns true if this hyperlink has a tooltip. ">has_tooltip()</a> will return false afterwards).  <a href="#aa2b619a14ec6a4f80a14db49f7300ac1">More...</a><br /></td></tr>
+<tr class="separator:aa2b619a14ec6a4f80a14db49f7300ac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29e92c319eabd0eec486e3bec8911ce8"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#a29e92c319eabd0eec486e3bec8911ce8">tooltip</a> () const</td></tr>
+<tr class="memdesc:a29e92c319eabd0eec486e3bec8911ce8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the tooltip of this hyperlink. Assumes that this hyperlink has a tooltip (please call <a class="el" href="classxlnt_1_1hyperlink.html#a3e2fa88219c9f1f99199fe72e03632e5" title="Returns true if this hyperlink has a tooltip. ">has_tooltip()</a> to check). If this hyperlink does not have a tooltip, an empty string will be returned.  <a href="#a29e92c319eabd0eec486e3bec8911ce8">More...</a><br /></td></tr>
 <tr class="separator:a29e92c319eabd0eec486e3bec8911ce8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79f232689a1056cb62bd044d3c2d372c"><td class="memItemLeft" align="right" valign="top"><a id="a79f232689a1056cb62bd044d3c2d372c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_location</b> () const</td></tr>
+<tr class="memitem:a79f232689a1056cb62bd044d3c2d372c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#a79f232689a1056cb62bd044d3c2d372c">has_location</a> () const</td></tr>
+<tr class="memdesc:a79f232689a1056cb62bd044d3c2d372c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether this hyperlink has a location.  <a href="#a79f232689a1056cb62bd044d3c2d372c">More...</a><br /></td></tr>
 <tr class="separator:a79f232689a1056cb62bd044d3c2d372c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af99ce57346bfab3de6880587f7dce2fb"><td class="memItemLeft" align="right" valign="top"><a id="af99ce57346bfab3de6880587f7dce2fb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>location</b> (const std::string &amp;value)</td></tr>
+<tr class="memitem:af99ce57346bfab3de6880587f7dce2fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#af99ce57346bfab3de6880587f7dce2fb">location</a> (const std::string &amp;value)</td></tr>
+<tr class="memdesc:af99ce57346bfab3de6880587f7dce2fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the location of this hyperlink.  <a href="#af99ce57346bfab3de6880587f7dce2fb">More...</a><br /></td></tr>
 <tr class="separator:af99ce57346bfab3de6880587f7dce2fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b3f6289552598bc6b3ff332f8a1b128"><td class="memItemLeft" align="right" valign="top"><a id="a2b3f6289552598bc6b3ff332f8a1b128"></a>
-const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>location</b> () const</td></tr>
+<tr class="memitem:ad64009f179b628c48fba2bf4e93e363e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#ad64009f179b628c48fba2bf4e93e363e">clear_location</a> ()</td></tr>
+<tr class="memdesc:ad64009f179b628c48fba2bf4e93e363e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the location of this hyperlink (<a class="el" href="classxlnt_1_1hyperlink.html#a79f232689a1056cb62bd044d3c2d372c" title="Returns whether this hyperlink has a location. ">has_location()</a> will return false afterwards).  <a href="#ad64009f179b628c48fba2bf4e93e363e">More...</a><br /></td></tr>
+<tr class="separator:ad64009f179b628c48fba2bf4e93e363e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b3f6289552598bc6b3ff332f8a1b128"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1hyperlink.html#a2b3f6289552598bc6b3ff332f8a1b128">location</a> () const</td></tr>
+<tr class="memdesc:a2b3f6289552598bc6b3ff332f8a1b128"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the location of this hyperlink. Assumes that this hyperlink has a location (please call <a class="el" href="classxlnt_1_1hyperlink.html#a79f232689a1056cb62bd044d3c2d372c" title="Returns whether this hyperlink has a location. ">has_location()</a> to check). If this hyperlink does not have a location, an empty string will be returned.  <a href="#a2b3f6289552598bc6b3ff332f8a1b128">More...</a><br /></td></tr>
 <tr class="separator:a2b3f6289552598bc6b3ff332f8a1b128"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
@@ -126,7 +135,296 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>cell</b></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Describes a hyperlink pointing from a cell to another cell or a URL. </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a026643b695fc0ca0afc2c748b604a887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a026643b695fc0ca0afc2c748b604a887">&#9670;&nbsp;</a></span>clear_display()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void xlnt::hyperlink::clear_display </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears the displayed text of this hyperlink (<a class="el" href="classxlnt_1_1hyperlink.html#a1456294f13febb4909021a6573601cf1" title="Returns whether this hyperlink has a displayed text. ">has_display()</a> will return false afterwards). </p>
+
+</div>
+</div>
+<a id="ad64009f179b628c48fba2bf4e93e363e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad64009f179b628c48fba2bf4e93e363e">&#9670;&nbsp;</a></span>clear_location()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void xlnt::hyperlink::clear_location </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears the location of this hyperlink (<a class="el" href="classxlnt_1_1hyperlink.html#a79f232689a1056cb62bd044d3c2d372c" title="Returns whether this hyperlink has a location. ">has_location()</a> will return false afterwards). </p>
+
+</div>
+</div>
+<a id="aa2b619a14ec6a4f80a14db49f7300ac1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2b619a14ec6a4f80a14db49f7300ac1">&#9670;&nbsp;</a></span>clear_tooltip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void xlnt::hyperlink::clear_tooltip </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears the tooltip of this hyperlink (<a class="el" href="classxlnt_1_1hyperlink.html#a3e2fa88219c9f1f99199fe72e03632e5" title="Returns true if this hyperlink has a tooltip. ">has_tooltip()</a> will return false afterwards). </p>
+
+</div>
+</div>
+<a id="af47fccf3b6b9ce88a74af0b09becefdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af47fccf3b6b9ce88a74af0b09becefdb">&#9670;&nbsp;</a></span>display() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void xlnt::hyperlink::display </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the displayed text of this hyperlink. </p>
+
+</div>
+</div>
+<a id="ab66278ca35e1d56fd4fbb11b814cb713"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab66278ca35e1d56fd4fbb11b814cb713">&#9670;&nbsp;</a></span>display() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string&amp; xlnt::hyperlink::display </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the displayed text of this hyperlink. Assumes that this hyperlink has a displayed text (please call <a class="el" href="classxlnt_1_1hyperlink.html#a1456294f13febb4909021a6573601cf1" title="Returns whether this hyperlink has a displayed text. ">has_display()</a> to check). If this hyperlink does not have a displayed text, an empty string will be returned. </p>
+
+</div>
+</div>
+<a id="a1456294f13febb4909021a6573601cf1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1456294f13febb4909021a6573601cf1">&#9670;&nbsp;</a></span>has_display()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::hyperlink::has_display </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether this hyperlink has a displayed text. </p>
+
+</div>
+</div>
+<a id="a79f232689a1056cb62bd044d3c2d372c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79f232689a1056cb62bd044d3c2d372c">&#9670;&nbsp;</a></span>has_location()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::hyperlink::has_location </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether this hyperlink has a location. </p>
+
+</div>
+</div>
+<a id="a3e2fa88219c9f1f99199fe72e03632e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e2fa88219c9f1f99199fe72e03632e5">&#9670;&nbsp;</a></span>has_tooltip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::hyperlink::has_tooltip </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if this hyperlink has a tooltip. </p>
+
+</div>
+</div>
+<a id="af99ce57346bfab3de6880587f7dce2fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af99ce57346bfab3de6880587f7dce2fb">&#9670;&nbsp;</a></span>location() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void xlnt::hyperlink::location </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the location of this hyperlink. </p>
+
+</div>
+</div>
+<a id="a2b3f6289552598bc6b3ff332f8a1b128"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b3f6289552598bc6b3ff332f8a1b128">&#9670;&nbsp;</a></span>location() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string&amp; xlnt::hyperlink::location </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the location of this hyperlink. Assumes that this hyperlink has a location (please call <a class="el" href="classxlnt_1_1hyperlink.html#a79f232689a1056cb62bd044d3c2d372c" title="Returns whether this hyperlink has a location. ">has_location()</a> to check). If this hyperlink does not have a location, an empty string will be returned. </p>
+
+</div>
+</div>
+<a id="aa29bd9ea53b0626ed76f8723e5407b80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa29bd9ea53b0626ed76f8723e5407b80">&#9670;&nbsp;</a></span>relationship()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">class <a class="el" href="classxlnt_1_1relationship.html">relationship</a> xlnt::hyperlink::relationship </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the relationship of this hyperlink. If this hyperlink does not have a relationship because it is internal (external() returns false), an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
+
+</div>
+</div>
+<a id="a5db012df3c97f60409deee6ad6e303db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5db012df3c97f60409deee6ad6e303db">&#9670;&nbsp;</a></span>target_range()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string xlnt::hyperlink::target_range </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the target range (internal target) of this hyperlink. If this hyperlink does not have a target range because it is external (external() returns true), an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
+
+</div>
+</div>
+<a id="ad2c99481c54b2c26dc482155b86d27e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2c99481c54b2c26dc482155b86d27e5">&#9670;&nbsp;</a></span>tooltip() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void xlnt::hyperlink::tooltip </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the tooltip of this hyperlink. </p>
+
+</div>
+</div>
+<a id="a29e92c319eabd0eec486e3bec8911ce8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29e92c319eabd0eec486e3bec8911ce8">&#9670;&nbsp;</a></span>tooltip() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string&amp; xlnt::hyperlink::tooltip </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the tooltip of this hyperlink. Assumes that this hyperlink has a tooltip (please call <a class="el" href="classxlnt_1_1hyperlink.html#a3e2fa88219c9f1f99199fe72e03632e5" title="Returns true if this hyperlink has a tooltip. ">has_tooltip()</a> to check). If this hyperlink does not have a tooltip, an empty string will be returned. </p>
+
+</div>
+</div>
+<a id="a22a8ec0c1df8a16fb9c778f941a11618"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22a8ec0c1df8a16fb9c778f941a11618">&#9670;&nbsp;</a></span>url()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string xlnt::hyperlink::url </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the URL (external target) of this hyperlink. If this hyperlink does not have a URL because it is internal (external() returns false), an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>xlnt/cell/<a class="el" href="hyperlink_8hpp_source.html">hyperlink.hpp</a></li>
 </ul>
 </div><!-- contents -->

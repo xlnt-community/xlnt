@@ -172,7 +172,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a2ff93ed6a518de7261edb7da3f0a61ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the color of the font to c and returns a reference to the font.  <a href="#a2ff93ed6a518de7261edb7da3f0a61ea">More...</a><br /></td></tr>
 <tr class="separator:a2ff93ed6a518de7261edb7da3f0a61ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adefcdbf6c053764bb5a80fad725ff208"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1color.html">xlnt::color</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1font.html#adefcdbf6c053764bb5a80fad725ff208">color</a> () const</td></tr>
-<tr class="memdesc:adefcdbf6c053764bb5a80fad725ff208"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the color that this font is using.  <a href="#adefcdbf6c053764bb5a80fad725ff208">More...</a><br /></td></tr>
+<tr class="memdesc:adefcdbf6c053764bb5a80fad725ff208"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the color that this font is using. Assumes that this font has a color (please call <a class="el" href="classxlnt_1_1font.html#acb854f8871df86620cb549a0ee161338" title="Returns true if this font has a color applied. ">has_color()</a> to check). If this font does not have a color, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#adefcdbf6c053764bb5a80fad725ff208">More...</a><br /></td></tr>
 <tr class="separator:adefcdbf6c053764bb5a80fad725ff208"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7044c8e4b65c7ad0a6f96aa12d197420"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1font.html#a7044c8e4b65c7ad0a6f96aa12d197420">has_family</a> () const</td></tr>
 <tr class="memdesc:a7044c8e4b65c7ad0a6f96aa12d197420"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this font has a family defined.  <a href="#a7044c8e4b65c7ad0a6f96aa12d197420">More...</a><br /></td></tr>
@@ -181,7 +181,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a3955debb317912b23c5703c798dd174c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the family index of the font to family and returns a reference to the font.  <a href="#a3955debb317912b23c5703c798dd174c">More...</a><br /></td></tr>
 <tr class="separator:a3955debb317912b23c5703c798dd174c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abca2788c8a38e8d4398b4d08ff2fe574"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1font.html#abca2788c8a38e8d4398b4d08ff2fe574">family</a> () const</td></tr>
-<tr class="memdesc:abca2788c8a38e8d4398b4d08ff2fe574"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the family index for the font.  <a href="#abca2788c8a38e8d4398b4d08ff2fe574">More...</a><br /></td></tr>
+<tr class="memdesc:abca2788c8a38e8d4398b4d08ff2fe574"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the family index for the font. Assumes that this font has a family (please call <a class="el" href="classxlnt_1_1font.html#a7044c8e4b65c7ad0a6f96aa12d197420" title="Returns true if this font has a family defined. ">has_family()</a> to check). If this font does not have a family, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#abca2788c8a38e8d4398b4d08ff2fe574">More...</a><br /></td></tr>
 <tr class="separator:abca2788c8a38e8d4398b4d08ff2fe574"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf57a2c389fc66a3085db89f3c9481b4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1font.html#acf57a2c389fc66a3085db89f3c9481b4">has_charset</a> () const</td></tr>
 <tr class="memdesc:acf57a2c389fc66a3085db89f3c9481b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this font has a charset defined.  <a href="#acf57a2c389fc66a3085db89f3c9481b4">More...</a><br /></td></tr>
@@ -190,7 +190,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a6ffca8ac196a5da8d5d1ff38f220ee0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the charset of the font to charset and returns a reference to the font.  <a href="#a6ffca8ac196a5da8d5d1ff38f220ee0b">More...</a><br /></td></tr>
 <tr class="separator:a6ffca8ac196a5da8d5d1ff38f220ee0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7afbc51c6f0cf0db3caab4c7daa0834f"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1font.html#a7afbc51c6f0cf0db3caab4c7daa0834f">charset</a> () const</td></tr>
-<tr class="memdesc:a7afbc51c6f0cf0db3caab4c7daa0834f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the charset of the font.  <a href="#a7afbc51c6f0cf0db3caab4c7daa0834f">More...</a><br /></td></tr>
+<tr class="memdesc:a7afbc51c6f0cf0db3caab4c7daa0834f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the charset of the font. Assumes that this font has a charset (please call <a class="el" href="classxlnt_1_1font.html#acf57a2c389fc66a3085db89f3c9481b4" title="Returns true if this font has a charset defined. ">has_charset()</a> to check). If this font does not have a charset, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a7afbc51c6f0cf0db3caab4c7daa0834f">More...</a><br /></td></tr>
 <tr class="separator:a7afbc51c6f0cf0db3caab4c7daa0834f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6933fbd5c23914bf4fa9bef388f9a599"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1font.html#a6933fbd5c23914bf4fa9bef388f9a599">has_scheme</a> () const</td></tr>
 <tr class="memdesc:a6933fbd5c23914bf4fa9bef388f9a599"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this font has a scheme.  <a href="#a6933fbd5c23914bf4fa9bef388f9a599">More...</a><br /></td></tr>
@@ -199,7 +199,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8c9830da30df0570a4b9f153ac17786b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the scheme of the font to scheme and returns a reference to the font.  <a href="#a8c9830da30df0570a4b9f153ac17786b">More...</a><br /></td></tr>
 <tr class="separator:a8c9830da30df0570a4b9f153ac17786b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6724cf1210e175cd17b2a85a5b786ef8"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1font.html#a6724cf1210e175cd17b2a85a5b786ef8">scheme</a> () const</td></tr>
-<tr class="memdesc:a6724cf1210e175cd17b2a85a5b786ef8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the scheme of this font.  <a href="#a6724cf1210e175cd17b2a85a5b786ef8">More...</a><br /></td></tr>
+<tr class="memdesc:a6724cf1210e175cd17b2a85a5b786ef8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the scheme of this font. Assumes that this font has a scheme (please call <a class="el" href="classxlnt_1_1font.html#a6933fbd5c23914bf4fa9bef388f9a599" title="Returns true if this font has a scheme. ">has_scheme()</a> to check). If this font does not have a scheme, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a6724cf1210e175cd17b2a85a5b786ef8">More...</a><br /></td></tr>
 <tr class="separator:a6724cf1210e175cd17b2a85a5b786ef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab75d07b2df24fd4068c36ea69fa17177"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1font.html#ab75d07b2df24fd4068c36ea69fa17177">operator==</a> (const <a class="el" href="classxlnt_1_1font.html">font</a> &amp;other) const</td></tr>
 <tr class="memdesc:ab75d07b2df24fd4068c36ea69fa17177"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if left is exactly equal to right.  <a href="#ab75d07b2df24fd4068c36ea69fa17177">More...</a><br /></td></tr>
@@ -336,7 +336,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>style</b></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the charset of the font. </p>
+<p>Returns the charset of the font. Assumes that this font has a charset (please call <a class="el" href="classxlnt_1_1font.html#acf57a2c389fc66a3085db89f3c9481b4" title="Returns true if this font has a charset defined. ">has_charset()</a> to check). If this font does not have a charset, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -375,7 +375,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>style</b></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the color that this font is using. </p>
+<p>Returns the color that this font is using. Assumes that this font has a color (please call <a class="el" href="classxlnt_1_1font.html#acb854f8871df86620cb549a0ee161338" title="Returns true if this font has a color applied. ">has_color()</a> to check). If this font does not have a color, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -414,7 +414,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>style</b></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the family index for the font. </p>
+<p>Returns the family index for the font. Assumes that this font has a family (please call <a class="el" href="classxlnt_1_1font.html#a7044c8e4b65c7ad0a6f96aa12d197420" title="Returns true if this font has a family defined. ">has_family()</a> to check). If this font does not have a family, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -732,7 +732,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>style</b></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the scheme of this font. </p>
+<p>Returns the scheme of this font. Assumes that this font has a scheme (please call <a class="el" href="classxlnt_1_1font.html#a6933fbd5c23914bf4fa9bef388f9a599" title="Returns true if this font has a scheme. ">has_scheme()</a> to check). If this font does not have a scheme, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>

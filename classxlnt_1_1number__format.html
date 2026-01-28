@@ -82,19 +82,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a2af3586d8f1d5156771562da790346d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a default <a class="el" href="classxlnt_1_1number__format.html" title="Describes the number formatting applied to text and numbers within a certain cell. ">number_format</a> equivalent to "General"  <a href="#a2af3586d8f1d5156771562da790346d3">More...</a><br /></td></tr>
 <tr class="separator:a2af3586d8f1d5156771562da790346d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a325c0a9528a07762a6996c1dfe8edfcd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1number__format.html#a325c0a9528a07762a6996c1dfe8edfcd">number_format</a> (std::size_t builtin_id)</td></tr>
-<tr class="memdesc:a325c0a9528a07762a6996c1dfe8edfcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a number format equivalent to that returned from number_format::from_builtin_id(builtin_id).  <a href="#a325c0a9528a07762a6996c1dfe8edfcd">More...</a><br /></td></tr>
+<tr class="memdesc:a325c0a9528a07762a6996c1dfe8edfcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a number format equivalent to that returned from number_format::from_builtin_id(builtin_id). Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30). Note: custom formats have IDs 164 and higher.  <a href="#a325c0a9528a07762a6996c1dfe8edfcd">More...</a><br /></td></tr>
 <tr class="separator:a325c0a9528a07762a6996c1dfe8edfcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61b2937320e1957c7d9ff25b0f72cda6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1number__format.html#a61b2937320e1957c7d9ff25b0f72cda6">number_format</a> (const std::string &amp;code)</td></tr>
-<tr class="memdesc:a61b2937320e1957c7d9ff25b0f72cda6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a number format from a code string. If the string matches a builtin ID, its ID will also be set to match the builtin ID.  <a href="#a61b2937320e1957c7d9ff25b0f72cda6">More...</a><br /></td></tr>
+<tr class="memdesc:a61b2937320e1957c7d9ff25b0f72cda6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a number format from a code string. If the string matches a known builtin ID, its ID will also be set to match the builtin ID.  <a href="#a61b2937320e1957c7d9ff25b0f72cda6">More...</a><br /></td></tr>
 <tr class="separator:a61b2937320e1957c7d9ff25b0f72cda6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84615e37d75fb43b1fc47c991134e351"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1number__format.html#a84615e37d75fb43b1fc47c991134e351">number_format</a> (const std::string &amp;code, std::size_t custom_id)</td></tr>
-<tr class="memdesc:a84615e37d75fb43b1fc47c991134e351"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a number format from a code string and custom ID. Custom ID should generally be &gt;= 164.  <a href="#a84615e37d75fb43b1fc47c991134e351">More...</a><br /></td></tr>
+<tr class="memdesc:a84615e37d75fb43b1fc47c991134e351"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a number format from a code string and custom ID. Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30). Note: custom formats have IDs 164 and higher.  <a href="#a84615e37d75fb43b1fc47c991134e351">More...</a><br /></td></tr>
 <tr class="separator:a84615e37d75fb43b1fc47c991134e351"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a81df42719198e2693a214be89d2718"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1number__format.html#a9a81df42719198e2693a214be89d2718">format_string</a> (const std::string &amp;format_code)</td></tr>
 <tr class="memdesc:a9a81df42719198e2693a214be89d2718"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the format code of this number format to format_code.  <a href="#a9a81df42719198e2693a214be89d2718">More...</a><br /></td></tr>
 <tr class="separator:a9a81df42719198e2693a214be89d2718"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3019523e5c92279ab303c351433e57d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1number__format.html#a3019523e5c92279ab303c351433e57d6">format_string</a> (const std::string &amp;format_code, std::size_t custom_id)</td></tr>
-<tr class="memdesc:a3019523e5c92279ab303c351433e57d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the format code of this number format to format_code and the ID to custom_id.  <a href="#a3019523e5c92279ab303c351433e57d6">More...</a><br /></td></tr>
+<tr class="memdesc:a3019523e5c92279ab303c351433e57d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the format code of this number format to format_code and the ID to custom_id. Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30). Note: custom formats have IDs 164 and higher.  <a href="#a3019523e5c92279ab303c351433e57d6">More...</a><br /></td></tr>
 <tr class="separator:a3019523e5c92279ab303c351433e57d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a936df793569ba6833825d016c539b18a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1number__format.html#a936df793569ba6833825d016c539b18a">format_string</a> () const</td></tr>
 <tr class="memdesc:a936df793569ba6833825d016c539b18a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the format code this number format uses.  <a href="#a936df793569ba6833825d016c539b18a">More...</a><br /></td></tr>
@@ -103,10 +103,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a09ee801ca6589c36c08ea648ababce63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this number format has an ID.  <a href="#a09ee801ca6589c36c08ea648ababce63">More...</a><br /></td></tr>
 <tr class="separator:a09ee801ca6589c36c08ea648ababce63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2123a9cb95255606e56efcaf039b5a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1number__format.html#ad2123a9cb95255606e56efcaf039b5a3">id</a> (std::size_t id)</td></tr>
-<tr class="memdesc:ad2123a9cb95255606e56efcaf039b5a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the ID of this number format to id.  <a href="#ad2123a9cb95255606e56efcaf039b5a3">More...</a><br /></td></tr>
+<tr class="memdesc:ad2123a9cb95255606e56efcaf039b5a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the ID of this number format to id. Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30). Note: custom formats have IDs 164 and higher.  <a href="#ad2123a9cb95255606e56efcaf039b5a3">More...</a><br /></td></tr>
 <tr class="separator:ad2123a9cb95255606e56efcaf039b5a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aef03101e88db7c53159b6b17f51d4d78"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1number__format.html#aef03101e88db7c53159b6b17f51d4d78">id</a> () const</td></tr>
-<tr class="memdesc:aef03101e88db7c53159b6b17f51d4d78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the ID of this format.  <a href="#aef03101e88db7c53159b6b17f51d4d78">More...</a><br /></td></tr>
+<tr class="memdesc:aef03101e88db7c53159b6b17f51d4d78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the ID of this format. Assumes that this format has an ID (please call <a class="el" href="classxlnt_1_1number__format.html#a09ee801ca6589c36c08ea648ababce63" title="Returns true if this number format has an ID. ">has_id()</a> to check). If this format does not have an ID, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30). Note: custom formats have IDs 164 and higher.  <a href="#aef03101e88db7c53159b6b17f51d4d78">More...</a><br /></td></tr>
 <tr class="separator:aef03101e88db7c53159b6b17f51d4d78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a311c393ee708876673c3ada232a68b67"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1number__format.html#a311c393ee708876673c3ada232a68b67">format</a> (const std::string &amp;<a class="el" href="classxlnt_1_1number__format.html#a71e3128aeee72bfae3c6b845b40715b0">text</a>) const</td></tr>
 <tr class="memdesc:a311c393ee708876673c3ada232a68b67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns text formatted according to this number format's format code.  <a href="#a311c393ee708876673c3ada232a68b67">More...</a><br /></td></tr>
@@ -205,10 +205,10 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:aa977712c3c5e887ea671b908d3be97c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number format "h:mm:ss"  <a href="#aa977712c3c5e887ea671b908d3be97c1">More...</a><br /></td></tr>
 <tr class="separator:aa977712c3c5e887ea671b908d3be97c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9575186f94d2299f179f0eb04ed6179e"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1number__format.html#a9575186f94d2299f179f0eb04ed6179e">is_builtin_format</a> (std::size_t builtin_id)</td></tr>
-<tr class="memdesc:a9575186f94d2299f179f0eb04ed6179e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the given format ID corresponds to a known builtin format.  <a href="#a9575186f94d2299f179f0eb04ed6179e">More...</a><br /></td></tr>
+<tr class="memdesc:a9575186f94d2299f179f0eb04ed6179e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the given format ID corresponds to a known builtin format. Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30). Note: custom formats have IDs 164 and higher.  <a href="#a9575186f94d2299f179f0eb04ed6179e">More...</a><br /></td></tr>
 <tr class="separator:a9575186f94d2299f179f0eb04ed6179e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52410625f003fdcb7c951f10d5427b9e"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="classxlnt_1_1number__format.html">number_format</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1number__format.html#a52410625f003fdcb7c951f10d5427b9e">from_builtin_id</a> (std::size_t builtin_id)</td></tr>
-<tr class="memdesc:a52410625f003fdcb7c951f10d5427b9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the format with the given ID. Thows an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">invalid_parameter</a> exception if builtin_id is not a valid ID.  <a href="#a52410625f003fdcb7c951f10d5427b9e">More...</a><br /></td></tr>
+<tr class="memdesc:a52410625f003fdcb7c951f10d5427b9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the known builtin format with the given ID. Assumes that the builtin ID is known (please call <a class="el" href="classxlnt_1_1number__format.html#a9575186f94d2299f179f0eb04ed6179e" title="Returns true if the given format ID corresponds to a known builtin format. Note: general builtin form...">is_builtin_format()</a> to check). Thows an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">invalid_parameter</a> exception if builtin_id is not a known builtin ID. Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30). Note: custom formats have IDs 164 and higher.  <a href="#a52410625f003fdcb7c951f10d5427b9e">More...</a><br /></td></tr>
 <tr class="separator:a52410625f003fdcb7c951f10d5427b9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -249,7 +249,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Constructs a number format equivalent to that returned from number_format::from_builtin_id(builtin_id). </p>
+<p>Constructs a number format equivalent to that returned from number_format::from_builtin_id(builtin_id). Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30). Note: custom formats have IDs 164 and higher. </p>
 
 </div>
 </div>
@@ -269,7 +269,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Constructs a number format from a code string. If the string matches a builtin ID, its ID will also be set to match the builtin ID. </p>
+<p>Constructs a number format from a code string. If the string matches a known builtin ID, its ID will also be set to match the builtin ID. </p>
 
 </div>
 </div>
@@ -299,7 +299,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Constructs a number format from a code string and custom ID. Custom ID should generally be &gt;= 164. </p>
+<p>Constructs a number format from a code string and custom ID. Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30). Note: custom formats have IDs 164 and higher. </p>
 
 </div>
 </div>
@@ -913,7 +913,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Sets the format code of this number format to format_code and the ID to custom_id. </p>
+<p>Sets the format code of this number format to format_code and the ID to custom_id. Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30). Note: custom formats have IDs 164 and higher. </p>
 
 </div>
 </div>
@@ -960,7 +960,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the format with the given ID. Thows an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">invalid_parameter</a> exception if builtin_id is not a valid ID. </p>
+<p>Returns the known builtin format with the given ID. Assumes that the builtin ID is known (please call <a class="el" href="classxlnt_1_1number__format.html#a9575186f94d2299f179f0eb04ed6179e" title="Returns true if the given format ID corresponds to a known builtin format. Note: general builtin form...">is_builtin_format()</a> to check). Thows an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">invalid_parameter</a> exception if builtin_id is not a known builtin ID. Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30). Note: custom formats have IDs 164 and higher. </p>
 
 </div>
 </div>
@@ -1026,7 +1026,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Sets the ID of this number format to id. </p>
+<p>Sets the ID of this number format to id. Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30). Note: custom formats have IDs 164 and higher. </p>
 
 </div>
 </div>
@@ -1045,7 +1045,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the ID of this format. </p>
+<p>Returns the ID of this format. Assumes that this format has an ID (please call <a class="el" href="classxlnt_1_1number__format.html#a09ee801ca6589c36c08ea648ababce63" title="Returns true if this number format has an ID. ">has_id()</a> to check). If this format does not have an ID, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30). Note: custom formats have IDs 164 and higher. </p>
 
 </div>
 </div>
@@ -1073,7 +1073,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns true if the given format ID corresponds to a known builtin format. </p>
+<p>Returns true if the given format ID corresponds to a known builtin format. Note: general builtin formats go up to ID 49, but some languages have formats up to ID 81 (see OOXML section 18.8.30). Note: custom formats have IDs 164 and higher. </p>
 
 </div>
 </div>

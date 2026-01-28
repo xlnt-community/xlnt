@@ -112,10 +112,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a484604bfc32de74cb74662484a160d1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector pointing to the n-th row or column in this range (depending on major order).  <a href="#a484604bfc32de74cb74662484a160d1e">More...</a><br /></td></tr>
 <tr class="separator:a484604bfc32de74cb74662484a160d1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac004859dac54c6e7d195647726bdaac3"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1cell.html">cell</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1range.html#ac004859dac54c6e7d195647726bdaac3">cell</a> (const <a class="el" href="classxlnt_1_1cell__reference.html">cell_reference</a> &amp;ref)</td></tr>
-<tr class="memdesc:ac004859dac54c6e7d195647726bdaac3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a cell in the range relative to its top left cell.  <a href="#ac004859dac54c6e7d195647726bdaac3">More...</a><br /></td></tr>
+<tr class="memdesc:ac004859dac54c6e7d195647726bdaac3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a wrapper pointing to the cell in the range relative to its top left cell. If the cell doesn't exist, an empty cell will be created, added to the worksheet, and returned.  <a href="#ac004859dac54c6e7d195647726bdaac3">More...</a><br /></td></tr>
 <tr class="separator:ac004859dac54c6e7d195647726bdaac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace746c40bf5c1d6574c1ead52640c947"><td class="memItemLeft" align="right" valign="top">const class <a class="el" href="classxlnt_1_1cell.html">cell</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1range.html#ace746c40bf5c1d6574c1ead52640c947">cell</a> (const <a class="el" href="classxlnt_1_1cell__reference.html">cell_reference</a> &amp;ref) const</td></tr>
-<tr class="memdesc:ace746c40bf5c1d6574c1ead52640c947"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a cell in the range relative to its top left cell.  <a href="#ace746c40bf5c1d6574c1ead52640c947">More...</a><br /></td></tr>
+<tr class="memdesc:ace746c40bf5c1d6574c1ead52640c947"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a wrapper pointing to the cell in the range relative to its top left cell. Assumes that the cell exists. If the cell doesn't exist, an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">invalid_parameter</a> exception will be thrown.  <a href="#ace746c40bf5c1d6574c1ead52640c947">More...</a><br /></td></tr>
 <tr class="separator:ace746c40bf5c1d6574c1ead52640c947"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08a7f43c12ac57acdb08f5486dec3d7d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classxlnt_1_1worksheet.html">worksheet</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1range.html#a08a7f43c12ac57acdb08f5486dec3d7d">target_worksheet</a> () const</td></tr>
 <tr class="memdesc:a08a7f43c12ac57acdb08f5486dec3d7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The worksheet this range targets  <a href="#a08a7f43c12ac57acdb08f5486dec3d7d">More...</a><br /></td></tr>
@@ -151,9 +151,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aec21f3287434bf645968195feb3fc49d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the named style applied to all cells in this range to a style named style_name.  <a href="#aec21f3287434bf645968195feb3fc49d">More...</a><br /></td></tr>
 <tr class="separator:aec21f3287434bf645968195feb3fc49d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15486e1d6107d77a6dcdec87db8689d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1range.html">range</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1range.html#a15486e1d6107d77a6dcdec87db8689d2">style</a> (const std::string &amp;style_name)</td></tr>
-<tr class="memdesc:a15486e1d6107d77a6dcdec87db8689d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the named style applied to all cells in this range to a style named style_name. If this style has not been previously created in the workbook, a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception will be thrown.  <a href="#a15486e1d6107d77a6dcdec87db8689d2">More...</a><br /></td></tr>
+<tr class="memdesc:a15486e1d6107d77a6dcdec87db8689d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the named style applied to all cells in this range to a style named style_name. Assumes that the style has been previously created in the workbook (please call <a class="el" href="classxlnt_1_1workbook.html#a21ddb585620af57719db5d1299dbaab1" title="Returns true if this workbook has a style with the given name. ">workbook::has_style()</a> to check). If this style has not been previously created in the workbook, a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception will be thrown.  <a href="#a15486e1d6107d77a6dcdec87db8689d2">More...</a><br /></td></tr>
 <tr class="separator:a15486e1d6107d77a6dcdec87db8689d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28d7597a0ac586a2e663ce1b55459b12"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1conditional__format.html">xlnt::conditional_format</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1range.html#a28d7597a0ac586a2e663ce1b55459b12">conditional_format</a> (const <a class="el" href="classxlnt_1_1condition.html">condition</a> &amp;when)</td></tr>
+<tr class="memdesc:a28d7597a0ac586a2e663ce1b55459b12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a conditional format for the given condition and returns a wrapper pointing to it.  <a href="#a28d7597a0ac586a2e663ce1b55459b12">More...</a><br /></td></tr>
 <tr class="separator:a28d7597a0ac586a2e663ce1b55459b12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d07b943eab523c06ac3810a4611153d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1cell__vector.html">cell_vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1range.html#a1d07b943eab523c06ac3810a4611153d">front</a> ()</td></tr>
 <tr class="memdesc:a1d07b943eab523c06ac3810a4611153d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the first row or column in this range.  <a href="#a1d07b943eab523c06ac3810a4611153d">More...</a><br /></td></tr>
@@ -548,7 +549,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns a cell in the range relative to its top left cell. </p>
+<p>Returns a wrapper pointing to the cell in the range relative to its top left cell. If the cell doesn't exist, an empty cell will be created, added to the worksheet, and returned. </p>
 
 </div>
 </div>
@@ -568,7 +569,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns a cell in the range relative to its top left cell. </p>
+<p>Returns a wrapper pointing to the cell in the range relative to its top left cell. Assumes that the cell exists. If the cell doesn't exist, an <a class="el" href="classxlnt_1_1invalid__parameter.html" title="Exception for a bad parameter value ">invalid_parameter</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -626,7 +627,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p></p>
+<p>Creates a conditional format for the given condition and returns a wrapper pointing to it. </p>
 
 </div>
 </div>
@@ -1074,7 +1075,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Sets the named style applied to all cells in this range to a style named style_name. If this style has not been previously created in the workbook, a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception will be thrown. </p>
+<p>Sets the named style applied to all cells in this range to a style named style_name. Assumes that the style has been previously created in the workbook (please call <a class="el" href="classxlnt_1_1workbook.html#a21ddb585620af57719db5d1299dbaab1" title="Returns true if this workbook has a style with the given name. ">workbook::has_style()</a> to check). If this style has not been previously created in the workbook, a <a class="el" href="classxlnt_1_1key__not__found.html" title="Exception for a key that doesn&#39;t exist in a container ">key_not_found</a> exception will be thrown. </p>
 
 </div>
 </div>

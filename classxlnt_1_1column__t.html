@@ -74,7 +74,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Columns can be referred to as a string A,B,...Z,AA,AB,..,ZZ,AAA,...,ZZZ or as a 1-indexed index. This class encapsulates both of these forms of column referencing and allows for conversions between them.  
+<p>Columns can be referred to as a string A,B,...Z,AA,AB,..,ZZ,AAA,...,XFD or as a 1-indexed index (indices 1 to 16384). This class encapsulates both of these forms of column referencing and allows for conversions between them. By default, column references range from A to XFD (column indices 1 to 16384), but the OOXML specification allows to extend this range, and XLNT allows columns between 1 and 4294967295. Please note that not all applications might support these extended ranges.  
  <a href="classxlnt_1_1column__t.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="index__types_8hpp_source.html">index_types.hpp</a>&gt;</code></p>
@@ -94,10 +94,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8ef4798c933f535e5c344d15b730dea1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a column from a number.  <a href="#a8ef4798c933f535e5c344d15b730dea1">More...</a><br /></td></tr>
 <tr class="separator:a8ef4798c933f535e5c344d15b730dea1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51223789791f8bac595c1f7d68d94d2b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1column__t.html#a51223789791f8bac595c1f7d68d94d2b">column_t</a> (const std::string &amp;<a class="el" href="classxlnt_1_1column__t.html#acf34c7f03d070a3bfa9dabed88411f1c">column_string</a>)</td></tr>
-<tr class="memdesc:a51223789791f8bac595c1f7d68d94d2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a column from a string.  <a href="#a51223789791f8bac595c1f7d68d94d2b">More...</a><br /></td></tr>
+<tr class="memdesc:a51223789791f8bac595c1f7d68d94d2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a column from a string. Excel only supports 1 - 3 letter column names from A-&gt;Z, AA-&gt;ZZ, AAA-&gt;XFD, so XLNT restricts column names to 1 - 3 characters, each in the range A - Z (columns A to ZZZ). Strings outside this range and malformed strings will throw an <a class="el" href="classxlnt_1_1invalid__column__index.html" title="Exception for bad column indices in A1-style cell references. ">invalid_column_index</a> exception.  <a href="#a51223789791f8bac595c1f7d68d94d2b">More...</a><br /></td></tr>
 <tr class="separator:a51223789791f8bac595c1f7d68d94d2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe9a7724fafffc29ca8fdf428469cf4a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1column__t.html#abe9a7724fafffc29ca8fdf428469cf4a">column_t</a> (const char *<a class="el" href="classxlnt_1_1column__t.html#acf34c7f03d070a3bfa9dabed88411f1c">column_string</a>)</td></tr>
-<tr class="memdesc:abe9a7724fafffc29ca8fdf428469cf4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a column from a string.  <a href="#abe9a7724fafffc29ca8fdf428469cf4a">More...</a><br /></td></tr>
+<tr class="memdesc:abe9a7724fafffc29ca8fdf428469cf4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a column from a string. Excel only supports 1 - 3 letter column names from A-&gt;Z, AA-&gt;ZZ, AAA-&gt;XFD, so XLNT restricts column names to 1 - 3 characters, each in the range A - Z (columns A to ZZZ). Strings outside this range and malformed strings will throw an <a class="el" href="classxlnt_1_1invalid__column__index.html" title="Exception for bad column indices in A1-style cell references. ">invalid_column_index</a> exception.  <a href="#abe9a7724fafffc29ca8fdf428469cf4a">More...</a><br /></td></tr>
 <tr class="separator:abe9a7724fafffc29ca8fdf428469cf4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf34c7f03d070a3bfa9dabed88411f1c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1column__t.html#acf34c7f03d070a3bfa9dabed88411f1c">column_string</a> () const</td></tr>
 <tr class="memdesc:acf34c7f03d070a3bfa9dabed88411f1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a string representation of this column index.  <a href="#acf34c7f03d070a3bfa9dabed88411f1c">More...</a><br /></td></tr>
@@ -221,7 +221,7 @@ Friends</h2></td></tr>
 <tr class="separator:af1486fe7df99c58aa681c53009c64532"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Columns can be referred to as a string A,B,...Z,AA,AB,..,ZZ,AAA,...,ZZZ or as a 1-indexed index. This class encapsulates both of these forms of column referencing and allows for conversions between them. </p>
+<div class="textblock"><p>Columns can be referred to as a string A,B,...Z,AA,AB,..,ZZ,AAA,...,XFD or as a 1-indexed index (indices 1 to 16384). This class encapsulates both of these forms of column referencing and allows for conversions between them. By default, column references range from A to XFD (column indices 1 to 16384), but the OOXML specification allows to extend this range, and XLNT allows columns between 1 and 4294967295. Please note that not all applications might support these extended ranges. </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="ab514d159582ca03315e0f020dc8efedd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab514d159582ca03315e0f020dc8efedd">&#9670;&nbsp;</a></span>index_t</h2>
@@ -295,7 +295,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Constructs a column from a string. </p>
+<p>Constructs a column from a string. Excel only supports 1 - 3 letter column names from A-&gt;Z, AA-&gt;ZZ, AAA-&gt;XFD, so XLNT restricts column names to 1 - 3 characters, each in the range A - Z (columns A to ZZZ). Strings outside this range and malformed strings will throw an <a class="el" href="classxlnt_1_1invalid__column__index.html" title="Exception for bad column indices in A1-style cell references. ">invalid_column_index</a> exception. </p>
 
 </div>
 </div>
@@ -315,7 +315,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Constructs a column from a string. </p>
+<p>Constructs a column from a string. Excel only supports 1 - 3 letter column names from A-&gt;Z, AA-&gt;ZZ, AAA-&gt;XFD, so XLNT restricts column names to 1 - 3 characters, each in the range A - Z (columns A to ZZZ). Strings outside this range and malformed strings will throw an <a class="el" href="classxlnt_1_1invalid__column__index.html" title="Exception for bad column indices in A1-style cell references. ">invalid_column_index</a> exception. </p>
 
 </div>
 </div>
@@ -345,7 +345,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Convert a column letter into a column number (e.g. B -&gt; 2) </p>
-<p>Excel only supports 1 - 3 letter column names from A-&gt;ZZZ, so we restrict our column names to 1 - 3 characters, each in the range A - Z. Strings outside this range and malformed strings will throw column_string_index_exception. </p>
+<p>Excel only supports 1 - 3 letter column names from A-&gt;Z, AA-&gt;ZZ, AAA-&gt;XFD, so XLNT restricts column names to 1 - 3 characters, each in the range A - Z (columns A to ZZZ). Strings outside this range and malformed strings will throw an <a class="el" href="classxlnt_1_1invalid__column__index.html" title="Exception for bad column indices in A1-style cell references. ">invalid_column_index</a> exception. </p>
 
 </div>
 </div>

@@ -76,6 +76,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1alignment.html">alignment</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alignment options that determine how text should be displayed within a cell.  <a href="classxlnt_1_1alignment.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1bad__variant__access.html">bad_variant_access</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exception for <a class="el" href="classxlnt_1_1variant.html" title="Represents an object that can have variable type. ">xlnt::variant</a> access  <a href="classxlnt_1_1bad__variant__access.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1border.html">border</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes the border style of a particular cell.  <a href="classxlnt_1_1border.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -89,7 +92,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A cell iterator iterates over a 1D range by row or by column.  <a href="classxlnt_1_1cell__iterator.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1cell__reference.html">cell_reference</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An object used to refer to a cell. References have two parts, the column and the row. In Excel, the reference string A1 refers to the top-left-most cell. A <a class="el" href="classxlnt_1_1cell__reference.html" title="An object used to refer to a cell. References have two parts, the column and the row. In Excel, the reference string A1 refers to the top-left-most cell. A cell_reference can be initialized from a string of this form or a 1-indexed ordered pair of the form column, row. ">cell_reference</a> can be initialized from a string of this form or a 1-indexed ordered pair of the form column, row.  <a href="classxlnt_1_1cell__reference.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An object used to refer to a cell. References have two parts, the column and the row. In Excel, the reference string A1 refers to the top-left-most cell. A <a class="el" href="classxlnt_1_1cell__reference.html" title="An object used to refer to a cell. References have two parts, the column and the row. In Excel, the reference string A1 refers to the top-left-most cell. A cell_reference can be initialized from a string of this form or a 1-indexed ordered pair of the form column, row. By default, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD, column index 16384). The OOXML specification allows to extend this range, and XLNT allows both rows and columns between 1 and 4294967295. Please note that not all applications might support these extended ranges. ">cell_reference</a> can be initialized from a string of this form or a 1-indexed ordered pair of the form column, row. By default, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD, column index 16384). The OOXML specification allows to extend this range, and XLNT allows both rows and columns between 1 and 4294967295. Please note that not all applications might support these extended ranges.  <a href="classxlnt_1_1cell__reference.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structxlnt_1_1cell__reference__hash.html">cell_reference_hash</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Functor for hashing a cell reference. Allows for use of std::unordered_set&lt;cell_reference, cel_reference_hash&gt; and similar.  <a href="structxlnt_1_1cell__reference__hash.html#details">More...</a><br /></td></tr>
@@ -107,7 +110,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Properties applied to a column in a worksheet. Columns can have a size and a style.  <a href="classxlnt_1_1column__properties.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1column__t.html">column_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Columns can be referred to as a string A,B,...Z,AA,AB,..,ZZ,AAA,...,ZZZ or as a 1-indexed index. This class encapsulates both of these forms of column referencing and allows for conversions between them.  <a href="classxlnt_1_1column__t.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Columns can be referred to as a string A,B,...Z,AA,AB,..,ZZ,AAA,...,XFD or as a 1-indexed index (indices 1 to 16384). This class encapsulates both of these forms of column referencing and allows for conversions between them. By default, column references range from A to XFD (column indices 1 to 16384), but the OOXML specification allows to extend this range, and XLNT allows columns between 1 and 4294967295. Please note that not all applications might support these extended ranges.  <a href="classxlnt_1_1column__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1comment.html">comment</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A comment can be applied to a cell to provide extra information about its contents.  <a href="classxlnt_1_1comment.html#details">More...</a><br /></td></tr>
@@ -134,6 +137,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1document__security.html">document_security</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Properties governing how the data in a workbook should be protected. These values can be ignored by consumers.  <a href="classxlnt_1_1document__security.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1encoding__error.html">encoding_error</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exception for encoding errors  <a href="classxlnt_1_1encoding__error.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1exception.html">exception</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parent type of all custom exceptions thrown in this library.  <a href="classxlnt_1_1exception.html#details">More...</a><br /></td></tr>
@@ -169,7 +175,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An indexed color encapsulates a simple index to a color in the indexedColors of the stylesheet.  <a href="classxlnt_1_1indexed__color.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1invalid__attribute.html">invalid_attribute</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exception when setting a class's attribute to an invalid value  <a href="classxlnt_1_1invalid__attribute.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exception when getting a class's attribute before being set/initialized, or when setting a class's attribute to an invalid value.  <a href="classxlnt_1_1invalid__attribute.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1invalid__cell__reference.html">invalid_cell_reference</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exception for converting between numeric and A1-style cell references.  <a href="classxlnt_1_1invalid__cell__reference.html#details">More...</a><br /></td></tr>
@@ -185,6 +191,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1invalid__parameter.html">invalid_parameter</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exception for a bad parameter value  <a href="classxlnt_1_1invalid__parameter.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1invalid__password.html">invalid_password</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exception for invalid (empty, incorrect) passwords  <a href="classxlnt_1_1invalid__password.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1invalid__sheet__title.html">invalid_sheet_title</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exception for bad sheet names.  <a href="classxlnt_1_1invalid__sheet__title.html#details">More...</a><br /></td></tr>
@@ -325,7 +334,7 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:abd2bb61f1d4794b8affafb8957b151b6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacexlnt.html#abd2bb61f1d4794b8affafb8957b151b6">row_t</a> = std::uint32_t</td></tr>
-<tr class="memdesc:abd2bb61f1d4794b8affafb8957b151b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">All rows should be referred to by an instance of this type.  <a href="#abd2bb61f1d4794b8affafb8957b151b6">More...</a><br /></td></tr>
+<tr class="memdesc:abd2bb61f1d4794b8affafb8957b151b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">All rows should be referred to by an instance of this type. By default, row references range from 1 to 1048576, but the OOXML specification allows to extend this range, and XLNT allows rows between 1 and 4294967295. Please note that not all applications might support these extended ranges.  <a href="#abd2bb61f1d4794b8affafb8957b151b6">More...</a><br /></td></tr>
 <tr class="separator:abd2bb61f1d4794b8affafb8957b151b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
@@ -736,7 +745,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
       </table>
 </div><div class="memdoc">
 
-<p>All rows should be referred to by an instance of this type. </p>
+<p>All rows should be referred to by an instance of this type. By default, row references range from 1 to 1048576, but the OOXML specification allows to extend this range, and XLNT allows rows between 1 and 4294967295. Please note that not all applications might support these extended ranges. </p>
 
 </div>
 </div>

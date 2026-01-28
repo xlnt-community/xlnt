@@ -41,6 +41,7 @@ var searchData=
   ['different_5ffirst',['different_first',['../classxlnt_1_1header__footer.html#ac05acf474f74a04498f3e51839a38716',1,'xlnt::header_footer']]],
   ['different_5fodd_5feven',['different_odd_even',['../classxlnt_1_1header__footer.html#a879194359f873c0687dc5d4933021b1e',1,'xlnt::header_footer']]],
   ['disable_5fknown_5ffonts',['disable_known_fonts',['../classxlnt_1_1workbook.html#a51326c9e04e77021605b73d810fea63e',1,'xlnt::workbook']]],
+  ['display',['display',['../classxlnt_1_1hyperlink.html#af47fccf3b6b9ce88a74af0b09becefdb',1,'xlnt::hyperlink::display(const std::string &amp;value)'],['../classxlnt_1_1hyperlink.html#ab66278ca35e1d56fd4fbb11b814cb713',1,'xlnt::hyperlink::display() const']]],
   ['document_5fsecurity',['document_security',['../classxlnt_1_1document__security.html',1,'xlnt::document_security'],['../classxlnt_1_1document__security.html#a6fa71d4f89db0444ea3405a6e8c69023',1,'xlnt::document_security::document_security()']]],
   ['dy_5fdescent',['dy_descent',['../classxlnt_1_1row__properties.html#af1e170c603a28a4e63c57735c7d07757',1,'xlnt::row_properties::dy_descent()'],['../classxlnt_1_1sheet__format__properties.html#a39349c3d32da2d50836ee03bbb5cd940',1,'xlnt::sheet_format_properties::dy_descent()']]]
 ];

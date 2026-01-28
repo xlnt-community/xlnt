@@ -88,44 +88,53 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:af8d322ba8cd29a536c54e80472577198"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of this style.  <a href="#af8d322ba8cd29a536c54e80472577198">More...</a><br /></td></tr>
 <tr class="separator:af8d322ba8cd29a536c54e80472577198"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad924e4d2430322fdfdc7fab5921d4dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1style.html">style</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#aad924e4d2430322fdfdc7fab5921d4dc">name</a> (const std::string &amp;name)</td></tr>
-<tr class="memdesc:aad924e4d2430322fdfdc7fab5921d4dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the name of this style to name.  <a href="#aad924e4d2430322fdfdc7fab5921d4dc">More...</a><br /></td></tr>
+<tr class="memdesc:aad924e4d2430322fdfdc7fab5921d4dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the name of this style to name. Returns a wrapper pointing to this style.  <a href="#aad924e4d2430322fdfdc7fab5921d4dc">More...</a><br /></td></tr>
 <tr class="separator:aad924e4d2430322fdfdc7fab5921d4dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a384abfdeb437705184c32317084a96"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a6a384abfdeb437705184c32317084a96">hidden</a> () const</td></tr>
 <tr class="memdesc:a6a384abfdeb437705184c32317084a96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this style is hidden.  <a href="#a6a384abfdeb437705184c32317084a96">More...</a><br /></td></tr>
 <tr class="separator:a6a384abfdeb437705184c32317084a96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c7c7ecc1ffc209d9039b4914512f0ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1style.html">style</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a4c7c7ecc1ffc209d9039b4914512f0ea">hidden</a> (bool value)</td></tr>
-<tr class="memdesc:a4c7c7ecc1ffc209d9039b4914512f0ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the hidden state of this style to value. A hidden style will not be shown in the list of selectable styles in the UI, but will still apply its formatting to cells using it.  <a href="#a4c7c7ecc1ffc209d9039b4914512f0ea">More...</a><br /></td></tr>
+<tr class="memdesc:a4c7c7ecc1ffc209d9039b4914512f0ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the hidden state of this style to value. A hidden style will not be shown in the list of selectable styles in the UI, but will still apply its formatting to cells using it. Returns a wrapper pointing to this style.  <a href="#a4c7c7ecc1ffc209d9039b4914512f0ea">More...</a><br /></td></tr>
 <tr class="separator:a4c7c7ecc1ffc209d9039b4914512f0ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2c294a5b51f93fa1ebc7fbfe41c72cd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#aa2c294a5b51f93fa1ebc7fbfe41c72cd">custom_builtin</a> () const</td></tr>
 <tr class="memdesc:aa2c294a5b51f93fa1ebc7fbfe41c72cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this is a builtin style that has been customized and should therefore be persisted in the workbook.  <a href="#aa2c294a5b51f93fa1ebc7fbfe41c72cd">More...</a><br /></td></tr>
 <tr class="separator:aa2c294a5b51f93fa1ebc7fbfe41c72cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad18be2affc80439670daae02a90a7d6d"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#ad18be2affc80439670daae02a90a7d6d">builtin_id</a> () const</td></tr>
-<tr class="memdesc:ad18be2affc80439670daae02a90a7d6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the index of the builtin style that this style is an instance of or is a customized version thereof. If <a class="el" href="classxlnt_1_1style.html#a7a6abdea098d68174527b94a70c8381a" title="Returns true if this is a builtin style. ">style::builtin()</a> is false, this will throw an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">invalid_attribute</a> exception.  <a href="#ad18be2affc80439670daae02a90a7d6d">More...</a><br /></td></tr>
+<tr class="memdesc:ad18be2affc80439670daae02a90a7d6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the index of the builtin style that this style is an instance of or is a customized version thereof. If <a class="el" href="classxlnt_1_1style.html#a7a6abdea098d68174527b94a70c8381a" title="Returns true if this is a builtin style. ">style::builtin()</a> is false, this will throw an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">invalid_attribute</a> exception.  <a href="#ad18be2affc80439670daae02a90a7d6d">More...</a><br /></td></tr>
 <tr class="separator:ad18be2affc80439670daae02a90a7d6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a6abdea098d68174527b94a70c8381a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a7a6abdea098d68174527b94a70c8381a">builtin</a> () const</td></tr>
 <tr class="memdesc:a7a6abdea098d68174527b94a70c8381a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this is a builtin style.  <a href="#a7a6abdea098d68174527b94a70c8381a">More...</a><br /></td></tr>
 <tr class="separator:a7a6abdea098d68174527b94a70c8381a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d9453634f90238d917ae5d4ba831fbc"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1alignment.html">alignment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a5d9453634f90238d917ae5d4ba831fbc">alignment</a> () const</td></tr>
-<tr class="memdesc:a5d9453634f90238d917ae5d4ba831fbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the alignment of this style.  <a href="#a5d9453634f90238d917ae5d4ba831fbc">More...</a><br /></td></tr>
+<tr class="memdesc:a5d9453634f90238d917ae5d4ba831fbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the alignment of this style. If no alignment has been set (<a class="el" href="classxlnt_1_1style.html#a4333b23d1c0c5bfed5c8fd2a41eef22d" title="Returns true if an alignment has been set for this style. ">has_alignment()</a> returns false), a default-constructed alignment will be returned.  <a href="#a5d9453634f90238d917ae5d4ba831fbc">More...</a><br /></td></tr>
 <tr class="separator:a5d9453634f90238d917ae5d4ba831fbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4333b23d1c0c5bfed5c8fd2a41eef22d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a4333b23d1c0c5bfed5c8fd2a41eef22d">has_alignment</a> () const</td></tr>
+<tr class="memdesc:a4333b23d1c0c5bfed5c8fd2a41eef22d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if an alignment has been set for this style.  <a href="#a4333b23d1c0c5bfed5c8fd2a41eef22d">More...</a><br /></td></tr>
+<tr class="separator:a4333b23d1c0c5bfed5c8fd2a41eef22d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb8d9ca4d8d114bc0dc1e7ce755c8155"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#acb8d9ca4d8d114bc0dc1e7ce755c8155">alignment_applied</a> () const</td></tr>
 <tr class="memdesc:acb8d9ca4d8d114bc0dc1e7ce755c8155"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the alignment of this style should be applied to cells using it.  <a href="#acb8d9ca4d8d114bc0dc1e7ce755c8155">More...</a><br /></td></tr>
 <tr class="separator:acb8d9ca4d8d114bc0dc1e7ce755c8155"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5eb6eaa6592ef57ac4ae25ce595b3929"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1style.html">style</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a5eb6eaa6592ef57ac4ae25ce595b3929">alignment</a> (const <a class="el" href="classxlnt_1_1alignment.html">xlnt::alignment</a> &amp;new_alignment, <a class="el" href="classxlnt_1_1optional.html">optional</a>&lt; bool &gt; applied={})</td></tr>
-<tr class="memdesc:a5eb6eaa6592ef57ac4ae25ce595b3929"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the alignment of this style to new_alignment. Applied, which defaults to true, determines whether the alignment should be enabled for cells using this style.  <a href="#a5eb6eaa6592ef57ac4ae25ce595b3929">More...</a><br /></td></tr>
+<tr class="memdesc:a5eb6eaa6592ef57ac4ae25ce595b3929"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the alignment of this style to new_alignment. Applied, which defaults to true, determines whether the alignment should be enabled for cells using this style. Returns a wrapper pointing to this style.  <a href="#a5eb6eaa6592ef57ac4ae25ce595b3929">More...</a><br /></td></tr>
 <tr class="separator:a5eb6eaa6592ef57ac4ae25ce595b3929"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a863f830e52e73ba0579de2ab818d40ba"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1border.html">border</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a863f830e52e73ba0579de2ab818d40ba">border</a> () const</td></tr>
-<tr class="memdesc:a863f830e52e73ba0579de2ab818d40ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the border of this style.  <a href="#a863f830e52e73ba0579de2ab818d40ba">More...</a><br /></td></tr>
+<tr class="memdesc:a863f830e52e73ba0579de2ab818d40ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the border of this style. If no border has been set (<a class="el" href="classxlnt_1_1style.html#aca3dc276fb7a3fcfba455287fd4da7ad" title="Returns true if a border has been set for this style. ">has_border()</a> returns false), a default-constructed border will be returned.  <a href="#a863f830e52e73ba0579de2ab818d40ba">More...</a><br /></td></tr>
 <tr class="separator:a863f830e52e73ba0579de2ab818d40ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca3dc276fb7a3fcfba455287fd4da7ad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#aca3dc276fb7a3fcfba455287fd4da7ad">has_border</a> () const</td></tr>
+<tr class="memdesc:aca3dc276fb7a3fcfba455287fd4da7ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if a border has been set for this style.  <a href="#aca3dc276fb7a3fcfba455287fd4da7ad">More...</a><br /></td></tr>
+<tr class="separator:aca3dc276fb7a3fcfba455287fd4da7ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac6c36f64878a356fe6825d9a3948ca9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#aac6c36f64878a356fe6825d9a3948ca9">border_applied</a> () const</td></tr>
 <tr class="memdesc:aac6c36f64878a356fe6825d9a3948ca9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the border set for this style should be applied to cells using the style.  <a href="#aac6c36f64878a356fe6825d9a3948ca9">More...</a><br /></td></tr>
 <tr class="separator:aac6c36f64878a356fe6825d9a3948ca9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea3667eb32b2149cac287d3a255e061b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1style.html">style</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#aea3667eb32b2149cac287d3a255e061b">border</a> (const <a class="el" href="classxlnt_1_1border.html">xlnt::border</a> &amp;new_border, <a class="el" href="classxlnt_1_1optional.html">optional</a>&lt; bool &gt; applied={})</td></tr>
-<tr class="memdesc:aea3667eb32b2149cac287d3a255e061b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the border of this style to new_border. Applied, which defaults to true, determines whether the border should be enabled for cells using this style.  <a href="#aea3667eb32b2149cac287d3a255e061b">More...</a><br /></td></tr>
+<tr class="memdesc:aea3667eb32b2149cac287d3a255e061b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the border of this style to new_border. Applied, which defaults to true, determines whether the border should be enabled for cells using this style. Returns a wrapper pointing to this style.  <a href="#aea3667eb32b2149cac287d3a255e061b">More...</a><br /></td></tr>
 <tr class="separator:aea3667eb32b2149cac287d3a255e061b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb97e7dcdaaff1e63a8e450ebffc07ea"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1fill.html">fill</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#afb97e7dcdaaff1e63a8e450ebffc07ea">fill</a> () const</td></tr>
-<tr class="memdesc:afb97e7dcdaaff1e63a8e450ebffc07ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the fill of this style.  <a href="#afb97e7dcdaaff1e63a8e450ebffc07ea">More...</a><br /></td></tr>
+<tr class="memdesc:afb97e7dcdaaff1e63a8e450ebffc07ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the fill of this style. If no fill has been set (<a class="el" href="classxlnt_1_1style.html#a26a2166b52d91f4ee376b7443d3bfea7" title="Returns true if a fill has been set for this style. ">has_fill()</a> returns false), a default-constructed fill will be returned.  <a href="#afb97e7dcdaaff1e63a8e450ebffc07ea">More...</a><br /></td></tr>
 <tr class="separator:afb97e7dcdaaff1e63a8e450ebffc07ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26a2166b52d91f4ee376b7443d3bfea7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a26a2166b52d91f4ee376b7443d3bfea7">has_fill</a> () const</td></tr>
+<tr class="memdesc:a26a2166b52d91f4ee376b7443d3bfea7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if a fill has been set for this style.  <a href="#a26a2166b52d91f4ee376b7443d3bfea7">More...</a><br /></td></tr>
+<tr class="separator:a26a2166b52d91f4ee376b7443d3bfea7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1061d1e5a2295d1163a5a115172e9ed"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#ad1061d1e5a2295d1163a5a115172e9ed">fill_applied</a> () const</td></tr>
 <tr class="memdesc:ad1061d1e5a2295d1163a5a115172e9ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the fill set for this style should be applied to cells using the style.  <a href="#ad1061d1e5a2295d1163a5a115172e9ed">More...</a><br /></td></tr>
 <tr class="separator:ad1061d1e5a2295d1163a5a115172e9ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -133,31 +142,40 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a5984410b5863489c91ff7441538621a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the fill of this style to new_fill. Applied, which defaults to true, determines whether the border should be enabled for cells using this style.  <a href="#a5984410b5863489c91ff7441538621a1">More...</a><br /></td></tr>
 <tr class="separator:a5984410b5863489c91ff7441538621a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad92e4e52e75bfa8e39b79db73a35c88a"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1font.html">font</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#ad92e4e52e75bfa8e39b79db73a35c88a">font</a> () const</td></tr>
-<tr class="memdesc:ad92e4e52e75bfa8e39b79db73a35c88a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the font of this style.  <a href="#ad92e4e52e75bfa8e39b79db73a35c88a">More...</a><br /></td></tr>
+<tr class="memdesc:ad92e4e52e75bfa8e39b79db73a35c88a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the font of this style. If no font has been set (<a class="el" href="classxlnt_1_1style.html#a1a99c8379524bc951115b19a4abfd80c" title="Returns true if a font has been set for this style. ">has_font()</a> returns false), a default-constructed font will be returned.  <a href="#ad92e4e52e75bfa8e39b79db73a35c88a">More...</a><br /></td></tr>
 <tr class="separator:ad92e4e52e75bfa8e39b79db73a35c88a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a99c8379524bc951115b19a4abfd80c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a1a99c8379524bc951115b19a4abfd80c">has_font</a> () const</td></tr>
+<tr class="memdesc:a1a99c8379524bc951115b19a4abfd80c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if a font has been set for this style.  <a href="#a1a99c8379524bc951115b19a4abfd80c">More...</a><br /></td></tr>
+<tr class="separator:a1a99c8379524bc951115b19a4abfd80c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa73e8ebab8112280c5174063b4405db8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#aa73e8ebab8112280c5174063b4405db8">font_applied</a> () const</td></tr>
 <tr class="memdesc:aa73e8ebab8112280c5174063b4405db8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the font set for this style should be applied to cells using the style.  <a href="#aa73e8ebab8112280c5174063b4405db8">More...</a><br /></td></tr>
 <tr class="separator:aa73e8ebab8112280c5174063b4405db8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b0ef35f32e7bcb35142a7120dcec4cf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1style.html">style</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a2b0ef35f32e7bcb35142a7120dcec4cf">font</a> (const <a class="el" href="classxlnt_1_1font.html">xlnt::font</a> &amp;new_font, <a class="el" href="classxlnt_1_1optional.html">optional</a>&lt; bool &gt; applied={})</td></tr>
-<tr class="memdesc:a2b0ef35f32e7bcb35142a7120dcec4cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the font of this style to new_font. Applied, which defaults to true, determines whether the font should be enabled for cells using this style.  <a href="#a2b0ef35f32e7bcb35142a7120dcec4cf">More...</a><br /></td></tr>
+<tr class="memdesc:a2b0ef35f32e7bcb35142a7120dcec4cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the font of this style to new_font. Applied, which defaults to true, determines whether the font should be enabled for cells using this style. Returns a wrapper pointing to this style.  <a href="#a2b0ef35f32e7bcb35142a7120dcec4cf">More...</a><br /></td></tr>
 <tr class="separator:a2b0ef35f32e7bcb35142a7120dcec4cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7185515dcdae3e3d5fc248fb67992fb1"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1number__format.html">number_format</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a7185515dcdae3e3d5fc248fb67992fb1">number_format</a> () const</td></tr>
-<tr class="memdesc:a7185515dcdae3e3d5fc248fb67992fb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the <a class="el" href="classxlnt_1_1number__format.html" title="Describes the number formatting applied to text and numbers within a certain cell. ">number_format</a> of this style.  <a href="#a7185515dcdae3e3d5fc248fb67992fb1">More...</a><br /></td></tr>
+<tr class="memdesc:a7185515dcdae3e3d5fc248fb67992fb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the <a class="el" href="classxlnt_1_1number__format.html" title="Describes the number formatting applied to text and numbers within a certain cell. ">number_format</a> of this style. If no number format has been set (<a class="el" href="classxlnt_1_1style.html#a087f176bd0c11437169d274fac39f5c9" title="Returns true if a number format has been set for this style. ">has_number_format()</a> returns false), a default-constructed number format will be returned.  <a href="#a7185515dcdae3e3d5fc248fb67992fb1">More...</a><br /></td></tr>
 <tr class="separator:a7185515dcdae3e3d5fc248fb67992fb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a087f176bd0c11437169d274fac39f5c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a087f176bd0c11437169d274fac39f5c9">has_number_format</a> () const</td></tr>
+<tr class="memdesc:a087f176bd0c11437169d274fac39f5c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if a number format has been set for this style.  <a href="#a087f176bd0c11437169d274fac39f5c9">More...</a><br /></td></tr>
+<tr class="separator:a087f176bd0c11437169d274fac39f5c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79fdf1823f240bf5747970f53f7a0b7d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a79fdf1823f240bf5747970f53f7a0b7d">number_format_applied</a> () const</td></tr>
 <tr class="memdesc:a79fdf1823f240bf5747970f53f7a0b7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the <a class="el" href="classxlnt_1_1number__format.html" title="Describes the number formatting applied to text and numbers within a certain cell. ">number_format</a> set for this style should be applied to cells using the style.  <a href="#a79fdf1823f240bf5747970f53f7a0b7d">More...</a><br /></td></tr>
 <tr class="separator:a79fdf1823f240bf5747970f53f7a0b7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41aa5ccedce8226afc6e5b41fd2b8899"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1style.html">style</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a41aa5ccedce8226afc6e5b41fd2b8899">number_format</a> (const <a class="el" href="classxlnt_1_1number__format.html">xlnt::number_format</a> &amp;new_number_format, <a class="el" href="classxlnt_1_1optional.html">optional</a>&lt; bool &gt; applied={})</td></tr>
-<tr class="memdesc:a41aa5ccedce8226afc6e5b41fd2b8899"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the number format of this style to new_number_format. Applied, which defaults to true, determines whether the number format should be enabled for cells using this style.  <a href="#a41aa5ccedce8226afc6e5b41fd2b8899">More...</a><br /></td></tr>
+<tr class="memdesc:a41aa5ccedce8226afc6e5b41fd2b8899"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the number format of this style to new_number_format. Applied, which defaults to true, determines whether the number format should be enabled for cells using this style. Returns a wrapper pointing to this style.  <a href="#a41aa5ccedce8226afc6e5b41fd2b8899">More...</a><br /></td></tr>
 <tr class="separator:a41aa5ccedce8226afc6e5b41fd2b8899"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a84402c65f465cb0a076c6c25d84051"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classxlnt_1_1protection.html">protection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a7a84402c65f465cb0a076c6c25d84051">protection</a> () const</td></tr>
-<tr class="memdesc:a7a84402c65f465cb0a076c6c25d84051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the protection of this style.  <a href="#a7a84402c65f465cb0a076c6c25d84051">More...</a><br /></td></tr>
+<tr class="memdesc:a7a84402c65f465cb0a076c6c25d84051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the protection of this style. If no protection has been set (<a class="el" href="classxlnt_1_1style.html#a0ab543c2bebb0b8d388043ec21b634d1" title="Returns true if protection has been set for this style. ">has_protection()</a> returns false), a default-constructed protection will be returned.  <a href="#a7a84402c65f465cb0a076c6c25d84051">More...</a><br /></td></tr>
 <tr class="separator:a7a84402c65f465cb0a076c6c25d84051"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ab543c2bebb0b8d388043ec21b634d1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a0ab543c2bebb0b8d388043ec21b634d1">has_protection</a> () const</td></tr>
+<tr class="memdesc:a0ab543c2bebb0b8d388043ec21b634d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if protection has been set for this style.  <a href="#a0ab543c2bebb0b8d388043ec21b634d1">More...</a><br /></td></tr>
+<tr class="separator:a0ab543c2bebb0b8d388043ec21b634d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84e322c1bb7e0eb356452bcad787949e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a84e322c1bb7e0eb356452bcad787949e">protection_applied</a> () const</td></tr>
 <tr class="memdesc:a84e322c1bb7e0eb356452bcad787949e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the protection set for this style should be applied to cells using the style.  <a href="#a84e322c1bb7e0eb356452bcad787949e">More...</a><br /></td></tr>
 <tr class="separator:a84e322c1bb7e0eb356452bcad787949e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a992ada0110b15057ddeca624c8da9ef4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1style.html">style</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#a992ada0110b15057ddeca624c8da9ef4">protection</a> (const <a class="el" href="classxlnt_1_1protection.html">xlnt::protection</a> &amp;new_protection, <a class="el" href="classxlnt_1_1optional.html">optional</a>&lt; bool &gt; applied={})</td></tr>
-<tr class="memdesc:a992ada0110b15057ddeca624c8da9ef4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the border of this style to new_protection. Applied, which defaults to true, determines whether the protection should be enabled for cells using this style.  <a href="#a992ada0110b15057ddeca624c8da9ef4">More...</a><br /></td></tr>
+<tr class="memdesc:a992ada0110b15057ddeca624c8da9ef4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the border of this style to new_protection. Applied, which defaults to true, determines whether the protection should be enabled for cells using this style. Returns a wrapper pointing to this style.  <a href="#a992ada0110b15057ddeca624c8da9ef4">More...</a><br /></td></tr>
 <tr class="separator:a992ada0110b15057ddeca624c8da9ef4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0279530d128bcfca094f3a108118f51"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1style.html#ad0279530d128bcfca094f3a108118f51">pivot_button</a> () const</td></tr>
 <tr class="memdesc:ad0279530d128bcfca094f3a108118f51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the pivot table interface is enabled for this style.  <a href="#ad0279530d128bcfca094f3a108118f51">More...</a><br /></td></tr>
@@ -261,7 +279,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
       </table>
 </div><div class="memdoc">
 
-<p>Returns the alignment of this style. </p>
+<p>Returns a copy of the alignment of this style. If no alignment has been set (<a class="el" href="classxlnt_1_1style.html#a4333b23d1c0c5bfed5c8fd2a41eef22d" title="Returns true if an alignment has been set for this style. ">has_alignment()</a> returns false), a default-constructed alignment will be returned. </p>
 
 </div>
 </div>
@@ -291,7 +309,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
       </table>
 </div><div class="memdoc">
 
-<p>Sets the alignment of this style to new_alignment. Applied, which defaults to true, determines whether the alignment should be enabled for cells using this style. </p>
+<p>Sets the alignment of this style to new_alignment. Applied, which defaults to true, determines whether the alignment should be enabled for cells using this style. Returns a wrapper pointing to this style. </p>
 
 </div>
 </div>
@@ -329,7 +347,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
       </table>
 </div><div class="memdoc">
 
-<p>Returns the border of this style. </p>
+<p>Returns a copy of the border of this style. If no border has been set (<a class="el" href="classxlnt_1_1style.html#aca3dc276fb7a3fcfba455287fd4da7ad" title="Returns true if a border has been set for this style. ">has_border()</a> returns false), a default-constructed border will be returned. </p>
 
 </div>
 </div>
@@ -359,7 +377,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
       </table>
 </div><div class="memdoc">
 
-<p>Sets the border of this style to new_border. Applied, which defaults to true, determines whether the border should be enabled for cells using this style. </p>
+<p>Sets the border of this style to new_border. Applied, which defaults to true, determines whether the border should be enabled for cells using this style. Returns a wrapper pointing to this style. </p>
 
 </div>
 </div>
@@ -416,7 +434,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
       </table>
 </div><div class="memdoc">
 
-<p>Returns the index of the builtin style that this style is an instance of or is a customized version thereof. If <a class="el" href="classxlnt_1_1style.html#a7a6abdea098d68174527b94a70c8381a" title="Returns true if this is a builtin style. ">style::builtin()</a> is false, this will throw an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when setting a class&#39;s attribute to an invalid value ">invalid_attribute</a> exception. </p>
+<p>Returns the index of the builtin style that this style is an instance of or is a customized version thereof. If <a class="el" href="classxlnt_1_1style.html#a7a6abdea098d68174527b94a70c8381a" title="Returns true if this is a builtin style. ">style::builtin()</a> is false, this will throw an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">invalid_attribute</a> exception. </p>
 
 </div>
 </div>
@@ -454,7 +472,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
       </table>
 </div><div class="memdoc">
 
-<p>Returns the fill of this style. </p>
+<p>Returns a copy of the fill of this style. If no fill has been set (<a class="el" href="classxlnt_1_1style.html#a26a2166b52d91f4ee376b7443d3bfea7" title="Returns true if a fill has been set for this style. ">has_fill()</a> returns false), a default-constructed fill will be returned. </p>
 
 </div>
 </div>
@@ -522,7 +540,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
       </table>
 </div><div class="memdoc">
 
-<p>Returns the font of this style. </p>
+<p>Returns a copy of the font of this style. If no font has been set (<a class="el" href="classxlnt_1_1style.html#a1a99c8379524bc951115b19a4abfd80c" title="Returns true if a font has been set for this style. ">has_font()</a> returns false), a default-constructed font will be returned. </p>
 
 </div>
 </div>
@@ -552,7 +570,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
       </table>
 </div><div class="memdoc">
 
-<p>Sets the font of this style to new_font. Applied, which defaults to true, determines whether the font should be enabled for cells using this style. </p>
+<p>Sets the font of this style to new_font. Applied, which defaults to true, determines whether the font should be enabled for cells using this style. Returns a wrapper pointing to this style. </p>
 
 </div>
 </div>
@@ -572,6 +590,120 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
 </div><div class="memdoc">
 
 <p>Returns true if the font set for this style should be applied to cells using the style. </p>
+
+</div>
+</div>
+<a id="a4333b23d1c0c5bfed5c8fd2a41eef22d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4333b23d1c0c5bfed5c8fd2a41eef22d">&#9670;&nbsp;</a></span>has_alignment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::style::has_alignment </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if an alignment has been set for this style. </p>
+
+</div>
+</div>
+<a id="aca3dc276fb7a3fcfba455287fd4da7ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca3dc276fb7a3fcfba455287fd4da7ad">&#9670;&nbsp;</a></span>has_border()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::style::has_border </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if a border has been set for this style. </p>
+
+</div>
+</div>
+<a id="a26a2166b52d91f4ee376b7443d3bfea7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26a2166b52d91f4ee376b7443d3bfea7">&#9670;&nbsp;</a></span>has_fill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::style::has_fill </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if a fill has been set for this style. </p>
+
+</div>
+</div>
+<a id="a1a99c8379524bc951115b19a4abfd80c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a99c8379524bc951115b19a4abfd80c">&#9670;&nbsp;</a></span>has_font()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::style::has_font </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if a font has been set for this style. </p>
+
+</div>
+</div>
+<a id="a087f176bd0c11437169d274fac39f5c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a087f176bd0c11437169d274fac39f5c9">&#9670;&nbsp;</a></span>has_number_format()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::style::has_number_format </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if a number format has been set for this style. </p>
+
+</div>
+</div>
+<a id="a0ab543c2bebb0b8d388043ec21b634d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ab543c2bebb0b8d388043ec21b634d1">&#9670;&nbsp;</a></span>has_protection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool xlnt::style::has_protection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if protection has been set for this style. </p>
 
 </div>
 </div>
@@ -610,7 +742,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
       </table>
 </div><div class="memdoc">
 
-<p>Sets the hidden state of this style to value. A hidden style will not be shown in the list of selectable styles in the UI, but will still apply its formatting to cells using it. </p>
+<p>Sets the hidden state of this style to value. A hidden style will not be shown in the list of selectable styles in the UI, but will still apply its formatting to cells using it. Returns a wrapper pointing to this style. </p>
 
 </div>
 </div>
@@ -649,7 +781,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
       </table>
 </div><div class="memdoc">
 
-<p>Sets the name of this style to name. </p>
+<p>Sets the name of this style to name. Returns a wrapper pointing to this style. </p>
 
 </div>
 </div>
@@ -668,7 +800,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
       </table>
 </div><div class="memdoc">
 
-<p>Returns the <a class="el" href="classxlnt_1_1number__format.html" title="Describes the number formatting applied to text and numbers within a certain cell. ">number_format</a> of this style. </p>
+<p>Returns a copy of the <a class="el" href="classxlnt_1_1number__format.html" title="Describes the number formatting applied to text and numbers within a certain cell. ">number_format</a> of this style. If no number format has been set (<a class="el" href="classxlnt_1_1style.html#a087f176bd0c11437169d274fac39f5c9" title="Returns true if a number format has been set for this style. ">has_number_format()</a> returns false), a default-constructed number format will be returned. </p>
 
 </div>
 </div>
@@ -698,7 +830,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
       </table>
 </div><div class="memdoc">
 
-<p>Sets the number format of this style to new_number_format. Applied, which defaults to true, determines whether the number format should be enabled for cells using this style. </p>
+<p>Sets the number format of this style to new_number_format. Applied, which defaults to true, determines whether the number format should be enabled for cells using this style. Returns a wrapper pointing to this style. </p>
 
 </div>
 </div>
@@ -815,7 +947,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
       </table>
 </div><div class="memdoc">
 
-<p>Returns the protection of this style. </p>
+<p>Returns a copy of the protection of this style. If no protection has been set (<a class="el" href="classxlnt_1_1style.html#a0ab543c2bebb0b8d388043ec21b634d1" title="Returns true if protection has been set for this style. ">has_protection()</a> returns false), a default-constructed protection will be returned. </p>
 
 </div>
 </div>
@@ -845,7 +977,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>detail::xlsx_consume
       </table>
 </div><div class="memdoc">
 
-<p>Sets the border of this style to new_protection. Applied, which defaults to true, determines whether the protection should be enabled for cells using this style. </p>
+<p>Sets the border of this style to new_protection. Applied, which defaults to true, determines whether the protection should be enabled for cells using this style. Returns a wrapper pointing to this style. </p>
 
 </div>
 </div>

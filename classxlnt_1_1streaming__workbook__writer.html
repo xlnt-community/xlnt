@@ -82,10 +82,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a99fbe9fd5dbb7703fb85a3c1b296a5e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finishes writing of the remaining contents of the workbook and closes currently open write stream. This will be called automatically by the destructor if it hasn't already been called manually.  <a href="#a99fbe9fd5dbb7703fb85a3c1b296a5e2">More...</a><br /></td></tr>
 <tr class="separator:a99fbe9fd5dbb7703fb85a3c1b296a5e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6467f8fc6e6540fe3cf35e5c316d7be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1cell.html">cell</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1streaming__workbook__writer.html#af6467f8fc6e6540fe3cf35e5c316d7be">add_cell</a> (const <a class="el" href="classxlnt_1_1cell__reference.html">cell_reference</a> &amp;ref)</td></tr>
-<tr class="memdesc:af6467f8fc6e6540fe3cf35e5c316d7be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a cell to the currently active worksheet at the position given by ref and with the given value. ref should be to the right of or below the previously written cell.  <a href="#af6467f8fc6e6540fe3cf35e5c316d7be">More...</a><br /></td></tr>
+<tr class="memdesc:af6467f8fc6e6540fe3cf35e5c316d7be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a cell to the currently active worksheet at the position given by ref and with the given value. ref should be to the right of or below the previously written cell. Returns a wrapper pointing to the cell.  <a href="#af6467f8fc6e6540fe3cf35e5c316d7be">More...</a><br /></td></tr>
 <tr class="separator:af6467f8fc6e6540fe3cf35e5c316d7be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a861df93030c79b2322b71cda3be48482"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1worksheet.html">worksheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1streaming__workbook__writer.html#a861df93030c79b2322b71cda3be48482">add_worksheet</a> (const std::string &amp;title)</td></tr>
-<tr class="memdesc:a861df93030c79b2322b71cda3be48482"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ends writing of data to the current sheet and begins writing a new sheet with the given title.  <a href="#a861df93030c79b2322b71cda3be48482">More...</a><br /></td></tr>
+<tr class="memdesc:a861df93030c79b2322b71cda3be48482"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ends writing of data to the current sheet and begins writing a new sheet with the given title. Returns a wrapper pointing to this new sheet.  <a href="#a861df93030c79b2322b71cda3be48482">More...</a><br /></td></tr>
 <tr class="separator:a861df93030c79b2322b71cda3be48482"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a575252c273cecbded87ea0d7ac4a746a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1streaming__workbook__writer.html#a575252c273cecbded87ea0d7ac4a746a">open</a> (std::vector&lt; std::uint8_t &gt; &amp;data)</td></tr>
 <tr class="memdesc:a575252c273cecbded87ea0d7ac4a746a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes the workbook into an XLSX file and saves the bytes into byte vector data.  <a href="#a575252c273cecbded87ea0d7ac4a746a">More...</a><br /></td></tr>
@@ -143,7 +143,7 @@ std::unique_ptr&lt; xml::serializer &gt;&#160;</td><td class="memItemRight" vali
       </table>
 </div><div class="memdoc">
 
-<p>Writes a cell to the currently active worksheet at the position given by ref and with the given value. ref should be to the right of or below the previously written cell. </p>
+<p>Writes a cell to the currently active worksheet at the position given by ref and with the given value. ref should be to the right of or below the previously written cell. Returns a wrapper pointing to the cell. </p>
 
 </div>
 </div>
@@ -163,7 +163,7 @@ std::unique_ptr&lt; xml::serializer &gt;&#160;</td><td class="memItemRight" vali
       </table>
 </div><div class="memdoc">
 
-<p>Ends writing of data to the current sheet and begins writing a new sheet with the given title. </p>
+<p>Ends writing of data to the current sheet and begins writing a new sheet with the given title. Returns a wrapper pointing to this new sheet. </p>
 
 </div>
 </div>

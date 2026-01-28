@@ -90,16 +90,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a5bf4f32630c254d6650ca6c457259620"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this selection has a defined active cell.  <a href="#a5bf4f32630c254d6650ca6c457259620">More...</a><br /></td></tr>
 <tr class="separator:a5bf4f32630c254d6650ca6c457259620"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87324b54a28a4da1bbeacddb13ee47c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1cell__reference.html">cell_reference</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1selection.html#a87324b54a28a4da1bbeacddb13ee47c3">active_cell</a> () const</td></tr>
-<tr class="memdesc:a87324b54a28a4da1bbeacddb13ee47c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the cell reference of the active cell.  <a href="#a87324b54a28a4da1bbeacddb13ee47c3">More...</a><br /></td></tr>
+<tr class="memdesc:a87324b54a28a4da1bbeacddb13ee47c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the cell reference of the active cell. Assumes that this selection has an active cell (please call <a class="el" href="classxlnt_1_1selection.html#a5bf4f32630c254d6650ca6c457259620" title="Returns true if this selection has a defined active cell. ">has_active_cell()</a> to check). If this selection does not have an active cell, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a87324b54a28a4da1bbeacddb13ee47c3">More...</a><br /></td></tr>
 <tr class="separator:a87324b54a28a4da1bbeacddb13ee47c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74b5381120da0e242a82d37a510cc87f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1selection.html#a74b5381120da0e242a82d37a510cc87f">active_cell</a> (const <a class="el" href="classxlnt_1_1cell__reference.html">cell_reference</a> &amp;ref)</td></tr>
 <tr class="memdesc:a74b5381120da0e242a82d37a510cc87f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the active cell to that pointed to by ref.  <a href="#a74b5381120da0e242a82d37a510cc87f">More...</a><br /></td></tr>
 <tr class="separator:a74b5381120da0e242a82d37a510cc87f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a48a60ab81466b899cea6517245e0c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1selection.html#a3a48a60ab81466b899cea6517245e0c7">clear_active_cell</a> ()</td></tr>
+<tr class="memdesc:a3a48a60ab81466b899cea6517245e0c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the active cell.  <a href="#a3a48a60ab81466b899cea6517245e0c7">More...</a><br /></td></tr>
+<tr class="separator:a3a48a60ab81466b899cea6517245e0c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec919b23d8857c10bf97015310ba87ea"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1selection.html#aec919b23d8857c10bf97015310ba87ea">has_sqref</a> () const</td></tr>
 <tr class="memdesc:aec919b23d8857c10bf97015310ba87ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this selection has a defined sqref.  <a href="#aec919b23d8857c10bf97015310ba87ea">More...</a><br /></td></tr>
 <tr class="separator:aec919b23d8857c10bf97015310ba87ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9523a01e135cffffbf2dae3df7af787f"><td class="memItemLeft" align="right" valign="top">XLNT_DEPRECATED <a class="el" href="classxlnt_1_1range__reference.html">range_reference</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1selection.html#a9523a01e135cffffbf2dae3df7af787f">sqref</a> () const</td></tr>
-<tr class="memdesc:a9523a01e135cffffbf2dae3df7af787f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the range encompassed by this selection. If the range contains multiple (non-contiguous) regions, the first range is returned. Use sqrefs to obtain the full selection.  <a href="#a9523a01e135cffffbf2dae3df7af787f">More...</a><br /></td></tr>
+<tr class="memdesc:a9523a01e135cffffbf2dae3df7af787f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the range encompassed by this selection. If the range contains multiple (non-contiguous) regions, the first range is returned. Use sqrefs to obtain the full selection. Assumes that at least one region exists (please call <a class="el" href="classxlnt_1_1selection.html#aec919b23d8857c10bf97015310ba87ea" title="Returns true if this selection has a defined sqref. ">has_sqref()</a> to check). If there are no regions, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a9523a01e135cffffbf2dae3df7af787f">More...</a><br /></td></tr>
 <tr class="separator:a9523a01e135cffffbf2dae3df7af787f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adcd10266b5564ea135d0d212300ddb18"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classxlnt_1_1range__reference.html">range_reference</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1selection.html#adcd10266b5564ea135d0d212300ddb18">sqrefs</a> () const</td></tr>
 <tr class="memdesc:adcd10266b5564ea135d0d212300ddb18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the range encompassed by this selection.  <a href="#adcd10266b5564ea135d0d212300ddb18">More...</a><br /></td></tr>
@@ -261,7 +264,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the cell reference of the active cell. </p>
+<p>Returns the cell reference of the active cell. Assumes that this selection has an active cell (please call <a class="el" href="classxlnt_1_1selection.html#a5bf4f32630c254d6650ca6c457259620" title="Returns true if this selection has a defined active cell. ">has_active_cell()</a> to check). If this selection does not have an active cell, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
@@ -290,6 +293,33 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets the active cell to that pointed to by ref. </p>
+
+</div>
+</div>
+<a id="a3a48a60ab81466b899cea6517245e0c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a48a60ab81466b899cea6517245e0c7">&#9670;&nbsp;</a></span>clear_active_cell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void xlnt::selection::clear_active_cell </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clears the active cell. </p>
 
 </div>
 </div>
@@ -480,7 +510,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the range encompassed by this selection. If the range contains multiple (non-contiguous) regions, the first range is returned. Use sqrefs to obtain the full selection. </p>
+<p>Returns the range encompassed by this selection. If the range contains multiple (non-contiguous) regions, the first range is returned. Use sqrefs to obtain the full selection. Assumes that at least one region exists (please call <a class="el" href="classxlnt_1_1selection.html#aec919b23d8857c10bf97015310ba87ea" title="Returns true if this selection has a defined sqref. ">has_sqref()</a> to check). If there are no regions, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 <p>&lt;deprecated&gt; Use sqrefs instead. &lt;/deprecated&gt; </p>
 
 </div>

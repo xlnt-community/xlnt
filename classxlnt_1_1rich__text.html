@@ -123,7 +123,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8bcb341d09fc78e5f3275482a64a4f75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this text has phonetic properties  <a href="#a8bcb341d09fc78e5f3275482a64a4f75">More...</a><br /></td></tr>
 <tr class="separator:a8bcb341d09fc78e5f3275482a64a4f75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41bf42e54d36c322a481c60ac521dde2"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classxlnt_1_1phonetic__pr.html">phonetic_pr</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1rich__text.html#a41bf42e54d36c322a481c60ac521dde2">phonetic_properties</a> () const</td></tr>
-<tr class="memdesc:a41bf42e54d36c322a481c60ac521dde2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the phonetic properties of this text.  <a href="#a41bf42e54d36c322a481c60ac521dde2">More...</a><br /></td></tr>
+<tr class="memdesc:a41bf42e54d36c322a481c60ac521dde2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the phonetic properties of this text. Assumes that this text has phonetic properties (please call <a class="el" href="classxlnt_1_1rich__text.html#a8bcb341d09fc78e5f3275482a64a4f75" title="Returns true if this text has phonetic properties ">has_phonetic_properties()</a> to check). If this text does not have phonetic properties, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown.  <a href="#a41bf42e54d36c322a481c60ac521dde2">More...</a><br /></td></tr>
 <tr class="separator:a41bf42e54d36c322a481c60ac521dde2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afbd3fc18f001773e1c403d7c0f7a414d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1rich__text.html#afbd3fc18f001773e1c403d7c0f7a414d">phonetic_properties</a> (const <a class="el" href="classxlnt_1_1phonetic__pr.html">phonetic_pr</a> &amp;phonetic_props)</td></tr>
 <tr class="memdesc:afbd3fc18f001773e1c403d7c0f7a414d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the phonetic properties of this text to phonetic_props  <a href="#afbd3fc18f001773e1c403d7c0f7a414d">More...</a><br /></td></tr>
@@ -458,7 +458,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the phonetic properties of this text. </p>
+<p>Returns the phonetic properties of this text. Assumes that this text has phonetic properties (please call <a class="el" href="classxlnt_1_1rich__text.html#a8bcb341d09fc78e5f3275482a64a4f75" title="Returns true if this text has phonetic properties ">has_phonetic_properties()</a> to check). If this text does not have phonetic properties, an <a class="el" href="classxlnt_1_1invalid__attribute.html" title="Exception when getting a class&#39;s attribute before being set/initialized, or when setting a class&#39;s at...">xlnt::invalid_attribute</a> exception will be thrown. </p>
 
 </div>
 </div>
