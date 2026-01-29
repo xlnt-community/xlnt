@@ -1,4 +1,4 @@
-// Copyright (c) 2025 xlnt-community
+// Copyright (c) 2025-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -105,11 +105,11 @@ public:
     {
         std::hash<xlnt::color> color_hasher;
         std::hash<xlnt::font> font_hasher;
-        
+
         // Test that hash functions work well in practice with unordered_set
         std::unordered_set<xlnt::color> color_set;
         std::unordered_set<xlnt::font> font_set;
-        
+
         // Test a reasonable set of different colors
         std::vector<xlnt::color> test_colors = {
             xlnt::color::red(), xlnt::color::blue(), xlnt::color::green(),
@@ -117,27 +117,27 @@ public:
             xlnt::color(xlnt::indexed_color(1)), xlnt::color(xlnt::indexed_color(2)),
             xlnt::color(xlnt::theme_color(1)), xlnt::color(xlnt::theme_color(2))
         };
-        
+
         // Add some tinted colors
         xlnt::color tinted_red = xlnt::color::red();
         tinted_red.tint(0.5);
         test_colors.push_back(tinted_red);
-        
+
         xlnt::color tinted_blue = xlnt::color::blue();
         tinted_blue.tint(-0.3);
         test_colors.push_back(tinted_blue);
-        
+
         // Insert all colors and verify they are properly handled
         for (const auto& color : test_colors) {
             color_set.insert(color);
         }
         xlnt_assert_equals(color_set.size(), test_colors.size());
-        
+
         // Test different font combinations
         std::vector<std::string> font_names = {"Arial", "Calibri", "Times New Roman"};
         std::vector<double> font_sizes = {10.0, 12.0, 14.0};
         std::vector<bool> bold_options = {false, true};
-        
+
         for (const auto& name : font_names) {
             for (const auto& size : font_sizes) {
                 for (bool bold : bold_options) {
@@ -153,12 +153,12 @@ public:
         for (const auto& color : test_colors) {
             color_hashes.insert(color_hasher(color));
         }
-        
+
         std::unordered_set<std::size_t> font_hashes;
         for (const auto& font : font_set) {
             font_hashes.insert(font_hasher(font));
         }
-        
+
         // Use consistent collision tolerance for both
         xlnt_assert(color_hashes.size() >= test_colors.size() * 0.9); // Allow 10% collision rate
         xlnt_assert(font_hashes.size() >= font_set.size() * 0.9); // Allow 10% collision rate
@@ -199,77 +199,77 @@ public:
 
         // Test fonts with different special attributes
         xlnt::font font1;
-        
+
         xlnt::font font2;
         font2.superscript(true);
         xlnt_assert(hasher(font1) != hasher(font2));
-        
+
         xlnt::font font3;
         font3.subscript(true);
         xlnt_assert(hasher(font1) != hasher(font3));
         xlnt_assert(hasher(font2) != hasher(font3));
-        
+
         xlnt::font font4;
         font4.strikethrough(true);
         xlnt_assert(hasher(font1) != hasher(font4));
-        
+
         xlnt::font font5;
         font5.underline(xlnt::font::underline_style::single);
         xlnt_assert(hasher(font1) != hasher(font5));
-        
+
         xlnt::font font6;
         font6.outline(true);
         xlnt_assert(hasher(font1) != hasher(font6));
-        
+
         xlnt::font font7;
         font7.shadow(true);
         xlnt_assert(hasher(font1) != hasher(font7));
-        
+
         // Test font with family
         xlnt::font font8;
         font8.family(2);
         xlnt_assert(hasher(font1) != hasher(font8));
-        
+
         // Test font with charset
         xlnt::font font9;
         font9.charset(1);
         xlnt_assert(hasher(font1) != hasher(font9));
-        
+
         // Test font with scheme
         xlnt::font font10;
         font10.scheme("major");
         xlnt_assert(hasher(font1) != hasher(font10));
-        
+
         // Test that same attributes produce same hash
         xlnt::font font11;
         font11.family(2);
         xlnt_assert_equals(hasher(font8), hasher(font11));
     }
-    
+
     void test_color_special_attributes()
     {
         std::hash<xlnt::color> hasher;
-        
+
         // Test auto colors
         xlnt::color auto_color1 = xlnt::color::red();
         auto_color1.auto_(true);
-        
+
         xlnt::color auto_color2 = xlnt::color::red();
         auto_color2.auto_(false);
-        
+
         xlnt_assert(hasher(auto_color1) != hasher(auto_color2));
-        
+
         // Test colors with and without tint
         xlnt::color color1 = xlnt::color::blue();
         xlnt::color color2 = xlnt::color::blue();
         color2.tint(0.5);
-        
+
         xlnt_assert(hasher(color1) != hasher(color2));
-        
+
         // Test same tinted colors
         xlnt::color color3 = xlnt::color::blue();
         color3.tint(0.5);
-        
+
         xlnt_assert_equals(hasher(color2), hasher(color3));
     }
 };
