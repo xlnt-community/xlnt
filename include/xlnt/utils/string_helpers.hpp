@@ -25,7 +25,6 @@
 
 #include <string>
 
-#include <detail/xlnt_config_impl.hpp>
 #include <xlnt/internal/features.hpp>
 
 #if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
