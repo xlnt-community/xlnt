@@ -58,6 +58,7 @@
 #include <xlnt/utils/datetime.hpp>
 #include <xlnt/utils/exceptions.hpp>
 #include <xlnt/utils/path.hpp>
+#include <xlnt/utils/string_helpers.hpp>
 #include <xlnt/utils/time.hpp>
 #include <xlnt/utils/timedelta.hpp>
 #include <xlnt/utils/variant.hpp>

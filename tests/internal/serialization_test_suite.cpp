@@ -29,7 +29,6 @@
 #include <helpers/test_suite.hpp>
 #include <helpers/internal/xml_helper.hpp>
 #include <detail/serialization/xlsx_consumer.hpp>
-#include <detail/utils/string_helpers.hpp>
 #include <xlnt/internal/features.hpp>
 
 #if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
@@ -115,11 +114,10 @@ public:
     {
         xlnt::workbook wb;
         #define DOES_NOT_EXIST "DOES NOT EXIST.xlsx"
-        LSTRING_LITERAL(DOES_NOT_EXIST);
         xlnt_assert_throws(wb.load(DOES_NOT_EXIST), xlnt::invalid_file);
-        xlnt_assert_throws(wb.load(U8STRING_LITERAL(DOES_NOT_EXIST)), xlnt::invalid_file);
+        xlnt_assert_throws(wb.load(XLNT_U8STRING_LITERAL(DOES_NOT_EXIST)), xlnt::invalid_file);
 #ifdef _MSC_VER
-        xlnt_assert_throws(wb.load(LSTRING_LITERAL(DOES_NOT_EXIST)), xlnt::invalid_file);
+        xlnt_assert_throws(wb.load(XLNT_LSTRING_LITERAL(DOES_NOT_EXIST)), xlnt::invalid_file);
 #endif
     }
 
@@ -380,18 +378,18 @@ public:
         xlnt::workbook wb;
         // L"/9_unicode_Λ_😇.xlsx" doesn't use wchar_t(0x039B) for the capital lambda...
         // L"/9_unicode_\u039B_\U0001F607.xlsx" gives the correct output
-        const auto path = LSTRING_LITERAL(XLNT_TEST_DATA_DIR) L"/9_unicode_\u039B_\U0001F607.xlsx"; // L"/9_unicode_Λ_😇.xlsx"
+        const auto path = XLNT_LSTRING_LITERAL(XLNT_TEST_DATA_DIR) L"/9_unicode_\u039B_\U0001F607.xlsx"; // L"/9_unicode_Λ_😇.xlsx"
         wb.load(path);
-        xlnt_assert_equals(wb.active_sheet().cell("A1").value<std::string>(), U8_TO_CHAR_PTR(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
+        xlnt_assert_equals(wb.active_sheet().cell("A1").value<std::string>(), XLNT_U8_TO_CHAR_PTR(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
 #endif
 
 #ifndef __MINGW32__
         xlnt::workbook wb2;
         // u8"/9_unicode_Λ_😇.xlsx" doesn't use 0xC3AA for the capital lambda...
         // u8"/9_unicode_\u039B_\U0001F607.xlsx" gives the correct output
-        const auto path2 = U8STRING_LITERAL(XLNT_TEST_DATA_DIR) u8"/9_unicode_\u039B_\U0001F607.xlsx"; // u8"/9_unicode_Λ_😇.xlsx"
+        const auto path2 = XLNT_U8STRING_LITERAL(XLNT_TEST_DATA_DIR) u8"/9_unicode_\u039B_\U0001F607.xlsx"; // u8"/9_unicode_Λ_😇.xlsx"
         wb2.load(path2);
-        xlnt_assert_equals(wb2.active_sheet().cell("A1").value<std::string>(), U8_TO_CHAR_PTR(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
+        xlnt_assert_equals(wb2.active_sheet().cell("A1").value<std::string>(), XLNT_U8_TO_CHAR_PTR(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
 #endif
     }
 
@@ -403,14 +401,14 @@ public:
 
 #ifdef _MSC_VER
         xlnt::workbook wb;
-        const auto path = LSTRING_LITERAL(TEMP_PATH);
+        const auto path = XLNT_LSTRING_LITERAL(TEMP_PATH);
         xlnt_assert_throws_nothing(wb.save(path));
-        xlnt_assert(xlnt::path(U8STRING_LITERAL(TEMP_PATH)).exists());
+        xlnt_assert(xlnt::path(XLNT_U8STRING_LITERAL(TEMP_PATH)).exists());
 #endif
 
 #ifndef __MINGW32__
         xlnt::workbook wb2;
-        const auto path2 = U8STRING_LITERAL(TEMP_PATH);
+        const auto path2 = XLNT_U8STRING_LITERAL(TEMP_PATH);
         xlnt_assert_throws_nothing(wb2.save(path2));
         xlnt_assert(xlnt::path(path2).exists());
 #endif

@@ -38,8 +38,8 @@
 #endif
 
 #include <xlnt/utils/path.hpp>
+#include <xlnt/utils/string_helpers.hpp>
 #include <detail/external/include_windows.hpp>
-#include <detail/utils/string_helpers.hpp>
 
 namespace {
 
