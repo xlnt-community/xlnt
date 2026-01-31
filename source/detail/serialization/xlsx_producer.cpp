@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -2373,32 +2373,32 @@ void xlsx_producer::write_worksheet(const relationship &rel)
         {
             write_attribute("enableFormatConditionsCalculation", props.enable_format_condition_calculation.get());
         }
-        
-        if (props.apply_styles.is_set() || props.summary_below.is_set() || 
+
+        if (props.apply_styles.is_set() || props.summary_below.is_set() ||
             props.summary_right.is_set() || props.show_outline_symbols.is_set())
         {
             write_start_element(xmlns, "outlinePr");
-            
+
             if (props.apply_styles.is_set())
             {
                 write_attribute("applyStyles", write_bool(props.apply_styles.get()));
             }
-            
+
             if (props.summary_below.is_set())
             {
                 write_attribute("summaryBelow", write_bool(props.summary_below.get()));
             }
-            
+
             if (props.summary_right.is_set())
             {
                 write_attribute("summaryRight", write_bool(props.summary_right.get()));
             }
-            
+
             if (props.show_outline_symbols.is_set())
             {
                 write_attribute("showOutlineSymbols", write_bool(props.show_outline_symbols.get()));
             }
-            
+
             write_end_element(xmlns, "outlinePr");
         }
 

@@ -1,7 +1,7 @@
 /*  POLE - Portable C++ library to access OLE Storage
  Copyright (C) 2002-2007 Ariya Hidayat (ariya@kde.org).
  Copyright (C) 2016-2022 Thomas Fussell
- Copyright (c) 2024-2025 xlnt-community
+ Copyright (c) 2024-2026 xlnt-community
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
