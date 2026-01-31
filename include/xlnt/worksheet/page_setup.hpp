@@ -31,6 +31,12 @@
 
 namespace xlnt {
 
+namespace detail {
+
+class xlsx_producer;
+
+} // namespace detail
+
 /// <summary>
 /// The orientation of the worksheet when it is printed.
 /// </summary>
@@ -208,6 +214,8 @@ public:
     bool operator!=(const page_setup &rhs) const;
 
 private:
+    friend class xlnt::detail::xlsx_producer;
+
     /// <summary>
     /// Relationship Id
     /// </summary>
@@ -246,7 +254,7 @@ private:
     /// <summary>
     /// The amount to scale the worksheet
     /// </summary>
-    xlnt::value_with_default<unsigned int, 100> scale_;
+    detail::value_with_default<unsigned int, 100> scale_;
 };
 
 } // namespace xlnt

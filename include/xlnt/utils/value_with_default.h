@@ -23,7 +23,10 @@
 
 #pragma once
 
+#include <utility>
+
 namespace xlnt {
+namespace detail {
 
 /// <summary>
 /// Encapsulates a value with a default value
@@ -32,16 +35,19 @@ template <typename T, T default_value>
 class value_with_default
 {
 public:
-    value_with_default(T value = default_value) : value_(value) {}
+    explicit value_with_default(T value = default_value) : value_(std::move(value)) {}
 
     bool is_default () const {return value_ == default_value;}
     bool is_set () const {return !is_default();}
 
     const T& get () const {return value_;}
-    operator T() const {return get();}
+    operator const T&() const {return get();}
+
+    value_with_default& operator=(T value) {value_ = std::move(value); return *this;}
 
 private:
     T value_;
 };
 
+} // namespace detail
 } // namespace xlnt

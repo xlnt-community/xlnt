@@ -3003,10 +3003,7 @@ void xlsx_producer::write_worksheet(const relationship &rel)
             write_attribute("paperSize", static_cast<std::size_t>(ps.paper_size()));
         }
 
-        if (ps.has_scale())
-        {
-            write_attribute("scale", ps.scale());
-        }
+        write_attribute_if_set("scale", ps.scale_);
 
         if (ps.has_rel_id())
         {
