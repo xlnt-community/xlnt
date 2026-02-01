@@ -41,7 +41,9 @@ public:
     bool is_set () const {return !is_default();}
 
     const T& get () const {return value_;}
+    T& get () {return value_;}
     operator const T&() const {return get();}
+    operator T&() {return get();}
 
     value_with_default& operator=(T value) {value_ = std::move(value); return *this;}
 
