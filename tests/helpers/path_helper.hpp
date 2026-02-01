@@ -25,12 +25,29 @@
 #define XLNT_SAMPLE_DATA_DIR ""
 #endif
 
+// Prepends the string literal prefix to the provided string literal.
+// Useful when defining a string literal once, then using it with multiple string types.
+#define XLNT_TEST_LSTRING_LITERAL2(a) L##a
+#define XLNT_TEST_U8STRING_LITERAL2(a) u8##a
+#define XLNT_TEST_U16STRING_LITERAL2(a) u##a
+#define XLNT_TEST_U32STRING_LITERAL2(a) U##a
+#define XLNT_TEST_LSTRING_LITERAL(a) XLNT_TEST_LSTRING_LITERAL2(a)
+#define XLNT_TEST_U8STRING_LITERAL(a) XLNT_TEST_U8STRING_LITERAL2(a)
+#define XLNT_TEST_U16STRING_LITERAL(a) XLNT_TEST_U16STRING_LITERAL2(a)
+#define XLNT_TEST_U32STRING_LITERAL(a) XLNT_TEST_U32STRING_LITERAL2(a)
+
+// Prepends the u8 string literal prefix to the provided string literal, then
+// casts it to a narrow string literal without changing its encoding or performing any conversions.
+// Useful when defining a string literal once, then using it with both narrow and u8 strings.
+#define XLNT_TEST_ENSURE_UTF8_LITERAL(a) XLNT_U8_TO_CHAR_PTR(XLNT_TEST_U8STRING_LITERAL(a))
+
+
 class path_helper
 {
 public:
     static xlnt::path test_data_directory()
     {
-        static const std::string data_dir = XLNT_ENSURE_UTF8_LITERAL(XLNT_TEST_DATA_DIR);
+        static const std::string data_dir = XLNT_TEST_ENSURE_UTF8_LITERAL(XLNT_TEST_DATA_DIR);
         return xlnt::path(data_dir);
     }
 
@@ -48,7 +65,7 @@ public:
 
     static xlnt::path benchmark_data_directory()
     {
-        static const std::string data_dir = XLNT_ENSURE_UTF8_LITERAL(XLNT_BENCHMARK_DATA_DIR);
+        static const std::string data_dir = XLNT_TEST_ENSURE_UTF8_LITERAL(XLNT_BENCHMARK_DATA_DIR);
         return xlnt::path(data_dir);
     }
 
@@ -66,7 +83,7 @@ public:
 
     static xlnt::path sample_data_directory()
     {
-        static const std::string data_dir = XLNT_ENSURE_UTF8_LITERAL(XLNT_SAMPLE_DATA_DIR);
+        static const std::string data_dir = XLNT_TEST_ENSURE_UTF8_LITERAL(XLNT_SAMPLE_DATA_DIR);
         return xlnt::path(data_dir);
     }
 

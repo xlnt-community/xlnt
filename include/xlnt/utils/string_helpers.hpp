@@ -32,59 +32,42 @@
 #endif
 
 namespace xlnt {
-namespace detail {
 
-// Prepends the string literal prefix to the provided string literal.
-// Useful when defining a string literal once, then using it with multiple string types.
-#define XLNT_LSTRING_LITERAL2(a) L##a
-#define XLNT_U8STRING_LITERAL2(a) u8##a
-#define XLNT_U16STRING_LITERAL2(a) u##a
-#define XLNT_U32STRING_LITERAL2(a) U##a
-#define XLNT_LSTRING_LITERAL(a) XLNT_LSTRING_LITERAL2(a)
-#define XLNT_U8STRING_LITERAL(a) XLNT_U8STRING_LITERAL2(a)
-#define XLNT_U16STRING_LITERAL(a) XLNT_U16STRING_LITERAL2(a)
-#define XLNT_U32STRING_LITERAL(a) XLNT_U32STRING_LITERAL2(a)
-
-// Casts a UTF-8 string literal to a narrow string literal without changing its encoding.
+// Casts a UTF-8 string literal to a narrow string literal without changing its encoding or performing any conversions,
+// by performing the required casts depending on the C++ version. This ensures that such code will be compatible
+// with multiple C++ versions without any code changes.
 #ifdef __cpp_char8_t
 // For C++20 and newer, interpret as UTF-8 and then cast to string literal
-#define XLNT_U8_TO_CHAR_PTR(a) xlnt::detail::to_char_ptr(a)
+#define XLNT_U8_TO_CHAR_PTR(a) xlnt::to_char_ptr(a)
 #else
-// For C++11, C++14 and C++17, simply interpret as UTF-8, which works with classic string literals.
+// For C++11, C++14 and C++17, simply interpret as UTF-8, which works with narrow string literals.
 #define XLNT_U8_TO_CHAR_PTR(a) a
 #endif
 
 
-// The following weird cast ensures that the string is UTF-8 encoded at all costs!
-#define XLNT_ENSURE_UTF8_LITERAL(a) XLNT_U8_TO_CHAR_PTR(XLNT_U8STRING_LITERAL(a))
-
 #ifdef __cpp_char8_t
-/// Casts const char8_t arrays from C++20 to const char arrays.
+/// Casts a const char8_t array to a const char array
+/// without changing its encoding or performing any conversions.
 inline const char * to_char_ptr(const char8_t *utf8)
 {
     return reinterpret_cast<const char *>(utf8);
 }
-
-/// Casts char8_t arrays from C++20 to char arrays.
-inline char * to_char_ptr(char8_t *utf8)
-{
-    return reinterpret_cast<char *>(utf8);
-}
 #endif
 
 #if XLNT_HAS_FEATURE(U8_STRING_VIEW)
-/// Casts std::u8string_view from C++20 to std::string_view.
+/// Casts std::u8string(_view) to std::string_view
+/// without changing its encoding or performing any conversions.
 inline std::string_view to_string_view(std::u8string_view utf8)
 {
     return std::string_view{to_char_ptr(utf8.data()), utf8.length()};
 }
 
-/// Copies std::u8string(_view) from C++20 to std::string.
+/// Copies std::u8string(_view) to std::string
+/// without changing its encoding or performing any conversions.
 inline std::string to_string_copy(std::u8string_view utf8)
 {
     return std::string{utf8.begin(), utf8.end()};
 }
 #endif
 
-} // namespace detail
 } // namespace xlnt
