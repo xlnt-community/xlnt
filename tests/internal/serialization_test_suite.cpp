@@ -380,7 +380,7 @@ public:
         // L"/9_unicode_\u039B_\U0001F607.xlsx" gives the correct output
         const auto path = XLNT_TEST_LSTRING_LITERAL(XLNT_TEST_DATA_DIR) L"/9_unicode_\u039B_\U0001F607.xlsx"; // L"/9_unicode_Λ_😇.xlsx"
         wb.load(path);
-        xlnt_assert_equals(wb.active_sheet().cell("A1").value<std::string>(), XLNT_TEST_U8_TO_CHAR_PTR(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
+        xlnt_assert_equals(wb.active_sheet().cell("A1").value<std::string>(), XLNT_U8_TO_CHAR_PTR(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
 #endif
 
 #ifndef __MINGW32__
