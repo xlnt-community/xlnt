@@ -45,7 +45,7 @@ public:
     void test_decode_empty()
     {
         std::string input = "";
-        auto output = decode_base64(input);
+        auto output = base64::decode(input);
         xlnt_assert(output.empty());
     }
 
@@ -62,7 +62,7 @@ public:
         {
             try 
             {
-                auto output = decode_base64(in);
+                auto output = base64::decode(in);
                 (void)output;
             }
             catch (...) 
@@ -84,7 +84,7 @@ public:
         {
             try 
             {
-                auto output = decode_base64(in);
+                auto output = base64::decode(in);
                 (void)output;
             }
             catch (...) 
@@ -99,7 +99,7 @@ public:
         std::string input = "$#@!";
         try 
         {
-            auto output = decode_base64(input);
+            auto output = base64::decode(input);
             (void)output;
         }
         catch (...) {}
@@ -112,7 +112,7 @@ public:
         
         try 
         {
-            auto output = decode_base64(input);
+            auto output = base64::decode(input);
             (void)output;
         }
         catch (...) 
