@@ -29,9 +29,9 @@
 namespace xlnt {
 namespace detail {
 
-std::string encode_base64(const std::vector<std::uint8_t> &input);
+XLNT_API std::string encode_base64(const std::vector<std::uint8_t> &input);
 
-std::vector<std::uint8_t> decode_base64(const std::string &input);
+XLNT_API std::vector<std::uint8_t> decode_base64(const std::string &input);
 
 } // namespace detail
 } // namespace xlnt
