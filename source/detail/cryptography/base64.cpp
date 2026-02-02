@@ -97,7 +97,6 @@ std::string encode_base64(const std::vector<std::uint8_t> &input)
 
 std::vector<std::uint8_t> decode_base64(const std::string &input)
 {
-    // Handle empty input explicitly to prevent invalid pointer access later.
     if (input.empty())
     {
         return {};
@@ -106,7 +105,6 @@ std::vector<std::uint8_t> decode_base64(const std::string &input)
     std::size_t padding_count = 0;
     auto in_end = input.data() + input.size();
 
-    // Added boundary check `in_end > input.data()` to prevent buffer under-read
     while (in_end > input.data() && *--in_end == '=')
     {
         ++padding_count;
@@ -114,10 +112,8 @@ std::vector<std::uint8_t> decode_base64(const std::string &input)
 
     auto raw_size = (6 * input.size()) / 8;
     
-    // Prevent integer underflow. If padding_count is suspiciously large.
     auto decoded_length = (padding_count > raw_size) ? 0 : (raw_size - padding_count);
 
-    // Use `reserve` instead of pre-allocating the size.
     std::vector<std::uint8_t> output;
     output.reserve(decoded_length);
 
@@ -161,7 +157,6 @@ std::vector<std::uint8_t> decode_base64(const std::string &input)
 
             for (i = 0; i < 3; i++)
             {
-                // Use `push_back` which automatically handles memory reallocation
                 output.push_back(a3[i]);
             }
 
@@ -190,7 +185,6 @@ std::vector<std::uint8_t> decode_base64(const std::string &input)
 
         for (j = 0; j < i - 1; j++)
         {
-            // Use `push_back` for safe writing.
             output.push_back(a3[j]);
         }
     }
