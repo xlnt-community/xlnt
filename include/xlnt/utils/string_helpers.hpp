@@ -70,4 +70,23 @@ inline std::string to_string_copy(std::u8string_view utf8)
 }
 #endif
 
+
+/// ----- INTERNAL MACROS AND FUNCTIONS -----
+
+// Prepends the string literal prefix to the provided string literal.
+// Useful when defining a string literal once, then using it with multiple string types.
+#define XLNT_DETAIL_LSTRING_LITERAL2(a) L##a
+#define XLNT_DETAIL_U8STRING_LITERAL2(a) u8##a
+#define XLNT_DETAIL_U16STRING_LITERAL2(a) u##a
+#define XLNT_DETAIL_U32STRING_LITERAL2(a) U##a
+#define XLNT_DETAIL_LSTRING_LITERAL(a) XLNT_DETAIL_LSTRING_LITERAL2(a)
+#define XLNT_DETAIL_U8STRING_LITERAL(a) XLNT_DETAIL_U8STRING_LITERAL2(a)
+#define XLNT_DETAIL_U16STRING_LITERAL(a) XLNT_DETAIL_U16STRING_LITERAL2(a)
+#define XLNT_DETAIL_U32STRING_LITERAL(a) XLNT_DETAIL_U32STRING_LITERAL2(a)
+
+// Prepends the u8 string literal prefix to the provided string literal, then
+// casts it to a narrow string literal without changing its encoding or performing any conversions.
+// Useful when defining a string literal once, then using it with both narrow and u8 strings.
+#define XLNT_DETAIL_ENSURE_UTF8_LITERAL(a) XLNT_U8_TO_CHAR_PTR(XLNT_DETAIL_U8STRING_LITERAL(a))
+
 } // namespace xlnt
