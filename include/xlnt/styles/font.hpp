@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -342,19 +342,19 @@ struct hash<xlnt::font>
     size_t operator()(const xlnt::font& f) const
     {
         size_t seed = 0;
-        
+
         // Hash name
         if (f.has_name())
         {
             xlnt::detail::hash_combine(seed, f.name());
         }
-        
+
         // Hash size
         if (f.has_size())
         {
             xlnt::detail::hash_combine(seed, f.size());
         }
-        
+
         // Hash all boolean properties
         xlnt::detail::hash_combine(seed, f.bold());
         xlnt::detail::hash_combine(seed, f.italic());
@@ -364,25 +364,25 @@ struct hash<xlnt::font>
         xlnt::detail::hash_combine(seed, static_cast<int>(f.underline()));
         xlnt::detail::hash_combine(seed, f.outline());
         xlnt::detail::hash_combine(seed, f.shadow());
-        
+
         // Hash scheme
         if (f.has_scheme())
         {
             xlnt::detail::hash_combine(seed, f.scheme());
         }
-        
+
         // Hash color (importantly, this re-uses the std::hash<xlnt::color> we just defined)
         if (f.has_color())
         {
             xlnt::detail::hash_combine(seed, f.color());
         }
-        
+
         // Hash family
         if (f.has_family())
         {
             xlnt::detail::hash_combine(seed, f.family());
         }
-        
+
         // Hash charset
         if (f.has_charset())
         {
