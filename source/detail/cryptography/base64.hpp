@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-#include <xlnt/xlnt_config.hpp>
+#include <detail/xlnt_config_impl.hpp>
 
 namespace xlnt {
 namespace detail {
