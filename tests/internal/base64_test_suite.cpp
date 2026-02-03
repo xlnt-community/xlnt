@@ -1,4 +1,4 @@
-// Copyright (c) 2024-2026 xlnt-community
+// Copyright (c) 2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,6 +36,7 @@ public:
     base64_test_suite()
     {
         register_test(test_decode_empty);
+        register_test(test_decode_normal);
         register_test(test_decode_malformed_length);
         register_test(test_decode_malformed_padding);
         register_test(test_decode_invalid_chars);
@@ -49,6 +50,18 @@ public:
         xlnt_assert(output.empty());
     }
 
+    void test_decode_normal()
+    {
+        std::string input = "SGVsbG8=";
+        std::string expected_str = "Hello";
+        
+        std::vector<std::uint8_t> output;
+        xlnt_assert_throws_nothing(output = decode_base64(input));
+        
+        std::string output_str(output.begin(), output.end());
+        xlnt_assert_equals(output_str, expected_str);
+    }
+
     void test_decode_malformed_length()
     {
         std::vector<std::string> inputs = {
@@ -60,16 +73,8 @@ public:
 
         for (const auto& in : inputs)
         {
-            try 
-            {
-                auto output = decode_base64(in);
-                (void)output;
-            }
-            catch (...) 
-            {
-            }
+            xlnt_assert_throws_nothing(decode_base64(in));
         }
-        xlnt_assert(true);
     }
 
     void test_decode_malformed_padding()
@@ -82,44 +87,20 @@ public:
 
         for (const auto& in : inputs)
         {
-            try 
-            {
-                auto output = decode_base64(in);
-                (void)output;
-            }
-            catch (...) 
-            {
-            }
+            xlnt_assert_throws_nothing(decode_base64(in));
         }
-        xlnt_assert(true);
     }
 
     void test_decode_invalid_chars()
     {
         std::string input = "$#@!";
-        try 
-        {
-            auto output = decode_base64(input);
-            (void)output;
-        }
-        catch (...) {}
-        xlnt_assert(true);
+        xlnt_assert_throws_nothing(decode_base64(input));
     }
 
     void test_issue137_payload()
     {
         std::string input = "Ws7Lk2ZRUg52XqgmyE8Nkzx7p9wRpXy8zkpiIZw/calcChain3Ji0yae3jfy2N1q9u6fmuj3vUDE20DSF6Lt1iNUwhQ8Hfg==";
-        
-        try 
-        {
-            auto output = decode_base64(input);
-            (void)output;
-        }
-        catch (...) 
-        {
-            
-        }
-        xlnt_assert(true);
+        xlnt_assert_throws_nothing(decode_base64(input));
     }
 };
 
