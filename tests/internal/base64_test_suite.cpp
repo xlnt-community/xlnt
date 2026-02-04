@@ -64,43 +64,51 @@ public:
 
     void test_decode_malformed_length()
     {
-        std::vector<std::string> inputs = {
-            "SGVsbG8",
-            "A",
-            "AB",
-            "ABC"
+        struct TestCase {
+            std::string input;
+            std::vector<std::uint8_t> expected;
         };
 
-        for (const auto& in : inputs)
+        std::vector<TestCase> tests = {
+            { "SGVsbG8", {'H', 'e', 'l', 'l', 'o'} },
+            { "A", {} },
+            { "AB", {0x00} },
+            { "ABC", {0x00, 0x10} }
+        };
+
+        for (const auto& test : tests)
         {
-            xlnt_assert_throws_nothing(decode_base64(in));
+            std::vector<std::uint8_t> output;
+            xlnt_assert_throws_nothing(output = decode_base64(test.input));
+            xlnt_assert_equals(output, test.expected);
         }
     }
 
     void test_decode_malformed_padding()
     {
-        std::vector<std::string> inputs = {
-            "====",
-            "A===",
-            "AB=="
-        };
-
-        for (const auto& in : inputs)
-        {
-            xlnt_assert_throws_nothing(decode_base64(in));
-        }
+        std::string input = "====";
+        std::vector<std::uint8_t> output;
+        
+        xlnt_assert_throws_nothing(output = decode_base64(input));
+        xlnt_assert(output.empty());
     }
 
     void test_decode_invalid_chars()
     {
         std::string input = "$#@!";
-        xlnt_assert_throws_nothing(decode_base64(input));
+        std::vector<std::uint8_t> expected = { 0xff, 0xff, 0xbf };
+        std::vector<std::uint8_t> output;
+
+        xlnt_assert_throws_nothing(output = decode_base64(input));
+        xlnt_assert_equals(output, expected);
     }
 
     void test_issue137_payload()
     {
         std::string input = "Ws7Lk2ZRUg52XqgmyE8Nkzx7p9wRpXy8zkpiIZw/calcChain3Ji0yae3jfy2N1q9u6fmuj3vUDE20DSF6Lt1iNUwhQ8Hfg==";
-        xlnt_assert_throws_nothing(decode_base64(input));
+        std::vector<std::uint8_t> output;
+        xlnt_assert_throws_nothing(output = decode_base64(input));
+        xlnt_assert_equals(output.size(), 71);
     }
 };
 
