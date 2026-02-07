@@ -563,7 +563,7 @@ std::istream &compound_document::open_read_stream(const std::string &name)
 {
     if (!contains_entry(name, compound_document_entry::entry_type::UserStream))
     {
-        throw xlnt::exception("compound document entry of type UserStream not found at path: " + name);
+        throw xlnt::invalid_file("compound document entry of type UserStream not found at path: " + name);
     }
 
     const auto entry_id = find_entry(name, compound_document_entry::entry_type::UserStream);
@@ -891,7 +891,8 @@ directory_id compound_document::insert_entry(
 
         if (parent_id < 0)
         {
-            throw xlnt::exception("compound document entry of type UserStorage not found at path: " + joined_path);
+            throw xlnt::invalid_parameter("parent compound document entry of type UserStorage not found at path \"" + joined_path + "\", "
+                "necessary to insert entry \"" + name + "\" of type " + std::to_string(static_cast<int>(type)));
         }
 
         parent_storage_[entry_id] = parent_id;
