@@ -78,7 +78,7 @@ struct compound_document_entry
         auto u16_name = utf8_to_utf16(new_name);
         name_length = static_cast<std::uint16_t>(std::min(u16_name.size(), std::size_t(31)));
         std::copy(u16_name.begin(), u16_name.begin() + name_length, name_array.begin());
-        name_array[name_length] = 0;
+        name_array.at(name_length) = 0;
         name_length = (name_length + 1) * 2;
     }
 
