@@ -52,23 +52,6 @@ class optional
     using set_move_noexcept_t = typename std::conditional<std::is_nothrow_move_constructible<T>{} && std::is_nothrow_move_assignable<T>{}, std::true_type, std::false_type>::type;
     using clear_noexcept_t = typename std::conditional<std::is_nothrow_destructible<T>{}, std::true_type, std::false_type>::type;
 #endif
-    /// <summary>
-    /// Default equality operation, just uses operator==
-    /// </summary>
-    template <typename U = T, typename std::enable_if<!std::is_floating_point<U>::value>::type * = nullptr>
-    constexpr bool compare_equal(const U &lhs, const U &rhs) const
-    {
-        return lhs == rhs;
-    }
-
-    /// <summary>
-    /// equality operation for floating point numbers. Provides "fuzzy" equality
-    /// </summary>
-    template <typename U = T, typename std::enable_if<std::is_floating_point<U>::value>::type * = nullptr>
-    constexpr bool compare_equal(const U &lhs, const U &rhs) const
-    {
-        return detail::float_equals(lhs, rhs);
-    }
 
 public:
     /// <summary>
@@ -298,8 +281,7 @@ public:
         {
             return true;
         }
-        // equality is overloaded to provide fuzzy equality when T is a fp number
-        return compare_equal(value_ref(), other.value_ref());
+        return value_ref() == other.value_ref();
     }
 
     /// <summary>
