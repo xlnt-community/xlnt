@@ -25,7 +25,6 @@
 #pragma once
 
 #include "xlnt/utils/exceptions.hpp"
-#include "xlnt/utils/numeric.hpp"
 #include <type_traits>
 #include <cstring>
 

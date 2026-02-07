@@ -28,6 +28,7 @@
 #include <cstddef>
 
 #include <xlnt/xlnt_config.hpp>
+#include <xlnt/utils/numeric.hpp>
 #include <xlnt/utils/optional.hpp>
 
 namespace xlnt {
@@ -69,7 +70,7 @@ public:
 
 inline bool operator==(const column_properties &lhs, const column_properties &rhs)
 {
-    return lhs.width == rhs.width
+    return detail::float_equals(lhs.width, rhs.width)
         && lhs.custom_width == rhs.custom_width
         && lhs.style == rhs.style
         && lhs.best_fit == rhs.best_fit
