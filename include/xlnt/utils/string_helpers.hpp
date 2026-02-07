@@ -47,7 +47,8 @@ namespace xlnt {
 
 #ifdef __cpp_char8_t
 /// Casts a const char8_t array to a const char array
-/// without changing its encoding or performing any conversions.
+/// without changing its encoding or performing any conversions,
+/// and without copying the string.
 inline const char * to_char_ptr(const char8_t *utf8)
 {
     return reinterpret_cast<const char *>(utf8);
@@ -56,7 +57,8 @@ inline const char * to_char_ptr(const char8_t *utf8)
 
 #if XLNT_HAS_FEATURE(U8_STRING_VIEW)
 /// Casts std::u8string(_view) to std::string_view
-/// without changing its encoding or performing any conversions.
+/// without changing its encoding or performing any conversions,
+/// and without copying the string.
 inline std::string_view to_string_view(std::u8string_view utf8)
 {
     return std::string_view{to_char_ptr(utf8.data()), utf8.length()};
@@ -64,7 +66,8 @@ inline std::string_view to_string_view(std::u8string_view utf8)
 
 /// Copies std::u8string(_view) to std::string
 /// without changing its encoding or performing any conversions.
-inline std::string to_string_copy(std::u8string_view utf8)
+/// A full copy of the string is made.
+inline std::string to_string(std::u8string_view utf8)
 {
     return std::string{utf8.begin(), utf8.end()};
 }
@@ -87,6 +90,6 @@ inline std::string to_string_copy(std::u8string_view utf8)
 // Prepends the u8 string literal prefix to the provided string literal, then
 // casts it to a narrow string literal without changing its encoding or performing any conversions.
 // Useful when defining a string literal once, then using it with both narrow and u8 strings.
-#define XLNT_DETAIL_ENSURE_UTF8_LITERAL(a) XLNT_U8_TO_CHAR_PTR(XLNT_DETAIL_U8STRING_LITERAL(a))
+#define XLNT_DETAIL_U8(a) XLNT_U8_TO_CHAR_PTR(XLNT_DETAIL_U8STRING_LITERAL(a))
 
 } // namespace xlnt
