@@ -28,6 +28,7 @@
 #include <string>
 
 #include <xlnt/xlnt_config.hpp>
+#include <xlnt/utils/numeric.hpp>
 #include <xlnt/utils/optional.hpp>
 
 namespace xlnt {
@@ -88,8 +89,8 @@ public:
 
 inline bool operator==(const row_properties &lhs, const row_properties &rhs)
 {
-    return lhs.height == rhs.height
-        && lhs.dy_descent == rhs.dy_descent
+    return detail::float_equals(lhs.height, rhs.height)
+        && detail::float_equals(lhs.dy_descent, rhs.dy_descent)
         && lhs.custom_height == rhs.custom_height
         && lhs.hidden == rhs.hidden
         && lhs.custom_format == rhs.custom_format
