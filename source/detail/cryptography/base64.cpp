@@ -23,6 +23,8 @@
 
 #include <detail/cryptography/base64.hpp>
 #include <array>
+#include <vector>
+#include <string>
 
 namespace xlnt {
 namespace detail {
@@ -95,18 +97,27 @@ std::string encode_base64(const std::vector<std::uint8_t> &input)
 
 std::vector<std::uint8_t> decode_base64(const std::string &input)
 {
+    if (input.empty())
+    {
+        return {};
+    }
+
     std::size_t padding_count = 0;
     auto in_end = input.data() + input.size();
 
-    while (*--in_end == '=')
+    while (in_end > input.data() && *--in_end == '=')
     {
         ++padding_count;
     }
 
-    auto decoded_length = ((6 * input.size()) / 8) - padding_count;
-    auto output = std::vector<std::uint8_t>(decoded_length);
+    auto raw_size = (6 * input.size()) / 8;
+    
+    auto decoded_length = (padding_count > raw_size) ? 0 : (raw_size - padding_count);
+
+    std::vector<std::uint8_t> output;
+    output.reserve(decoded_length);
+
     auto input_iterator = input.begin();
-    auto output_iterator = output.begin();
     auto i = std::size_t(0);
     auto j = std::size_t(0);
     std::array<std::uint8_t, 3> a3{{0}};
@@ -146,7 +157,7 @@ std::vector<std::uint8_t> decode_base64(const std::string &input)
 
             for (i = 0; i < 3; i++)
             {
-                *output_iterator++ = a3[i];
+                output.push_back(a3[i]);
             }
 
             i = 0;
@@ -174,7 +185,7 @@ std::vector<std::uint8_t> decode_base64(const std::string &input)
 
         for (j = 0; j < i - 1; j++)
         {
-            *output_iterator++ = a3[j];
+            output.push_back(a3[j]);
         }
     }
 

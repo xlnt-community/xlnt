@@ -117,11 +117,7 @@ void page_setup::scale(unsigned int scale)
 
 unsigned int page_setup::scale() const
 {
-    if (!scale_.is_set())
-    {
-        return 100;
-    }
-    return scale_.get();
+    return scale_;
 }
 
 bool page_setup::has_scale() const
