@@ -287,7 +287,7 @@ void color::tint(double tint)
 
 double color::tint() const
 {
-    return tint_.is_set() ? tint_.get() : 0.0;
+    return tint_;
 }
 
 void color::assert_type(color_type t) const
@@ -304,7 +304,7 @@ bool color::operator==(const xlnt::color &other) const
     {
         return false;
     }
-    if (tint_.is_set() != other.tint_.is_set() || (tint_.is_set() && std::fabs(tint_.get() - other.tint_.get()) != 0.0))
+    if (std::fabs(tint_.get() - other.tint_.get()) != 0.0)
     {
         return false;
     }

@@ -28,10 +28,16 @@
 namespace xlnt {
 namespace detail {
 
+template<typename T>
+struct default_type_for_value {typedef T type;};
+
+template<>
+struct default_type_for_value<double> {typedef int type;};
+
 /// <summary>
 /// Encapsulates a value with a default value
 /// </summary>
-template <typename T, T default_value>
+template <typename T, typename default_type_for_value<T>::type default_value>
 class value_with_default
 {
 public:

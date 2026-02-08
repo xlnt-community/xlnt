@@ -32,8 +32,15 @@
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/utils/optional.hpp>
 #include <xlnt/utils/hash_combine.hpp>
+#include <xlnt/utils/value_with_default.h>
 
 namespace xlnt {
+
+namespace detail {
+
+class xlsx_producer;
+
+} // namespace detail
 
 /// <summary>
 /// An indexed color encapsulates a simple index to a color in the indexedColors of the stylesheet.
@@ -320,6 +327,8 @@ public:
     bool operator!=(const color &other) const;
 
 private:
+    friend class detail::xlsx_producer;
+
     /// <summary>
     /// Throws an invalid_attribute exception if the given type is different from this color's type
     /// </summary>
@@ -348,7 +357,7 @@ private:
     /// <summary>
     /// The tint of this color
     /// </summary>
-    optional<double> tint_;
+    detail::value_with_default<double, 0> tint_;
 
     /// <summary>
     /// Whether or not this is an auto color
