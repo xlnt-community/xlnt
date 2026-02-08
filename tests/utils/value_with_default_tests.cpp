@@ -207,7 +207,7 @@ public:
         xlnt_assert(xlnt::detail::float_equals(v1, 0.001));
 
         xlnt::detail::double_with_default<100> v2;
-        xlnt_assert(xlnt::detail::float_equals(v2.get(), 100));
+        xlnt_assert(xlnt::detail::float_equals(v2.get(), 100.0));
 
         xlnt::detail::fp_with_default_nan<double> v3;
         xlnt_assert(v3.is_default());
