@@ -21,6 +21,7 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
+#include <xlnt/utils/numeric.hpp>
 #include <xlnt/utils/value_with_default.h>
 
 #include <helpers/test_suite.hpp>
@@ -40,6 +41,7 @@ public:
         register_test(test_equality);
         register_test(test_const);
         register_test(test_different_default);
+        register_test(test_double);
     }
 
     void test_ctor()
@@ -197,6 +199,18 @@ public:
         xlnt::detail::value_with_default<int, default_value2> opt2;
         xlnt_assert_differs(opt1, opt2);
         xlnt_assert(opt1 != opt2);
+    }
+
+    void test_double()
+    {
+        xlnt::detail::double_with_default<1, 1000> v1;
+        xlnt_assert(xlnt::detail::float_equals(v1, 0.001));
+
+        xlnt::detail::double_with_default<100> v2;
+        xlnt_assert(xlnt::detail::float_equals(v2.get(), 100));
+
+        xlnt::detail::fp_with_default_nan<double> v3;
+        xlnt_assert(v3.is_default());
     }
 };
 static value_with_default_test_suite x;

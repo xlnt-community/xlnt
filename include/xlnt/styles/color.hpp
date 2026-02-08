@@ -357,7 +357,7 @@ private:
     /// <summary>
     /// The tint of this color
     /// </summary>
-    detail::value_with_default<double, 0> tint_;
+    detail::double_with_default<0> tint_;
 
     /// <summary>
     /// Whether or not this is an auto color

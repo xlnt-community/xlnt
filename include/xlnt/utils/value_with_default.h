@@ -23,27 +23,45 @@
 
 #pragma once
 
+#include <cmath>
+#include <cstdint>
+#include <limits>
 #include <utility>
 
 namespace xlnt {
 namespace detail {
 
-template<typename T>
-struct default_type_for_value {typedef T type;};
+template<typename T, T value>
+struct default_value
+{
+    static constexpr T get() {return value;}
+    static bool is(const T& v) {return get() == v;}
+};
 
-template<>
-struct default_type_for_value<double> {typedef int type;};
+template<typename T, std::int64_t numerator, std::int64_t denominator = 1>
+struct default_fp
+{
+    static constexpr T get() {return (T) numerator / denominator;}
+    static bool is(const T& v) {return get() == v;}
+};
+
+template<typename T>
+struct default_nan
+{
+    static constexpr T get() {return std::numeric_limits<T>::quiet_NaN();}
+    static bool is(const T& v) {return std::isnan(v);}
+};
 
 /// <summary>
 /// Encapsulates a value with a default value
 /// </summary>
-template <typename T, typename default_type_for_value<T>::type default_value>
-class value_with_default
+template <typename T, typename DEFAULT>
+class value_with_default_type
 {
 public:
-    explicit value_with_default(T value = default_value) : value_(std::move(value)) {}
+    explicit value_with_default_type(T value = DEFAULT::get()) : value_(std::move(value)) {}
 
-    bool is_default () const {return value_ == default_value;}
+    bool is_default () const {return DEFAULT::is(value_);}
     bool is_set () const {return !is_default();}
 
     const T& get () const {return value_;}
@@ -51,11 +69,26 @@ public:
     operator const T&() const {return get();}
     operator T&() {return get();}
 
-    value_with_default& operator=(T value) {value_ = std::move(value); return *this;}
+    value_with_default_type& operator=(T value) {value_ = std::move(value); return *this;}
 
 private:
     T value_;
 };
+
+template<typename T, T default_value_>
+using value_with_default = value_with_default_type<T, default_value<T, default_value_>>;
+
+template<typename T, std::int64_t numerator, std::int64_t denominator = 1>
+using fp_with_default = value_with_default_type<T, default_fp<T, numerator, denominator>>;
+
+template<std::int64_t numerator, std::int64_t denominator = 1>
+using double_with_default = fp_with_default<double, numerator, denominator>;
+
+template<std::int64_t numerator, std::int64_t denominator = 1>
+using float_with_default = fp_with_default<float, numerator, denominator>;
+
+template<typename T>
+using fp_with_default_nan = value_with_default_type<T, default_nan<T>>;
 
 } // namespace detail
 } // namespace xlnt

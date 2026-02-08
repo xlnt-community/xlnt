@@ -224,8 +224,8 @@ private:
         current_part_serializer_->attribute(name, std::to_string(value));
     }
 
-    template <typename T, typename default_type_for_value<T>::type default_value>
-    void write_attribute_if_set(const std::string &name, const detail::value_with_default<T, default_value>& value)
+    template <typename T, typename DEFAULT_VALUE>
+    void write_attribute_if_set(const std::string &name, const detail::value_with_default_type<T, DEFAULT_VALUE>& value)
     {
         if (value.is_set())
             write_attribute(name, value.get());
