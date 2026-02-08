@@ -36,11 +36,21 @@
 #include <detail/cryptography/compound_document.hpp>
 #include <detail/unicode.hpp>
 
+#define FMT_HEADER_ONLY
+#include <fmt/format.h>
+
 // NOTE: compound files are not part of the OOXML specification (ECMA-376).
 // This implementation is based on the "[MS-CFB]: Compound File Binary File Format" specification.
 namespace {
 
 using namespace xlnt::detail;
+
+template <typename T>
+std::string format_hex(T value)
+{
+    // Format example: 0x0000660F
+    return fmt::format("0x{:08X}", value);
+}
 
 int compare_keys(const std::string &left, const std::string &right)
 {
@@ -370,7 +380,7 @@ private:
         }
 
         position_ += written;
-        entry_.size = std::max(entry_.size, static_cast<std::uint32_t>(position_));
+        entry_.size = std::max(entry_.size, static_cast<std::uint64_t>(position_));
         document_.write_directory();
 
         std::fill(current_sector_.begin(), current_sector_.end(), byte(0));
@@ -1261,6 +1271,107 @@ void compound_document::read_header()
 {
     in_->seekg(0, std::ios::beg);
     in_->read(reinterpret_cast<char *>(&header_), sizeof(compound_document_header));
+
+    // Header Signature (8 bytes): Identification signature for the compound file structure, and MUST be
+    // set to the value 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1.
+    if (header_.header_signature != 0xE11AB1A1E011CFD0)
+    {
+        throw xlnt::invalid_file("invalid header signature, expected 0xE11AB1A1E011CFD0 but got " + format_hex(header_.header_signature));
+    }
+
+    // Header CLSID (16 bytes): Reserved and unused class ID that MUST be set to all zeroes (CLSID_NULL).
+    if (std::any_of(header_.header_clsid.begin(), header_.header_clsid.end(), [](auto i) { return i != 0; }))
+    {
+        std::string exception_str = "invalid header CLSID, expected only zeros but got: ";
+        for (auto val : header_.header_clsid)
+        {
+            exception_str += fmt::format("{:02x} ", val);
+        }
+        throw xlnt::invalid_file(exception_str);
+    }
+
+    // Major Version (2 bytes): Version number for breaking changes. This field MUST be set to either
+    // 0x0003 (version 3) or 0x0004 (version 4).
+    if (header_.major_version != 3 && header_.major_version != 4)
+    {
+        throw xlnt::invalid_file("invalid major version, expected 3 or 4 but got " + std::to_string(header_.major_version));
+    }
+
+    // Byte Order (2 bytes): This field MUST be set to 0xFFFE. This field is a byte order mark for all integer
+    // fields, specifying little-endian byte order.
+    if (static_cast<std::uint16_t>(header_.byte_order) != 0xFFFE)
+    {
+        throw xlnt::invalid_file("invalid byte order, expected 0xFFFE (little-endian) but got " +
+            fmt::format("0x{:04X}", static_cast<std::uint16_t>(header_.byte_order)));
+    }
+
+    // Sector Shift (2 bytes): This field MUST be set to 0x0009, or 0x000c, depending on the Major
+    // Version field. This field specifies the sector size of the compound file as a power of 2.
+    // - If Major Version is 3, the Sector Shift MUST be 0x0009, specifying a sector size of 512 bytes.
+    // - If Major Version is 4, the Sector Shift MUST be 0x000C, specifying a sector size of 4096 bytes.
+    if (!((header_.major_version == 3 && header_.sector_size_power == 0x0009) ||
+        (header_.major_version == 4 && header_.sector_size_power == 0x000C)))
+    {
+        throw xlnt::invalid_file("invalid combination of sector size power and major version, got sector_size_power = " +
+            fmt::format("0x{:04X}", header_.sector_size_power) + "; major_version = " + std::to_string(header_.major_version));
+    }
+
+    // Mini Sector Shift (2 bytes): This field MUST be set to 0x0006. This field specifies the sector size of
+    // the Mini Stream as a power of 2. The sector size of the Mini Stream MUST be 64 bytes.
+    if (header_.short_sector_size_power != 0x0006)
+    {
+        throw xlnt::invalid_file("invalid short sector size power, expected 0x0006 but got " + fmt::format("0x{:04X}", header_.short_sector_size_power));
+    }
+
+    // Reserved (6 bytes): This field MUST be set to all zeroes.
+    if (std::any_of(header_.reserved.begin(), header_.reserved.end(), [](auto i) { return i != 0; }))
+    {
+        std::string exception_str = "invalid reserved field, expected only zeros but got: ";
+        for (auto val : header_.reserved)
+        {
+            exception_str += fmt::format("{:02x} ", val);
+        }
+        throw xlnt::invalid_file(exception_str);
+    }
+
+    // Number of Directory Sectors (4 bytes): This integer field contains the count of the number of
+    // directory sectors in the compound file.
+    // - If Major Version is 3, the Number of Directory Sectors MUST be zero. This field is not
+    //   supported for version 3 compound files.
+    if (header_.major_version == 3 && header_.num_directory_sectors != 0)
+    {
+        throw xlnt::invalid_file("invalid number of directory sectors for major version 3: expected 0 directory sectors but got " +
+            std::to_string(header_.num_directory_sectors));
+    }
+
+    // Mini Stream Cutoff Size (4 bytes): This integer field MUST be set to 0x00001000. This field
+    // specifies the maximum size of a user-defined data stream that is allocated from the mini FAT
+    // and mini stream, and that cutoff is 4,096 bytes. Any user-defined data stream that is greater than
+    // or equal to this cutoff size must be allocated as normal sectors from the FAT.
+    if (header_.threshold != 0x00001000)
+    {
+        throw xlnt::invalid_file("invalid mini stream cutoff size, expected 0x00001000 but got " + format_hex(header_.threshold));
+    }
+
+    // DIFAT (436 bytes): This array of 32-bit integer fields contains the first 109 FAT sector locations of
+    // the compound file.
+    // - For version 4 compound files, the header size (512 bytes) is less than the sector size (4,096
+    //   bytes), so the remaining part of the header (3,584 bytes) MUST be filled with all zeroes.
+    if (header_.major_version == 4)
+    {
+        std::array<std::uint8_t, 3584> remaining {{ 0 }};
+        in_->read(reinterpret_cast<char *>(remaining.data()), sizeof(remaining));
+
+        if (std::any_of(remaining.begin(), remaining.end(), [](auto i) { return i != 0; }))
+        {
+            std::string exception_str = "invalid remaining bytes in header (major version 4), expected only zeros but got: ";
+            for (auto val : remaining)
+            {
+                exception_str += fmt::format("{:02x} ", val);
+            }
+            throw xlnt::invalid_file(exception_str);
+        }
+    }
 }
 
 void compound_document::read_msat()
@@ -1308,6 +1419,12 @@ void compound_document::read_ssat()
     }
 }
 
+std::string format_entry_info(directory_id entry_id, sector_id sector_id)
+{
+    // The formatted IDs should be as short as possible to keep the exception message readable - so we do not add leading zeros.
+    return "(entry " + fmt::format("0x{:X}", entry_id) + " in sector " + fmt::format("0x{:X}", sector_id) + ")";
+}
+
 void compound_document::read_entry(directory_id id)
 {
     const auto directory_chain = follow_chain(header_.directory_start, sat_);
@@ -1317,7 +1434,161 @@ void compound_document::read_entry(directory_id id)
         + ((static_cast<std::size_t>(id) % entries_per_sector) * sizeof(compound_document_entry));
 
     in_->seekg(static_cast<std::ptrdiff_t>(sector_data_start() + offset), std::ios::beg);
-    in_->read(reinterpret_cast<char *>(&entries_.at(static_cast<std::size_t>(id))), sizeof(compound_document_entry));
+    compound_document_entry &current_entry = entries_.at(static_cast<std::size_t>(id));
+    in_->read(reinterpret_cast<char *>(&current_entry), sizeof(compound_document_entry));
+
+    // First check the length, as we'll need this for the string itself.
+    // Directory Entry Name Length (2 bytes): This field MUST match the length of the Directory Entry
+    // Name Unicode string in bytes. The length MUST be a multiple of 2 and include the terminating null
+    // character in the count. This length MUST NOT exceed 64, the maximum size of the Directory Entry
+    // Name field.
+    if (current_entry.name_length < 2 || current_entry.name_length > 64)
+    {
+        throw xlnt::invalid_file("invalid entry name length " + format_entry_info(id, directory_sector) +
+            ", expected >= 2 and <= 64, but got " + std::to_string(current_entry.name_length));
+    }
+    else if (current_entry.name_length % 2 != 0)
+    {
+        throw xlnt::invalid_file("invalid entry name length " + format_entry_info(id, directory_sector) +
+            ", which must be a multiple of 2, but got " + std::to_string(current_entry.name_length));
+    }
+
+    // Directory Entry Name (64 bytes): This field MUST contain a Unicode string for the storage or
+    // stream name encoded in UTF-16. The name MUST be terminated with a UTF-16 terminating null
+    // character. Thus, storage and stream names are limited to 32 UTF-16 code points, including the
+    // terminating null character. When locating an object in the compound file except for the root
+    // storage, the directory entry name is compared by using a special case-insensitive uppercase
+    // mapping, described in Red-Black Tree. The following characters are illegal and MUST NOT be part
+    // of the name: '/', '\', ':', '!'.
+    std::uint16_t name_length_characters = (current_entry.name_length / 2) - 1; // does NOT include \0 at the end
+    if (current_entry.name_array.at(name_length_characters) != u'\0')
+    {
+        std::string exception_str = "invalid entry name " + format_entry_info(id, directory_sector) +
+            ", which must be terminated with \\0 but is terminated with " +
+            fmt::format("0x{:04X}", static_cast<uint16_t>(current_entry.name_array.at(name_length_characters))) +
+            "\nString has a length of " + std::to_string(name_length_characters) + " characters (" +
+            std::to_string(current_entry.name_length) + " bytes including \\0). Full buffer contents:\n";
+        for (auto val : current_entry.name_array)
+        {
+            exception_str += fmt::format("{:04x} ", static_cast<uint16_t>(val));
+        }
+
+        throw xlnt::invalid_file(exception_str);
+    }
+
+    for (std::uint16_t n = 0; n < name_length_characters; ++n)
+    {
+        auto curr = current_entry.name_array.at(n);
+        if (curr == u'/' || curr == u'\\' || curr == u':' || curr == u'!')
+        {
+            throw xlnt::invalid_file("invalid entry name " + format_entry_info(id, directory_sector) +
+                ", which contains invalid character " +
+                fmt::format("0x{:04X}", static_cast<uint16_t>(curr)) + " at position " + std::to_string(n));
+        }
+    }
+
+    // Object Type (1 byte): This field MUST be 0x00, 0x01, 0x02, or 0x05, depending on the actual type
+    // of object. All other values are not valid.
+    if (static_cast<uint8_t>(current_entry.type) != 0x00 && // Empty
+        static_cast<uint8_t>(current_entry.type) != 0x01 && // UserStorage
+        static_cast<uint8_t>(current_entry.type) != 0x02 && // UserStream
+        static_cast<uint8_t>(current_entry.type) != 0x05) // RootStorage
+    {
+        throw xlnt::invalid_file("invalid entry object type " + format_entry_info(id, directory_sector) +
+            ", expected 0, 1, 2 or 5 but got " + std::to_string(static_cast<int>(current_entry.type)));
+    }
+
+    // Color Flag (1 byte): This field MUST be 0x00 (red) or 0x01 (black). All other values are not valid.
+    if (static_cast<uint8_t>(current_entry.color) != 0 && static_cast<uint8_t>(current_entry.color) != 1)
+    {
+        throw xlnt::invalid_file("invalid entry color " + format_entry_info(id, directory_sector) +
+            ", expected 0 or 1, but got " + std::to_string(static_cast<int>(current_entry.color)));
+    }
+
+    // CLSID (16 bytes): This field contains an object class GUID, if this entry is for a storage object or
+    // root storage object. For a stream object, this field MUST be set to all zeroes. A value containing all
+    // zeroes in a storage or root storage directory entry is valid, and indicates that no object class is
+    // associated with the storage. If an implementation of the file format enables applications to create
+    // storage objects without explicitly setting an object class GUID, it MUST write all zeroes by default.
+    // If this value is not all zeroes, the object class GUID can be used as a parameter to start
+    // applications.
+    if (current_entry.type == compound_document_entry::entry_type::UserStream &&
+        std::any_of(current_entry.clsid.begin(), current_entry.clsid.end(), [](auto i) { return i != 0; }))
+    {
+        std::string exception_str = "invalid entry CLSID " + format_entry_info(id, directory_sector) +
+            " for UserStream type, espected all zeros but got: ";
+        for (auto val : current_entry.clsid)
+        {
+            exception_str += fmt::format("{:02x} ", val);
+        }
+        throw xlnt::invalid_file(exception_str);
+    }
+
+    // Creation Time (8 bytes): This field contains the creation time for a storage object, or all zeroes to
+    // indicate that the creation time of the storage object was not recorded. The Windows FILETIME
+    // structure is used to represent this field in UTC. For a stream object, this field MUST be all zeroes.
+    // For a root storage object, this field MUST be all zeroes, and the creation time is retrieved or set on
+    // the compound file itself.
+    if ((current_entry.type == compound_document_entry::entry_type::UserStream ||
+        current_entry.type == compound_document_entry::entry_type::RootStorage) &&
+        current_entry.creation_time != 0)
+    {
+        throw xlnt::invalid_file("invalid entry creation time " + format_entry_info(id, directory_sector) +
+            " for type " + std::to_string(static_cast<int>(current_entry.type)) +
+            ", expected 0 but got " + std::to_string(current_entry.creation_time));
+    }
+
+    // Modified Time (8 bytes): This field contains the modification time for a storage object, or all
+    // zeroes to indicate that the modified time of the storage object was not recorded. The Windows
+    // FILETIME structure is used to represent this field in UTC. For a stream object, this field MUST be
+    // all zeroes. For a root storage object, this field MAY<2> be set to all zeroes, and the modified time
+    // is retrieved or set on the compound file itself.
+    if (current_entry.type == compound_document_entry::entry_type::UserStream &&
+        current_entry.modified_time != 0)
+    {
+        throw xlnt::invalid_file("invalid entry modification time " + format_entry_info(id, directory_sector) +
+            " for type UserStream, expected 0 but got " + std::to_string(current_entry.modified_time));
+    }
+
+    // Starting Sector Location (4 bytes): This field contains the first sector location if this is a stream
+    // object. For a root storage object, this field MUST contain the first sector of the mini stream, if the
+    // mini stream exists. For a storage object, this field MUST be set to all zeroes.
+    if (current_entry.type == compound_document_entry::entry_type::UserStorage &&
+        current_entry.start != 0)
+    {
+        throw xlnt::invalid_file("invalid entry start sector location " + format_entry_info(id, directory_sector) +
+            " for type UserStorage, expected 0 but got " +
+            std::to_string(current_entry.start));
+    }
+
+    // Stream Size (8 bytes): ... (see below for the rest)
+    // - For a version 3 compound file 512-byte sector size, the value of this field MUST be less than
+    //   or equal to 0x80000000. (Equivalently, this requirement can be stated: the size of a stream or
+    //   of the mini stream in a version 3 compound file MUST be less than or equal to 2 gigabytes
+    //   (GB).) Note that as a consequence of this requirement, the most significant 32 bits of this field
+    //   MUST be zero in a version 3 compound file. However, implementers should be aware that
+    //   some older implementations did not initialize the most significant 32 bits of this field, and
+    //   these bits might therefore be nonzero in files that are otherwise valid version 3 compound
+    //   files. Although this document does not normatively specify parser behavior, it is recommended
+    //   that parsers ignore the most significant 32 bits of this field in version 3 compound files,
+    //   treating it as if its value were zero, unless there is a specific reason to do otherwise (for
+    //   example, a parser whose purpose is to verify the correctness of a compound file).
+    if (header_.major_version == 3 && current_entry.size > 0x80000000)
+    {
+        // Note: we have checked above that the only allowed byte order is little-endian.
+        current_entry.size = current_entry.size & 0x0000FFFF;
+    }
+
+    // Stream Size (8 bytes): This 64-bit integer field contains the size of the user-defined data if this is
+    // a stream object. For a root storage object, this field contains the size of the mini stream. For a
+    // storage object, this field MUST be set to all zeroes.
+    if (current_entry.type == compound_document_entry::entry_type::UserStorage &&
+        current_entry.size != 0)
+    {
+        throw xlnt::invalid_file("invalid entry stream size " + format_entry_info(id, directory_sector) +
+            " for type UserStorage, expected 0 but got " +
+            std::to_string(current_entry.size));
+    }
 }
 
 void compound_document::write_header()

@@ -52,17 +52,18 @@ struct compound_document_header
         little_endian = 0xFEFF
     };
 
-    std::uint64_t file_id = 0xE11AB1A1E011CFD0;
-    std::array<std::uint8_t, 16> ignore1 = { { 0 } };
-    std::uint16_t revision = 0x003E;
-    std::uint16_t version = 0x0003;
+    std::uint64_t header_signature = 0xE11AB1A1E011CFD0;
+    std::array<std::uint8_t, 16> header_clsid = { { 0 } };
+    std::uint16_t minor_version = 0x003E;
+    std::uint16_t major_version = 0x0003;
     byte_order_type byte_order = byte_order_type::little_endian;
     std::uint16_t sector_size_power = 9;
     std::uint16_t short_sector_size_power = 6;
-    std::array<std::uint8_t, 10> ignore2 = { { 0 } };
+    std::array<std::uint8_t, 6> reserved = { { 0 } };
+    std::uint32_t num_directory_sectors = 0; // not used for version 3
     std::uint32_t num_msat_sectors = 0;
     sector_id directory_start = -1;
-    std::array<std::uint8_t, 4> ignore3 = { { 0 } };
+    std::uint32_t transaction_signature_number = 0;
     std::uint32_t threshold = 4096;
     sector_id ssat_start = -2;
     std::uint32_t num_short_sectors = 0;
@@ -85,7 +86,7 @@ struct compound_document_entry
     std::string name() const
     {
         return utf16_to_utf8(std::u16string(name_array.begin(),
-            name_array.begin() + (name_length - 1) / 2));
+            name_array.begin() + (name_length / 2) - 1));
     }
 
     enum class entry_type : std::uint8_t
@@ -111,10 +112,12 @@ struct compound_document_entry
     directory_id prev = -1;
     directory_id next = -1;
     directory_id child = -1;
-    std::array<std::uint8_t, 36> ignore;
+    std::array<std::uint8_t, 16> clsid = { { 0 } };
+    std::uint32_t state_bits = 0;
+    std::int64_t creation_time = 0;
+    std::int64_t modified_time = 0;
     sector_id start = -2;
-    std::uint32_t size = 0;
-    std::uint32_t ignore2;
+    std::uint64_t size = 0;
 };
 
 class compound_document_istreambuf;
