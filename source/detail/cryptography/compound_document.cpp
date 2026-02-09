@@ -1280,7 +1280,7 @@ void compound_document::read_header()
     }
 
     // Header CLSID (16 bytes): Reserved and unused class ID that MUST be set to all zeroes (CLSID_NULL).
-    if (std::any_of(header_.header_clsid.begin(), header_.header_clsid.end(), [](auto i) { return i != 0; }))
+    if (std::any_of(header_.header_clsid.begin(), header_.header_clsid.end(), [](std::uint8_t i) { return i != 0; }))
     {
         std::string exception_str = "invalid header CLSID, expected only zeros but got: ";
         for (auto val : header_.header_clsid)
@@ -1324,7 +1324,7 @@ void compound_document::read_header()
     }
 
     // Reserved (6 bytes): This field MUST be set to all zeroes.
-    if (std::any_of(header_.reserved.begin(), header_.reserved.end(), [](auto i) { return i != 0; }))
+    if (std::any_of(header_.reserved.begin(), header_.reserved.end(), [](std::uint8_t i) { return i != 0; }))
     {
         std::string exception_str = "invalid reserved field, expected only zeros but got: ";
         for (auto val : header_.reserved)
@@ -1362,7 +1362,7 @@ void compound_document::read_header()
         std::array<std::uint8_t, 3584> remaining {{ 0 }};
         in_->read(reinterpret_cast<char *>(remaining.data()), sizeof(remaining));
 
-        if (std::any_of(remaining.begin(), remaining.end(), [](auto i) { return i != 0; }))
+        if (std::any_of(remaining.begin(), remaining.end(), [](std::uint8_t i) { return i != 0; }))
         {
             std::string exception_str = "invalid remaining bytes in header (major version 4), expected only zeros but got: ";
             for (auto val : remaining)
@@ -1513,7 +1513,7 @@ void compound_document::read_entry(directory_id id)
     // If this value is not all zeroes, the object class GUID can be used as a parameter to start
     // applications.
     if (current_entry.type == compound_document_entry::entry_type::UserStream &&
-        std::any_of(current_entry.clsid.begin(), current_entry.clsid.end(), [](auto i) { return i != 0; }))
+        std::any_of(current_entry.clsid.begin(), current_entry.clsid.end(), [](std::uint8_t i) { return i != 0; }))
     {
         std::string exception_str = "invalid entry CLSID " + format_entry_info(id, directory_sector) +
             " for UserStream type, espected all zeros but got: ";
