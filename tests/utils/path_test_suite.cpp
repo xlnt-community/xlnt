@@ -80,7 +80,7 @@ public:
     {
         xlnt::path path(u8"🤔🥳😇");
         path = path.append(u8"🍕🍟🍔");
-        xlnt_assert_equals(path.string(), XLNT_U8_TO_CHAR_PTR(u8"🤔🥳😇/🍕🍟🍔"));
+        xlnt_assert_equals(path.string(), xlnt::to_char_ptr(u8"🤔🥳😇/🍕🍟🍔"));
     }
 #endif
 

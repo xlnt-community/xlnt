@@ -381,7 +381,7 @@ public:
         // L"/9_unicode_\u039B_\U0001F607.xlsx" gives the correct output
         const auto path = XLNT_DETAIL_LSTRING_LITERAL(XLNT_TEST_DATA_DIR) L"/9_unicode_\u039B_\U0001F607.xlsx"; // L"/9_unicode_Λ_😇.xlsx"
         wb.load(path);
-        xlnt_assert_equals(wb.active_sheet().cell("A1").value<std::string>(), XLNT_U8_TO_CHAR_PTR(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
+        xlnt_assert_equals(wb.active_sheet().cell("A1").value<std::string>(), xlnt::to_char_ptr(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
 #endif
 
 #ifndef __MINGW32__
@@ -390,7 +390,7 @@ public:
         // u8"/9_unicode_\u039B_\U0001F607.xlsx" gives the correct output
         const auto path2 = XLNT_DETAIL_U8STRING_LITERAL(XLNT_TEST_DATA_DIR) u8"/9_unicode_\u039B_\U0001F607.xlsx"; // u8"/9_unicode_Λ_😇.xlsx"
         wb2.load(path2);
-        xlnt_assert_equals(wb2.active_sheet().cell("A1").value<std::string>(), XLNT_U8_TO_CHAR_PTR(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
+        xlnt_assert_equals(wb2.active_sheet().cell("A1").value<std::string>(), xlnt::to_char_ptr(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
 #endif
     }
 

@@ -33,18 +33,10 @@
 
 namespace xlnt {
 
-// Casts a UTF-8 string literal to a narrow string literal without changing its encoding or performing any conversions,
-// by performing the required casts depending on the C++ version. This ensures that such code will be compatible
-// with multiple C++ versions without any code changes.
-#ifdef __cpp_char8_t
-// For C++20 and newer, interpret as UTF-8 and then cast to string literal
-#define XLNT_U8_TO_CHAR_PTR(a) xlnt::to_char_ptr(a)
-#else
-// For C++11, C++14 and C++17, simply interpret as UTF-8, which works with narrow string literals.
-#define XLNT_U8_TO_CHAR_PTR(a) a
-#endif
-
-
+// Casts a UTF-8 C string to a narrow C string without changing its encoding or performing any conversions,
+// and without copying the string. It performs the required casts depending on the C++ version.
+// It is mainly meant for C++20 or newer to provide compatibility with std::string(_view). However, a fallback function is available
+// for code that needs to compile with both C++20 (or newer) and C++17 (or older), without any code changes.
 #ifdef __cpp_char8_t
 /// Casts a const char8_t array to a const char array
 /// without changing its encoding or performing any conversions,
@@ -53,7 +45,14 @@ inline const char * to_char_ptr(const char8_t *utf8)
 {
     return reinterpret_cast<const char *>(utf8);
 }
+#else
+/// For C++11, C++14 and C++17, simply return the C string as it is.
+inline const char * to_char_ptr(const char *utf8)
+{
+    return utf8;
+}
 #endif
+
 
 #if XLNT_HAS_FEATURE(U8_STRING_VIEW)
 /// Casts std::u8string(_view) to std::string_view
@@ -90,6 +89,6 @@ inline std::string to_string(std::u8string_view utf8)
 // Prepends the u8 string literal prefix to the provided string literal, then
 // casts it to a narrow string literal without changing its encoding or performing any conversions.
 // Useful when defining a string literal once, then using it with both narrow and u8 strings.
-#define XLNT_DETAIL_U8(a) XLNT_U8_TO_CHAR_PTR(XLNT_DETAIL_U8STRING_LITERAL(a))
+#define XLNT_DETAIL_U8(a) xlnt::to_char_ptr(XLNT_DETAIL_U8STRING_LITERAL(a))
 
 } // namespace xlnt
