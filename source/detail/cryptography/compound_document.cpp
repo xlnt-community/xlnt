@@ -901,7 +901,7 @@ directory_id compound_document::insert_entry(
 
         if (parent_id < 0)
         {
-            throw xlnt::invalid_parameter("parent compound document entry of type UserStorage not found at path \"" + joined_path + "\", "
+            throw xlnt::key_not_found("parent compound document entry of type UserStorage not found at path \"" + joined_path + "\", "
                 "necessary to insert entry \"" + name + "\" of type " + std::to_string(static_cast<int>(type)));
         }
 
