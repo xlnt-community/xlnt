@@ -93,6 +93,7 @@ public:
         register_test(test_set_and_get);
         register_test(test_equality);
         register_test(test_const);
+        register_test(test_double);
     }
 
     void test_ctor()
@@ -303,6 +304,31 @@ public:
         xlnt_assert(opt2 == opt);
         xlnt_assert(!(opt != opt2));
         xlnt_assert(!(opt2 != opt));
+    }
+
+    void test_double()
+    {
+        xlnt::optional<double> empty1;
+        xlnt::optional<double> empty2;
+        xlnt::optional<double> v1(1);
+        xlnt::optional<double> v1b(1 + std::numeric_limits<double>::epsilon());
+        xlnt::optional<double> v2(2);
+
+        // empty - empty
+        xlnt_assert(xlnt::detail::float_equals(empty1, empty2));
+
+        // empty and non-empty
+        xlnt_assert(!xlnt::detail::float_equals(empty1, v1));
+        xlnt_assert(!xlnt::detail::float_equals(v1, empty1));
+
+        // non-empty
+        xlnt_assert(xlnt::detail::float_equals(v1, v1b));
+        xlnt_assert(xlnt::detail::float_equals(v1.get(), v1b.get()));
+        xlnt_assert_differs(v1, v1b);
+        xlnt_assert_differs(v1.get(), v1b.get());
+
+        xlnt_assert(!xlnt::detail::float_equals(v1, v2));
+        xlnt_assert(!xlnt::detail::float_equals(v1.get(), v2.get()));
     }
 };
 static optional_test_suite x;

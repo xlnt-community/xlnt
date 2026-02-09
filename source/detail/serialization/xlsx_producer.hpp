@@ -33,6 +33,7 @@
 #include <detail/external/include_libstudxml.hpp>
 #include <detail/serialization/serialisation_helpers.hpp>
 #include <xlnt/internal/features.hpp>
+#include <xlnt/utils/value_with_default.h>
 
 #if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
   #include <string_view>
@@ -223,6 +224,12 @@ private:
         current_part_serializer_->attribute(name, std::to_string(value));
     }
 
+    template <typename T, typename DEFAULT_VALUE>
+    void write_attribute_if_set(const std::string &name, const detail::value_with_default_type<T, DEFAULT_VALUE>& value)
+    {
+        if (value.is_set())
+            write_attribute(name, value.get());
+    }
 
     template <typename T>
     void write_characters(T characters, bool preserve_whitespace = false)

@@ -59,10 +59,10 @@ public:
 
 inline bool operator==(const sheet_format_properties &lhs, const sheet_format_properties &rhs)
 {
-    return lhs.base_col_width == rhs.base_col_width
-        && lhs.default_column_width == rhs.default_column_width
+    return detail::float_equals(lhs.base_col_width, rhs.base_col_width)
+        && detail::float_equals(lhs.default_column_width, rhs.default_column_width)
         && detail::float_equals(lhs.default_row_height, rhs.default_row_height)
-        && lhs.dy_descent == rhs.dy_descent;
+        && detail::float_equals(lhs.dy_descent, rhs.dy_descent);
 }
 
 inline bool operator!=(const sheet_format_properties &lhs, const sheet_format_properties &rhs)

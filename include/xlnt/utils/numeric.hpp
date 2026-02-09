@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include "xlnt/utils/optional.hpp"
 #include <cmath>
 #include <limits>
 #include <type_traits>
@@ -100,6 +101,20 @@ bool float_equals(const LNumber &lhs, const RNumber &rhs,
                                                              xlnt::detail::abs<common_t>(rhs)), // |max| of parameters.
                                common_t{1}); // clamp
     return ((lhs + scaled_fuzz) >= rhs) && ((rhs + scaled_fuzz) >= lhs);
+}
+
+template <typename EpsilonType = float, typename LNumber, typename RNumber>
+bool float_equals(const xlnt::optional<LNumber> &lhs, const xlnt::optional<RNumber> &rhs, int epsilon_scale = 20)
+{
+    if (lhs.is_set() != rhs.is_set())
+    {
+        return false;
+    }
+    if (!lhs.is_set())
+    {
+        return true;
+    }
+    return float_equals(lhs.get(), rhs.get(), epsilon_scale);
 }
 
 } // namespace detail

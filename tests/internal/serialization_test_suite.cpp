@@ -89,6 +89,7 @@ public:
         register_test(test_Issue6_google_missing_workbookView);
         register_test(test_non_contiguous_selection);
         register_test(test_Issue41_empty_fill)
+        register_test(test_value_with_default)
     }
 
     bool workbook_matches_file(xlnt::workbook &wb, const xlnt::path &file)
@@ -941,6 +942,29 @@ R"TEST(<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         xlnt::workbook wb;
         xlnt::detail::xlsx_consumer consumer(wb);
         xlnt_assert_throws_nothing(consumer.read_stylesheet(xml));
+    }
+
+    void test_value_with_default()
+    {
+        unsigned int scale = 123;
+
+        {
+            xlnt::workbook wb;
+            auto page_setup = wb.active_sheet().page_setup();
+            xlnt_assert(!page_setup.has_scale());
+
+            page_setup.scale(scale);
+            wb.active_sheet().page_setup(page_setup);
+
+            xlnt_assert_throws_nothing(wb.save("temp.xlsx"));
+        }
+
+        {
+            xlnt::workbook wb2;
+            wb2.load("temp.xlsx");
+
+            xlnt_assert_equals(wb2.active_sheet().page_setup().scale(), scale);
+        }
     }
 };
 

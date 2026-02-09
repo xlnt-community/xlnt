@@ -26,12 +26,14 @@
 #include <string>
 #include <vector>
 
+#include <detail/xlnt_config_impl.hpp>
+
 namespace xlnt {
 namespace detail {
 
-std::string encode_base64(const std::vector<std::uint8_t> &input);
+XLNT_API_INTERNAL std::string encode_base64(const std::vector<std::uint8_t> &input);
 
-std::vector<std::uint8_t> decode_base64(const std::string &input);
+XLNT_API_INTERNAL std::vector<std::uint8_t> decode_base64(const std::string &input);
 
 } // namespace detail
 } // namespace xlnt

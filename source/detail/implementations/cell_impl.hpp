@@ -31,6 +31,7 @@
 #include <xlnt/cell/index_types.hpp>
 #include <xlnt/cell/rich_text.hpp>
 #include <xlnt/packaging/relationship.hpp>
+#include <xlnt/utils/numeric.hpp>
 #include <xlnt/utils/optional.hpp>
 #include <detail/implementations/format_impl.hpp>
 #include <detail/implementations/hyperlink_impl.hpp>

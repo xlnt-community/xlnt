@@ -27,8 +27,15 @@
 
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/utils/optional.hpp>
+#include <xlnt/utils/value_with_default.h>
 
 namespace xlnt {
+
+namespace detail {
+
+class xlsx_producer;
+
+} // namespace detail
 
 /// <summary>
 /// The orientation of the worksheet when it is printed.
@@ -207,6 +214,8 @@ public:
     bool operator!=(const page_setup &rhs) const;
 
 private:
+    friend class xlnt::detail::xlsx_producer;
+
     /// <summary>
     /// Relationship Id
     /// </summary>
@@ -245,7 +254,7 @@ private:
     /// <summary>
     /// The amount to scale the worksheet
     /// </summary>
-    xlnt::optional<unsigned int> scale_;
+    detail::value_with_default<unsigned int, 100> scale_;
 };
 
 } // namespace xlnt
