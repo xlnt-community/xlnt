@@ -54,7 +54,7 @@ public:
 
     void test_convert_utf8_to_utf16()
     {
-        const char *utf8 = XLNT_DETAIL_U8(UNICODE_TEST_STRING);
+        const char *utf8 = XLNT_U8(UNICODE_TEST_STRING);
         std::u16string result = xlnt::detail::utf8_to_utf16(utf8);
         xlnt_assert_equals(result, XLNT_DETAIL_U16STRING_LITERAL(UNICODE_TEST_STRING));
     }
@@ -70,7 +70,7 @@ public:
 
     void test_convert_utf8_to_utf32()
     {
-        const char *utf8 = XLNT_DETAIL_U8(UNICODE_TEST_STRING);
+        const char *utf8 = XLNT_U8(UNICODE_TEST_STRING);
         std::u32string result = xlnt::detail::utf8_to_utf32(utf8);
         xlnt_assert_equals(result, XLNT_DETAIL_U32STRING_LITERAL(UNICODE_TEST_STRING));
     }
@@ -88,7 +88,7 @@ public:
     {
         const char16_t *utf16 = XLNT_DETAIL_U16STRING_LITERAL(UNICODE_TEST_STRING);
         std::string result = xlnt::detail::utf16_to_utf8(utf16);
-        xlnt_assert_equals(result, XLNT_DETAIL_U8(UNICODE_TEST_STRING));
+        xlnt_assert_equals(result, XLNT_U8(UNICODE_TEST_STRING));
     }
 
 #if XLNT_HAS_FEATURE(U8_STRING_VIEW)
@@ -104,7 +104,7 @@ public:
     {
         const char32_t *utf32 = XLNT_DETAIL_U32STRING_LITERAL(UNICODE_TEST_STRING);
         std::string result = xlnt::detail::utf32_to_utf8(utf32);
-        xlnt_assert_equals(result, XLNT_DETAIL_U8(UNICODE_TEST_STRING));
+        xlnt_assert_equals(result, XLNT_U8(UNICODE_TEST_STRING));
     }
 
 #if XLNT_HAS_FEATURE(U8_STRING_VIEW)

@@ -33,6 +33,14 @@
 
 namespace xlnt {
 
+// Prepends the u8 string literal prefix to the provided string literal, then
+// casts it to a narrow string literal without changing its encoding or performing any conversions.
+// Useful when defining a string literal once, then using it with both narrow and u8 strings. However, it can
+// also be used as a convenience macro for replacing u8 from C++ entirely by XLNT_U8, as XLNT_u8 provides
+// the same behavior as u8 did in C++11, C++14 and C++17.
+#define XLNT_U8(a) xlnt::to_char_ptr(XLNT_DETAIL_U8STRING_LITERAL(a))
+
+
 // Casts a UTF-8 C string to a narrow C string without changing its encoding or performing any conversions,
 // and without copying the string. It performs the required casts depending on the C++ version.
 // It is mainly meant for C++20 or newer to provide compatibility with std::string(_view). However, a fallback function is available
@@ -85,10 +93,5 @@ inline std::string to_string(std::u8string_view utf8)
 #define XLNT_DETAIL_U8STRING_LITERAL(a) XLNT_DETAIL_U8STRING_LITERAL2(a)
 #define XLNT_DETAIL_U16STRING_LITERAL(a) XLNT_DETAIL_U16STRING_LITERAL2(a)
 #define XLNT_DETAIL_U32STRING_LITERAL(a) XLNT_DETAIL_U32STRING_LITERAL2(a)
-
-// Prepends the u8 string literal prefix to the provided string literal, then
-// casts it to a narrow string literal without changing its encoding or performing any conversions.
-// Useful when defining a string literal once, then using it with both narrow and u8 strings.
-#define XLNT_DETAIL_U8(a) xlnt::to_char_ptr(XLNT_DETAIL_U8STRING_LITERAL(a))
 
 } // namespace xlnt

@@ -31,7 +31,7 @@ class path_helper
 public:
     static xlnt::path test_data_directory()
     {
-        static const std::string data_dir = XLNT_DETAIL_U8(XLNT_TEST_DATA_DIR);
+        static const std::string data_dir = XLNT_U8(XLNT_TEST_DATA_DIR);
         return xlnt::path(data_dir);
     }
 
@@ -49,7 +49,7 @@ public:
 
     static xlnt::path benchmark_data_directory()
     {
-        static const std::string data_dir = XLNT_DETAIL_U8(XLNT_BENCHMARK_DATA_DIR);
+        static const std::string data_dir = XLNT_U8(XLNT_BENCHMARK_DATA_DIR);
         return xlnt::path(data_dir);
     }
 
@@ -67,7 +67,7 @@ public:
 
     static xlnt::path sample_data_directory()
     {
-        static const std::string data_dir = XLNT_DETAIL_U8(XLNT_SAMPLE_DATA_DIR);
+        static const std::string data_dir = XLNT_U8(XLNT_SAMPLE_DATA_DIR);
         return xlnt::path(data_dir);
     }
 
