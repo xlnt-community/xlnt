@@ -35,7 +35,6 @@
 #include <detail/serialization/xlsx_producer.hpp>
 #include <detail/serialization/zstream.hpp>
 #include <detail/unicode.hpp>
-#include <detail/utils/string_helpers.hpp>
 
 // NOTE: encryption and decryption is not part of the OOXML specification (ECMA-376).
 // This implementation is based on the "[MS-OFFCRYPTO]: Office Document Cryptography Structure" specification.
