@@ -33,11 +33,8 @@
 
 namespace xlnt {
 
-// Prepends the u8 string literal prefix to the provided string literal, then
-// casts it to a narrow string literal without changing its encoding or performing any conversions.
-// Useful when defining a string literal once, then using it with both narrow and u8 strings. However, it can
-// also be used as a convenience macro for replacing u8 from C++ entirely by XLNT_U8, as XLNT_u8 provides
-// the same behavior as u8 did in C++11, C++14 and C++17.
+// Replacement for u8 from C++ that always returns const char *,
+// like u8 did in C++11, C++14 and C++17 - but XLNT_U8 also does this with C++20 and newer.
 #define XLNT_U8(a) xlnt::to_char_ptr(XLNT_DETAIL_U8STRING_LITERAL(a))
 
 
