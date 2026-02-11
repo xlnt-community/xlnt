@@ -20,7 +20,11 @@ Issues and PRs on the original repo will not be transferred in bulk to this repo
 XLNT generally expects strings to be encoded as UTF-8. This is **required** when saving files created by XLNT, which will fail when using special characters not encoded as UTF-8. This is an issue on compilers and IDEs that do not use UTF-8 by default, like Microsoft Visual Studio. There are a few things to keep in mind:
 
 - For string literals (like `"test"`) written in the source code, you will need to make sure, at a minimum, that the execution character set for strings passed to XLNT is UTF-8:
-    - Using `u8` string literals like `u8"test"` will ensure that these strings are encoded as UTF-8 during compilation. However, since C++20, `u8` string literals need to be used with `std::u8string` or `std::u8string_view`, which XLNT currently supports only for paths.
+    - Using `u8` string literals like `u8"test"` (available since C++11) will ensure that these strings are encoded as UTF-8 during compilation. However, since C++20, `u8` string literals need to be used with `std::u8string` or `std::u8string_view`, which XLNT currently supports only for paths. To use `u8` string literals with C++20 and newer while keeping compatibility with `std::string`, please use the following helpers that do not change the encoding or perform any conversions:
+        - **`XLNT_U8`** for string literals, which provides the same behavior as `u8` did in C++11, C++14 and C++17
+        - **`xlnt::to_string`** for copying **`std::u8string`**, **`std::u8string_view`** or **`const char8_t*`** to **`std::string`**
+        - **`xlnt::to_string_view`** for casting **`std::u8string_view`** or **`const char8_t*`** to **`std::string_view`**
+        - **`xlnt::to_char_ptr`** for casting **`const char8_t*`** to **`const char*`** and string literals like **`u8"test"`** to **`"test"`**
     - Alternatively, the execution character set can be changed in the compiler settings to force all string literals like `"test"` to be encoded as UTF-8 during compilation. For Visual Studio, compile using [`/execution-charset:utf-8`](https://learn.microsoft.com/en-us/cpp/build/reference/execution-charset-set-execution-character-set).
     - Optionally, the best solution would be to use UTF-8 for both the source and execution character set. To do this:
         1. Convert existing source code files to UTF-8, if they already contain special characters (outside of US-ASCII).

@@ -38,8 +38,8 @@
 #endif
 
 #include <xlnt/utils/path.hpp>
+#include <xlnt/utils/string_helpers.hpp>
 #include <detail/external/include_windows.hpp>
-#include <detail/utils/string_helpers.hpp>
 
 namespace {
 
@@ -176,13 +176,13 @@ path::path(const std::string &path_string, char sep)
 
 #if XLNT_HAS_FEATURE(U8_STRING_VIEW)
 path::path(std::u8string_view path_string)
-    : path(detail::to_string_copy(path_string))
+    : path(to_string(path_string))
 {
 
 }
 
 path::path(std::u8string_view path_string, char sep)
-    : path(detail::to_string_copy(path_string), sep)
+    : path(to_string(path_string), sep)
 {
 
 }
@@ -365,7 +365,7 @@ path path::append(const std::string &to_append) const
 #if XLNT_HAS_FEATURE(U8_STRING_VIEW)
 path path::append(std::u8string_view to_append) const
 {
-    return append(detail::to_string_copy(to_append));
+    return append(to_string(to_append));
 }
 #endif
 

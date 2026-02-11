@@ -38,7 +38,6 @@
 #include <detail/serialization/vector_streambuf.hpp>
 #include <detail/serialization/xlsx_consumer.hpp>
 #include <detail/unicode.hpp>
-#include <detail/utils/string_helpers.hpp>
 
 #define FMT_HEADER_ONLY
 #include <fmt/format.h>
