@@ -40,9 +40,41 @@
 namespace xlnt {
 namespace detail {
 
-using directory_id = std::int32_t;
-using sector_id = std::int32_t;
+using directory_id = std::uint32_t;
+using sector_id = std::uint32_t;
 using sector_chain = std::vector<sector_id>;
+
+constexpr sector_id MAXREGSECT = 0xFFFFFFFA; // Maximum regular sector number.
+// 0xFFFFFFFB -> Reserved for future use.
+constexpr sector_id DIFSECT = 0xFFFFFFFC; // Specifies a DIFAT sector in the FAT.
+constexpr sector_id FATSECT = 0xFFFFFFFD; // Specifies a FAT sector in the FAT.
+constexpr sector_id ENDOFCHAIN = 0xFFFFFFFE; // End of a linked chain of sectors.
+constexpr sector_id FREESECT = 0xFFFFFFFF; // Specifies an unallocated sector in the FAT, Mini FAT, or DIFAT.
+
+constexpr directory_id MAXREGSID = 0xFFFFFFFA; // Maximum regular stream ID.
+constexpr directory_id NOSTREAM = 0xFFFFFFFF; // Terminator or empty pointer.
+
+/// Returns true if the sector ID equals ENDOFCHAIN, false otherwise.
+/// Expects either a valid sector ID (<= MAXREGSECT), or ENDOFCHAIN - otherwise, an invalid_parameter exception will be thrown.
+bool is_chain_end(sector_id sector);
+
+/// Returns true if the sector ID equals ENDOFCHAIN or FREESECT, false otherwise.
+/// Expects either a valid sector ID (<= MAXREGSECT), or ENDOFCHAIN, or FREESECT - otherwise, an invalid_parameter exception will be thrown.
+bool is_invalid_sector(sector_id sector);
+
+/// Returns true if the directory ID of the entry equals NOSTREAM, false otherwise.
+/// Expects either a valid directory ID (<= MAXREGSID) or NOSTREAM - otherwise, an invalid_parameter exception will be thrown.
+bool is_invalid_entry(directory_id entry);
+
+/// Throws if the sector ID is neither a valid one (<= MAXREGSECT) nor ENDOFCHAIN.
+void expect_valid_sector_or_chain_end(sector_id sector);
+
+/// Throws if the sector ID is neither a valid one (<= MAXREGSECT), nor ENDOFCHAIN, nor FREESECT.
+void expect_valid_sector_or_chain_end_or_free(sector_id sector);
+
+/// Throws if the directory ID of the entry is neither a valid one (<= MAXREGSID) nor NOSTREAM.
+void expect_valid_entry_or_no_stream(directory_id entry);
+
 
 struct compound_document_header
 {
@@ -62,32 +94,61 @@ struct compound_document_header
     std::array<std::uint8_t, 6> reserved = { { 0 } };
     std::uint32_t num_directory_sectors = 0; // not used for version 3
     std::uint32_t num_msat_sectors = 0;
-    sector_id directory_start = -1;
+    sector_id directory_start = ENDOFCHAIN;
     std::uint32_t transaction_signature_number = 0;
     std::uint32_t threshold = 4096;
-    sector_id ssat_start = -2;
+    sector_id ssat_start = ENDOFCHAIN;
     std::uint32_t num_short_sectors = 0;
-    sector_id extra_msat_start = -2;
+    sector_id extra_msat_start = ENDOFCHAIN;
     std::uint32_t num_extra_msat_sectors = 0;
-    std::array<sector_id, 109> msat = {{0}};
+    std::array<sector_id, 109> msat = {{FREESECT}};
 };
+
+constexpr std::size_t COMPOUND_DOCUMENT_ENTRY_SIZE = 128; // The size if it didn't contain padding.
 
 struct compound_document_entry
 {
+    /// Can throw xlnt::invalid_parameter if the string length after being converted
+    /// to UTF-16 is > 31 characters, or if it contains any of the characters '/', '\', ':', '!'.
     void name(const std::string &new_name)
     {
-        auto u16_name = utf8_to_utf16(new_name);
-        name_length = static_cast<std::uint16_t>(std::min(u16_name.size(), std::size_t(31)));
+        std::size_t curr_pos = 0;
+        for (char curr : new_name)
+        {
+            if (curr == '/' || curr == '\\' || curr == ':' || curr == '!')
+            {
+                throw xlnt::invalid_parameter("invalid entry name \"" + new_name +
+                    "\", which contains invalid character " + curr + " at position " + std::to_string(curr_pos));
+            }
+        }
+
+        std::u16string u16_name = utf8_to_utf16(new_name);
+        if (u16_name.length() > 31)
+        {
+            throw xlnt::invalid_parameter("invalid entry name \"" + new_name +
+                "\", expected UTF-16 length <= 31 but got " + std::to_string(u16_name.length()));
+        }
+
+        name_length = static_cast<std::uint16_t>(u16_name.length());
         std::copy(u16_name.begin(), u16_name.begin() + name_length, name_array.begin());
         name_array[name_length] = u'\0';
         name_length = (name_length + 1) * 2;
     }
 
+    /// Can throw: utf8::invalid_utf16, utf8::invalid_code_point
     std::string name() const
     {
+        if (name_length < 2)
+        {
+            return {};
+        }
         return utf16_to_utf8(std::u16string(name_array.begin(),
             name_array.begin() + (name_length / 2) - 1));
     }
+
+    /// Formats the entry infos for debugging purposes.
+    /// IMPORTANT: only show the name after the name and its length have been validated!
+    std::string format_info(directory_id entry_id, sector_id sector_id, bool show_entry_name) const;
 
     enum class entry_type : std::uint8_t
     {
@@ -105,18 +166,21 @@ struct compound_document_entry
         Black = 1
     };
 
+    // Free (unused) directory entries are marked with Object Type 0x0 (unknown or unallocated). The
+    // entire directory entry must consist of all zeroes except for the child, right sibling, and left sibling
+    // pointers, which must be initialized to NOSTREAM (0xFFFFFFFF).
     std::array<char16_t, 32> name_array = { { 0 } };
-    std::uint16_t name_length = 2;
+    std::uint16_t name_length = 0;
     entry_type type = entry_type::Empty;
-    entry_color color = entry_color::Black;
-    directory_id prev = -1;
-    directory_id next = -1;
-    directory_id child = -1;
+    entry_color color = entry_color::Red;
+    directory_id prev = NOSTREAM;
+    directory_id next = NOSTREAM;
+    directory_id child = NOSTREAM;
     std::array<std::uint8_t, 16> clsid = { { 0 } };
     std::uint32_t state_bits = 0;
     std::int64_t creation_time = 0;
     std::int64_t modified_time = 0;
-    sector_id start = -2;
+    sector_id start = 0; // must be 0 for an empty entry
     std::uint64_t size = 0;
 };
 
@@ -173,9 +237,9 @@ private:
     void write_entry(directory_id id);
     void write_directory();
 
-    std::size_t sector_size();
-    std::size_t short_sector_size();
-    std::size_t sector_data_start();
+    std::uint64_t sector_size();
+    std::uint64_t short_sector_size();
+    std::uint64_t sector_data_start();
 
     void print_directory();
 
@@ -219,8 +283,8 @@ private:
     std::unordered_map<directory_id, directory_id> parent_storage_;
     std::unordered_map<directory_id, directory_id> parent_;
 
-    std::istream *in_;
-    std::ostream *out_;
+    std::istream *in_ = nullptr;
+    std::ostream *out_ = nullptr;
 
     std::unique_ptr<compound_document_istreambuf> stream_in_buffer_;
     std::istream stream_in_;

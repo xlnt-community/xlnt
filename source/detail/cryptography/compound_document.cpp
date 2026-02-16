@@ -61,7 +61,7 @@ int compare_keys(const std::string &left, const std::string &right)
         }
         else
         {
-            static const auto locale = std::locale();
+            static const std::locale locale;
             std::use_facet<std::ctype<char>>(locale).tolower(&s[0], &s[0] + s.size());
 
             return s;
@@ -73,9 +73,9 @@ int compare_keys(const std::string &left, const std::string &right)
 
 std::vector<std::string> split_path(const std::string &path)
 {
-    auto split = std::vector<std::string>();
-    auto current = path.find('/');
-    auto prev = std::size_t(0);
+    std::vector<std::string> split = std::vector<std::string>();
+    std::size_t current = path.find('/');
+    std::size_t prev = 0;
 
     while (current != std::string::npos)
     {
@@ -91,9 +91,9 @@ std::vector<std::string> split_path(const std::string &path)
 
 std::string join_path(const std::vector<std::string> &path)
 {
-    auto joined = std::string();
+    std::string joined;
 
-    for (const auto &part : path)
+    for (const std::string &part : path)
     {
         joined.append(part);
         joined.push_back('/');
@@ -103,28 +103,66 @@ std::string join_path(const std::vector<std::string> &path)
 }
 
 template <typename T>
-const T & back_safe(const std::vector<T> &vec)
+const T & last_elem(const std::vector<T> &vec)
 {
     return vec.at(vec.size() - 1);
 }
 
 template <typename T>
-T & back_safe(std::vector<T> &vec)
+T & last_elem(std::vector<T> &vec)
 {
     return vec.at(vec.size() - 1);
 }
-
-const sector_id FreeSector = -1;
-const sector_id EndOfChain = -2;
-const sector_id SATSector = -3;
-//const sector_id MSATSector = -4;
-
-const directory_id End = -1;
 
 } // namespace
 
 namespace xlnt {
 namespace detail {
+
+bool is_chain_end(sector_id sector)
+{
+    expect_valid_sector_or_chain_end(sector);
+    return sector == ENDOFCHAIN;
+}
+
+bool is_invalid_sector(sector_id sector)
+{
+    expect_valid_sector_or_chain_end_or_free(sector);
+    return sector == ENDOFCHAIN || sector == FREESECT;
+}
+
+bool is_invalid_entry(directory_id entry)
+{
+    expect_valid_entry_or_no_stream(entry);
+    return entry == NOSTREAM;
+}
+
+void expect_valid_sector_or_chain_end(sector_id sector)
+{
+    if (sector > MAXREGSECT && sector != ENDOFCHAIN)
+    {
+        throw xlnt::invalid_parameter("expected valid sector (<= MAXREGSECT, which means <= 0xFFFFFFFA) or ENDOFCHAIN (0xFFFFFFFE)"
+            ", but got " + format_hex(sector));
+    }
+}
+
+void expect_valid_sector_or_chain_end_or_free(sector_id sector)
+{
+    if (sector > MAXREGSECT && sector != ENDOFCHAIN && sector != FREESECT)
+    {
+        throw xlnt::invalid_parameter("expected valid sector (<= MAXREGSECT, which means <= 0xFFFFFFFA),"
+            " or ENDOFCHAIN (0xFFFFFFFE), or FREESECT (0xFFFFFFFF), but got " + format_hex(sector));
+    }
+}
+
+void expect_valid_entry_or_no_stream(directory_id entry)
+{
+    if (entry > MAXREGSID && entry != NOSTREAM)
+    {
+        throw xlnt::invalid_parameter("expected valid entry (<= MAXREGSID, which means <= 0xFFFFFFFA) or NOSTREAM (0xFFFFFFFF)"
+            ", but got " + format_hex(entry));
+    }
+}
 
 /// <summary>
 /// Allows a std::vector to be read through a std::istream.
@@ -137,32 +175,31 @@ public:
     compound_document_istreambuf(const compound_document_entry &entry, compound_document &document)
         : entry_(entry),
           document_(document),
-          sector_writer_(current_sector_),
-          position_(0)
+          sector_writer_(current_sector_)
     {
     }
 
     compound_document_istreambuf(const compound_document_istreambuf &) = delete;
     compound_document_istreambuf &operator=(const compound_document_istreambuf &) = delete;
 
-    ~compound_document_istreambuf() override;
+    ~compound_document_istreambuf() override = default;
 
 private:
     std::streamsize xsgetn(char *c, std::streamsize count) override
     {
-        auto bytes_read = std::streamsize(0);
+        std::streamsize bytes_read = 0;
 
-        const auto sector_chain = short_stream() ? document_.ssat_ : document_.sat_;
-        const auto chain = document_.follow_chain(entry_.start, sector_chain);
-        const auto sector_size = short_stream() ? document_.short_sector_size() : document_.sector_size();
-        auto current_sector = chain.at(position_ / sector_size);
-        auto remaining = std::min(std::size_t(entry_.size) - position_, std::size_t(count));
+        const sector_chain &sec_chain = short_stream() ? document_.ssat_ : document_.sat_;
+        const sector_chain chain = document_.follow_chain(entry_.start, sec_chain);
+        const std::uint64_t sector_size = short_stream() ? document_.short_sector_size() : document_.sector_size();
+        sector_id current_sector = chain.at(static_cast<std::size_t>(position_ / sector_size));
+        std::uint64_t remaining = std::min(entry_.size - position_, static_cast<std::uint64_t>(count));
 
         while (remaining)
         {
-            if (current_sector_.empty() || chain.at(position_ / sector_size) != current_sector)
+            if (current_sector_.empty() || chain.at(static_cast<std::size_t>(position_ / sector_size)) != current_sector)
             {
-                current_sector = chain.at(position_ / sector_size);
+                current_sector = chain.at(static_cast<std::size_t>(position_ / sector_size));
                 sector_writer_.reset();
                 if (short_stream())
                 {
@@ -174,9 +211,8 @@ private:
                 }
             }
 
-            const auto available = std::min(entry_.size - position_,
-                sector_size - position_ % sector_size);
-            const auto to_read = std::min(available, std::size_t(remaining));
+            const std::uint64_t available = std::min(entry_.size - position_, sector_size - position_ % sector_size);
+            const std::uint64_t to_read = std::min(available, remaining);
 
             auto start = current_sector_.begin() + static_cast<std::ptrdiff_t>(position_ % sector_size);
             auto end = start + static_cast<std::ptrdiff_t>(to_read);
@@ -191,9 +227,9 @@ private:
             bytes_read += to_read;
         }
 
-        if (position_ < entry_.size && chain.at(position_ / sector_size) != current_sector)
+        if (position_ < entry_.size && chain.at(static_cast<std::size_t>(position_ / sector_size)) != current_sector)
         {
-            current_sector = chain.at(position_ / sector_size);
+            current_sector = chain.at(static_cast<std::size_t>(position_ / sector_size));
             sector_writer_.reset();
             if (short_stream())
             {
@@ -220,8 +256,8 @@ private:
             return traits_type::eof();
         }
 
-        auto old_position = position_;
-        auto result = '\0';
+        std::uint64_t old_position = position_;
+        char result = '\0';
         xsgetn(&result, 1);
         position_ = old_position;
 
@@ -230,7 +266,7 @@ private:
 
     int_type uflow() override
     {
-        auto result = underflow();
+        int_type result = underflow();
         ++position_;
 
         return result;
@@ -259,30 +295,30 @@ private:
 
         if (off < 0)
         {
-            if (static_cast<std::size_t>(-off) > position_)
+            if (static_cast<std::uint64_t>(-off) > position_)
             {
                 position_ = 0;
-                return static_cast<std::ptrdiff_t>(-1);
+                return static_cast<std::streamoff>(-1);
             }
             else
             {
-                position_ -= static_cast<std::size_t>(-off);
+                position_ -= static_cast<std::uint64_t>(-off);
             }
         }
         else if (off > 0)
         {
-            if (static_cast<std::size_t>(off) + position_ > entry_.size)
+            if (static_cast<std::uint64_t>(off) + position_ > entry_.size)
             {
                 position_ = entry_.size;
-                return static_cast<std::ptrdiff_t>(-1);
+                return static_cast<std::streamoff>(-1);
             }
             else
             {
-                position_ += static_cast<std::size_t>(off);
+                position_ += static_cast<std::uint64_t>(off);
             }
         }
 
-        return static_cast<std::ptrdiff_t>(position_);
+        return static_cast<std::streamoff>(position_);
     }
 
     std::streampos seekpos(std::streampos sp, std::ios_base::openmode) override
@@ -291,16 +327,16 @@ private:
         {
             position_ = 0;
         }
-        else if (static_cast<std::size_t>(sp) > entry_.size)
+        else if (static_cast<std::uint64_t>(sp) > entry_.size)
         {
             position_ = entry_.size;
         }
         else
         {
-            position_ = static_cast<std::size_t>(sp);
+            position_ = static_cast<std::uint64_t>(sp);
         }
 
-        return static_cast<std::ptrdiff_t>(position_);
+        return static_cast<std::streamoff>(position_);
     }
 
 private:
@@ -308,12 +344,8 @@ private:
     compound_document &document_;
     std::vector<byte> current_sector_;
     binary_writer<byte> sector_writer_;
-    std::size_t position_;
+    std::uint64_t position_ = 0;
 };
-
-compound_document_istreambuf::~compound_document_istreambuf()
-{
-}
 
 /// <summary>
 /// Allows a std::vector to be written through a std::ostream.
@@ -327,8 +359,7 @@ public:
         : entry_(entry),
           document_(document),
           current_sector_(document.header_.threshold),
-          sector_reader_(current_sector_),
-          position_(0)
+          sector_reader_(current_sector_)
     {
         setp(reinterpret_cast<char *>(current_sector_.data()),
             reinterpret_cast<char *>(current_sector_.data() + current_sector_.size()));
@@ -342,9 +373,9 @@ public:
 private:
     int sync() override
     {
-        auto written = static_cast<std::size_t>(pptr() - pbase());
+        auto written = static_cast<std::uint64_t>(pptr() - pbase());
 
-        if (written == std::size_t(0))
+        if (written == 0)
         {
             return 0;
         }
@@ -359,14 +390,15 @@ private:
             }
             else
             {
-                if (entry_.start < 0)
+                if (is_invalid_sector(entry_.start))
                 {
-                    auto num_sectors = (position_ + written + document_.short_sector_size() - 1) / document_.short_sector_size();
+                    std::size_t num_sectors = static_cast<std::size_t>(
+                        (position_ + written + document_.short_sector_size() - 1) / document_.short_sector_size());
                     chain_ = document_.allocate_short_sectors(num_sectors);
                     entry_.start = chain_.at(0);
                 }
 
-                for (auto link : chain_)
+                for (sector_id link : chain_)
                 {
                     document_.write_short_sector(sector_reader_, link);
                     sector_reader_.offset(sector_reader_.offset() + document_.short_sector_size());
@@ -375,12 +407,12 @@ private:
         }
         else
         {
-            const auto sector_index = position_ / document_.sector_size();
+            const std::size_t sector_index = static_cast<std::size_t>(position_ / document_.sector_size());
             document_.write_sector(sector_reader_, chain_.at(sector_index));
         }
 
         position_ += written;
-        entry_.size = std::max(entry_.size, static_cast<std::uint64_t>(position_));
+        entry_.size = std::max(entry_.size, position_);
         document_.write_directory();
 
         std::fill(current_sector_.begin(), current_sector_.end(), byte(0));
@@ -401,15 +433,15 @@ private:
 
         if (short_stream())
         {
-            auto next_sector = document_.allocate_short_sector();
-            document_.ssat_.at(static_cast<std::size_t>(back_safe(chain_))) = next_sector;
+            sector_id next_sector = document_.allocate_short_sector();
+            document_.ssat_.at(last_elem(chain_)) = next_sector;
             chain_.push_back(next_sector);
             document_.write_ssat();
         }
         else
         {
-            auto next_sector = document_.allocate_sector();
-            document_.sat_.at(static_cast<std::size_t>(back_safe(chain_))) = next_sector;
+            sector_id next_sector = document_.allocate_sector();
+            document_.sat_.at(last_elem(chain_)) = next_sector;
             chain_.push_back(next_sector);
             document_.write_sat();
         }
@@ -418,7 +450,8 @@ private:
 
         if (c != traits_type::eof())
         {
-            current_sector_.at(position_ % current_sector_.size()) = value;
+            std::size_t sector_index = static_cast<std::size_t>(position_ % current_sector_.size());
+            current_sector_.at(sector_index) = value;
         }
 
         pbump(1);
@@ -430,10 +463,10 @@ private:
     {
         sector_reader_.reset();
 
-        auto num_sectors = current_sector_.size() / document_.sector_size();
-        auto new_chain = document_.allocate_sectors(num_sectors);
+        std::size_t num_sectors = static_cast<std::size_t>(current_sector_.size() / document_.sector_size());
+        sector_chain new_chain = document_.allocate_sectors(num_sectors);
 
-        for (auto link : new_chain)
+        for (sector_id link : new_chain)
         {
             document_.write_sector(sector_reader_, link);
             sector_reader_.offset(sector_reader_.offset() + document_.short_sector_size());
@@ -442,12 +475,12 @@ private:
         current_sector_.resize(document_.sector_size(), 0);
         std::fill(current_sector_.begin(), current_sector_.end(), byte(0));
 
-        if (entry_.start < 0)
+        if (is_invalid_sector(entry_.start))
         {
             // TODO: deallocate short sectors here
             if (document_.header_.num_short_sectors == 0)
             {
-                document_.entries_.at(0).start = EndOfChain;
+                document_.entries_.at(0).start = ENDOFCHAIN;
             }
         }
 
@@ -469,30 +502,30 @@ private:
 
         if (off < 0)
         {
-            if (static_cast<std::size_t>(-off) > position_)
+            if (static_cast<std::uint64_t>(-off) > position_)
             {
                 position_ = 0;
-                return static_cast<std::ptrdiff_t>(-1);
+                return static_cast<std::streamoff>(-1);
             }
             else
             {
-                position_ -= static_cast<std::size_t>(-off);
+                position_ -= static_cast<std::uint64_t>(-off);
             }
         }
         else if (off > 0)
         {
-            if (static_cast<std::size_t>(off) + position_ > entry_.size)
+            if (static_cast<std::uint64_t>(off) + position_ > entry_.size)
             {
                 position_ = entry_.size;
-                return static_cast<std::ptrdiff_t>(-1);
+                return static_cast<std::streamoff>(-1);
             }
             else
             {
-                position_ += static_cast<std::size_t>(off);
+                position_ += static_cast<std::uint64_t>(off);
             }
         }
 
-        return static_cast<std::ptrdiff_t>(position_);
+        return static_cast<std::streamoff>(position_);
     }
 
     std::streampos seekpos(std::streampos sp, std::ios_base::openmode) override
@@ -501,16 +534,16 @@ private:
         {
             position_ = 0;
         }
-        else if (static_cast<std::size_t>(sp) > entry_.size)
+        else if (static_cast<std::uint64_t>(sp) > entry_.size)
         {
             position_ = entry_.size;
         }
         else
         {
-            position_ = static_cast<std::size_t>(sp);
+            position_ = static_cast<std::uint64_t>(sp);
         }
 
-        return static_cast<std::ptrdiff_t>(position_);
+        return static_cast<std::streamoff>(position_);
     }
 
 private:
@@ -518,7 +551,7 @@ private:
     compound_document &document_;
     std::vector<byte> current_sector_;
     binary_reader<byte> sector_reader_;
-    std::size_t position_;
+    std::uint64_t position_ = 0;
     sector_chain chain_;
 };
 
@@ -532,7 +565,6 @@ compound_document::compound_document(std::ostream &out)
       stream_in_(nullptr),
       stream_out_(nullptr)
 {
-    header_.msat.fill(FreeSector);
     write_header();
     insert_entry("/Root Entry", compound_document_entry::entry_type::RootStorage);
 }
@@ -559,14 +591,14 @@ void compound_document::close()
     stream_out_buffer_.reset(nullptr);
 }
 
-std::size_t compound_document::sector_size()
+std::uint64_t compound_document::sector_size()
 {
-    return static_cast<std::size_t>(1) << header_.sector_size_power;
+    return static_cast<std::uint64_t>(1) << header_.sector_size_power;
 }
 
-std::size_t compound_document::short_sector_size()
+std::uint64_t compound_document::short_sector_size()
 {
-    return static_cast<std::size_t>(1) << header_.short_sector_size_power;
+    return static_cast<std::uint64_t>(1) << header_.short_sector_size_power;
 }
 
 std::istream &compound_document::open_read_stream(const std::string &name)
@@ -576,8 +608,8 @@ std::istream &compound_document::open_read_stream(const std::string &name)
         throw xlnt::invalid_file("compound document entry of type UserStream not found at path: " + name);
     }
 
-    const auto entry_id = find_entry(name, compound_document_entry::entry_type::UserStream);
-    const auto &entry = entries_.at(static_cast<std::size_t>(entry_id));
+    const directory_id entry_id = find_entry(name, compound_document_entry::entry_type::UserStream);
+    const compound_document_entry &entry = entries_.at(entry_id);
 
     stream_in_buffer_.reset(new compound_document_istreambuf(entry, *this));
     stream_in_.rdbuf(stream_in_buffer_.get());
@@ -587,10 +619,10 @@ std::istream &compound_document::open_read_stream(const std::string &name)
 
 std::ostream &compound_document::open_write_stream(const std::string &name)
 {
-    auto entry_id = contains_entry(name, compound_document_entry::entry_type::UserStream)
+    directory_id entry_id = contains_entry(name, compound_document_entry::entry_type::UserStream)
         ? find_entry(name, compound_document_entry::entry_type::UserStream)
         : insert_entry(name, compound_document_entry::entry_type::UserStream);
-    auto &entry = entries_.at(static_cast<std::size_t>(entry_id));
+    compound_document_entry &entry = entries_.at(entry_id);
 
     stream_out_buffer_.reset(new compound_document_ostreambuf(entry, *this));
     stream_out_.rdbuf(stream_out_buffer_.get());
@@ -601,35 +633,35 @@ std::ostream &compound_document::open_write_stream(const std::string &name)
 template <typename T>
 void compound_document::write_sector(binary_reader<T> &reader, sector_id id)
 {
-    out_->seekp(static_cast<std::ptrdiff_t>(sector_data_start() + sector_size() * static_cast<std::size_t>(id)));
+    out_->seekp(static_cast<std::streampos>(sector_data_start() + sector_size() * id));
     out_->write(reinterpret_cast<const char *>(reader.data() + reader.offset()),
-        static_cast<std::ptrdiff_t>(std::min(sector_size(), reader.bytes() - reader.offset())));
+        static_cast<std::streamsize>(std::min(sector_size(), static_cast<std::uint64_t>(reader.bytes() - reader.offset()))));
 }
 
 template <typename T>
 void compound_document::write_short_sector(binary_reader<T> &reader, sector_id id)
 {
-    auto chain = follow_chain(entries_.at(0).start, sat_);
-    auto sector_id = chain.at(static_cast<std::size_t>(id) / (sector_size() / short_sector_size()));
-    auto sector_offset = static_cast<std::size_t>(id) % (sector_size() / short_sector_size()) * short_sector_size();
-    out_->seekp(static_cast<std::ptrdiff_t>(sector_data_start() + sector_size() * static_cast<std::size_t>(sector_id) + sector_offset));
+    sector_chain chain = follow_chain(entries_.at(0).start, sat_);
+    sector_id sector_id = chain.at(static_cast<std::size_t>(id / (sector_size() / short_sector_size())));
+    std::uint64_t sector_offset = id % (sector_size() / short_sector_size()) * short_sector_size();
+    out_->seekp(static_cast<std::streampos>(sector_data_start() + sector_size() * sector_id + sector_offset));
     out_->write(reinterpret_cast<const char *>(reader.data() + reader.offset()),
-        static_cast<std::ptrdiff_t>(std::min(short_sector_size(), reader.bytes() - reader.offset())));
+        static_cast<std::streamsize>(std::min(short_sector_size(), static_cast<std::uint64_t>(reader.bytes() - reader.offset()))));
 }
 
 template <typename T>
 void compound_document::read_sector(sector_id id, binary_writer<T> &writer)
 {
-    in_->seekg(static_cast<std::ptrdiff_t>(sector_data_start() + sector_size() * static_cast<std::size_t>(id)));
+    in_->seekg(static_cast<std::streampos>(sector_data_start() + sector_size() * id));
     std::vector<byte> sector(sector_size(), 0);
-    in_->read(reinterpret_cast<char *>(sector.data()), static_cast<std::ptrdiff_t>(sector_size()));
+    in_->read(reinterpret_cast<char *>(sector.data()), static_cast<std::streamsize>(sector_size()));
     writer.append(sector);
 }
 
 template <typename T>
 void compound_document::read_sector_chain(sector_id start, binary_writer<T> &writer)
 {
-    for (auto link : follow_chain(start, sat_))
+    for (sector_id link : follow_chain(start, sat_))
     {
         read_sector(link, writer);
     }
@@ -638,9 +670,9 @@ void compound_document::read_sector_chain(sector_id start, binary_writer<T> &wri
 template <typename T>
 void compound_document::read_sector_chain(sector_id start, binary_writer<T> &writer, sector_id offset, std::size_t count)
 {
-    auto chain = follow_chain(start, sat_);
+    sector_chain chain = follow_chain(start, sat_);
 
-    for (auto i = std::size_t(0); i < count; ++i)
+    for (std::size_t i = 0; i < count; ++i)
     {
         read_sector(chain.at(offset + i), writer);
     }
@@ -649,17 +681,17 @@ void compound_document::read_sector_chain(sector_id start, binary_writer<T> &wri
 template <typename T>
 void compound_document::read_short_sector(sector_id id, binary_writer<T> &writer)
 {
-    const auto container_chain = follow_chain(entries_.at(0).start, sat_);
-    auto container = std::vector<byte>();
-    auto container_writer = binary_writer<byte>(container);
+    const sector_chain container_chain = follow_chain(entries_.at(0).start, sat_);
+    std::vector<byte> container;
+    binary_writer<byte> container_writer(container);
 
-    for (auto sector : container_chain)
+    for (sector_id sector : container_chain)
     {
         read_sector(sector, container_writer);
     }
 
-    auto container_reader = binary_reader<byte>(container);
-    container_reader.offset(static_cast<std::size_t>(id) * short_sector_size());
+    binary_reader<byte> container_reader(container);
+    container_reader.offset(static_cast<std::size_t>(id * short_sector_size()));
 
     writer.append(container_reader, short_sector_size());
 }
@@ -667,7 +699,7 @@ void compound_document::read_short_sector(sector_id id, binary_writer<T> &writer
 template <typename T>
 void compound_document::read_short_sector_chain(sector_id start, binary_writer<T> &writer)
 {
-    for (auto link : follow_chain(start, ssat_))
+    for (sector_id link : follow_chain(start, ssat_))
     {
         read_short_sector(link, writer);
     }
@@ -676,9 +708,9 @@ void compound_document::read_short_sector_chain(sector_id start, binary_writer<T
 template <typename T>
 void compound_document::read_short_sector_chain(sector_id start, binary_writer<T> &writer, sector_id offset, std::size_t count)
 {
-    auto chain = follow_chain(start, ssat_);
+    sector_chain chain = follow_chain(start, ssat_);
 
-    for (auto i = std::size_t(0); i < count; ++i)
+    for (std::size_t i = 0; i < count; ++i)
     {
         read_short_sector(chain.at(offset + i), writer);
     }
@@ -686,13 +718,13 @@ void compound_document::read_short_sector_chain(sector_id start, binary_writer<T
 
 sector_id compound_document::allocate_sector()
 {
-    const auto sectors_per_sector = sector_size() / sizeof(sector_id);
-    auto next_free_iter = std::find(sat_.begin(), sat_.end(), FreeSector);
+    const auto sectors_per_sector = static_cast<std::size_t>(sector_size() / sizeof(sector_id));
+    auto next_free_iter = std::find(sat_.begin(), sat_.end(), FREESECT);
 
     if (next_free_iter == sat_.end())
     {
-        auto next_msat_index = header_.num_msat_sectors;
-        auto new_sat_sector_id = sector_id(sat_.size());
+        std::uint32_t next_msat_index = header_.num_msat_sectors;
+        auto new_sat_sector_id = static_cast<sector_id>(sat_.size());
 
         msat_.push_back(new_sat_sector_id);
         write_msat();
@@ -701,23 +733,23 @@ sector_id compound_document::allocate_sector()
         ++header_.num_msat_sectors;
         write_header();
 
-        sat_.resize(sat_.size() + sectors_per_sector, FreeSector);
-        sat_.at(static_cast<std::size_t>(new_sat_sector_id)) = SATSector;
+        sat_.resize(sat_.size() + sectors_per_sector, FREESECT);
+        sat_.at(new_sat_sector_id) = FATSECT;
 
-        auto sat_reader = binary_reader<sector_id>(sat_);
+        binary_reader<sector_id> sat_reader(sat_);
         sat_reader.offset(next_msat_index * sectors_per_sector);
         write_sector(sat_reader, new_sat_sector_id);
 
-        next_free_iter = std::find(sat_.begin(), sat_.end(), FreeSector);
+        next_free_iter = std::find(sat_.begin(), sat_.end(), FREESECT);
     }
 
-    auto next_free = sector_id(next_free_iter - sat_.begin());
-    sat_.at(static_cast<std::size_t>(next_free)) = EndOfChain;
+    auto next_free = static_cast<sector_id>(next_free_iter - sat_.begin());
+    sat_.at(next_free) = ENDOFCHAIN;
 
     write_sat();
 
-    auto empty_sector = std::vector<byte>(sector_size());
-    auto empty_sector_reader = binary_reader<byte>(empty_sector);
+    std::vector<byte> empty_sector(sector_size());
+    binary_reader<byte> empty_sector_reader(empty_sector);
     write_sector(empty_sector_reader, next_free);
 
     return next_free;
@@ -725,16 +757,17 @@ sector_id compound_document::allocate_sector()
 
 sector_chain compound_document::allocate_sectors(std::size_t count)
 {
-    if (count == std::size_t(0)) return {};
+    if (count == 0) return {};
 
-    auto chain = sector_chain();
-    auto current = allocate_sector();
+    sector_chain chain;
+    chain.reserve(count);
+    sector_id current = allocate_sector();
 
-    for (auto i = std::size_t(1); i < count; ++i)
+    for (std::size_t i = 1; i < count; ++i)
     {
         chain.push_back(current);
-        auto next = allocate_sector();
-        sat_.at(static_cast<std::size_t>(current)) = next;
+        sector_id next = allocate_sector();
+        sat_.at(current) = next;
         current = next;
     }
 
@@ -746,13 +779,13 @@ sector_chain compound_document::allocate_sectors(std::size_t count)
 
 sector_chain compound_document::follow_chain(sector_id start, const sector_chain &table)
 {
-    auto chain = sector_chain();
-    auto current = start;
+    sector_chain chain;
+    sector_id current = start;
 
-    while (current >= 0)
+    while (!is_invalid_sector(current))
     {
         chain.push_back(current);
-        current = table.at(static_cast<std::size_t>(current));
+        current = table.at(current);
     }
 
     return chain;
@@ -760,16 +793,17 @@ sector_chain compound_document::follow_chain(sector_id start, const sector_chain
 
 sector_chain compound_document::allocate_short_sectors(std::size_t count)
 {
-    if (count == std::size_t(0)) return {};
+    if (count == 0) return {};
 
-    auto chain = sector_chain();
-    auto current = allocate_short_sector();
+    sector_chain chain;
+    chain.reserve(count);
+    sector_id current = allocate_short_sector();
 
-    for (auto i = std::size_t(1); i < count; ++i)
+    for (std::size_t i = 1; i < count; ++i)
     {
         chain.push_back(current);
-        auto next = allocate_short_sector();
-        ssat_.at(static_cast<std::size_t>(current)) = next;
+        sector_id next = allocate_short_sector();
+        ssat_.at(current) = next;
         current = next;
     }
 
@@ -781,60 +815,60 @@ sector_chain compound_document::allocate_short_sectors(std::size_t count)
 
 sector_id compound_document::allocate_short_sector()
 {
-    const auto sectors_per_sector = sector_size() / sizeof(sector_id);
-    auto next_free_iter = std::find(ssat_.begin(), ssat_.end(), FreeSector);
+    const auto sectors_per_sector = static_cast<std::size_t>(sector_size() / sizeof(sector_id));
+    auto next_free_iter = std::find(ssat_.begin(), ssat_.end(), FREESECT);
 
     if (next_free_iter == ssat_.end())
     {
-        auto new_ssat_sector_id = allocate_sector();
+        sector_id new_ssat_sector_id = allocate_sector();
 
-        if (header_.ssat_start < 0)
+        if (is_invalid_sector(header_.ssat_start))
         {
             header_.ssat_start = new_ssat_sector_id;
         }
         else
         {
-            auto ssat_chain = follow_chain(header_.ssat_start, sat_);
-            sat_.at(static_cast<std::size_t>(back_safe(ssat_chain))) = new_ssat_sector_id;
+            sector_chain ssat_chain = follow_chain(header_.ssat_start, sat_);
+            sat_.at(last_elem(ssat_chain)) = new_ssat_sector_id;
             write_sat();
         }
 
         write_header();
 
-        auto old_size = ssat_.size();
-        ssat_.resize(old_size + sectors_per_sector, FreeSector);
+        std::size_t old_size = ssat_.size();
+        ssat_.resize(old_size + sectors_per_sector, FREESECT);
 
-        auto ssat_reader = binary_reader<sector_id>(ssat_);
+        binary_reader<sector_id> ssat_reader(ssat_);
         ssat_reader.offset(old_size / sectors_per_sector);
         write_sector(ssat_reader, new_ssat_sector_id);
 
-        next_free_iter = std::find(ssat_.begin(), ssat_.end(), FreeSector);
+        next_free_iter = std::find(ssat_.begin(), ssat_.end(), FREESECT);
     }
 
     ++header_.num_short_sectors;
     write_header();
 
-    auto next_free = sector_id(next_free_iter - ssat_.begin());
-    ssat_.at(static_cast<std::size_t>(next_free)) = EndOfChain;
+    auto next_free = static_cast<sector_id>(next_free_iter - ssat_.begin());
+    ssat_.at(next_free) = ENDOFCHAIN;
 
     write_ssat();
 
-    const auto short_sectors_per_sector = sector_size() / short_sector_size();
-    const auto required_container_sectors = static_cast<std::size_t>(next_free) / short_sectors_per_sector + std::size_t(1);
+    const std::uint64_t short_sectors_per_sector = sector_size() / short_sector_size();
+    const std::uint64_t required_container_sectors = next_free / short_sectors_per_sector + 1;
 
     if (required_container_sectors > 0)
     {
-        if (entries_.at(0).start < 0)
+        if (is_invalid_sector(entries_.at(0).start))
         {
             entries_.at(0).start = allocate_sector();
             write_entry(0);
         }
 
-        auto container_chain = follow_chain(entries_.at(0).start, sat_);
+        sector_chain container_chain = follow_chain(entries_.at(0).start, sat_);
 
         if (required_container_sectors > container_chain.size())
         {
-            sat_.at(static_cast<std::size_t>(back_safe(container_chain))) = allocate_sector();
+            sat_.at(last_elem(container_chain)) = allocate_sector();
             write_sat();
         }
     }
@@ -844,13 +878,11 @@ sector_id compound_document::allocate_short_sector()
 
 directory_id compound_document::next_empty_entry()
 {
-    auto entry_id = directory_id(0);
+    directory_id entry_id = 0;
 
-    for (; entry_id < directory_id(entries_.size()); ++entry_id)
+    for (; entry_id < entries_.size(); ++entry_id)
     {
-        auto &entry = entries_.at(static_cast<std::size_t>(entry_id));
-
-        if (entry.type == compound_document_entry::entry_type::Empty)
+        if (entries_.at(entry_id).type == compound_document_entry::entry_type::Empty)
         {
             return entry_id;
         }
@@ -858,25 +890,24 @@ directory_id compound_document::next_empty_entry()
 
     // entry_id is now equal to entries_.size()
 
-    if (header_.directory_start < 0)
+    if (is_invalid_sector(header_.directory_start))
     {
         header_.directory_start = allocate_sector();
     }
     else
     {
-        auto directory_chain = follow_chain(header_.directory_start, sat_);
-        sat_.at(static_cast<std::size_t>(back_safe(directory_chain))) = allocate_sector();
+        sector_chain directory_chain = follow_chain(header_.directory_start, sat_);
+        sat_.at(last_elem(directory_chain)) = allocate_sector();
         write_sat();
     }
 
-    const auto entries_per_sector = sector_size()
-        / sizeof(compound_document_entry);
+    const auto entries_per_sector = static_cast<std::size_t>(sector_size() / COMPOUND_DOCUMENT_ENTRY_SIZE);
 
-    for (auto i = std::size_t(0); i < entries_per_sector; ++i)
+    entries_.reserve(entries_.size() + entries_per_sector);
+    for (std::size_t i = 0; i < entries_per_sector; ++i)
     {
         entries_.emplace_back();
-        entries_.back().type = compound_document_entry::entry_type::Empty;
-        write_entry(entry_id + directory_id(i));
+        write_entry(entry_id + static_cast<directory_id>(i));
     }
 
     return entry_id;
@@ -886,20 +917,20 @@ directory_id compound_document::insert_entry(
     const std::string &name,
     compound_document_entry::entry_type type)
 {
-    auto entry_id = next_empty_entry();
-    auto &entry = entries_.at(static_cast<std::size_t>(entry_id));
+    directory_id entry_id = next_empty_entry();
+    compound_document_entry &entry = entries_.at(entry_id);
 
-    auto parent_id = directory_id(0);
-    auto split = split_path(name);
-    auto filename = back_safe(split);
+    directory_id parent_id = 0;
+    std::vector<std::string> split = split_path(name);
+    std::string filename = last_elem(split);
     split.pop_back();
 
     if (split.size() > 1)
     {
-        auto joined_path = join_path(split);
+        std::string joined_path = join_path(split);
         parent_id = find_entry(joined_path, compound_document_entry::entry_type::UserStorage);
 
-        if (parent_id < 0)
+        if (is_invalid_sector(parent_id))
         {
             throw xlnt::key_not_found("parent compound document entry of type UserStorage not found at path \"" + joined_path + "\", "
                 "necessary to insert entry \"" + name + "\" of type " + std::to_string(static_cast<int>(type)));
@@ -917,7 +948,7 @@ directory_id compound_document::insert_entry(
     return entry_id;
 }
 
-std::size_t compound_document::sector_data_start()
+std::uint64_t compound_document::sector_data_start()
 {
     return sizeof(compound_document_header);
 }
@@ -925,7 +956,7 @@ std::size_t compound_document::sector_data_start()
 bool compound_document::contains_entry(const std::string &path,
     compound_document_entry::entry_type type)
 {
-    return find_entry(path, type) >= 0;
+    return !is_invalid_sector(find_entry(path, type));
 }
 
 directory_id compound_document::find_entry(const std::string &name,
@@ -934,9 +965,9 @@ directory_id compound_document::find_entry(const std::string &name,
     if (type == compound_document_entry::entry_type::RootStorage
         && (name == "/" || name == "/Root Entry")) return 0;
 
-    auto entry_id = directory_id(0);
+    directory_id entry_id = 0;
 
-    for (auto &entry : entries_)
+    for (const compound_document_entry &entry : entries_)
     {
         if (entry.type == type && tree_path(entry_id) == name)
         {
@@ -946,14 +977,14 @@ directory_id compound_document::find_entry(const std::string &name,
         ++entry_id;
     }
 
-    return End;
+    return NOSTREAM;
 }
 
 void compound_document::print_directory()
 {
-    auto entry_id = directory_id(0);
+    directory_id entry_id = 0;
 
-    for (auto &entry : entries_)
+    for (const compound_document_entry &entry : entries_)
     {
         if (entry.type == compound_document_entry::entry_type::UserStream)
         {
@@ -966,46 +997,48 @@ void compound_document::print_directory()
 
 void compound_document::write_directory()
 {
-    for (auto entry_id = std::size_t(0); entry_id < entries_.size(); ++entry_id)
+    for (std::size_t entry_id = 0; entry_id < entries_.size(); ++entry_id)
     {
-        write_entry(directory_id(entry_id));
+        write_entry(static_cast<directory_id>(entry_id));
     }
 }
 
 void compound_document::read_directory()
 {
-    const auto entries_per_sector = sector_size() / sizeof(compound_document_entry);
-    const auto num_entries = follow_chain(header_.directory_start, sat_).size() * entries_per_sector;
+    const std::uint64_t entries_per_sector = sector_size() / COMPOUND_DOCUMENT_ENTRY_SIZE;
+    const std::size_t num_entries = static_cast<std::size_t>(
+        follow_chain(header_.directory_start, sat_).size() * entries_per_sector);
 
-    for (auto entry_id = std::size_t(0); entry_id < num_entries; ++entry_id)
+    entries_.reserve(entries_.size() + num_entries);
+    for (std::size_t entry_id = 0; entry_id < num_entries; ++entry_id)
     {
         entries_.emplace_back();
-        read_entry(directory_id(entry_id));
+        read_entry(static_cast<directory_id>(entry_id));
     }
 
-    auto stack = std::vector<directory_id>();
-    auto storage_siblings = std::vector<directory_id>();
-    auto stream_siblings = std::vector<directory_id>();
+    std::vector<directory_id> stack;
+    std::vector<directory_id> storage_siblings;
+    std::vector<directory_id> stream_siblings;
 
-    auto directory_stack = std::vector<directory_id>();
-    directory_stack.push_back(directory_id(0));
+    std::vector<directory_id> directory_stack;
+    directory_stack.push_back(0u);
 
     while (!directory_stack.empty())
     {
-        auto current_storage_id = directory_stack.back();
+        directory_id current_storage_id = directory_stack.back();
         directory_stack.pop_back();
 
-        if (tree_child(current_storage_id) < 0) continue;
+        if (is_invalid_sector(tree_child(current_storage_id))) continue;
 
-        auto storage_stack = std::vector<directory_id>();
-        auto storage_root_id = tree_child(current_storage_id);
-        parent_[storage_root_id] = End;
+        std::vector<directory_id> storage_stack;
+        directory_id storage_root_id = tree_child(current_storage_id);
+        parent_[storage_root_id] = NOSTREAM;
         storage_stack.push_back(storage_root_id);
 
         while (!storage_stack.empty())
         {
-            auto current_entry_id = storage_stack.back();
-            auto current_entry = entries_.at(static_cast<std::size_t>(current_entry_id));
+            directory_id current_entry_id = storage_stack.back();
+            const compound_document_entry &current_entry = entries_.at(current_entry_id);
             storage_stack.pop_back();
 
             parent_storage_[current_entry_id] = current_storage_id;
@@ -1015,13 +1048,13 @@ void compound_document::read_directory()
                 directory_stack.push_back(current_entry_id);
             }
 
-            if (tree_left(current_entry_id) >= 0)
+            if (!is_invalid_sector(tree_left(current_entry_id)))
             {
                 storage_stack.push_back(tree_left(current_entry_id));
                 tree_parent(tree_left(current_entry_id)) = current_entry_id;
             }
 
-            if (tree_right(current_entry_id) >= 0)
+            if (!is_invalid_sector(tree_right(current_entry_id)))
             {
                 storage_stack.push_back(tree_right(current_entry_id));
                 tree_parent(tree_right(current_entry_id)) = current_entry_id;
@@ -1036,10 +1069,10 @@ void compound_document::tree_insert(directory_id new_id, directory_id storage_id
 
     parent_storage_[new_id] = storage_id;
 
-    tree_left(new_id) = End;
-    tree_right(new_id) = End;
+    tree_left(new_id) = NOSTREAM;
+    tree_right(new_id) = NOSTREAM;
 
-    if (tree_root(new_id) == End)
+    if (is_invalid_entry(tree_root(new_id)))
     {
         if (new_id != 0)
         {
@@ -1047,17 +1080,17 @@ void compound_document::tree_insert(directory_id new_id, directory_id storage_id
         }
 
         tree_color(new_id) = entry_color::Black;
-        tree_parent(new_id) = End;
+        tree_parent(new_id) = NOSTREAM;
 
         return;
     }
 
     // normal tree insert
     // (will probably unbalance the tree, fix after)
-    auto x = tree_root(new_id);
-    auto y = End;
+    directory_id x = tree_root(new_id);
+    directory_id y = NOSTREAM;
 
-    while (x >= 0)
+    while (!is_invalid_entry(x))
     {
         y = x;
 
@@ -1087,26 +1120,26 @@ void compound_document::tree_insert(directory_id new_id, directory_id storage_id
 
 std::string compound_document::tree_path(directory_id id)
 {
-    auto storage_id = parent_storage_[id];
-    auto result = std::vector<std::string>();
+    directory_id storage_id = parent_storage_.at(id);
+    std::vector<std::string> result;
 
     while (storage_id > 0)
     {
-        storage_id = parent_storage_[storage_id];
-        result.emplace_back(entries_.at(static_cast<std::size_t>(storage_id)).name());
+        storage_id = parent_storage_.at(storage_id);
+        result.emplace_back(entries_.at(storage_id).name());
     }
 
-    return "/" + join_path(result) + entries_.at(static_cast<std::size_t>(id)).name();
+    return "/" + join_path(result) + entries_.at(id).name();
 }
 
 void compound_document::tree_rotate_left(directory_id x)
 {
-    auto y = tree_right(x);
+    directory_id y = tree_right(x);
 
     // turn y's left subtree into x's right subtree
     tree_right(x) = tree_left(y);
 
-    if (tree_left(y) != End)
+    if (!is_invalid_entry(tree_left(y)))
     {
         tree_parent(tree_left(y)) = x;
     }
@@ -1114,7 +1147,7 @@ void compound_document::tree_rotate_left(directory_id x)
     // link x's parent to y
     tree_parent(y) = tree_parent(x);
 
-    if (tree_parent(x) == End)
+    if (is_invalid_entry(tree_parent(x)))
     {
         tree_root(x) = y;
     }
@@ -1134,12 +1167,12 @@ void compound_document::tree_rotate_left(directory_id x)
 
 void compound_document::tree_rotate_right(directory_id y)
 {
-    auto x = tree_left(y);
+    directory_id x = tree_left(y);
 
     // turn x's right subtree into y's left subtree
     tree_left(y) = tree_right(x);
 
-    if (tree_right(x) != End)
+    if (!is_invalid_entry(tree_right(x)))
     {
         tree_parent(tree_right(x)) = y;
     }
@@ -1147,7 +1180,7 @@ void compound_document::tree_rotate_right(directory_id y)
     // link y's parent to x
     tree_parent(x) = tree_parent(y);
 
-    if (tree_parent(y) == End)
+    if (is_invalid_entry(tree_parent(y)))
     {
         tree_root(y) = x;
     }
@@ -1175,9 +1208,9 @@ void compound_document::tree_insert_fixup(directory_id x)
     {
         if (tree_parent(x) == tree_left(tree_parent(tree_parent(x))))
         {
-            auto y = tree_right(tree_parent(tree_parent(x)));
+            directory_id y = tree_right(tree_parent(tree_parent(x)));
 
-            if (y >= 0 && tree_color(y) == entry_color::Red)
+            if (!is_invalid_sector(y) && tree_color(y) == entry_color::Red)
             {
                 // case 1
                 tree_color(tree_parent(x)) = entry_color::Black;
@@ -1202,9 +1235,9 @@ void compound_document::tree_insert_fixup(directory_id x)
         }
         else // same as above with left and right switched
         {
-            auto y = tree_left(tree_parent(tree_parent(x)));
+            directory_id y = tree_left(tree_parent(tree_parent(x)));
 
-            if (y >= 0 && tree_color(y) == entry_color::Red)
+            if (!is_invalid_sector(y) && tree_color(y) == entry_color::Red)
             {
                 //case 1
                 tree_color(tree_parent(x)) = entry_color::Black;
@@ -1234,37 +1267,38 @@ void compound_document::tree_insert_fixup(directory_id x)
 
 directory_id &compound_document::tree_left(directory_id id)
 {
-    return entries_.at(static_cast<std::size_t>(id)).prev;
+    return entries_.at(id).prev;
 }
 
 directory_id &compound_document::tree_right(directory_id id)
 {
-    return entries_.at(static_cast<std::size_t>(id)).next;
+    return entries_.at(id).next;
 }
 
 directory_id &compound_document::tree_parent(directory_id id)
 {
+    // Note: the parent will be created, if it does not yet exist. This is fine.
     return parent_[id];
 }
 
 directory_id &compound_document::tree_root(directory_id id)
 {
-    return tree_child(parent_storage_[id]);
+    return tree_child(parent_storage_.at(id));
 }
 
 directory_id &compound_document::tree_child(directory_id id)
 {
-    return entries_.at(static_cast<std::size_t>(id)).child;
+    return entries_.at(id).child;
 }
 
 std::string compound_document::tree_key(directory_id id)
 {
-    return entries_.at(static_cast<std::size_t>(id)).name();
+    return entries_.at(id).name();
 }
 
 compound_document_entry::entry_color &compound_document::tree_color(directory_id id)
 {
-    return entries_.at(static_cast<std::size_t>(id)).color;
+    return entries_.at(id).color;
 }
 
 void compound_document::read_header()
@@ -1283,7 +1317,7 @@ void compound_document::read_header()
     if (std::any_of(header_.header_clsid.begin(), header_.header_clsid.end(), [](std::uint8_t i) { return i != 0; }))
     {
         std::string exception_str = "invalid header CLSID, expected only zeros but got: ";
-        for (auto val : header_.header_clsid)
+        for (std::uint8_t val : header_.header_clsid)
         {
             exception_str += fmt::format("{:02x} ", val);
         }
@@ -1327,7 +1361,7 @@ void compound_document::read_header()
     if (std::any_of(header_.reserved.begin(), header_.reserved.end(), [](std::uint8_t i) { return i != 0; }))
     {
         std::string exception_str = "invalid reserved field, expected only zeros but got: ";
-        for (auto val : header_.reserved)
+        for (std::uint8_t val : header_.reserved)
         {
             exception_str += fmt::format("{:02x} ", val);
         }
@@ -1365,7 +1399,7 @@ void compound_document::read_header()
         if (std::any_of(remaining.begin(), remaining.end(), [](std::uint8_t i) { return i != 0; }))
         {
             std::string exception_str = "invalid remaining bytes in header (major version 4), expected only zeros but got: ";
-            for (auto val : remaining)
+            for (std::uint8_t val : remaining)
             {
                 exception_str += fmt::format("{:02x} ", val);
             }
@@ -1378,12 +1412,12 @@ void compound_document::read_msat()
 {
     msat_.clear();
 
-    auto msat_sector = header_.extra_msat_start;
-    auto msat_writer = binary_writer<sector_id>(msat_);
+    sector_id msat_sector = header_.extra_msat_start;
+    binary_writer<sector_id> msat_writer(msat_);
 
-    for (auto i = std::uint32_t(0); i < header_.num_msat_sectors; ++i)
+    for (std::uint32_t i = 0u; i < header_.num_msat_sectors; ++i)
     {
-        if (i < std::uint32_t(109))
+        if (i < 109u)
         {
             msat_writer.write(header_.msat.at(i));
         }
@@ -1391,7 +1425,7 @@ void compound_document::read_msat()
         {
             read_sector(msat_sector, msat_writer);
 
-            msat_sector = back_safe(msat_);
+            msat_sector = last_elem(msat_);
             msat_.pop_back();
         }
     }
@@ -1400,9 +1434,9 @@ void compound_document::read_msat()
 void compound_document::read_sat()
 {
     sat_.clear();
-    auto sat_writer = binary_writer<sector_id>(sat_);
+    binary_writer<sector_id> sat_writer(sat_);
 
-    for (auto msat_sector : msat_)
+    for (sector_id msat_sector : msat_)
     {
         read_sector(msat_sector, sat_writer);
     }
@@ -1411,46 +1445,167 @@ void compound_document::read_sat()
 void compound_document::read_ssat()
 {
     ssat_.clear();
-    auto ssat_writer = binary_writer<sector_id>(ssat_);
+    binary_writer<sector_id> ssat_writer(ssat_);
 
-    for (auto ssat_sector : follow_chain(header_.ssat_start, sat_))
+    for (sector_id ssat_sector : follow_chain(header_.ssat_start, sat_))
     {
         read_sector(ssat_sector, ssat_writer);
     }
 }
 
-std::string format_entry_info(directory_id entry_id, sector_id sector_id)
+std::string compound_document_entry::format_info(
+    directory_id entry_id,
+    sector_id sector_id,
+    /// IMPORTANT: only show the name after the name and its length have been validated!
+    bool show_entry_name) const
 {
     // The formatted IDs should be as short as possible to keep the exception message readable - so we do not add leading zeros.
-    return "(entry " + fmt::format("0x{:X}", entry_id) + " in sector " + fmt::format("0x{:X}", sector_id) + ")";
+    std::string message = "(entry " + fmt::format("0x{:X}", entry_id);
+    if (show_entry_name)
+    {
+        message += " with name \"";
+        // Only add the name if the conversion does not throw an exception itself!
+        try
+        {
+            message += name();
+        }
+        catch (const std::exception &ex)
+        {
+            message += "INVALID (";
+            message += ex.what();
+            message.push_back(')');
+        }
+        message.push_back('"');
+    }
+    message += " of type " + std::to_string(static_cast<int>(type)) +
+        " in sector " + fmt::format("0x{:X}", sector_id) + ")";
+    return message;
 }
 
-void compound_document::read_entry(directory_id id)
+void check_empty_entry(
+    const compound_document_entry &entry,
+    directory_id id,
+    sector_id directory_sector)
 {
-    const auto directory_chain = follow_chain(header_.directory_start, sat_);
-    const auto entries_per_sector = sector_size() / sizeof(compound_document_entry);
-    const auto directory_sector = directory_chain.at(static_cast<std::size_t>(id) / entries_per_sector);
-    const auto offset = sector_size() * static_cast<std::size_t>(directory_sector)
-        + ((static_cast<std::size_t>(id) % entries_per_sector) * sizeof(compound_document_entry));
+    if (entry.type != compound_document_entry::entry_type::Empty)
+    {
+        throw xlnt::invalid_parameter("invalid entry type " +
+            entry.format_info(id, directory_sector, false) +
+            ", expected Empty but got " + std::to_string(static_cast<int>(entry.type)));
+    }
 
-    in_->seekg(static_cast<std::ptrdiff_t>(sector_data_start() + offset), std::ios::beg);
-    compound_document_entry &current_entry = entries_.at(static_cast<std::size_t>(id));
-    in_->read(reinterpret_cast<char *>(&current_entry), sizeof(compound_document_entry));
+    // Free (unused) directory entries are marked with Object Type 0x0 (unknown or unallocated). The
+    // entire directory entry must consist of all zeroes except for the child, right sibling, and left sibling
+    // pointers, which must be initialized to NOSTREAM (0xFFFFFFFF).
+
+    // NOTE: Some implementations seem to not initialize this buffer at all, so we cannot check it for correctness.
+    /*if (std::any_of(entry.name_array.begin(), entry.name_array.end(), [](char16_t i) { return i != 0; }))
+    {
+        std::string exception_str = "invalid entry name " +
+            entry.format_info(id, directory_sector, false) +
+            ", expected all zeros but got: ";
+        for (char16_t val : entry.name_array)
+        {
+            exception_str += fmt::format("{:04x} ", static_cast<std::uint16_t>(val));
+        }
+        throw xlnt::invalid_file(exception_str);
+    }*/
+
+    if (entry.name_length != 0)
+    {
+        throw xlnt::invalid_file("invalid entry name length " + entry.format_info(id, directory_sector, false) +
+            ", expected 0 but got " + std::to_string(entry.name_length));
+    }
+
+    if (static_cast<std::uint8_t>(entry.color) != 0)
+    {
+        throw xlnt::invalid_file("invalid entry color " + entry.format_info(id, directory_sector, false) +
+            ", expected 0 but got " + std::to_string(static_cast<int>(entry.color)));
+    }
+
+    if (entry.prev != NOSTREAM || entry.next != NOSTREAM || entry.child != NOSTREAM)
+    {
+        throw xlnt::invalid_file("empty entry contains invalid child or sibling " +
+            entry.format_info(id, directory_sector, false) +
+            "; prev = " + fmt::format("0x{:08X}", (entry.prev)) +
+            "; next = " + fmt::format("0x{:08X}", (entry.next)) +
+            "; child = " + fmt::format("0x{:08X}", (entry.child)));
+    }
+
+    if (std::any_of(entry.clsid.begin(), entry.clsid.end(), [](std::uint8_t i) { return i != 0; }))
+    {
+        std::string exception_str = "invalid entry CLSID " + entry.format_info(id, directory_sector, false) +
+            ", expected all zeros but got: ";
+        for (std::uint8_t val : entry.clsid)
+        {
+            exception_str += fmt::format("{:02x} ", val);
+        }
+        throw xlnt::invalid_file(exception_str);
+    }
+
+    if (entry.state_bits != 0)
+    {
+        throw xlnt::invalid_file("invalid entry state bits " + entry.format_info(id, directory_sector, false) +
+            ", expected 0 but got " + std::to_string(entry.state_bits));
+    }
+
+    // NOTE: some implementations seem to use the timestamp 116444736000000000, which is 1970-01-01 00:00:00 UTC.
+    if (entry.creation_time != 0 && entry.creation_time != 116444736000000000)
+    {
+        throw xlnt::invalid_file("invalid entry creation time " + entry.format_info(id, directory_sector, false) +
+            ", expected 0 or 116444736000000000, but got " + std::to_string(entry.creation_time));
+    }
+
+    // NOTE: some implementations seem to use the timestamp 116444736000000000, which is 1970-01-01 00:00:00 UTC.
+    if (entry.modified_time != 0 && entry.modified_time != 116444736000000000)
+    {
+        throw xlnt::invalid_file("invalid entry modification time " + entry.format_info(id, directory_sector, false) +
+            ", expected 0 or 116444736000000000, but got " + std::to_string(entry.modified_time));
+    }
+
+    // According to the specification (see above), it must be 0, but it seems that some immplementations
+    // initialize it with ENDOFCHAIN or FREESECT, which is honestly not wrong either. So let's accept that.
+    if (entry.start != 0 && entry.start != ENDOFCHAIN && entry.start != FREESECT)
+    {
+        throw xlnt::invalid_file("invalid entry start sector location " + entry.format_info(id, directory_sector, false) +
+            ", expected 0 or ENDOFCHAIN (0xFFFFFFFE) or FREESECT (0xFFFFFFFF), but got " + format_hex(entry.start));
+    }
+
+    if (entry.size != 0)
+    {
+        throw xlnt::invalid_file("invalid entry stream size " + entry.format_info(id, directory_sector, false) +
+            ", expected 0 but got " + std::to_string(entry.size));
+    }
+}
+
+void check_non_empty_entry(
+    const compound_document_entry &entry,
+    directory_id id,
+    sector_id directory_sector)
+{
+    if (entry.type == compound_document_entry::entry_type::Empty)
+    {
+        throw xlnt::invalid_parameter("invalid entry type " +
+            entry.format_info(id, directory_sector, false) +
+            ", expected different than Empty but got Empty");
+    }
 
     // First check the length, as we'll need this for the string itself.
     // Directory Entry Name Length (2 bytes): This field MUST match the length of the Directory Entry
     // Name Unicode string in bytes. The length MUST be a multiple of 2 and include the terminating null
     // character in the count. This length MUST NOT exceed 64, the maximum size of the Directory Entry
     // Name field.
-    if (current_entry.name_length < 2 || current_entry.name_length > 64)
+    if (entry.name_length < 2 || entry.name_length > 64)
     {
-        throw xlnt::invalid_file("invalid entry name length " + format_entry_info(id, directory_sector) +
-            ", expected >= 2 and <= 64, but got " + std::to_string(current_entry.name_length));
+        throw xlnt::invalid_file("invalid entry name length " +
+            entry.format_info(id, directory_sector, false) +
+            ", expected >= 2 and <= 64, but got " + std::to_string(entry.name_length));
     }
-    else if (current_entry.name_length % 2 != 0)
+    else if (entry.name_length % 2 != 0)
     {
-        throw xlnt::invalid_file("invalid entry name length " + format_entry_info(id, directory_sector) +
-            ", which must be a multiple of 2, but got " + std::to_string(current_entry.name_length));
+        throw xlnt::invalid_file("invalid entry name length " +
+            entry.format_info(id, directory_sector, false) +
+            ", which must be a multiple of 2, but got " + std::to_string(entry.name_length));
     }
 
     // Directory Entry Name (64 bytes): This field MUST contain a Unicode string for the storage or
@@ -1460,17 +1615,18 @@ void compound_document::read_entry(directory_id id)
     // storage, the directory entry name is compared by using a special case-insensitive uppercase
     // mapping, described in Red-Black Tree. The following characters are illegal and MUST NOT be part
     // of the name: '/', '\', ':', '!'.
-    std::uint16_t name_length_characters = (current_entry.name_length / 2) - 1; // does NOT include \0 at the end
-    if (current_entry.name_array.at(name_length_characters) != u'\0')
+    std::uint16_t name_length_characters = (entry.name_length / 2) - 1; // does NOT include \0 at the end
+    if (entry.name_array.at(name_length_characters) != u'\0')
     {
-        std::string exception_str = "invalid entry name " + format_entry_info(id, directory_sector) +
+        std::string exception_str = "invalid entry name " +
+            entry.format_info(id, directory_sector, false) +
             ", which must be terminated with \\0 but is terminated with " +
-            fmt::format("0x{:04X}", static_cast<uint16_t>(current_entry.name_array.at(name_length_characters))) +
+            fmt::format("0x{:04X}", static_cast<std::uint16_t>(entry.name_array.at(name_length_characters))) +
             "\nString has a length of " + std::to_string(name_length_characters) + " characters (" +
-            std::to_string(current_entry.name_length) + " bytes including \\0). Full buffer contents:\n";
-        for (auto val : current_entry.name_array)
+            std::to_string(entry.name_length) + " bytes including \\0). Full buffer contents:\n";
+        for (char16_t val : entry.name_array)
         {
-            exception_str += fmt::format("{:04x} ", static_cast<uint16_t>(val));
+            exception_str += fmt::format("{:04x} ", static_cast<std::uint16_t>(val));
         }
 
         throw xlnt::invalid_file(exception_str);
@@ -1478,31 +1634,32 @@ void compound_document::read_entry(directory_id id)
 
     for (std::uint16_t n = 0; n < name_length_characters; ++n)
     {
-        auto curr = current_entry.name_array.at(n);
+        char16_t curr = entry.name_array.at(n);
         if (curr == u'/' || curr == u'\\' || curr == u':' || curr == u'!')
         {
-            throw xlnt::invalid_file("invalid entry name " + format_entry_info(id, directory_sector) +
+            throw xlnt::invalid_file("invalid entry name " + entry.format_info(id, directory_sector, true) +
                 ", which contains invalid character " +
-                fmt::format("0x{:04X}", static_cast<uint16_t>(curr)) + " at position " + std::to_string(n));
+                fmt::format("0x{:04X}", static_cast<std::uint16_t>(curr)) + " at position " + std::to_string(n));
         }
     }
 
     // Object Type (1 byte): This field MUST be 0x00, 0x01, 0x02, or 0x05, depending on the actual type
     // of object. All other values are not valid.
-    if (static_cast<uint8_t>(current_entry.type) != 0x00 && // Empty
-        static_cast<uint8_t>(current_entry.type) != 0x01 && // UserStorage
-        static_cast<uint8_t>(current_entry.type) != 0x02 && // UserStream
-        static_cast<uint8_t>(current_entry.type) != 0x05) // RootStorage
+    // --------------------------------
+    // NOTE: the empty type is handled in check_empty_entry().
+    if (static_cast<std::uint8_t>(entry.type) != 0x01 && // UserStorage
+        static_cast<std::uint8_t>(entry.type) != 0x02 && // UserStream
+        static_cast<std::uint8_t>(entry.type) != 0x05) // RootStorage
     {
-        throw xlnt::invalid_file("invalid entry object type " + format_entry_info(id, directory_sector) +
-            ", expected 0, 1, 2 or 5 but got " + std::to_string(static_cast<int>(current_entry.type)));
+        throw xlnt::invalid_file("invalid entry object type " + entry.format_info(id, directory_sector, true) +
+            ", expected 0, 1, 2 or 5 but got " + std::to_string(static_cast<int>(entry.type)));
     }
 
     // Color Flag (1 byte): This field MUST be 0x00 (red) or 0x01 (black). All other values are not valid.
-    if (static_cast<uint8_t>(current_entry.color) != 0 && static_cast<uint8_t>(current_entry.color) != 1)
+    if (static_cast<std::uint8_t>(entry.color) != 0 && static_cast<std::uint8_t>(entry.color) != 1)
     {
-        throw xlnt::invalid_file("invalid entry color " + format_entry_info(id, directory_sector) +
-            ", expected 0 or 1, but got " + std::to_string(static_cast<int>(current_entry.color)));
+        throw xlnt::invalid_file("invalid entry color " + entry.format_info(id, directory_sector, true) +
+            ", expected 0 or 1, but got " + std::to_string(static_cast<int>(entry.color)));
     }
 
     // CLSID (16 bytes): This field contains an object class GUID, if this entry is for a storage object or
@@ -1512,12 +1669,12 @@ void compound_document::read_entry(directory_id id)
     // storage objects without explicitly setting an object class GUID, it MUST write all zeroes by default.
     // If this value is not all zeroes, the object class GUID can be used as a parameter to start
     // applications.
-    if (current_entry.type == compound_document_entry::entry_type::UserStream &&
-        std::any_of(current_entry.clsid.begin(), current_entry.clsid.end(), [](std::uint8_t i) { return i != 0; }))
+    if (entry.type == compound_document_entry::entry_type::UserStream &&
+        std::any_of(entry.clsid.begin(), entry.clsid.end(), [](std::uint8_t i) { return i != 0; }))
     {
-        std::string exception_str = "invalid entry CLSID " + format_entry_info(id, directory_sector) +
-            " for UserStream type, espected all zeros but got: ";
-        for (auto val : current_entry.clsid)
+        std::string exception_str = "invalid entry CLSID " + entry.format_info(id, directory_sector, true) +
+            " for UserStream type, expected all zeros but got: ";
+        for (std::uint8_t val : entry.clsid)
         {
             exception_str += fmt::format("{:02x} ", val);
         }
@@ -1529,37 +1686,80 @@ void compound_document::read_entry(directory_id id)
     // structure is used to represent this field in UTC. For a stream object, this field MUST be all zeroes.
     // For a root storage object, this field MUST be all zeroes, and the creation time is retrieved or set on
     // the compound file itself.
-    if ((current_entry.type == compound_document_entry::entry_type::UserStream ||
-        current_entry.type == compound_document_entry::entry_type::RootStorage) &&
-        current_entry.creation_time != 0)
+    // --------------------------------
+    // NOTE: unfortunately cannot be enforced, as some files:
+    // - have a root entry with timestamp 116444736000000000, which is 1970-01-01 00:00:00 UTC
+    // - have a stream with an actual timestamp
+    /*if ((entry.type == compound_document_entry::entry_type::UserStream ||
+        entry.type == compound_document_entry::entry_type::RootStorage) &&
+        entry.creation_time != 0)
     {
-        throw xlnt::invalid_file("invalid entry creation time " + format_entry_info(id, directory_sector) +
-            " for type " + std::to_string(static_cast<int>(current_entry.type)) +
-            ", expected 0 but got " + std::to_string(current_entry.creation_time));
-    }
+        throw xlnt::invalid_file("invalid entry creation time " + entry.format_info(id, directory_sector, true) +
+            " for type " + std::to_string(static_cast<int>(entry.type)) +
+            ", expected 0 but got " + std::to_string(entry.creation_time));
+    }*/
 
     // Modified Time (8 bytes): This field contains the modification time for a storage object, or all
     // zeroes to indicate that the modified time of the storage object was not recorded. The Windows
     // FILETIME structure is used to represent this field in UTC. For a stream object, this field MUST be
     // all zeroes. For a root storage object, this field MAY<2> be set to all zeroes, and the modified time
     // is retrieved or set on the compound file itself.
-    if (current_entry.type == compound_document_entry::entry_type::UserStream &&
-        current_entry.modified_time != 0)
+    // --------------------------------
+    // NOTE: unfortunately cannot be enforced, as some files have a stream with an actual timestamp.
+    /*if (entry.type == compound_document_entry::entry_type::UserStream &&
+        entry.modified_time != 0)
     {
-        throw xlnt::invalid_file("invalid entry modification time " + format_entry_info(id, directory_sector) +
-            " for type UserStream, expected 0 but got " + std::to_string(current_entry.modified_time));
-    }
+        throw xlnt::invalid_file("invalid entry modification time " + entry.format_info(id, directory_sector, true) +
+            " for type UserStream, expected 0 but got " + std::to_string(entry.modified_time));
+    }*/
 
     // Starting Sector Location (4 bytes): This field contains the first sector location if this is a stream
     // object. For a root storage object, this field MUST contain the first sector of the mini stream, if the
     // mini stream exists. For a storage object, this field MUST be set to all zeroes.
-    if (current_entry.type == compound_document_entry::entry_type::UserStorage &&
-        current_entry.start != 0)
+    // --------------------------------
+    // It seems that some immplementations initialize it with FREESECT,
+    // which is honestly not wrong either. So let's accept that.
+    if (entry.type == compound_document_entry::entry_type::UserStorage &&
+        !(entry.start == 0 || entry.start == FREESECT))
     {
-        throw xlnt::invalid_file("invalid entry start sector location " + format_entry_info(id, directory_sector) +
-            " for type UserStorage, expected 0 but got " +
-            std::to_string(current_entry.start));
+        throw xlnt::invalid_file("invalid entry start sector location " + entry.format_info(id, directory_sector, true) +
+            " for type UserStorage, expected 0 or FREESECT (0xFFFFFFFF), but got " + format_hex(entry.start));
     }
+
+    // Stream Size (8 bytes): This 64-bit integer field contains the size of the user-defined data if this is
+    // a stream object. For a root storage object, this field contains the size of the mini stream. For a
+    // storage object, this field MUST be set to all zeroes.
+    if (entry.type == compound_document_entry::entry_type::UserStorage &&
+        entry.size != 0)
+    {
+        throw xlnt::invalid_file("invalid entry stream size " + entry.format_info(id, directory_sector, true) +
+            " for type UserStorage, expected 0 but got " + std::to_string(entry.size));
+    }
+}
+
+void compound_document::read_entry(directory_id id)
+{
+    const sector_chain directory_chain = follow_chain(header_.directory_start, sat_);
+    const std::uint64_t entries_per_sector = sector_size() / COMPOUND_DOCUMENT_ENTRY_SIZE;
+    const sector_id directory_sector = directory_chain.at(static_cast<std::size_t>(id / entries_per_sector));
+    const std::uint64_t offset = sector_size() * directory_sector + ((id % entries_per_sector) * COMPOUND_DOCUMENT_ENTRY_SIZE);
+
+    in_->seekg(static_cast<std::streamoff>(sector_data_start() + offset), std::ios::beg);
+    compound_document_entry &entry = entries_.at(id);
+    // Read the fields manually due to struct padding (larger sizeof than 128 bytes).
+    in_->read(reinterpret_cast<char *>(entry.name_array.data()), sizeof(entry.name_array));
+    in_->read(reinterpret_cast<char *>(&entry.name_length), sizeof(entry.name_length));
+    in_->read(reinterpret_cast<char *>(&entry.type), sizeof(entry.type));
+    in_->read(reinterpret_cast<char *>(&entry.color), sizeof(entry.color));
+    in_->read(reinterpret_cast<char *>(&entry.prev), sizeof(entry.prev));
+    in_->read(reinterpret_cast<char *>(&entry.next), sizeof(entry.next));
+    in_->read(reinterpret_cast<char *>(&entry.child), sizeof(entry.child));
+    in_->read(reinterpret_cast<char *>(entry.clsid.data()), sizeof(entry.clsid));
+    in_->read(reinterpret_cast<char *>(&entry.state_bits), sizeof(entry.state_bits));
+    in_->read(reinterpret_cast<char *>(&entry.creation_time), sizeof(entry.creation_time));
+    in_->read(reinterpret_cast<char *>(&entry.modified_time), sizeof(entry.modified_time));
+    in_->read(reinterpret_cast<char *>(&entry.start), sizeof(entry.start));
+    in_->read(reinterpret_cast<char *>(&entry.size), sizeof(entry.size));
 
     // Stream Size (8 bytes): ... (see below for the rest)
     // - For a version 3 compound file 512-byte sector size, the value of this field MUST be less than
@@ -1573,21 +1773,19 @@ void compound_document::read_entry(directory_id id)
     //   that parsers ignore the most significant 32 bits of this field in version 3 compound files,
     //   treating it as if its value were zero, unless there is a specific reason to do otherwise (for
     //   example, a parser whose purpose is to verify the correctness of a compound file).
-    if (header_.major_version == 3 && current_entry.size > 0x80000000)
+    if (header_.major_version == 3 && entry.size > 0x80000000)
     {
-        // Note: we have checked above that the only allowed byte order is little-endian.
-        current_entry.size = current_entry.size & 0x0000FFFF;
+        // Note: the only allowed byte order is little-endian.
+        entry.size = entry.size & 0x0000FFFF;
     }
 
-    // Stream Size (8 bytes): This 64-bit integer field contains the size of the user-defined data if this is
-    // a stream object. For a root storage object, this field contains the size of the mini stream. For a
-    // storage object, this field MUST be set to all zeroes.
-    if (current_entry.type == compound_document_entry::entry_type::UserStorage &&
-        current_entry.size != 0)
+    if (entry.type == compound_document_entry::entry_type::Empty)
     {
-        throw xlnt::invalid_file("invalid entry stream size " + format_entry_info(id, directory_sector) +
-            " for type UserStorage, expected 0 but got " +
-            std::to_string(current_entry.size));
+        check_empty_entry(entry, id, directory_sector);
+    }
+    else
+    {
+        check_non_empty_entry(entry, id, directory_sector);
     }
 }
 
@@ -1599,22 +1797,22 @@ void compound_document::write_header()
 
 void compound_document::write_msat()
 {
-    auto msat_sector = header_.extra_msat_start;
+    sector_id msat_sector = header_.extra_msat_start;
 
-    for (auto i = std::uint32_t(0); i < header_.num_msat_sectors; ++i)
+    for (std::uint32_t i = 0u; i < header_.num_msat_sectors; ++i)
     {
-        if (i < std::uint32_t(109))
+        if (i < 109u)
         {
             header_.msat.at(i) = msat_.at(i);
         }
         else
         {
-            auto sector = std::vector<sector_id>();
-            auto sector_writer = binary_writer<sector_id>(sector);
+            std::vector<sector_id> sector;
+            binary_writer<sector_id> sector_writer(sector);
 
             read_sector(msat_sector, sector_writer);
 
-            msat_sector = back_safe(sector);
+            msat_sector = last_elem(sector);
             sector.pop_back();
 
             std::copy(sector.begin(), sector.end(), std::back_inserter(msat_));
@@ -1624,9 +1822,9 @@ void compound_document::write_msat()
 
 void compound_document::write_sat()
 {
-    auto sector_reader = binary_reader<sector_id>(sat_);
+    binary_reader<sector_id> sector_reader(sat_);
 
-    for (auto sat_sector : msat_)
+    for (sector_id sat_sector : msat_)
     {
         write_sector(sector_reader, sat_sector);
     }
@@ -1634,9 +1832,9 @@ void compound_document::write_sat()
 
 void compound_document::write_ssat()
 {
-    auto sector_reader = binary_reader<sector_id>(ssat_);
+    binary_reader<sector_id> sector_reader(ssat_);
 
-    for (auto ssat_sector : follow_chain(header_.ssat_start, sat_))
+    for (sector_id ssat_sector : follow_chain(header_.ssat_start, sat_))
     {
         write_sector(sector_reader, ssat_sector);
     }
@@ -1644,14 +1842,28 @@ void compound_document::write_ssat()
 
 void compound_document::write_entry(directory_id id)
 {
-    const auto directory_chain = follow_chain(header_.directory_start, sat_);
-    const auto entries_per_sector = sector_size() / sizeof(compound_document_entry);
-    const auto directory_sector = directory_chain.at(static_cast<std::size_t>(id) / entries_per_sector);
-    const auto offset = sector_data_start() + sector_size() * static_cast<std::size_t>(directory_sector)
-        + ((static_cast<std::size_t>(id) % entries_per_sector) * sizeof(compound_document_entry));
+    const sector_chain directory_chain = follow_chain(header_.directory_start, sat_);
+    const std::uint64_t entries_per_sector = sector_size() / COMPOUND_DOCUMENT_ENTRY_SIZE;
+    const sector_id directory_sector = directory_chain.at(static_cast<std::size_t>(id / entries_per_sector));
+    const std::uint64_t offset = sector_data_start() + sector_size() * directory_sector
+        + ((id % entries_per_sector) * COMPOUND_DOCUMENT_ENTRY_SIZE);
 
-    out_->seekp(static_cast<std::ptrdiff_t>(offset), std::ios::beg);
-    out_->write(reinterpret_cast<char *>(&entries_.at(static_cast<std::size_t>(id))), sizeof(compound_document_entry));
+    out_->seekp(static_cast<std::streamoff>(offset), std::ios::beg);
+    const compound_document_entry &entry = entries_.at(id);
+    // Write the fields manually due to struct padding (larger sizeof than 128 bytes).
+    out_->write(reinterpret_cast<const char *>(entry.name_array.data()), sizeof(entry.name_array));
+    out_->write(reinterpret_cast<const char *>(&entry.name_length), sizeof(entry.name_length));
+    out_->write(reinterpret_cast<const char *>(&entry.type), sizeof(entry.type));
+    out_->write(reinterpret_cast<const char *>(&entry.color), sizeof(entry.color));
+    out_->write(reinterpret_cast<const char *>(&entry.prev), sizeof(entry.prev));
+    out_->write(reinterpret_cast<const char *>(&entry.next), sizeof(entry.next));
+    out_->write(reinterpret_cast<const char *>(&entry.child), sizeof(entry.child));
+    out_->write(reinterpret_cast<const char *>(entry.clsid.data()), sizeof(entry.clsid));
+    out_->write(reinterpret_cast<const char *>(&entry.state_bits), sizeof(entry.state_bits));
+    out_->write(reinterpret_cast<const char *>(&entry.creation_time), sizeof(entry.creation_time));
+    out_->write(reinterpret_cast<const char *>(&entry.modified_time), sizeof(entry.modified_time));
+    out_->write(reinterpret_cast<const char *>(&entry.start), sizeof(entry.start));
+    out_->write(reinterpret_cast<const char *>(&entry.size), sizeof(entry.size));
 }
 
 } // namespace detail
