@@ -930,7 +930,7 @@ directory_id compound_document::insert_entry(
         std::string joined_path = join_path(split);
         parent_id = find_entry(joined_path, compound_document_entry::entry_type::UserStorage);
 
-        if (is_invalid_sector(parent_id))
+        if (is_invalid_entry(parent_id))
         {
             throw xlnt::key_not_found("parent compound document entry of type UserStorage not found at path \"" + joined_path + "\", "
                 "necessary to insert entry \"" + name + "\" of type " + std::to_string(static_cast<int>(type)));
@@ -956,7 +956,7 @@ std::uint64_t compound_document::sector_data_start()
 bool compound_document::contains_entry(const std::string &path,
     compound_document_entry::entry_type type)
 {
-    return !is_invalid_sector(find_entry(path, type));
+    return !is_invalid_entry(find_entry(path, type));
 }
 
 directory_id compound_document::find_entry(const std::string &name,
@@ -1028,7 +1028,7 @@ void compound_document::read_directory()
         directory_id current_storage_id = directory_stack.back();
         directory_stack.pop_back();
 
-        if (is_invalid_sector(tree_child(current_storage_id))) continue;
+        if (is_invalid_entry(tree_child(current_storage_id))) continue;
 
         std::vector<directory_id> storage_stack;
         directory_id storage_root_id = tree_child(current_storage_id);
@@ -1048,13 +1048,13 @@ void compound_document::read_directory()
                 directory_stack.push_back(current_entry_id);
             }
 
-            if (!is_invalid_sector(tree_left(current_entry_id)))
+            if (!is_invalid_entry(tree_left(current_entry_id)))
             {
                 storage_stack.push_back(tree_left(current_entry_id));
                 tree_parent(tree_left(current_entry_id)) = current_entry_id;
             }
 
-            if (!is_invalid_sector(tree_right(current_entry_id)))
+            if (!is_invalid_entry(tree_right(current_entry_id)))
             {
                 storage_stack.push_back(tree_right(current_entry_id));
                 tree_parent(tree_right(current_entry_id)) = current_entry_id;
@@ -1210,7 +1210,7 @@ void compound_document::tree_insert_fixup(directory_id x)
         {
             directory_id y = tree_right(tree_parent(tree_parent(x)));
 
-            if (!is_invalid_sector(y) && tree_color(y) == entry_color::Red)
+            if (!is_invalid_entry(y) && tree_color(y) == entry_color::Red)
             {
                 // case 1
                 tree_color(tree_parent(x)) = entry_color::Black;
@@ -1237,7 +1237,7 @@ void compound_document::tree_insert_fixup(directory_id x)
         {
             directory_id y = tree_left(tree_parent(tree_parent(x)));
 
-            if (!is_invalid_sector(y) && tree_color(y) == entry_color::Red)
+            if (!is_invalid_entry(y) && tree_color(y) == entry_color::Red)
             {
                 //case 1
                 tree_color(tree_parent(x)) = entry_color::Black;
