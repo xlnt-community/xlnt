@@ -40,6 +40,8 @@
 namespace xlnt {
 namespace detail {
 
+struct compound_document_entry;
+
 using directory_id = std::uint32_t;
 using sector_id = std::uint32_t;
 using sector_chain = std::vector<sector_id>;
@@ -62,6 +64,10 @@ bool is_chain_end(sector_id sector);
 /// Expects either a valid sector ID (<= MAXREGSECT), or ENDOFCHAIN, or FREESECT - otherwise, an invalid_parameter exception will be thrown.
 bool is_invalid_sector(sector_id sector);
 
+/// Returns true if the sector ID equals ENDOFCHAIN or FREESECT, or if the sector ID equals 0 for Empty entries, false otherwise.
+/// Expects either a valid sector ID (<= MAXREGSECT), or ENDOFCHAIN, or FREESECT - otherwise, an invalid_parameter exception will be thrown.
+bool has_invalid_start_sector(const compound_document_entry &entry);
+
 /// Returns true if the directory ID of the entry equals NOSTREAM, false otherwise.
 /// Expects either a valid directory ID (<= MAXREGSID) or NOSTREAM - otherwise, an invalid_parameter exception will be thrown.
 bool is_invalid_entry(directory_id entry);
@@ -80,8 +86,8 @@ struct compound_document_header
 {
     enum class byte_order_type : uint16_t
     {
-        big_endian = 0xFFFE,
-        little_endian = 0xFEFF
+        little_endian = 0xFFFE,
+        big_endian = 0xFEFF
     };
 
     std::uint64_t header_signature = 0xE11AB1A1E011CFD0;
@@ -169,7 +175,7 @@ struct compound_document_entry
     // Free (unused) directory entries are marked with Object Type 0x0 (unknown or unallocated). The
     // entire directory entry must consist of all zeroes except for the child, right sibling, and left sibling
     // pointers, which must be initialized to NOSTREAM (0xFFFFFFFF).
-    std::array<char16_t, 32> name_array = { { 0 } };
+    std::array<char16_t, 32> name_array = { { u'\0' } };
     std::uint16_t name_length = 0;
     entry_type type = entry_type::Empty;
     entry_color color = entry_color::Red;
@@ -217,6 +223,7 @@ private:
     void read_short_sector_chain(sector_id start, binary_writer<T> &writer, sector_id offset, std::size_t count);
 
     sector_chain follow_chain(sector_id start, const sector_chain &table);
+    sector_chain follow_chain(const compound_document_entry &entry, const sector_chain &table);
 
     template<typename T>
     void write_sector(binary_reader<T> &reader, sector_id id);

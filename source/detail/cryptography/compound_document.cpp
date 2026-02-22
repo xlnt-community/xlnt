@@ -131,6 +131,19 @@ bool is_invalid_sector(sector_id sector)
     return sector == ENDOFCHAIN || sector == FREESECT;
 }
 
+bool has_invalid_start_sector(const compound_document_entry &entry)
+{
+    // Empty entries must use start sector 0, which is however invalid in this case.
+    if (entry.type == compound_document_entry::entry_type::Empty && entry.start == 0)
+    {
+        return true;
+    }
+    else
+    {
+        return is_invalid_sector(entry.start);
+    }
+}
+
 bool is_invalid_entry(directory_id entry)
 {
     expect_valid_entry_or_no_stream(entry);
@@ -190,7 +203,7 @@ private:
         std::streamsize bytes_read = 0;
 
         const sector_chain &sec_chain = short_stream() ? document_.ssat_ : document_.sat_;
-        const sector_chain chain = document_.follow_chain(entry_.start, sec_chain);
+        const sector_chain chain = document_.follow_chain(entry_, sec_chain);
         const std::uint64_t sector_size = short_stream() ? document_.short_sector_size() : document_.sector_size();
         sector_id current_sector = chain.at(static_cast<std::size_t>(position_ / sector_size));
         std::uint64_t remaining = std::min(entry_.size - position_, static_cast<std::uint64_t>(count));
@@ -390,7 +403,7 @@ private:
             }
             else
             {
-                if (is_invalid_sector(entry_.start))
+                if (has_invalid_start_sector(entry_))
                 {
                     std::size_t num_sectors = static_cast<std::size_t>(
                         (position_ + written + document_.short_sector_size() - 1) / document_.short_sector_size());
@@ -475,7 +488,7 @@ private:
         current_sector_.resize(document_.sector_size(), 0);
         std::fill(current_sector_.begin(), current_sector_.end(), byte(0));
 
-        if (is_invalid_sector(entry_.start))
+        if (has_invalid_start_sector(entry_))
         {
             // TODO: deallocate short sectors here
             if (document_.header_.num_short_sectors == 0)
@@ -641,7 +654,7 @@ void compound_document::write_sector(binary_reader<T> &reader, sector_id id)
 template <typename T>
 void compound_document::write_short_sector(binary_reader<T> &reader, sector_id id)
 {
-    sector_chain chain = follow_chain(entries_.at(0).start, sat_);
+    sector_chain chain = follow_chain(entries_.at(0), sat_);
     sector_id sector_id = chain.at(static_cast<std::size_t>(id / (sector_size() / short_sector_size())));
     std::uint64_t sector_offset = id % (sector_size() / short_sector_size()) * short_sector_size();
     out_->seekp(static_cast<std::streampos>(sector_data_start() + sector_size() * sector_id + sector_offset));
@@ -681,7 +694,7 @@ void compound_document::read_sector_chain(sector_id start, binary_writer<T> &wri
 template <typename T>
 void compound_document::read_short_sector(sector_id id, binary_writer<T> &writer)
 {
-    const sector_chain container_chain = follow_chain(entries_.at(0).start, sat_);
+    const sector_chain container_chain = follow_chain(entries_.at(0), sat_);
     std::vector<byte> container;
     binary_writer<byte> container_writer(container);
 
@@ -791,6 +804,18 @@ sector_chain compound_document::follow_chain(sector_id start, const sector_chain
     return chain;
 }
 
+sector_chain compound_document::follow_chain(const compound_document_entry &entry, const sector_chain &table)
+{
+    if (has_invalid_start_sector(entry))
+    {
+        return {};
+    }
+    else
+    {
+        return follow_chain(entry.start, table);
+    }
+}
+
 sector_chain compound_document::allocate_short_sectors(std::size_t count)
 {
     if (count == 0) return {};
@@ -858,13 +883,13 @@ sector_id compound_document::allocate_short_sector()
 
     if (required_container_sectors > 0)
     {
-        if (is_invalid_sector(entries_.at(0).start))
+        if (has_invalid_start_sector(entries_.at(0)))
         {
             entries_.at(0).start = allocate_sector();
             write_entry(0);
         }
 
-        sector_chain container_chain = follow_chain(entries_.at(0).start, sat_);
+        sector_chain container_chain = follow_chain(entries_.at(0), sat_);
 
         if (required_container_sectors > container_chain.size())
         {
@@ -1333,7 +1358,7 @@ void compound_document::read_header()
 
     // Byte Order (2 bytes): This field MUST be set to 0xFFFE. This field is a byte order mark for all integer
     // fields, specifying little-endian byte order.
-    if (static_cast<std::uint16_t>(header_.byte_order) != 0xFFFE)
+    if (header_.byte_order != compound_document_header::byte_order_type::little_endian)
     {
         throw xlnt::invalid_file("invalid byte order, expected 0xFFFE (little-endian) but got " +
             fmt::format("0x{:04X}", static_cast<std::uint16_t>(header_.byte_order)));
@@ -1491,7 +1516,7 @@ void check_empty_entry(
     {
         throw xlnt::invalid_parameter("invalid entry type " +
             entry.format_info(id, directory_sector, false) +
-            ", expected Empty but got " + std::to_string(static_cast<int>(entry.type)));
+            ", expected 0 (Unallocated) but got " + std::to_string(static_cast<int>(entry.type)));
     }
 
     // Free (unused) directory entries are marked with Object Type 0x0 (unknown or unallocated). The
@@ -1517,10 +1542,10 @@ void check_empty_entry(
             ", expected 0 but got " + std::to_string(entry.name_length));
     }
 
-    if (static_cast<std::uint8_t>(entry.color) != 0)
+    if (entry.color != compound_document_entry::entry_color::Red)
     {
         throw xlnt::invalid_file("invalid entry color " + entry.format_info(id, directory_sector, false) +
-            ", expected 0 but got " + std::to_string(static_cast<int>(entry.color)));
+            ", expected 0 (Red) but got " + std::to_string(static_cast<int>(entry.color)));
     }
 
     if (entry.prev != NOSTREAM || entry.next != NOSTREAM || entry.child != NOSTREAM)
@@ -1647,19 +1672,19 @@ void check_non_empty_entry(
     // of object. All other values are not valid.
     // --------------------------------
     // NOTE: the empty type is handled in check_empty_entry().
-    if (static_cast<std::uint8_t>(entry.type) != 0x01 && // UserStorage
-        static_cast<std::uint8_t>(entry.type) != 0x02 && // UserStream
-        static_cast<std::uint8_t>(entry.type) != 0x05) // RootStorage
+    if (entry.type != compound_document_entry::entry_type::UserStorage &&
+        entry.type != compound_document_entry::entry_type::UserStream &&
+        entry.type != compound_document_entry::entry_type::RootStorage)
     {
         throw xlnt::invalid_file("invalid entry object type " + entry.format_info(id, directory_sector, true) +
-            ", expected 0, 1, 2 or 5 but got " + std::to_string(static_cast<int>(entry.type)));
+            ", expected 0 (Unallocated), 1 (Storage), 2 (Stream) or 5 (RootStorage) but got " + std::to_string(static_cast<int>(entry.type)));
     }
 
     // Color Flag (1 byte): This field MUST be 0x00 (red) or 0x01 (black). All other values are not valid.
-    if (static_cast<std::uint8_t>(entry.color) != 0 && static_cast<std::uint8_t>(entry.color) != 1)
+    if (entry.color != compound_document_entry::entry_color::Red && entry.color != compound_document_entry::entry_color::Black)
     {
         throw xlnt::invalid_file("invalid entry color " + entry.format_info(id, directory_sector, true) +
-            ", expected 0 or 1, but got " + std::to_string(static_cast<int>(entry.color)));
+            ", expected 0 (Red) or 1 (Black), but got " + std::to_string(static_cast<int>(entry.color)));
     }
 
     // CLSID (16 bytes): This field contains an object class GUID, if this entry is for a storage object or
