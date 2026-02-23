@@ -64,7 +64,7 @@ bool is_chain_end(sector_id sector);
 /// Expects either a valid sector ID (<= MAXREGSECT), or ENDOFCHAIN, or FREESECT - otherwise, an invalid_parameter exception will be thrown.
 bool is_invalid_sector(sector_id sector);
 
-/// Returns true if the sector ID equals ENDOFCHAIN or FREESECT, or if the sector ID equals 0 for Empty entries, false otherwise.
+/// Returns true if the sector ID equals ENDOFCHAIN or FREESECT, or if the sector ID equals 0 for Unallocated entries, false otherwise.
 /// Expects either a valid sector ID (<= MAXREGSECT), or ENDOFCHAIN, or FREESECT - otherwise, an invalid_parameter exception will be thrown.
 bool has_invalid_start_sector(const compound_document_entry &entry);
 
@@ -95,19 +95,19 @@ struct compound_document_header
     std::uint16_t minor_version = 0x003E;
     std::uint16_t major_version = 0x0003;
     byte_order_type byte_order = byte_order_type::little_endian;
-    std::uint16_t sector_size_power = 9;
-    std::uint16_t short_sector_size_power = 6;
+    std::uint16_t sector_shift = 9;
+    std::uint16_t mini_sector_shift = 6;
     std::array<std::uint8_t, 6> reserved = { { 0 } };
     std::uint32_t num_directory_sectors = 0; // not used for version 3
-    std::uint32_t num_msat_sectors = 0;
-    sector_id directory_start = ENDOFCHAIN;
+    std::uint32_t num_FAT_sectors = 0;
+    sector_id directory_start_sector = ENDOFCHAIN;
     std::uint32_t transaction_signature_number = 0;
-    std::uint32_t threshold = 4096;
-    sector_id ssat_start = ENDOFCHAIN;
-    std::uint32_t num_short_sectors = 0;
-    sector_id extra_msat_start = ENDOFCHAIN;
-    std::uint32_t num_extra_msat_sectors = 0;
-    std::array<sector_id, 109> msat = {{FREESECT}};
+    std::uint32_t mini_stream_cutoff_size = 4096;
+    sector_id mini_FAT_start_sector = ENDOFCHAIN;
+    std::uint32_t num_mini_FAT_sectors = 0;
+    sector_id DIFAT_start_sector = ENDOFCHAIN;
+    std::uint32_t num_DIFAT_sectors = 0;
+    std::array<sector_id, 109> DIFAT = {{FREESECT}};
 };
 
 constexpr std::size_t COMPOUND_DOCUMENT_ENTRY_SIZE = 128; // The size if it didn't contain padding.
@@ -135,21 +135,21 @@ struct compound_document_entry
                 "\", expected UTF-16 length <= 31 but got " + std::to_string(u16_name.length()));
         }
 
-        name_length = static_cast<std::uint16_t>(u16_name.length());
-        std::copy(u16_name.begin(), u16_name.begin() + name_length, name_array.begin());
-        name_array[name_length] = u'\0';
-        name_length = (name_length + 1) * 2;
+        directory_entry_name_length = static_cast<std::uint16_t>(u16_name.length());
+        std::copy(u16_name.begin(), u16_name.begin() + directory_entry_name_length, directory_entry_name.begin());
+        directory_entry_name[directory_entry_name_length] = u'\0';
+        directory_entry_name_length = (directory_entry_name_length + 1) * 2;
     }
 
     /// Can throw: utf8::invalid_utf16, utf8::invalid_code_point
     std::string name() const
     {
-        if (name_length < 2)
+        if (directory_entry_name_length < 2)
         {
             return {};
         }
-        return utf16_to_utf8(std::u16string(name_array.begin(),
-            name_array.begin() + (name_length / 2) - 1));
+        return utf16_to_utf8(std::u16string(directory_entry_name.begin(),
+            directory_entry_name.begin() + (directory_entry_name_length / 2) - 1));
     }
 
     /// Formats the entry infos for debugging purposes.
@@ -158,9 +158,9 @@ struct compound_document_entry
 
     enum class entry_type : std::uint8_t
     {
-        Empty = 0,
-        UserStorage = 1,
-        UserStream = 2,
+        Unallocated = 0,
+        Storage = 1,
+        Stream = 2,
         LockBytes = 3,
         Property = 4,
         RootStorage = 5
@@ -175,19 +175,19 @@ struct compound_document_entry
     // Free (unused) directory entries are marked with Object Type 0x0 (unknown or unallocated). The
     // entire directory entry must consist of all zeroes except for the child, right sibling, and left sibling
     // pointers, which must be initialized to NOSTREAM (0xFFFFFFFF).
-    std::array<char16_t, 32> name_array = { { u'\0' } };
-    std::uint16_t name_length = 0;
-    entry_type type = entry_type::Empty;
+    std::array<char16_t, 32> directory_entry_name = { { u'\0' } };
+    std::uint16_t directory_entry_name_length = 0;
+    entry_type type = entry_type::Unallocated;
     entry_color color = entry_color::Red;
-    directory_id prev = NOSTREAM;
-    directory_id next = NOSTREAM;
+    directory_id left_sibling = NOSTREAM;
+    directory_id right_sibling = NOSTREAM;
     directory_id child = NOSTREAM;
     std::array<std::uint8_t, 16> clsid = { { 0 } };
     std::uint32_t state_bits = 0;
     std::int64_t creation_time = 0;
     std::int64_t modified_time = 0;
-    sector_id start = 0; // must be 0 for an empty entry
-    std::uint64_t size = 0;
+    sector_id start_sector = 0; // must be 0 for an Unallocated entry
+    std::uint64_t stream_size = 0;
 };
 
 class compound_document_istreambuf;
@@ -216,11 +216,11 @@ private:
     template<typename T>
     void read_sector_chain(sector_id start, binary_writer<T> &writer, sector_id offset, std::size_t count);
     template<typename T>
-    void read_short_sector(sector_id id, binary_writer<T> &writer);
+    void read_mini_sector(sector_id id, binary_writer<T> &writer);
     template<typename T>
-    void read_short_sector_chain(sector_id start, binary_writer<T> &writer);
+    void read_mini_sector_chain(sector_id start, binary_writer<T> &writer);
     template<typename T>
-    void read_short_sector_chain(sector_id start, binary_writer<T> &writer, sector_id offset, std::size_t count);
+    void read_mini_sector_chain(sector_id start, binary_writer<T> &writer, sector_id offset, std::size_t count);
 
     sector_chain follow_chain(sector_id start, const sector_chain &table);
     sector_chain follow_chain(const compound_document_entry &entry, const sector_chain &table);
@@ -228,42 +228,42 @@ private:
     template<typename T>
     void write_sector(binary_reader<T> &reader, sector_id id);
     template<typename T>
-    void write_short_sector(binary_reader<T> &reader, sector_id id);
+    void write_mini_sector(binary_reader<T> &reader, sector_id id);
 
     void read_header();
-    void read_msat();
-    void read_sat();
-    void read_ssat();
+    void read_DIFAT();
+    void read_FAT();
+    void read_mini_FAT();
     void read_entry(directory_id id);
     void read_directory();
 
     void write_header();
-    void write_msat();
-    void write_sat();
-    void write_ssat();
+    void write_DIFAT();
+    void write_FAT();
+    void write_mini_FAT();
     void write_entry(directory_id id);
     void write_directory();
 
     std::uint64_t sector_size();
-    std::uint64_t short_sector_size();
+    std::uint64_t mini_sector_size();
     std::uint64_t sector_data_start();
 
     void print_directory();
 
-    sector_id allocate_msat_sector();
-    sector_id allocate_sat_sector();
-    sector_id allocate_ssat_sector();
+    sector_id allocate_DIFAT_sector();
+    sector_id allocate_FAT_sector();
+    sector_id allocate_mini_FAT_sector();
 
     sector_id allocate_sector();
     sector_chain allocate_sectors(std::size_t sectors);
-    sector_id allocate_short_sector();
-    sector_chain allocate_short_sectors(std::size_t sectors);
+    sector_id allocate_mini_sector();
+    sector_chain allocate_mini_sectors(std::size_t sectors);
 
     bool contains_entry(const std::string &path,
         compound_document_entry::entry_type type);
     directory_id find_entry(const std::string &path,
         compound_document_entry::entry_type type);
-    directory_id next_empty_entry();
+    directory_id next_unallocated_entry();
     directory_id insert_entry(const std::string &path,
         compound_document_entry::entry_type type);
 
@@ -282,9 +282,9 @@ private:
     compound_document_entry::entry_color &tree_color(directory_id id);
 
     compound_document_header header_;
-    sector_chain msat_;
-    sector_chain sat_;
-    sector_chain ssat_;
+    sector_chain DIFAT_;
+    sector_chain FAT_;
+    sector_chain mini_FAT_;
     std::vector<compound_document_entry> entries_;
 
     std::unordered_map<directory_id, directory_id> parent_storage_;

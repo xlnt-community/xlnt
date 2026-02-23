@@ -133,14 +133,14 @@ bool is_invalid_sector(sector_id sector)
 
 bool has_invalid_start_sector(const compound_document_entry &entry)
 {
-    // Empty entries must use start sector 0, which is however invalid in this case.
-    if (entry.type == compound_document_entry::entry_type::Empty && entry.start == 0)
+    // Unallocated entries must use start sector 0, which is however invalid in this case.
+    if (entry.type == compound_document_entry::entry_type::Unallocated && entry.start_sector == 0)
     {
         return true;
     }
     else
     {
-        return is_invalid_sector(entry.start);
+        return is_invalid_sector(entry.start_sector);
     }
 }
 
@@ -202,11 +202,11 @@ private:
     {
         std::streamsize bytes_read = 0;
 
-        const sector_chain &sec_chain = short_stream() ? document_.ssat_ : document_.sat_;
+        const sector_chain &sec_chain = mini_stream() ? document_.mini_FAT_ : document_.FAT_;
         const sector_chain chain = document_.follow_chain(entry_, sec_chain);
-        const std::uint64_t sector_size = short_stream() ? document_.short_sector_size() : document_.sector_size();
+        const std::uint64_t sector_size = mini_stream() ? document_.mini_sector_size() : document_.sector_size();
         sector_id current_sector = chain.at(static_cast<std::size_t>(position_ / sector_size));
-        std::uint64_t remaining = std::min(entry_.size - position_, static_cast<std::uint64_t>(count));
+        std::uint64_t remaining = std::min(entry_.stream_size - position_, static_cast<std::uint64_t>(count));
 
         while (remaining)
         {
@@ -214,9 +214,9 @@ private:
             {
                 current_sector = chain.at(static_cast<std::size_t>(position_ / sector_size));
                 sector_writer_.reset();
-                if (short_stream())
+                if (mini_stream())
                 {
-                    document_.read_short_sector(current_sector, sector_writer_);
+                    document_.read_mini_sector(current_sector, sector_writer_);
                 }
                 else
                 {
@@ -224,7 +224,7 @@ private:
                 }
             }
 
-            const std::uint64_t available = std::min(entry_.size - position_, sector_size - position_ % sector_size);
+            const std::uint64_t available = std::min(entry_.stream_size - position_, sector_size - position_ % sector_size);
             const std::uint64_t to_read = std::min(available, remaining);
 
             auto start = current_sector_.begin() + static_cast<std::ptrdiff_t>(position_ % sector_size);
@@ -240,13 +240,13 @@ private:
             bytes_read += to_read;
         }
 
-        if (position_ < entry_.size && chain.at(static_cast<std::size_t>(position_ / sector_size)) != current_sector)
+        if (position_ < entry_.stream_size && chain.at(static_cast<std::size_t>(position_ / sector_size)) != current_sector)
         {
             current_sector = chain.at(static_cast<std::size_t>(position_ / sector_size));
             sector_writer_.reset();
-            if (short_stream())
+            if (mini_stream())
             {
-                document_.read_short_sector(current_sector, sector_writer_);
+                document_.read_mini_sector(current_sector, sector_writer_);
             }
             else
             {
@@ -257,14 +257,14 @@ private:
         return bytes_read;
     }
 
-    bool short_stream()
+    bool mini_stream()
     {
-        return entry_.size < document_.header_.threshold;
+        return entry_.stream_size < document_.header_.mini_stream_cutoff_size;
     }
 
     int_type underflow() override
     {
-        if (position_ >= entry_.size)
+        if (position_ >= entry_.stream_size)
         {
             return traits_type::eof();
         }
@@ -287,12 +287,12 @@ private:
 
     std::streamsize showmanyc() override
     {
-        if (position_ == entry_.size)
+        if (position_ == entry_.stream_size)
         {
             return static_cast<std::streamsize>(-1);
         }
 
-        return static_cast<std::streamsize>(entry_.size - position_);
+        return static_cast<std::streamsize>(entry_.stream_size - position_);
     }
 
     std::streampos seekoff(std::streamoff off, std::ios_base::seekdir way, std::ios_base::openmode) override
@@ -303,7 +303,7 @@ private:
         }
         else if (way == std::ios_base::end)
         {
-            position_ = entry_.size;
+            position_ = entry_.stream_size;
         }
 
         if (off < 0)
@@ -320,9 +320,9 @@ private:
         }
         else if (off > 0)
         {
-            if (static_cast<std::uint64_t>(off) + position_ > entry_.size)
+            if (static_cast<std::uint64_t>(off) + position_ > entry_.stream_size)
             {
-                position_ = entry_.size;
+                position_ = entry_.stream_size;
                 return static_cast<std::streamoff>(-1);
             }
             else
@@ -340,9 +340,9 @@ private:
         {
             position_ = 0;
         }
-        else if (static_cast<std::uint64_t>(sp) > entry_.size)
+        else if (static_cast<std::uint64_t>(sp) > entry_.stream_size)
         {
-            position_ = entry_.size;
+            position_ = entry_.stream_size;
         }
         else
         {
@@ -371,7 +371,7 @@ public:
     compound_document_ostreambuf(compound_document_entry &entry, compound_document &document)
         : entry_(entry),
           document_(document),
-          current_sector_(document.header_.threshold),
+          current_sector_(document.header_.mini_stream_cutoff_size),
           sector_reader_(current_sector_)
     {
         setp(reinterpret_cast<char *>(current_sector_.data()),
@@ -395,9 +395,9 @@ private:
 
         sector_reader_.reset();
 
-        if (short_stream())
+        if (mini_stream())
         {
-            if (position_ + written >= document_.header_.threshold)
+            if (position_ + written >= document_.header_.mini_stream_cutoff_size)
             {
                 convert_to_long_stream();
             }
@@ -406,15 +406,15 @@ private:
                 if (has_invalid_start_sector(entry_))
                 {
                     std::size_t num_sectors = static_cast<std::size_t>(
-                        (position_ + written + document_.short_sector_size() - 1) / document_.short_sector_size());
-                    chain_ = document_.allocate_short_sectors(num_sectors);
-                    entry_.start = chain_.at(0);
+                        (position_ + written + document_.mini_sector_size() - 1) / document_.mini_sector_size());
+                    chain_ = document_.allocate_mini_sectors(num_sectors);
+                    entry_.start_sector = chain_.at(0);
                 }
 
                 for (sector_id link : chain_)
                 {
-                    document_.write_short_sector(sector_reader_, link);
-                    sector_reader_.offset(sector_reader_.offset() + document_.short_sector_size());
+                    document_.write_mini_sector(sector_reader_, link);
+                    sector_reader_.offset(sector_reader_.offset() + document_.mini_sector_size());
                 }
             }
         }
@@ -425,7 +425,7 @@ private:
         }
 
         position_ += written;
-        entry_.size = std::max(entry_.size, position_);
+        entry_.stream_size = std::max(entry_.stream_size, position_);
         document_.write_directory();
 
         std::fill(current_sector_.begin(), current_sector_.end(), byte(0));
@@ -435,28 +435,28 @@ private:
         return 0;
     }
 
-    bool short_stream()
+    bool mini_stream()
     {
-        return entry_.size < document_.header_.threshold;
+        return entry_.stream_size < document_.header_.mini_stream_cutoff_size;
     }
 
     int_type overflow(int_type c = traits_type::eof()) override
     {
         sync();
 
-        if (short_stream())
+        if (mini_stream())
         {
-            sector_id next_sector = document_.allocate_short_sector();
-            document_.ssat_.at(last_elem(chain_)) = next_sector;
+            sector_id next_sector = document_.allocate_mini_sector();
+            document_.mini_FAT_.at(last_elem(chain_)) = next_sector;
             chain_.push_back(next_sector);
-            document_.write_ssat();
+            document_.write_mini_FAT();
         }
         else
         {
             sector_id next_sector = document_.allocate_sector();
-            document_.sat_.at(last_elem(chain_)) = next_sector;
+            document_.FAT_.at(last_elem(chain_)) = next_sector;
             chain_.push_back(next_sector);
-            document_.write_sat();
+            document_.write_FAT();
         }
 
         auto value = static_cast<std::uint8_t>(c);
@@ -482,7 +482,7 @@ private:
         for (sector_id link : new_chain)
         {
             document_.write_sector(sector_reader_, link);
-            sector_reader_.offset(sector_reader_.offset() + document_.short_sector_size());
+            sector_reader_.offset(sector_reader_.offset() + document_.mini_sector_size());
         }
 
         current_sector_.resize(document_.sector_size(), 0);
@@ -490,15 +490,15 @@ private:
 
         if (has_invalid_start_sector(entry_))
         {
-            // TODO: deallocate short sectors here
-            if (document_.header_.num_short_sectors == 0)
+            // TODO: deallocate mini sectors here
+            if (document_.header_.num_mini_FAT_sectors == 0)
             {
-                document_.entries_.at(0).start = ENDOFCHAIN;
+                document_.entries_.at(0).start_sector = ENDOFCHAIN;
             }
         }
 
         chain_ = new_chain;
-        entry_.start = chain_.at(0);
+        entry_.start_sector = chain_.at(0);
         document_.write_directory();
     }
 
@@ -510,7 +510,7 @@ private:
         }
         else if (way == std::ios_base::end)
         {
-            position_ = entry_.size;
+            position_ = entry_.stream_size;
         }
 
         if (off < 0)
@@ -527,9 +527,9 @@ private:
         }
         else if (off > 0)
         {
-            if (static_cast<std::uint64_t>(off) + position_ > entry_.size)
+            if (static_cast<std::uint64_t>(off) + position_ > entry_.stream_size)
             {
-                position_ = entry_.size;
+                position_ = entry_.stream_size;
                 return static_cast<std::streamoff>(-1);
             }
             else
@@ -547,9 +547,9 @@ private:
         {
             position_ = 0;
         }
-        else if (static_cast<std::uint64_t>(sp) > entry_.size)
+        else if (static_cast<std::uint64_t>(sp) > entry_.stream_size)
         {
-            position_ = entry_.size;
+            position_ = entry_.stream_size;
         }
         else
         {
@@ -588,9 +588,9 @@ compound_document::compound_document(std::istream &in)
       stream_out_(nullptr)
 {
     read_header();
-    read_msat();
-    read_sat();
-    read_ssat();
+    read_DIFAT();
+    read_FAT();
+    read_mini_FAT();
     read_directory();
 }
 
@@ -606,22 +606,22 @@ void compound_document::close()
 
 std::uint64_t compound_document::sector_size()
 {
-    return static_cast<std::uint64_t>(1) << header_.sector_size_power;
+    return static_cast<std::uint64_t>(1) << header_.sector_shift;
 }
 
-std::uint64_t compound_document::short_sector_size()
+std::uint64_t compound_document::mini_sector_size()
 {
-    return static_cast<std::uint64_t>(1) << header_.short_sector_size_power;
+    return static_cast<std::uint64_t>(1) << header_.mini_sector_shift;
 }
 
 std::istream &compound_document::open_read_stream(const std::string &name)
 {
-    if (!contains_entry(name, compound_document_entry::entry_type::UserStream))
+    if (!contains_entry(name, compound_document_entry::entry_type::Stream))
     {
-        throw xlnt::invalid_file("compound document entry of type UserStream not found at path: " + name);
+        throw xlnt::invalid_file("compound document entry of type 2 (Stream) not found at path: " + name);
     }
 
-    const directory_id entry_id = find_entry(name, compound_document_entry::entry_type::UserStream);
+    const directory_id entry_id = find_entry(name, compound_document_entry::entry_type::Stream);
     const compound_document_entry &entry = entries_.at(entry_id);
 
     stream_in_buffer_.reset(new compound_document_istreambuf(entry, *this));
@@ -632,9 +632,9 @@ std::istream &compound_document::open_read_stream(const std::string &name)
 
 std::ostream &compound_document::open_write_stream(const std::string &name)
 {
-    directory_id entry_id = contains_entry(name, compound_document_entry::entry_type::UserStream)
-        ? find_entry(name, compound_document_entry::entry_type::UserStream)
-        : insert_entry(name, compound_document_entry::entry_type::UserStream);
+    directory_id entry_id = contains_entry(name, compound_document_entry::entry_type::Stream)
+        ? find_entry(name, compound_document_entry::entry_type::Stream)
+        : insert_entry(name, compound_document_entry::entry_type::Stream);
     compound_document_entry &entry = entries_.at(entry_id);
 
     stream_out_buffer_.reset(new compound_document_ostreambuf(entry, *this));
@@ -652,14 +652,14 @@ void compound_document::write_sector(binary_reader<T> &reader, sector_id id)
 }
 
 template <typename T>
-void compound_document::write_short_sector(binary_reader<T> &reader, sector_id id)
+void compound_document::write_mini_sector(binary_reader<T> &reader, sector_id id)
 {
-    sector_chain chain = follow_chain(entries_.at(0), sat_);
-    sector_id sector_id = chain.at(static_cast<std::size_t>(id / (sector_size() / short_sector_size())));
-    std::uint64_t sector_offset = id % (sector_size() / short_sector_size()) * short_sector_size();
+    sector_chain chain = follow_chain(entries_.at(0), FAT_);
+    sector_id sector_id = chain.at(static_cast<std::size_t>(id / (sector_size() / mini_sector_size())));
+    std::uint64_t sector_offset = id % (sector_size() / mini_sector_size()) * mini_sector_size();
     out_->seekp(static_cast<std::streampos>(sector_data_start() + sector_size() * sector_id + sector_offset));
     out_->write(reinterpret_cast<const char *>(reader.data() + reader.offset()),
-        static_cast<std::streamsize>(std::min(short_sector_size(), static_cast<std::uint64_t>(reader.bytes() - reader.offset()))));
+        static_cast<std::streamsize>(std::min(mini_sector_size(), static_cast<std::uint64_t>(reader.bytes() - reader.offset()))));
 }
 
 template <typename T>
@@ -674,7 +674,7 @@ void compound_document::read_sector(sector_id id, binary_writer<T> &writer)
 template <typename T>
 void compound_document::read_sector_chain(sector_id start, binary_writer<T> &writer)
 {
-    for (sector_id link : follow_chain(start, sat_))
+    for (sector_id link : follow_chain(start, FAT_))
     {
         read_sector(link, writer);
     }
@@ -683,7 +683,7 @@ void compound_document::read_sector_chain(sector_id start, binary_writer<T> &wri
 template <typename T>
 void compound_document::read_sector_chain(sector_id start, binary_writer<T> &writer, sector_id offset, std::size_t count)
 {
-    sector_chain chain = follow_chain(start, sat_);
+    sector_chain chain = follow_chain(start, FAT_);
 
     for (std::size_t i = 0; i < count; ++i)
     {
@@ -692,9 +692,9 @@ void compound_document::read_sector_chain(sector_id start, binary_writer<T> &wri
 }
 
 template <typename T>
-void compound_document::read_short_sector(sector_id id, binary_writer<T> &writer)
+void compound_document::read_mini_sector(sector_id id, binary_writer<T> &writer)
 {
-    const sector_chain container_chain = follow_chain(entries_.at(0), sat_);
+    const sector_chain container_chain = follow_chain(entries_.at(0), FAT_);
     std::vector<byte> container;
     binary_writer<byte> container_writer(container);
 
@@ -704,62 +704,62 @@ void compound_document::read_short_sector(sector_id id, binary_writer<T> &writer
     }
 
     binary_reader<byte> container_reader(container);
-    container_reader.offset(static_cast<std::size_t>(id * short_sector_size()));
+    container_reader.offset(static_cast<std::size_t>(id * mini_sector_size()));
 
-    writer.append(container_reader, short_sector_size());
+    writer.append(container_reader, mini_sector_size());
 }
 
 template <typename T>
-void compound_document::read_short_sector_chain(sector_id start, binary_writer<T> &writer)
+void compound_document::read_mini_sector_chain(sector_id start, binary_writer<T> &writer)
 {
-    for (sector_id link : follow_chain(start, ssat_))
+    for (sector_id link : follow_chain(start, mini_FAT_))
     {
-        read_short_sector(link, writer);
+        read_mini_sector(link, writer);
     }
 }
 
 template <typename T>
-void compound_document::read_short_sector_chain(sector_id start, binary_writer<T> &writer, sector_id offset, std::size_t count)
+void compound_document::read_mini_sector_chain(sector_id start, binary_writer<T> &writer, sector_id offset, std::size_t count)
 {
-    sector_chain chain = follow_chain(start, ssat_);
+    sector_chain chain = follow_chain(start, mini_FAT_);
 
     for (std::size_t i = 0; i < count; ++i)
     {
-        read_short_sector(chain.at(offset + i), writer);
+        read_mini_sector(chain.at(offset + i), writer);
     }
 }
 
 sector_id compound_document::allocate_sector()
 {
     const auto sectors_per_sector = static_cast<std::size_t>(sector_size() / sizeof(sector_id));
-    auto next_free_iter = std::find(sat_.begin(), sat_.end(), FREESECT);
+    auto next_free_iter = std::find(FAT_.begin(), FAT_.end(), FREESECT);
 
-    if (next_free_iter == sat_.end())
+    if (next_free_iter == FAT_.end())
     {
-        std::uint32_t next_msat_index = header_.num_msat_sectors;
-        auto new_sat_sector_id = static_cast<sector_id>(sat_.size());
+        std::uint32_t next_DIFAT_index = header_.num_FAT_sectors;
+        auto new_FAT_sector_id = static_cast<sector_id>(FAT_.size());
 
-        msat_.push_back(new_sat_sector_id);
-        write_msat();
+        DIFAT_.push_back(new_FAT_sector_id);
+        write_DIFAT();
 
-        header_.msat.at(msat_.size() - 1) = new_sat_sector_id;
-        ++header_.num_msat_sectors;
+        header_.DIFAT.at(DIFAT_.size() - 1) = new_FAT_sector_id;
+        ++header_.num_FAT_sectors;
         write_header();
 
-        sat_.resize(sat_.size() + sectors_per_sector, FREESECT);
-        sat_.at(new_sat_sector_id) = FATSECT;
+        FAT_.resize(FAT_.size() + sectors_per_sector, FREESECT);
+        FAT_.at(new_FAT_sector_id) = FATSECT;
 
-        binary_reader<sector_id> sat_reader(sat_);
-        sat_reader.offset(next_msat_index * sectors_per_sector);
-        write_sector(sat_reader, new_sat_sector_id);
+        binary_reader<sector_id> FAT_reader(FAT_);
+        FAT_reader.offset(next_DIFAT_index * sectors_per_sector);
+        write_sector(FAT_reader, new_FAT_sector_id);
 
-        next_free_iter = std::find(sat_.begin(), sat_.end(), FREESECT);
+        next_free_iter = std::find(FAT_.begin(), FAT_.end(), FREESECT);
     }
 
-    auto next_free = static_cast<sector_id>(next_free_iter - sat_.begin());
-    sat_.at(next_free) = ENDOFCHAIN;
+    auto next_free = static_cast<sector_id>(next_free_iter - FAT_.begin());
+    FAT_.at(next_free) = ENDOFCHAIN;
 
-    write_sat();
+    write_FAT();
 
     std::vector<byte> empty_sector(sector_size());
     binary_reader<byte> empty_sector_reader(empty_sector);
@@ -780,12 +780,12 @@ sector_chain compound_document::allocate_sectors(std::size_t count)
     {
         chain.push_back(current);
         sector_id next = allocate_sector();
-        sat_.at(current) = next;
+        FAT_.at(current) = next;
         current = next;
     }
 
     chain.push_back(current);
-    write_sat();
+    write_FAT();
 
     return chain;
 }
@@ -812,102 +812,102 @@ sector_chain compound_document::follow_chain(const compound_document_entry &entr
     }
     else
     {
-        return follow_chain(entry.start, table);
+        return follow_chain(entry.start_sector, table);
     }
 }
 
-sector_chain compound_document::allocate_short_sectors(std::size_t count)
+sector_chain compound_document::allocate_mini_sectors(std::size_t count)
 {
     if (count == 0) return {};
 
     sector_chain chain;
     chain.reserve(count);
-    sector_id current = allocate_short_sector();
+    sector_id current = allocate_mini_sector();
 
     for (std::size_t i = 1; i < count; ++i)
     {
         chain.push_back(current);
-        sector_id next = allocate_short_sector();
-        ssat_.at(current) = next;
+        sector_id next = allocate_mini_sector();
+        mini_FAT_.at(current) = next;
         current = next;
     }
 
     chain.push_back(current);
-    write_ssat();
+    write_mini_FAT();
 
     return chain;
 }
 
-sector_id compound_document::allocate_short_sector()
+sector_id compound_document::allocate_mini_sector()
 {
     const auto sectors_per_sector = static_cast<std::size_t>(sector_size() / sizeof(sector_id));
-    auto next_free_iter = std::find(ssat_.begin(), ssat_.end(), FREESECT);
+    auto next_free_iter = std::find(mini_FAT_.begin(), mini_FAT_.end(), FREESECT);
 
-    if (next_free_iter == ssat_.end())
+    if (next_free_iter == mini_FAT_.end())
     {
-        sector_id new_ssat_sector_id = allocate_sector();
+        sector_id new_mini_FAT_sector_id = allocate_sector();
 
-        if (is_invalid_sector(header_.ssat_start))
+        if (is_invalid_sector(header_.mini_FAT_start_sector))
         {
-            header_.ssat_start = new_ssat_sector_id;
+            header_.mini_FAT_start_sector = new_mini_FAT_sector_id;
         }
         else
         {
-            sector_chain ssat_chain = follow_chain(header_.ssat_start, sat_);
-            sat_.at(last_elem(ssat_chain)) = new_ssat_sector_id;
-            write_sat();
+            sector_chain mini_FAT_chain = follow_chain(header_.mini_FAT_start_sector, FAT_);
+            FAT_.at(last_elem(mini_FAT_chain)) = new_mini_FAT_sector_id;
+            write_FAT();
         }
 
         write_header();
 
-        std::size_t old_size = ssat_.size();
-        ssat_.resize(old_size + sectors_per_sector, FREESECT);
+        std::size_t old_size = mini_FAT_.size();
+        mini_FAT_.resize(old_size + sectors_per_sector, FREESECT);
 
-        binary_reader<sector_id> ssat_reader(ssat_);
-        ssat_reader.offset(old_size / sectors_per_sector);
-        write_sector(ssat_reader, new_ssat_sector_id);
+        binary_reader<sector_id> mini_FAT_reader(mini_FAT_);
+        mini_FAT_reader.offset(old_size / sectors_per_sector);
+        write_sector(mini_FAT_reader, new_mini_FAT_sector_id);
 
-        next_free_iter = std::find(ssat_.begin(), ssat_.end(), FREESECT);
+        next_free_iter = std::find(mini_FAT_.begin(), mini_FAT_.end(), FREESECT);
     }
 
-    ++header_.num_short_sectors;
+    ++header_.num_mini_FAT_sectors;
     write_header();
 
-    auto next_free = static_cast<sector_id>(next_free_iter - ssat_.begin());
-    ssat_.at(next_free) = ENDOFCHAIN;
+    auto next_free = static_cast<sector_id>(next_free_iter - mini_FAT_.begin());
+    mini_FAT_.at(next_free) = ENDOFCHAIN;
 
-    write_ssat();
+    write_mini_FAT();
 
-    const std::uint64_t short_sectors_per_sector = sector_size() / short_sector_size();
-    const std::uint64_t required_container_sectors = next_free / short_sectors_per_sector + 1;
+    const std::uint64_t mini_sectors_per_sector = sector_size() / mini_sector_size();
+    const std::uint64_t required_container_sectors = next_free / mini_sectors_per_sector + 1;
 
     if (required_container_sectors > 0)
     {
         if (has_invalid_start_sector(entries_.at(0)))
         {
-            entries_.at(0).start = allocate_sector();
+            entries_.at(0).start_sector = allocate_sector();
             write_entry(0);
         }
 
-        sector_chain container_chain = follow_chain(entries_.at(0), sat_);
+        sector_chain container_chain = follow_chain(entries_.at(0), FAT_);
 
         if (required_container_sectors > container_chain.size())
         {
-            sat_.at(last_elem(container_chain)) = allocate_sector();
-            write_sat();
+            FAT_.at(last_elem(container_chain)) = allocate_sector();
+            write_FAT();
         }
     }
 
     return next_free;
 }
 
-directory_id compound_document::next_empty_entry()
+directory_id compound_document::next_unallocated_entry()
 {
     directory_id entry_id = 0;
 
     for (; entry_id < entries_.size(); ++entry_id)
     {
-        if (entries_.at(entry_id).type == compound_document_entry::entry_type::Empty)
+        if (entries_.at(entry_id).type == compound_document_entry::entry_type::Unallocated)
         {
             return entry_id;
         }
@@ -915,15 +915,15 @@ directory_id compound_document::next_empty_entry()
 
     // entry_id is now equal to entries_.size()
 
-    if (is_invalid_sector(header_.directory_start))
+    if (is_invalid_sector(header_.directory_start_sector))
     {
-        header_.directory_start = allocate_sector();
+        header_.directory_start_sector = allocate_sector();
     }
     else
     {
-        sector_chain directory_chain = follow_chain(header_.directory_start, sat_);
-        sat_.at(last_elem(directory_chain)) = allocate_sector();
-        write_sat();
+        sector_chain directory_chain = follow_chain(header_.directory_start_sector, FAT_);
+        FAT_.at(last_elem(directory_chain)) = allocate_sector();
+        write_FAT();
     }
 
     const auto entries_per_sector = static_cast<std::size_t>(sector_size() / COMPOUND_DOCUMENT_ENTRY_SIZE);
@@ -942,7 +942,7 @@ directory_id compound_document::insert_entry(
     const std::string &name,
     compound_document_entry::entry_type type)
 {
-    directory_id entry_id = next_empty_entry();
+    directory_id entry_id = next_unallocated_entry();
     compound_document_entry &entry = entries_.at(entry_id);
 
     directory_id parent_id = 0;
@@ -953,11 +953,11 @@ directory_id compound_document::insert_entry(
     if (split.size() > 1)
     {
         std::string joined_path = join_path(split);
-        parent_id = find_entry(joined_path, compound_document_entry::entry_type::UserStorage);
+        parent_id = find_entry(joined_path, compound_document_entry::entry_type::Storage);
 
         if (is_invalid_entry(parent_id))
         {
-            throw xlnt::key_not_found("parent compound document entry of type UserStorage not found at path \"" + joined_path + "\", "
+            throw xlnt::key_not_found("parent compound document entry of type 1 (Storage) not found at path \"" + joined_path + "\", "
                 "necessary to insert entry \"" + name + "\" of type " + std::to_string(static_cast<int>(type)));
         }
 
@@ -1011,7 +1011,7 @@ void compound_document::print_directory()
 
     for (const compound_document_entry &entry : entries_)
     {
-        if (entry.type == compound_document_entry::entry_type::UserStream)
+        if (entry.type == compound_document_entry::entry_type::Stream)
         {
             std::cout << tree_path(entry_id) << std::endl;
         }
@@ -1032,7 +1032,7 @@ void compound_document::read_directory()
 {
     const std::uint64_t entries_per_sector = sector_size() / COMPOUND_DOCUMENT_ENTRY_SIZE;
     const std::size_t num_entries = static_cast<std::size_t>(
-        follow_chain(header_.directory_start, sat_).size() * entries_per_sector);
+        follow_chain(header_.directory_start_sector, FAT_).size() * entries_per_sector);
 
     entries_.reserve(entries_.size() + num_entries);
     for (std::size_t entry_id = 0; entry_id < num_entries; ++entry_id)
@@ -1068,7 +1068,7 @@ void compound_document::read_directory()
 
             parent_storage_[current_entry_id] = current_storage_id;
 
-            if (current_entry.type == compound_document_entry::entry_type::UserStorage)
+            if (current_entry.type == compound_document_entry::entry_type::Storage)
             {
                 directory_stack.push_back(current_entry_id);
             }
@@ -1292,12 +1292,12 @@ void compound_document::tree_insert_fixup(directory_id x)
 
 directory_id &compound_document::tree_left(directory_id id)
 {
-    return entries_.at(id).prev;
+    return entries_.at(id).left_sibling;
 }
 
 directory_id &compound_document::tree_right(directory_id id)
 {
-    return entries_.at(id).next;
+    return entries_.at(id).right_sibling;
 }
 
 directory_id &compound_document::tree_parent(directory_id id)
@@ -1368,18 +1368,18 @@ void compound_document::read_header()
     // Version field. This field specifies the sector size of the compound file as a power of 2.
     // - If Major Version is 3, the Sector Shift MUST be 0x0009, specifying a sector size of 512 bytes.
     // - If Major Version is 4, the Sector Shift MUST be 0x000C, specifying a sector size of 4096 bytes.
-    if (!((header_.major_version == 3 && header_.sector_size_power == 0x0009) ||
-        (header_.major_version == 4 && header_.sector_size_power == 0x000C)))
+    if (!((header_.major_version == 3 && header_.sector_shift == 0x0009) ||
+        (header_.major_version == 4 && header_.sector_shift == 0x000C)))
     {
-        throw xlnt::invalid_file("invalid combination of sector size power and major version, got sector_size_power = " +
-            fmt::format("0x{:04X}", header_.sector_size_power) + "; major_version = " + std::to_string(header_.major_version));
+        throw xlnt::invalid_file("invalid combination of sector shift and major version, got sector_shift = " +
+            fmt::format("0x{:04X}", header_.sector_shift) + "; major_version = " + std::to_string(header_.major_version));
     }
 
     // Mini Sector Shift (2 bytes): This field MUST be set to 0x0006. This field specifies the sector size of
     // the Mini Stream as a power of 2. The sector size of the Mini Stream MUST be 64 bytes.
-    if (header_.short_sector_size_power != 0x0006)
+    if (header_.mini_sector_shift != 0x0006)
     {
-        throw xlnt::invalid_file("invalid short sector size power, expected 0x0006 but got " + fmt::format("0x{:04X}", header_.short_sector_size_power));
+        throw xlnt::invalid_file("invalid mini sector shift, expected 0x0006 but got " + fmt::format("0x{:04X}", header_.mini_sector_shift));
     }
 
     // Reserved (6 bytes): This field MUST be set to all zeroes.
@@ -1407,9 +1407,9 @@ void compound_document::read_header()
     // specifies the maximum size of a user-defined data stream that is allocated from the mini FAT
     // and mini stream, and that cutoff is 4,096 bytes. Any user-defined data stream that is greater than
     // or equal to this cutoff size must be allocated as normal sectors from the FAT.
-    if (header_.threshold != 0x00001000)
+    if (header_.mini_stream_cutoff_size != 0x00001000)
     {
-        throw xlnt::invalid_file("invalid mini stream cutoff size, expected 0x00001000 but got " + format_hex(header_.threshold));
+        throw xlnt::invalid_file("invalid mini stream cutoff size, expected 0x00001000 but got " + format_hex(header_.mini_stream_cutoff_size));
     }
 
     // DIFAT (436 bytes): This array of 32-bit integer fields contains the first 109 FAT sector locations of
@@ -1433,48 +1433,48 @@ void compound_document::read_header()
     }
 }
 
-void compound_document::read_msat()
+void compound_document::read_DIFAT()
 {
-    msat_.clear();
+    DIFAT_.clear();
 
-    sector_id msat_sector = header_.extra_msat_start;
-    binary_writer<sector_id> msat_writer(msat_);
+    sector_id DIFAT_sector = header_.DIFAT_start_sector;
+    binary_writer<sector_id> DIFAT_writer(DIFAT_);
 
-    for (std::uint32_t i = 0u; i < header_.num_msat_sectors; ++i)
+    for (std::uint32_t i = 0u; i < header_.num_FAT_sectors; ++i)
     {
         if (i < 109u)
         {
-            msat_writer.write(header_.msat.at(i));
+            DIFAT_writer.write(header_.DIFAT.at(i));
         }
         else
         {
-            read_sector(msat_sector, msat_writer);
+            read_sector(DIFAT_sector, DIFAT_writer);
 
-            msat_sector = last_elem(msat_);
-            msat_.pop_back();
+            DIFAT_sector = last_elem(DIFAT_);
+            DIFAT_.pop_back();
         }
     }
 }
 
-void compound_document::read_sat()
+void compound_document::read_FAT()
 {
-    sat_.clear();
-    binary_writer<sector_id> sat_writer(sat_);
+    FAT_.clear();
+    binary_writer<sector_id> FAT_writer(FAT_);
 
-    for (sector_id msat_sector : msat_)
+    for (sector_id DIFAT_sector : DIFAT_)
     {
-        read_sector(msat_sector, sat_writer);
+        read_sector(DIFAT_sector, FAT_writer);
     }
 }
 
-void compound_document::read_ssat()
+void compound_document::read_mini_FAT()
 {
-    ssat_.clear();
-    binary_writer<sector_id> ssat_writer(ssat_);
+    mini_FAT_.clear();
+    binary_writer<sector_id> mini_FAT_writer(mini_FAT_);
 
-    for (sector_id ssat_sector : follow_chain(header_.ssat_start, sat_))
+    for (sector_id mini_FAT_sector : follow_chain(header_.mini_FAT_start_sector, FAT_))
     {
-        read_sector(ssat_sector, ssat_writer);
+        read_sector(mini_FAT_sector, mini_FAT_writer);
     }
 }
 
@@ -1507,12 +1507,12 @@ std::string compound_document_entry::format_info(
     return message;
 }
 
-void check_empty_entry(
+void check_unallocated_entry(
     const compound_document_entry &entry,
     directory_id id,
     sector_id directory_sector)
 {
-    if (entry.type != compound_document_entry::entry_type::Empty)
+    if (entry.type != compound_document_entry::entry_type::Unallocated)
     {
         throw xlnt::invalid_parameter("invalid entry type " +
             entry.format_info(id, directory_sector, false) +
@@ -1524,22 +1524,22 @@ void check_empty_entry(
     // pointers, which must be initialized to NOSTREAM (0xFFFFFFFF).
 
     // NOTE: Some implementations seem to not initialize this buffer at all, so we cannot check it for correctness.
-    /*if (std::any_of(entry.name_array.begin(), entry.name_array.end(), [](char16_t i) { return i != 0; }))
+    /*if (std::any_of(entry.directory_entry_name.begin(), entry.directory_entry_name.end(), [](char16_t i) { return i != 0; }))
     {
-        std::string exception_str = "invalid entry name " +
+        std::string exception_str = "invalid directory entry name " +
             entry.format_info(id, directory_sector, false) +
             ", expected all zeros but got: ";
-        for (char16_t val : entry.name_array)
+        for (char16_t val : entry.directory_entry_name)
         {
             exception_str += fmt::format("{:04x} ", static_cast<std::uint16_t>(val));
         }
         throw xlnt::invalid_file(exception_str);
     }*/
 
-    if (entry.name_length != 0)
+    if (entry.directory_entry_name_length != 0)
     {
-        throw xlnt::invalid_file("invalid entry name length " + entry.format_info(id, directory_sector, false) +
-            ", expected 0 but got " + std::to_string(entry.name_length));
+        throw xlnt::invalid_file("invalid directory entry name length " + entry.format_info(id, directory_sector, false) +
+            ", expected 0 but got " + std::to_string(entry.directory_entry_name_length));
     }
 
     if (entry.color != compound_document_entry::entry_color::Red)
@@ -1548,12 +1548,13 @@ void check_empty_entry(
             ", expected 0 (Red) but got " + std::to_string(static_cast<int>(entry.color)));
     }
 
-    if (entry.prev != NOSTREAM || entry.next != NOSTREAM || entry.child != NOSTREAM)
+    if (entry.left_sibling != NOSTREAM || entry.right_sibling != NOSTREAM || entry.child != NOSTREAM)
     {
-        throw xlnt::invalid_file("empty entry contains invalid child or sibling " +
+        throw xlnt::invalid_file("unallocated entry contains invalid child or sibling " +
             entry.format_info(id, directory_sector, false) +
-            "; prev = " + fmt::format("0x{:08X}", (entry.prev)) +
-            "; next = " + fmt::format("0x{:08X}", (entry.next)) +
+            ", expected all to be NOSTREAM (0xFFFFFFFF) but got" +
+            ": left_sibling = " + fmt::format("0x{:08X}", (entry.left_sibling)) +
+            "; right_sibling = " + fmt::format("0x{:08X}", (entry.right_sibling)) +
             "; child = " + fmt::format("0x{:08X}", (entry.child)));
     }
 
@@ -1590,29 +1591,29 @@ void check_empty_entry(
 
     // According to the specification (see above), it must be 0, but it seems that some immplementations
     // initialize it with ENDOFCHAIN or FREESECT, which is honestly not wrong either. So let's accept that.
-    if (entry.start != 0 && entry.start != ENDOFCHAIN && entry.start != FREESECT)
+    if (entry.start_sector != 0 && entry.start_sector != ENDOFCHAIN && entry.start_sector != FREESECT)
     {
         throw xlnt::invalid_file("invalid entry start sector location " + entry.format_info(id, directory_sector, false) +
-            ", expected 0 or ENDOFCHAIN (0xFFFFFFFE) or FREESECT (0xFFFFFFFF), but got " + format_hex(entry.start));
+            ", expected 0 or ENDOFCHAIN (0xFFFFFFFE) or FREESECT (0xFFFFFFFF), but got " + format_hex(entry.start_sector));
     }
 
-    if (entry.size != 0)
+    if (entry.stream_size != 0)
     {
         throw xlnt::invalid_file("invalid entry stream size " + entry.format_info(id, directory_sector, false) +
-            ", expected 0 but got " + std::to_string(entry.size));
+            ", expected 0 but got " + std::to_string(entry.stream_size));
     }
 }
 
-void check_non_empty_entry(
+void check_non_unallocated_entry(
     const compound_document_entry &entry,
     directory_id id,
     sector_id directory_sector)
 {
-    if (entry.type == compound_document_entry::entry_type::Empty)
+    if (entry.type == compound_document_entry::entry_type::Unallocated)
     {
         throw xlnt::invalid_parameter("invalid entry type " +
             entry.format_info(id, directory_sector, false) +
-            ", expected different than Empty but got Empty");
+            ", expected different than 0 (Unallocated) but got 0 (Unallocated)");
     }
 
     // First check the length, as we'll need this for the string itself.
@@ -1620,17 +1621,17 @@ void check_non_empty_entry(
     // Name Unicode string in bytes. The length MUST be a multiple of 2 and include the terminating null
     // character in the count. This length MUST NOT exceed 64, the maximum size of the Directory Entry
     // Name field.
-    if (entry.name_length < 2 || entry.name_length > 64)
+    if (entry.directory_entry_name_length < 2 || entry.directory_entry_name_length > 64)
     {
         throw xlnt::invalid_file("invalid entry name length " +
             entry.format_info(id, directory_sector, false) +
-            ", expected >= 2 and <= 64, but got " + std::to_string(entry.name_length));
+            ", expected >= 2 and <= 64, but got " + std::to_string(entry.directory_entry_name_length));
     }
-    else if (entry.name_length % 2 != 0)
+    else if (entry.directory_entry_name_length % 2 != 0)
     {
         throw xlnt::invalid_file("invalid entry name length " +
             entry.format_info(id, directory_sector, false) +
-            ", which must be a multiple of 2, but got " + std::to_string(entry.name_length));
+            ", which must be a multiple of 2, but got " + std::to_string(entry.directory_entry_name_length));
     }
 
     // Directory Entry Name (64 bytes): This field MUST contain a Unicode string for the storage or
@@ -1640,16 +1641,16 @@ void check_non_empty_entry(
     // storage, the directory entry name is compared by using a special case-insensitive uppercase
     // mapping, described in Red-Black Tree. The following characters are illegal and MUST NOT be part
     // of the name: '/', '\', ':', '!'.
-    std::uint16_t name_length_characters = (entry.name_length / 2) - 1; // does NOT include \0 at the end
-    if (entry.name_array.at(name_length_characters) != u'\0')
+    std::uint16_t name_length_characters = (entry.directory_entry_name_length / 2) - 1; // does NOT include \0 at the end
+    if (entry.directory_entry_name.at(name_length_characters) != u'\0')
     {
-        std::string exception_str = "invalid entry name " +
+        std::string exception_str = "invalid directory entry name " +
             entry.format_info(id, directory_sector, false) +
             ", which must be terminated with \\0 but is terminated with " +
-            fmt::format("0x{:04X}", static_cast<std::uint16_t>(entry.name_array.at(name_length_characters))) +
+            fmt::format("0x{:04X}", static_cast<std::uint16_t>(entry.directory_entry_name.at(name_length_characters))) +
             "\nString has a length of " + std::to_string(name_length_characters) + " characters (" +
-            std::to_string(entry.name_length) + " bytes including \\0). Full buffer contents:\n";
-        for (char16_t val : entry.name_array)
+            std::to_string(entry.directory_entry_name_length) + " bytes including \\0). Full buffer contents:\n";
+        for (char16_t val : entry.directory_entry_name)
         {
             exception_str += fmt::format("{:04x} ", static_cast<std::uint16_t>(val));
         }
@@ -1659,10 +1660,10 @@ void check_non_empty_entry(
 
     for (std::uint16_t n = 0; n < name_length_characters; ++n)
     {
-        char16_t curr = entry.name_array.at(n);
+        char16_t curr = entry.directory_entry_name.at(n);
         if (curr == u'/' || curr == u'\\' || curr == u':' || curr == u'!')
         {
-            throw xlnt::invalid_file("invalid entry name " + entry.format_info(id, directory_sector, true) +
+            throw xlnt::invalid_file("invalid directory entry name " + entry.format_info(id, directory_sector, true) +
                 ", which contains invalid character " +
                 fmt::format("0x{:04X}", static_cast<std::uint16_t>(curr)) + " at position " + std::to_string(n));
         }
@@ -1671,9 +1672,9 @@ void check_non_empty_entry(
     // Object Type (1 byte): This field MUST be 0x00, 0x01, 0x02, or 0x05, depending on the actual type
     // of object. All other values are not valid.
     // --------------------------------
-    // NOTE: the empty type is handled in check_empty_entry().
-    if (entry.type != compound_document_entry::entry_type::UserStorage &&
-        entry.type != compound_document_entry::entry_type::UserStream &&
+    // NOTE: the Unallocated type is handled in check_unallocated_entry().
+    if (entry.type != compound_document_entry::entry_type::Storage &&
+        entry.type != compound_document_entry::entry_type::Stream &&
         entry.type != compound_document_entry::entry_type::RootStorage)
     {
         throw xlnt::invalid_file("invalid entry object type " + entry.format_info(id, directory_sector, true) +
@@ -1694,11 +1695,11 @@ void check_non_empty_entry(
     // storage objects without explicitly setting an object class GUID, it MUST write all zeroes by default.
     // If this value is not all zeroes, the object class GUID can be used as a parameter to start
     // applications.
-    if (entry.type == compound_document_entry::entry_type::UserStream &&
+    if (entry.type == compound_document_entry::entry_type::Stream &&
         std::any_of(entry.clsid.begin(), entry.clsid.end(), [](std::uint8_t i) { return i != 0; }))
     {
         std::string exception_str = "invalid entry CLSID " + entry.format_info(id, directory_sector, true) +
-            " for UserStream type, expected all zeros but got: ";
+            " for type 2 (Stream), expected all zeros but got: ";
         for (std::uint8_t val : entry.clsid)
         {
             exception_str += fmt::format("{:02x} ", val);
@@ -1715,7 +1716,7 @@ void check_non_empty_entry(
     // NOTE: unfortunately cannot be enforced, as some files:
     // - have a root entry with timestamp 116444736000000000, which is 1970-01-01 00:00:00 UTC
     // - have a stream with an actual timestamp
-    /*if ((entry.type == compound_document_entry::entry_type::UserStream ||
+    /*if ((entry.type == compound_document_entry::entry_type::Stream ||
         entry.type == compound_document_entry::entry_type::RootStorage) &&
         entry.creation_time != 0)
     {
@@ -1731,11 +1732,11 @@ void check_non_empty_entry(
     // is retrieved or set on the compound file itself.
     // --------------------------------
     // NOTE: unfortunately cannot be enforced, as some files have a stream with an actual timestamp.
-    /*if (entry.type == compound_document_entry::entry_type::UserStream &&
+    /*if (entry.type == compound_document_entry::entry_type::Stream &&
         entry.modified_time != 0)
     {
         throw xlnt::invalid_file("invalid entry modification time " + entry.format_info(id, directory_sector, true) +
-            " for type UserStream, expected 0 but got " + std::to_string(entry.modified_time));
+            " for type 2 (Stream), expected 0 but got " + std::to_string(entry.modified_time));
     }*/
 
     // Starting Sector Location (4 bytes): This field contains the first sector location if this is a stream
@@ -1744,27 +1745,27 @@ void check_non_empty_entry(
     // --------------------------------
     // It seems that some immplementations initialize it with FREESECT,
     // which is honestly not wrong either. So let's accept that.
-    if (entry.type == compound_document_entry::entry_type::UserStorage &&
-        !(entry.start == 0 || entry.start == FREESECT))
+    if (entry.type == compound_document_entry::entry_type::Storage &&
+        !(entry.start_sector == 0 || entry.start_sector == FREESECT))
     {
         throw xlnt::invalid_file("invalid entry start sector location " + entry.format_info(id, directory_sector, true) +
-            " for type UserStorage, expected 0 or FREESECT (0xFFFFFFFF), but got " + format_hex(entry.start));
+            " for type 1 (Storage), expected 0 or FREESECT (0xFFFFFFFF), but got " + format_hex(entry.start_sector));
     }
 
     // Stream Size (8 bytes): This 64-bit integer field contains the size of the user-defined data if this is
     // a stream object. For a root storage object, this field contains the size of the mini stream. For a
     // storage object, this field MUST be set to all zeroes.
-    if (entry.type == compound_document_entry::entry_type::UserStorage &&
-        entry.size != 0)
+    if (entry.type == compound_document_entry::entry_type::Storage &&
+        entry.stream_size != 0)
     {
         throw xlnt::invalid_file("invalid entry stream size " + entry.format_info(id, directory_sector, true) +
-            " for type UserStorage, expected 0 but got " + std::to_string(entry.size));
+            " for type 1 (Storage), expected 0 but got " + std::to_string(entry.stream_size));
     }
 }
 
 void compound_document::read_entry(directory_id id)
 {
-    const sector_chain directory_chain = follow_chain(header_.directory_start, sat_);
+    const sector_chain directory_chain = follow_chain(header_.directory_start_sector, FAT_);
     const std::uint64_t entries_per_sector = sector_size() / COMPOUND_DOCUMENT_ENTRY_SIZE;
     const sector_id directory_sector = directory_chain.at(static_cast<std::size_t>(id / entries_per_sector));
     const std::uint64_t offset = sector_size() * directory_sector + ((id % entries_per_sector) * COMPOUND_DOCUMENT_ENTRY_SIZE);
@@ -1772,19 +1773,19 @@ void compound_document::read_entry(directory_id id)
     in_->seekg(static_cast<std::streamoff>(sector_data_start() + offset), std::ios::beg);
     compound_document_entry &entry = entries_.at(id);
     // Read the fields manually due to struct padding (larger sizeof than 128 bytes).
-    in_->read(reinterpret_cast<char *>(entry.name_array.data()), sizeof(entry.name_array));
-    in_->read(reinterpret_cast<char *>(&entry.name_length), sizeof(entry.name_length));
+    in_->read(reinterpret_cast<char *>(entry.directory_entry_name.data()), sizeof(entry.directory_entry_name));
+    in_->read(reinterpret_cast<char *>(&entry.directory_entry_name_length), sizeof(entry.directory_entry_name_length));
     in_->read(reinterpret_cast<char *>(&entry.type), sizeof(entry.type));
     in_->read(reinterpret_cast<char *>(&entry.color), sizeof(entry.color));
-    in_->read(reinterpret_cast<char *>(&entry.prev), sizeof(entry.prev));
-    in_->read(reinterpret_cast<char *>(&entry.next), sizeof(entry.next));
+    in_->read(reinterpret_cast<char *>(&entry.left_sibling), sizeof(entry.left_sibling));
+    in_->read(reinterpret_cast<char *>(&entry.right_sibling), sizeof(entry.right_sibling));
     in_->read(reinterpret_cast<char *>(&entry.child), sizeof(entry.child));
     in_->read(reinterpret_cast<char *>(entry.clsid.data()), sizeof(entry.clsid));
     in_->read(reinterpret_cast<char *>(&entry.state_bits), sizeof(entry.state_bits));
     in_->read(reinterpret_cast<char *>(&entry.creation_time), sizeof(entry.creation_time));
     in_->read(reinterpret_cast<char *>(&entry.modified_time), sizeof(entry.modified_time));
-    in_->read(reinterpret_cast<char *>(&entry.start), sizeof(entry.start));
-    in_->read(reinterpret_cast<char *>(&entry.size), sizeof(entry.size));
+    in_->read(reinterpret_cast<char *>(&entry.start_sector), sizeof(entry.start_sector));
+    in_->read(reinterpret_cast<char *>(&entry.stream_size), sizeof(entry.stream_size));
 
     // Stream Size (8 bytes): ... (see below for the rest)
     // - For a version 3 compound file 512-byte sector size, the value of this field MUST be less than
@@ -1798,19 +1799,19 @@ void compound_document::read_entry(directory_id id)
     //   that parsers ignore the most significant 32 bits of this field in version 3 compound files,
     //   treating it as if its value were zero, unless there is a specific reason to do otherwise (for
     //   example, a parser whose purpose is to verify the correctness of a compound file).
-    if (header_.major_version == 3 && entry.size > 0x80000000)
+    if (header_.major_version == 3 && entry.stream_size > 0x80000000)
     {
         // Note: the only allowed byte order is little-endian.
-        entry.size = entry.size & 0x0000FFFF;
+        entry.stream_size = entry.stream_size & 0x0000FFFF;
     }
 
-    if (entry.type == compound_document_entry::entry_type::Empty)
+    if (entry.type == compound_document_entry::entry_type::Unallocated)
     {
-        check_empty_entry(entry, id, directory_sector);
+        check_unallocated_entry(entry, id, directory_sector);
     }
     else
     {
-        check_non_empty_entry(entry, id, directory_sector);
+        check_non_unallocated_entry(entry, id, directory_sector);
     }
 }
 
@@ -1820,54 +1821,54 @@ void compound_document::write_header()
     out_->write(reinterpret_cast<char *>(&header_), sizeof(compound_document_header));
 }
 
-void compound_document::write_msat()
+void compound_document::write_DIFAT()
 {
-    sector_id msat_sector = header_.extra_msat_start;
+    sector_id DIFAT_sector = header_.DIFAT_start_sector;
 
-    for (std::uint32_t i = 0u; i < header_.num_msat_sectors; ++i)
+    for (std::uint32_t i = 0u; i < header_.num_FAT_sectors; ++i)
     {
         if (i < 109u)
         {
-            header_.msat.at(i) = msat_.at(i);
+            header_.DIFAT.at(i) = DIFAT_.at(i);
         }
         else
         {
             std::vector<sector_id> sector;
             binary_writer<sector_id> sector_writer(sector);
 
-            read_sector(msat_sector, sector_writer);
+            read_sector(DIFAT_sector, sector_writer);
 
-            msat_sector = last_elem(sector);
+            DIFAT_sector = last_elem(sector);
             sector.pop_back();
 
-            std::copy(sector.begin(), sector.end(), std::back_inserter(msat_));
+            std::copy(sector.begin(), sector.end(), std::back_inserter(DIFAT_));
         }
     }
 }
 
-void compound_document::write_sat()
+void compound_document::write_FAT()
 {
-    binary_reader<sector_id> sector_reader(sat_);
+    binary_reader<sector_id> sector_reader(FAT_);
 
-    for (sector_id sat_sector : msat_)
+    for (sector_id FAT_sector : DIFAT_)
     {
-        write_sector(sector_reader, sat_sector);
+        write_sector(sector_reader, FAT_sector);
     }
 }
 
-void compound_document::write_ssat()
+void compound_document::write_mini_FAT()
 {
-    binary_reader<sector_id> sector_reader(ssat_);
+    binary_reader<sector_id> sector_reader(mini_FAT_);
 
-    for (sector_id ssat_sector : follow_chain(header_.ssat_start, sat_))
+    for (sector_id mini_FAT_sector : follow_chain(header_.mini_FAT_start_sector, FAT_))
     {
-        write_sector(sector_reader, ssat_sector);
+        write_sector(sector_reader, mini_FAT_sector);
     }
 }
 
 void compound_document::write_entry(directory_id id)
 {
-    const sector_chain directory_chain = follow_chain(header_.directory_start, sat_);
+    const sector_chain directory_chain = follow_chain(header_.directory_start_sector, FAT_);
     const std::uint64_t entries_per_sector = sector_size() / COMPOUND_DOCUMENT_ENTRY_SIZE;
     const sector_id directory_sector = directory_chain.at(static_cast<std::size_t>(id / entries_per_sector));
     const std::uint64_t offset = sector_data_start() + sector_size() * directory_sector
@@ -1876,19 +1877,19 @@ void compound_document::write_entry(directory_id id)
     out_->seekp(static_cast<std::streamoff>(offset), std::ios::beg);
     const compound_document_entry &entry = entries_.at(id);
     // Write the fields manually due to struct padding (larger sizeof than 128 bytes).
-    out_->write(reinterpret_cast<const char *>(entry.name_array.data()), sizeof(entry.name_array));
-    out_->write(reinterpret_cast<const char *>(&entry.name_length), sizeof(entry.name_length));
+    out_->write(reinterpret_cast<const char *>(entry.directory_entry_name.data()), sizeof(entry.directory_entry_name));
+    out_->write(reinterpret_cast<const char *>(&entry.directory_entry_name_length), sizeof(entry.directory_entry_name_length));
     out_->write(reinterpret_cast<const char *>(&entry.type), sizeof(entry.type));
     out_->write(reinterpret_cast<const char *>(&entry.color), sizeof(entry.color));
-    out_->write(reinterpret_cast<const char *>(&entry.prev), sizeof(entry.prev));
-    out_->write(reinterpret_cast<const char *>(&entry.next), sizeof(entry.next));
+    out_->write(reinterpret_cast<const char *>(&entry.left_sibling), sizeof(entry.left_sibling));
+    out_->write(reinterpret_cast<const char *>(&entry.right_sibling), sizeof(entry.right_sibling));
     out_->write(reinterpret_cast<const char *>(&entry.child), sizeof(entry.child));
     out_->write(reinterpret_cast<const char *>(entry.clsid.data()), sizeof(entry.clsid));
     out_->write(reinterpret_cast<const char *>(&entry.state_bits), sizeof(entry.state_bits));
     out_->write(reinterpret_cast<const char *>(&entry.creation_time), sizeof(entry.creation_time));
     out_->write(reinterpret_cast<const char *>(&entry.modified_time), sizeof(entry.modified_time));
-    out_->write(reinterpret_cast<const char *>(&entry.start), sizeof(entry.start));
-    out_->write(reinterpret_cast<const char *>(&entry.size), sizeof(entry.size));
+    out_->write(reinterpret_cast<const char *>(&entry.start_sector), sizeof(entry.start_sector));
+    out_->write(reinterpret_cast<const char *>(&entry.stream_size), sizeof(entry.stream_size));
 }
 
 } // namespace detail
