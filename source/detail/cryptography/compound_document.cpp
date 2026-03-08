@@ -644,8 +644,7 @@ void compound_document::write_sector(binary_reader<T> &reader, sector_id id)
 template <typename T>
 void compound_document::write_mini_sector(binary_reader<T> &reader, sector_id id)
 {
-    sector_chain chain = follow_chain(entries_.at(0), FAT_);
-    sector_id sector_id = chain.at(static_cast<std::size_t>(id / (sector_size() / mini_sector_size())));
+    sector_id sector_id = chain_sector_at_index(entries_.at(0), FAT_, id / (sector_size() / mini_sector_size()));
     std::uint64_t sector_offset = id % (sector_size() / mini_sector_size()) * mini_sector_size();
     out_->seekp(static_cast<std::streampos>(sector_data_start() + sector_size() * sector_id + sector_offset));
     out_->write(reinterpret_cast<const char *>(reader.data() + reader.offset()),
@@ -806,6 +805,72 @@ sector_chain compound_document::follow_chain(const compound_document_entry &entr
     }
 }
 
+sector_id compound_document::chain_sector_at_index(sector_id start, const sector_chain &table, std::uint64_t index)
+{
+    std::uint64_t current_index = 0;
+    sector_id current = start;
+
+    while (!is_chain_end(current) && current_index < index)
+    {
+        current = table.at(current);
+        ++current_index;
+    }
+
+    if (current_index == index)
+    {
+        return current;
+    }
+
+    return ENDOFCHAIN;
+}
+
+sector_id compound_document::chain_sector_at_index(const compound_document_entry &entry, const sector_chain &table, std::uint64_t index)
+{
+    if (has_invalid_start_sector(entry))
+    {
+        return ENDOFCHAIN;
+    }
+    else
+    {
+        return chain_sector_at_index(entry.start_sector, table, index);
+    }
+}
+
+sector_id compound_document::last_chain_sector(sector_id start, const sector_chain &table, std::uint64_t *num_sectors_out)
+{
+    sector_id current = start;
+    std::uint64_t num_sectors = 0;
+
+    while (!is_chain_end(current))
+    {
+        ++num_sectors;
+        current = table.at(current);
+    }
+
+    if (num_sectors_out != nullptr)
+    {
+        *num_sectors_out = num_sectors;
+    }
+
+    return current;
+}
+
+sector_id compound_document::last_chain_sector(const compound_document_entry &entry, const sector_chain &table, std::uint64_t *num_sectors_out)
+{
+    if (has_invalid_start_sector(entry))
+    {
+        if (num_sectors_out != nullptr)
+        {
+            *num_sectors_out = 0;
+        }
+        return ENDOFCHAIN;
+    }
+    else
+    {
+        return last_chain_sector(entry.start_sector, table, num_sectors_out);
+    }
+}
+
 sector_chain compound_document::allocate_mini_sectors(std::size_t count)
 {
     if (count == 0) return {};
@@ -843,8 +908,8 @@ sector_id compound_document::allocate_mini_sector()
         }
         else
         {
-            sector_chain mini_FAT_chain = follow_chain(header_.mini_FAT_start_sector, FAT_);
-            FAT_.at(last_elem(mini_FAT_chain)) = new_mini_FAT_sector_id;
+            sector_id last_mini_FAT_sector = last_chain_sector(header_.mini_FAT_start_sector, FAT_);
+            FAT_.at(last_mini_FAT_sector) = new_mini_FAT_sector_id;
             write_FAT();
         }
 
@@ -879,11 +944,12 @@ sector_id compound_document::allocate_mini_sector()
             write_entry(0);
         }
 
-        sector_chain container_chain = follow_chain(entries_.at(0), FAT_);
+        std::uint64_t num_sectors = 0;
+        sector_id container_last_sector = last_chain_sector(entries_.at(0), FAT_, &num_sectors);
 
-        if (required_container_sectors > container_chain.size())
+        if (required_container_sectors > num_sectors)
         {
-            FAT_.at(last_elem(container_chain)) = allocate_sector();
+            FAT_.at(container_last_sector) = allocate_sector();
             write_FAT();
         }
     }
@@ -911,8 +977,8 @@ directory_id compound_document::next_unallocated_entry()
     }
     else
     {
-        sector_chain directory_chain = follow_chain(header_.directory_start_sector, FAT_);
-        FAT_.at(last_elem(directory_chain)) = allocate_sector();
+        sector_id last_directory_sector = last_chain_sector(header_.directory_start_sector, FAT_);
+        FAT_.at(last_directory_sector) = allocate_sector();
         write_FAT();
     }
 
@@ -1021,8 +1087,9 @@ void compound_document::write_directory()
 void compound_document::read_directory()
 {
     const std::uint64_t entries_per_sector = sector_size() / COMPOUND_DOCUMENT_ENTRY_SIZE;
-    const std::size_t num_entries = static_cast<std::size_t>(
-        follow_chain(header_.directory_start_sector, FAT_).size() * entries_per_sector);
+    std::uint64_t num_sectors = 0;
+    last_chain_sector(header_.directory_start_sector, FAT_, &num_sectors);
+    const std::size_t num_entries = static_cast<std::size_t>(num_sectors * entries_per_sector);
 
     entries_.reserve(entries_.size() + num_entries);
     for (std::size_t entry_id = 0; entry_id < num_entries; ++entry_id)
@@ -1755,9 +1822,8 @@ void check_non_unallocated_entry(
 
 void compound_document::read_entry(directory_id id)
 {
-    const sector_chain directory_chain = follow_chain(header_.directory_start_sector, FAT_);
     const std::uint64_t entries_per_sector = sector_size() / COMPOUND_DOCUMENT_ENTRY_SIZE;
-    const sector_id directory_sector = directory_chain.at(static_cast<std::size_t>(id / entries_per_sector));
+    const sector_id directory_sector = chain_sector_at_index(header_.directory_start_sector, FAT_, id / entries_per_sector);
     const std::uint64_t offset = sector_size() * directory_sector + ((id % entries_per_sector) * COMPOUND_DOCUMENT_ENTRY_SIZE);
 
     in_->seekg(static_cast<std::streamoff>(sector_data_start() + offset), std::ios::beg);
@@ -1858,9 +1924,8 @@ void compound_document::write_mini_FAT()
 
 void compound_document::write_entry(directory_id id)
 {
-    const sector_chain directory_chain = follow_chain(header_.directory_start_sector, FAT_);
     const std::uint64_t entries_per_sector = sector_size() / COMPOUND_DOCUMENT_ENTRY_SIZE;
-    const sector_id directory_sector = directory_chain.at(static_cast<std::size_t>(id / entries_per_sector));
+    const sector_id directory_sector = chain_sector_at_index(header_.directory_start_sector, FAT_, id / entries_per_sector);
     const std::uint64_t offset = sector_data_start() + sector_size() * directory_sector
         + ((id % entries_per_sector) * COMPOUND_DOCUMENT_ENTRY_SIZE);
 

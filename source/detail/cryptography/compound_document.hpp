@@ -218,6 +218,10 @@ private:
 
     sector_chain follow_chain(sector_id start, const sector_chain &table);
     sector_chain follow_chain(const compound_document_entry &entry, const sector_chain &table);
+    sector_id chain_sector_at_index(sector_id start, const sector_chain &table, std::uint64_t index);
+    sector_id chain_sector_at_index(const compound_document_entry &entry, const sector_chain &table, std::uint64_t index);
+    sector_id last_chain_sector(sector_id start, const sector_chain &table, std::uint64_t *num_sectors_out = nullptr);
+    sector_id last_chain_sector(const compound_document_entry &entry, const sector_chain &table, std::uint64_t *num_sectors_out = nullptr);
 
     template<typename T>
     void write_sector(binary_reader<T> &reader, sector_id id);
