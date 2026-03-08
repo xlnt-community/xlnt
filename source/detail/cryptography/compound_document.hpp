@@ -60,10 +60,6 @@ constexpr directory_id NOSTREAM = 0xFFFFFFFF; // Terminator or empty pointer.
 /// Expects either a valid sector ID (<= MAXREGSECT), or ENDOFCHAIN - otherwise, an invalid_parameter exception will be thrown.
 bool is_chain_end(sector_id sector);
 
-/// Returns true if the sector ID equals ENDOFCHAIN or FREESECT, false otherwise.
-/// Expects either a valid sector ID (<= MAXREGSECT), or ENDOFCHAIN, or FREESECT - otherwise, an invalid_parameter exception will be thrown.
-bool is_invalid_next_sector(sector_id sector);
-
 /// Returns true if the sector ID equals ENDOFCHAIN or FREESECT for RootStorage and Stream entries, false otherwise.
 /// For RootStorage and Stream entries, expects either a valid sector ID (<= MAXREGSECT), or ENDOFCHAIN, or FREESECT - otherwise,
 /// an invalid_parameter exception will be thrown.
