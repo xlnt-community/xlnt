@@ -72,9 +72,6 @@ bool is_invalid_entry(directory_id entry);
 /// Throws if the sector ID is neither a valid one (<= MAXREGSECT) nor ENDOFCHAIN.
 void expect_valid_sector_or_chain_end(sector_id sector);
 
-/// Throws if the sector ID is neither a valid one (<= MAXREGSECT), nor ENDOFCHAIN, nor FREESECT.
-void expect_valid_sector_or_chain_end_or_free(sector_id sector);
-
 /// Throws if the directory ID of the entry is neither a valid one (<= MAXREGSID) nor NOSTREAM.
 void expect_valid_entry_or_no_stream(directory_id entry);
 
