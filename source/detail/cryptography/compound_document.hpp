@@ -62,10 +62,11 @@ bool is_chain_end(sector_id sector);
 
 /// Returns true if the sector ID equals ENDOFCHAIN or FREESECT, false otherwise.
 /// Expects either a valid sector ID (<= MAXREGSECT), or ENDOFCHAIN, or FREESECT - otherwise, an invalid_parameter exception will be thrown.
-bool is_invalid_sector(sector_id sector);
+bool is_invalid_next_sector(sector_id sector);
 
-/// Returns true if the sector ID equals ENDOFCHAIN or FREESECT, or if the sector ID equals 0 for Unallocated entries, false otherwise.
-/// Expects either a valid sector ID (<= MAXREGSECT), or ENDOFCHAIN, or FREESECT - otherwise, an invalid_parameter exception will be thrown.
+/// Returns true if the sector ID equals ENDOFCHAIN or FREESECT for RootStorage and Stream entries, false otherwise.
+/// For RootStorage and Stream entries, expects either a valid sector ID (<= MAXREGSECT), or ENDOFCHAIN, or FREESECT - otherwise,
+/// an invalid_parameter exception will be thrown.
 bool has_invalid_start_sector(const compound_document_entry &entry);
 
 /// Returns true if the directory ID of the entry equals NOSTREAM, false otherwise.

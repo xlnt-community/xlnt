@@ -125,7 +125,7 @@ bool is_chain_end(sector_id sector)
     return sector == ENDOFCHAIN;
 }
 
-bool is_invalid_sector(sector_id sector)
+bool is_invalid_next_sector(sector_id sector)
 {
     expect_valid_sector_or_chain_end_or_free(sector);
     return sector == ENDOFCHAIN || sector == FREESECT;
@@ -133,14 +133,19 @@ bool is_invalid_sector(sector_id sector)
 
 bool has_invalid_start_sector(const compound_document_entry &entry)
 {
-    // Unallocated entries must use start sector 0, which is however invalid in this case.
-    if (entry.type == compound_document_entry::entry_type::Unallocated && entry.start_sector == 0)
+    switch (entry.type)
     {
+    case compound_document_entry::entry_type::RootStorage:
+    case compound_document_entry::entry_type::Stream:
+        return is_invalid_next_sector(entry.start_sector);
+    // Both Unallocated and Storage entries can have a start sector that is 0, but they are still invalid.
+    // For all other entries, the start sector does not make sense either, and is thus always invalid.
+    case compound_document_entry::entry_type::Unallocated:
+    case compound_document_entry::entry_type::Storage:
+    case compound_document_entry::entry_type::LockBytes:
+    case compound_document_entry::entry_type::Property:
+    default:
         return true;
-    }
-    else
-    {
-        return is_invalid_sector(entry.start_sector);
     }
 }
 
@@ -795,7 +800,7 @@ sector_chain compound_document::follow_chain(sector_id start, const sector_chain
     sector_chain chain;
     sector_id current = start;
 
-    while (!is_invalid_sector(current))
+    while (!is_invalid_next_sector(current))
     {
         chain.push_back(current);
         current = table.at(current);
@@ -847,7 +852,7 @@ sector_id compound_document::allocate_mini_sector()
     {
         sector_id new_mini_FAT_sector_id = allocate_sector();
 
-        if (is_invalid_sector(header_.mini_FAT_start_sector))
+        if (is_invalid_next_sector(header_.mini_FAT_start_sector))
         {
             header_.mini_FAT_start_sector = new_mini_FAT_sector_id;
         }
@@ -915,7 +920,7 @@ directory_id compound_document::next_unallocated_entry()
 
     // entry_id is now equal to entries_.size()
 
-    if (is_invalid_sector(header_.directory_start_sector))
+    if (is_invalid_next_sector(header_.directory_start_sector))
     {
         header_.directory_start_sector = allocate_sector();
     }
