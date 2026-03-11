@@ -1021,7 +1021,7 @@ void workbook::load(const path &filename)
 
     if (!file_stream.good())
     {
-        throw xlnt::invalid_file(filename.string());
+        throw xlnt::invalid_file("could not open file: " + filename.string());
     }
 
     load(file_stream);
@@ -1040,7 +1040,7 @@ void workbook::load_internal(const xlnt::path &filename, const T &password)
 
     if (!file_stream.good())
     {
-        throw xlnt::invalid_file(filename.string());
+        throw xlnt::invalid_file("could not open file: " + filename.string());
     }
 
     return load(file_stream, password);
