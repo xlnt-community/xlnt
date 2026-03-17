@@ -1017,11 +1017,17 @@ void workbook::load(const std::string &filename)
 void workbook::load(const path &filename)
 {
     std::ifstream file_stream;
-    open_stream(file_stream, filename.string());
 
-    if (!file_stream.good())
+    // Exception handling could provide useful information about why errors have occurred.
+    file_stream.exceptions(std::istream::failbit | std::istream::badbit);
+
+    try
     {
-        throw xlnt::invalid_file("could not open file: " + filename.string());
+        open_stream(file_stream, filename.string());
+    }
+    catch (const std::exception &ex)
+    {
+        throw xlnt::invalid_file("Could not open file at path \"" + filename.string() + "\". Reason: " + ex.what());
     }
 
     load(file_stream);
@@ -1036,11 +1042,17 @@ template <typename T>
 void workbook::load_internal(const xlnt::path &filename, const T &password)
 {
     std::ifstream file_stream;
-    open_stream(file_stream, filename.string());
 
-    if (!file_stream.good())
+    // Exception handling could provide useful information about why errors have occurred.
+    file_stream.exceptions(std::istream::failbit | std::istream::badbit);
+
+    try
     {
-        throw xlnt::invalid_file("could not open file: " + filename.string());
+        open_stream(file_stream, filename.string());
+    }
+    catch (const std::exception &ex)
+    {
+        throw xlnt::invalid_file("Could not open file at path \"" + filename.string() + "\". Reason: " + ex.what());
     }
 
     return load(file_stream, password);
