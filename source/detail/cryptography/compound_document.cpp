@@ -654,10 +654,34 @@ void compound_document::write_mini_sector(binary_reader<T> &reader, sector_id id
 template <typename T>
 void compound_document::read_sector(sector_id id, binary_writer<T> &writer)
 {
-    in_->seekg(static_cast<std::streampos>(sector_data_start() + sector_size() * id));
+    auto seek_pos = static_cast<std::streampos>(sector_data_start() + sector_size() * id);
+    // Exception handling could provide useful information about why errors have occurred.
+    auto previous_exception_mask = in_->exceptions();
+    in_->exceptions(std::istream::failbit | std::istream::badbit);
+
+    try
+    {
+        in_->seekg(seek_pos);
+    }
+    catch (const std::exception &ex)
+    {
+        throw xlnt::invalid_file("Failed reading compound document sector " + std::to_string(id) + ": could not seek to stream position " +
+            std::to_string(seek_pos) + ". Reason: " + ex.what());
+    }
+
     std::vector<byte> sector(sector_size(), 0);
-    in_->read(reinterpret_cast<char *>(sector.data()), static_cast<std::streamsize>(sector_size()));
+    try
+    {
+        in_->read(reinterpret_cast<char *>(sector.data()), static_cast<std::streamsize>(sector_size()));
+    }
+    catch (const std::exception &ex)
+    {
+        throw xlnt::invalid_file("Failed reading compound document sector " + std::to_string(id) + ": could not read " + std::to_string(sector_size()) +
+            " bytes from stream position " + std::to_string(seek_pos) + ". Reason: " + ex.what());
+    }
+
     writer.append(sector);
+    in_->exceptions(previous_exception_mask);
 }
 
 template <typename T>
@@ -1385,8 +1409,28 @@ compound_document_entry::entry_color &compound_document::tree_color(directory_id
 
 void compound_document::read_header()
 {
-    in_->seekg(0, std::ios::beg);
-    in_->read(reinterpret_cast<char *>(&header_), sizeof(compound_document_header));
+    // Exception handling could provide useful information about why errors have occurred.
+    auto previous_exception_mask = in_->exceptions();
+    in_->exceptions(std::istream::failbit | std::istream::badbit);
+
+    try
+    {
+        in_->seekg(0, std::ios::beg);
+    }
+    catch (const std::exception &ex)
+    {
+        throw xlnt::invalid_file("Failed reading compound document header: could not seek to position 0. Reason: " + std::string(ex.what()));
+    }
+
+    try
+    {
+        in_->read(reinterpret_cast<char *>(&header_), sizeof(compound_document_header));
+    }
+    catch (const std::exception &ex)
+    {
+        throw xlnt::invalid_file("Failed reading compound document header: could not read " + std::to_string(sizeof(compound_document_header)) +
+            " bytes of header at position 0. Reason: " + ex.what());
+    }
 
     // Header Signature (8 bytes): Identification signature for the compound file structure, and MUST be
     // set to the value 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1.
@@ -1476,7 +1520,16 @@ void compound_document::read_header()
     if (header_.major_version == 4)
     {
         std::array<std::uint8_t, 3584> remaining {{ 0 }};
-        in_->read(reinterpret_cast<char *>(remaining.data()), sizeof(remaining));
+
+        try
+        {
+            in_->read(reinterpret_cast<char *>(remaining.data()), sizeof(remaining));
+        }
+        catch (const std::exception &ex)
+        {
+            throw xlnt::invalid_file("Failed reading compound document header: could not read " + std::to_string(sizeof(remaining)) +
+                " bytes of remaining data. Reason: " + ex.what());
+        }
 
         if (std::any_of(remaining.begin(), remaining.end(), [](std::uint8_t i) { return i != 0; }))
         {
@@ -1488,6 +1541,8 @@ void compound_document::read_header()
             throw xlnt::invalid_file(exception_str);
         }
     }
+
+    in_->exceptions(previous_exception_mask);
 }
 
 void compound_document::read_DIFAT()
@@ -1826,22 +1881,47 @@ void compound_document::read_entry(directory_id id)
     const sector_id directory_sector = chain_sector_at_index(header_.directory_start_sector, FAT_, id / entries_per_sector);
     const std::uint64_t offset = sector_size() * directory_sector + ((id % entries_per_sector) * COMPOUND_DOCUMENT_ENTRY_SIZE);
 
-    in_->seekg(static_cast<std::streamoff>(sector_data_start() + offset), std::ios::beg);
     compound_document_entry &entry = entries_.at(id);
-    // Read the fields manually due to struct padding (larger sizeof than 128 bytes).
-    in_->read(reinterpret_cast<char *>(entry.directory_entry_name.data()), sizeof(entry.directory_entry_name));
-    in_->read(reinterpret_cast<char *>(&entry.directory_entry_name_length), sizeof(entry.directory_entry_name_length));
-    in_->read(reinterpret_cast<char *>(&entry.type), sizeof(entry.type));
-    in_->read(reinterpret_cast<char *>(&entry.color), sizeof(entry.color));
-    in_->read(reinterpret_cast<char *>(&entry.left_sibling), sizeof(entry.left_sibling));
-    in_->read(reinterpret_cast<char *>(&entry.right_sibling), sizeof(entry.right_sibling));
-    in_->read(reinterpret_cast<char *>(&entry.child), sizeof(entry.child));
-    in_->read(reinterpret_cast<char *>(entry.clsid.data()), sizeof(entry.clsid));
-    in_->read(reinterpret_cast<char *>(&entry.state_bits), sizeof(entry.state_bits));
-    in_->read(reinterpret_cast<char *>(&entry.creation_time), sizeof(entry.creation_time));
-    in_->read(reinterpret_cast<char *>(&entry.modified_time), sizeof(entry.modified_time));
-    in_->read(reinterpret_cast<char *>(&entry.start_sector), sizeof(entry.start_sector));
-    in_->read(reinterpret_cast<char *>(&entry.stream_size), sizeof(entry.stream_size));
+    auto seek_pos = static_cast<std::streamoff>(sector_data_start() + offset);
+
+    // Exception handling could provide useful information about why errors have occurred.
+    auto previous_exception_mask = in_->exceptions();
+    in_->exceptions(std::istream::failbit | std::istream::badbit);
+
+    try
+    {
+        in_->seekg(seek_pos, std::ios::beg);
+    }
+    catch (const std::exception &ex)
+    {
+        throw xlnt::invalid_file("Failed reading compound document entry " + std::to_string(id) +
+            ": failed seeking to position" + std::to_string(seek_pos) + ". Reason: " + ex.what());
+    }
+
+    try
+    {
+        // Read the fields manually due to struct padding (larger sizeof than 128 bytes).
+        in_->read(reinterpret_cast<char *>(entry.directory_entry_name.data()), sizeof(entry.directory_entry_name));
+        in_->read(reinterpret_cast<char *>(&entry.directory_entry_name_length), sizeof(entry.directory_entry_name_length));
+        in_->read(reinterpret_cast<char *>(&entry.type), sizeof(entry.type));
+        in_->read(reinterpret_cast<char *>(&entry.color), sizeof(entry.color));
+        in_->read(reinterpret_cast<char *>(&entry.left_sibling), sizeof(entry.left_sibling));
+        in_->read(reinterpret_cast<char *>(&entry.right_sibling), sizeof(entry.right_sibling));
+        in_->read(reinterpret_cast<char *>(&entry.child), sizeof(entry.child));
+        in_->read(reinterpret_cast<char *>(entry.clsid.data()), sizeof(entry.clsid));
+        in_->read(reinterpret_cast<char *>(&entry.state_bits), sizeof(entry.state_bits));
+        in_->read(reinterpret_cast<char *>(&entry.creation_time), sizeof(entry.creation_time));
+        in_->read(reinterpret_cast<char *>(&entry.modified_time), sizeof(entry.modified_time));
+        in_->read(reinterpret_cast<char *>(&entry.start_sector), sizeof(entry.start_sector));
+        in_->read(reinterpret_cast<char *>(&entry.stream_size), sizeof(entry.stream_size));
+    }
+    catch (const std::exception &ex)
+    {
+        throw xlnt::invalid_file("Failed reading compound document entry " + std::to_string(id) +
+            ": failed reading entry fields. Reason: " + ex.what());
+    }
+
+    in_->exceptions(previous_exception_mask);
 
     // Stream Size (8 bytes): ... (see below for the rest)
     // - For a version 3 compound file 512-byte sector size, the value of this field MUST be less than
