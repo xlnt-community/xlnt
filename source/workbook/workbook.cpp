@@ -61,6 +61,7 @@
 #include <detail/serialization/vector_streambuf.hpp>
 #include <detail/serialization/xlsx_consumer.hpp>
 #include <detail/serialization/xlsx_producer.hpp>
+#include <detail/utils/error_helpers.hpp>
 
 namespace {
 
@@ -1023,11 +1024,15 @@ void workbook::load(const path &filename)
 
     try
     {
-        open_stream(file_stream, filename.string());
+        std::string file = filename.string();
+        errno = 0;
+        open_stream(file_stream, file);
     }
     catch (const std::exception &ex)
     {
-        throw xlnt::invalid_file("Could not open file at path \"" + filename.string() + "\". Reason: " + ex.what());
+        auto saved_errno = errno;
+        throw xlnt::invalid_file("Could not open file at path \"" + filename.string() + "\". Reason: \"" + ex.what() +
+            "\" (internal error " + std::to_string(saved_errno) + ": " + xlnt::detail::format_errno(saved_errno) + ")");
     }
 
     load(file_stream);
@@ -1048,11 +1053,15 @@ void workbook::load_internal(const xlnt::path &filename, const T &password)
 
     try
     {
-        open_stream(file_stream, filename.string());
+        std::string file = filename.string();
+        errno = 0;
+        open_stream(file_stream, file);
     }
     catch (const std::exception &ex)
     {
-        throw xlnt::invalid_file("Could not open file at path \"" + filename.string() + "\". Reason: " + ex.what());
+        auto saved_errno = errno;
+        throw xlnt::invalid_file("Could not open file at path \"" + filename.string() + "\". Reason: \"" + ex.what() +
+            "\" (internal error " + std::to_string(saved_errno) + ": " + xlnt::detail::format_errno(saved_errno) + ")");
     }
 
     return load(file_stream, password);

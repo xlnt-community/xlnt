@@ -27,7 +27,7 @@
 // MUST be defined before including <ctime>
 // See https://en.cppreference.com/w/c/header/time.html
 #if defined(__STDC_LIB_EXT1__) && !defined(__STDC_WANT_LIB_EXT1__)
-#    define __STDC_WANT_LIB_EXT1__
+#    define __STDC_WANT_LIB_EXT1__ 1
 #endif
 
 #include <ctime>
