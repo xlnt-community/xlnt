@@ -36,7 +36,7 @@
 namespace xlnt {
 namespace detail {
 
-std::string format_errno(int err_no)
+std::string strerror_safe(int err_no)
 {
     constexpr std::size_t BUFF_SIZE = 8192;
     std::string err_msg;

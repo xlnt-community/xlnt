@@ -1032,7 +1032,7 @@ void workbook::load(const path &filename)
     {
         auto saved_errno = errno;
         throw xlnt::invalid_file("Could not open file at path \"" + filename.string() + "\". Reason: \"" + ex.what() +
-            "\" (internal error " + std::to_string(saved_errno) + ": " + xlnt::detail::format_errno(saved_errno) + ")");
+            "\" (internal error " + std::to_string(saved_errno) + ": " + detail::strerror_safe(saved_errno) + ")");
     }
 
     load(file_stream);
@@ -1061,7 +1061,7 @@ void workbook::load_internal(const xlnt::path &filename, const T &password)
     {
         auto saved_errno = errno;
         throw xlnt::invalid_file("Could not open file at path \"" + filename.string() + "\". Reason: \"" + ex.what() +
-            "\" (internal error " + std::to_string(saved_errno) + ": " + xlnt::detail::format_errno(saved_errno) + ")");
+            "\" (internal error " + std::to_string(saved_errno) + ": " + detail::strerror_safe(saved_errno) + ")");
     }
 
     return load(file_stream, password);

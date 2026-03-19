@@ -28,7 +28,12 @@
 namespace xlnt {
 namespace detail {
 
-std::string format_errno(int err_no);
+/// Returns a string that describes the error code passed in the argument err_no.
+/// This function tries to be "safe" by using thread-safe versions of std::strerror if available on the system. While XLNT is
+/// not thread-safe itself, we still want to avoid calling functions that might use global variables
+/// (the char* returned by std::strerror is not guaranteed by the standard to be thread-local). This way,
+/// XLNT can still be used in a multi-threaded application as long as XLNT is called from a single thread, or synchronized by the application.
+std::string strerror_safe(int err_no);
 
 } // namespace detail
 } // namespace xlnt
