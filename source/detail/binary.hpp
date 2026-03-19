@@ -68,10 +68,6 @@ public:
         return *this;
     }
 
-    ~binary_reader()
-    {
-    }
-
     const T *data() const
     {
         return vector_ == nullptr ? data_ : vector_->data();
@@ -161,10 +157,6 @@ public:
     binary_writer(const binary_writer &other)
     {
         *this = other;
-    }
-
-    ~binary_writer()
-    {
     }
 
     binary_writer &operator=(const binary_writer &other)
