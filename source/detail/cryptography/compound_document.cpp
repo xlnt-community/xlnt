@@ -404,7 +404,7 @@ private:
                 for (sector_id link : chain_)
                 {
                     document_.write_mini_sector(sector_reader_, link);
-                    sector_reader_.offset(sector_reader_.offset() + document_.mini_sector_size());
+                    sector_reader_.offset(sector_reader_.offset() + static_cast<std::size_t>(document_.mini_sector_size()));
                 }
             }
         }
@@ -472,10 +472,10 @@ private:
         for (sector_id link : new_chain)
         {
             document_.write_sector(sector_reader_, link);
-            sector_reader_.offset(sector_reader_.offset() + document_.mini_sector_size());
+            sector_reader_.offset(sector_reader_.offset() + static_cast<std::size_t>(document_.mini_sector_size()));
         }
 
-        current_sector_.resize(document_.sector_size(), 0);
+        current_sector_.resize(static_cast<std::size_t>(document_.sector_size()), 0);
         std::fill(current_sector_.begin(), current_sector_.end(), byte(0));
 
         if (has_invalid_start_sector(entry_))
@@ -669,7 +669,7 @@ void compound_document::read_sector(sector_id id, binary_writer<T> &writer)
             std::to_string(seek_pos) + ". Reason: " + ex.what());
     }
 
-    std::vector<byte> sector(sector_size(), 0);
+    std::vector<byte> sector(static_cast<std::size_t>(sector_size()), 0);
     try
     {
         in_->read(reinterpret_cast<char *>(sector.data()), static_cast<std::streamsize>(sector_size()));
@@ -719,7 +719,7 @@ void compound_document::read_mini_sector(sector_id id, binary_writer<T> &writer)
     binary_reader<byte> container_reader(container);
     container_reader.offset(static_cast<std::size_t>(id * mini_sector_size()));
 
-    writer.append(container_reader, mini_sector_size());
+    writer.append(container_reader, static_cast<std::size_t>(mini_sector_size()));
 }
 
 template <typename T>
@@ -774,7 +774,7 @@ sector_id compound_document::allocate_sector()
 
     write_FAT();
 
-    std::vector<byte> empty_sector(sector_size());
+    std::vector<byte> empty_sector(static_cast<std::size_t>(sector_size()));
     binary_reader<byte> empty_sector_reader(empty_sector);
     write_sector(empty_sector_reader, next_free);
 
