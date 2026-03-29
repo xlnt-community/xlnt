@@ -388,7 +388,7 @@ workflows:
             parameters:
               cxx-ver:
                 - "11"
-                - "23"
+                - "26"
               build-type:
                 - Release
                 - Debug
@@ -402,10 +402,10 @@ workflows:
               # Exclude {static: ON, skip-internal-tests: ON} subset
               - {static: "ON", skip-internal-tests: "ON", cxx-ver: "11", build-type: Debug}
               - {static: "ON", skip-internal-tests: "ON", cxx-ver: "11", build-type: Release}
-              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "23", build-type: Debug}
-              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "23", build-type: Release}
+              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "26", build-type: Debug}
+              - {static: "ON", skip-internal-tests: "ON", cxx-ver: "26", build-type: Release}
               # Exclude combination covered by tests-gcc-sanitize job
-              - {cxx-ver: "23", build-type: Debug, static: "OFF", skip-internal-tests: "OFF"}
+              - {cxx-ver: "26", build-type: Debug, static: "OFF", skip-internal-tests: "OFF"}
           filters:
             branches:
               ignore: gh-pages
@@ -429,7 +429,7 @@ workflows:
             alias: tests-gcc-sanitize-all
             parameters:
               cxx-ver:
-                - "23"
+                - "26"
               build-type:
                 - Debug
               static:
@@ -539,7 +539,7 @@ workflows:
       - build-gcc:
           name: coverage-gcc
           image: PLACEHOLDER_IMAGE(gcc_cmake_latest)
-          cxx-ver: "23"
+          cxx-ver: "26"
           build-type: Debug
           coverage: "ON"
           filters:
