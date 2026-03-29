@@ -404,7 +404,22 @@ template<typename T>
 T read(std::istream &in)
 {
     T result;
-    in.read(reinterpret_cast<char *>(&result), sizeof(T));
+
+    // Exception handling could provide useful information about why errors have occurred.
+    auto previous_exception_mask = in.exceptions();
+    in.exceptions(std::istream::failbit | std::istream::badbit);
+
+    try
+    {
+        in.read(reinterpret_cast<char *>(&result), sizeof(T));
+    }
+    catch (const std::exception &ex)
+    {
+        throw xlnt::invalid_parameter("Failed reading 1 value of size " + std::to_string(sizeof(T)) +
+            " from binary stream. Reason: " + ex.what());
+    }
+
+    in.exceptions(previous_exception_mask);
 
     return result;
 }
@@ -413,8 +428,27 @@ template<typename T>
 std::vector<T> read_vector(std::istream &in, std::size_t count)
 {
     std::vector<T> result(count, T());
-    in.read(reinterpret_cast<char *>(&result[0]),
-        static_cast<std::streamsize>(sizeof(T) * count));
+
+    if (count == 0)
+    {
+        return result; // avoid dereferencing element at index [0] if there are 0 elements
+    }
+
+    // Exception handling could provide useful information about why errors have occurred.
+    auto previous_exception_mask = in.exceptions();
+    in.exceptions(std::istream::failbit | std::istream::badbit);
+
+    try
+    {
+        in.read(reinterpret_cast<char *>(&result[0]), static_cast<std::streamsize>(sizeof(T) * count));
+    }
+    catch (const std::exception &ex)
+    {
+        throw xlnt::invalid_parameter("Failed reading " + std::to_string(count) + " values of size " + std::to_string(sizeof(T)) +
+            " (total of " + std::to_string(count * sizeof(T)) + " bytes) from binary stream. Reason: " + ex.what());
+    }
+
+    in.exceptions(previous_exception_mask);
 
     return result;
 }
@@ -425,13 +459,32 @@ template<typename T>
 std::basic_string<T> read_string(std::istream &in, std::size_t count, bool contains_NUL)
 {
     std::basic_string<T> result(count, T());
-    in.read(reinterpret_cast<char *>(&result[0]),
-        static_cast<std::streamsize>(sizeof(T) * count));
+
+    if (count == 0)
+    {
+        return result; // avoid dereferencing element at index [0] if there are 0 elements
+    }
+
+    // Exception handling could provide useful information about why errors have occurred.
+    auto previous_exception_mask = in.exceptions();
+    in.exceptions(std::istream::failbit | std::istream::badbit);
+
+    try
+    {
+        in.read(reinterpret_cast<char *>(&result[0]), static_cast<std::streamsize>(sizeof(T) * count));
+    }
+    catch (const std::exception &ex)
+    {
+        throw xlnt::invalid_parameter("Failed reading " + std::to_string(count) + " characters of size " + std::to_string(sizeof(T)) +
+            " (total of " + std::to_string(count * sizeof(T)) + " bytes) from binary stream. Reason: " + ex.what());
+    }
 
     if (contains_NUL)
     {
         result.pop_back();
     }
+
+    in.exceptions(previous_exception_mask);
 
     return result;
 }
