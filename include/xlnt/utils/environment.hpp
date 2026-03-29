@@ -40,8 +40,7 @@
 #define XLNT_CPP_17 201703L
 #define XLNT_CPP_20 202002L
 #define XLNT_CPP_23 202302L
-// TODO: when C++26 is out, please update the C version check below as well!
-//#define XLNT_CPP_26 TODO_VERSION
+#define XLNT_CPP_26 202603L
 
 /// <summary>
 /// Returns whether the C++ version `version` is supported by the current build configuration.
@@ -78,6 +77,6 @@
     ((__STDC_VERSION__ >= version) || \
      (XLNT_C_99 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_11)) || \
      (XLNT_C_11 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_17)) || \
-     (XLNT_C_17 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_20)) /*|| \
-     (XLNT_C_23 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_26))*/ \
+     (XLNT_C_17 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_20)) || \
+     (XLNT_C_23 >= version && XLNT_HAS_CPP_VERSION(XLNT_CPP_26)) \
      ))
