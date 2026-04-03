@@ -1,4 +1,4 @@
-FROM gcc:14
+FROM gcc:15
 
 # 1. Install CMake
 
