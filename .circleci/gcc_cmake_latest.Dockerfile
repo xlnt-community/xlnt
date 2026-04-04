@@ -2,7 +2,7 @@ FROM gcc:14
 
 # 1. Install CMake
 
-ARG CMAKE_VERSION=4.2.4
+ARG CMAKE_VERSION=4.1.5
 
 WORKDIR /tmp/
 RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz
