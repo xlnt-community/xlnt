@@ -35,7 +35,7 @@ namespace xml {
 template <>
 struct value_traits<xlnt::detail::hash_algorithm>
 {
-    static xlnt::detail::hash_algorithm parse(std::string hash_algorithm_string, const parser &)
+    static xlnt::detail::hash_algorithm parse(const std::string &hash_algorithm_string, const parser &)
     {
         if (hash_algorithm_string == "SHA1")
             return xlnt::detail::hash_algorithm::sha1;

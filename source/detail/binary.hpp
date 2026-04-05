@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include <algorithm>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
@@ -57,21 +56,6 @@ public:
     {
     }
 
-    binary_reader(const binary_reader &other) = default;
-
-    binary_reader &operator=(const binary_reader &other)
-    {
-        vector_ = other.vector_;
-        offset_ = other.offset_;
-        data_ = other.data_;
-
-        return *this;
-    }
-
-    ~binary_reader()
-    {
-    }
-
     const T *data() const
     {
         return vector_ == nullptr ? data_ : vector_->data();
@@ -101,8 +85,20 @@ public:
     template<typename U>
     const U *read_pointer()
     {
+        static_assert(sizeof(U) % sizeof(T) == 0, "sizeof(U) MUST be a multiple of sizeof(T)");
+
+        const std::size_t num_elements_to_read = sizeof(U) / sizeof(T);
+        if (offset_ + num_elements_to_read > count())
+        {
+            throw xlnt::invalid_parameter("Reading past end while trying to read 1 element of size " + std::to_string(sizeof(U)) +
+                ": attempted to read from offset at element " + std::to_string(offset_) +
+                " (byte " + std::to_string(offset_ * sizeof(T)) + ") reading " + std::to_string(num_elements_to_read) +
+                " elements (" + std::to_string(num_elements_to_read * sizeof(T)) + " bytes), although the reader only has " +
+                std::to_string(count()) + " elements (" + std::to_string(bytes()) + " bytes)");
+        }
+
         const auto result = reinterpret_cast<const U *>(data() + offset_);
-        offset_ += sizeof(U) / sizeof(T);
+        offset_ += num_elements_to_read;
 
         return result;
     }
@@ -116,7 +112,20 @@ public:
     template<typename U>
     std::vector<U> as_vector() const
     {
-        auto result = std::vector<T>(bytes() / sizeof(U), U());
+        // Relax requirements (no static_assert) to allow reading as a vector of bytes.
+        if (bytes() % sizeof(U) != 0)
+        {
+            throw xlnt::invalid_parameter("Cannot copy " + std::to_string(count()) + " elements with an element size of " +
+                std::to_string(sizeof(T)) + " bytes (total of " + std::to_string(bytes()) + " bytes) to vector with an element size of " +
+                std::to_string(sizeof(U)) + " bytes");
+        }
+
+        if (count() == 0)
+        {
+            return {}; // otherwise std::vector::data() could be nullptr which causes undefined behavior with std::memcpy
+        }
+
+        auto result = std::vector<U>(bytes() / sizeof(U), U());
         std::memcpy(result.data(), data(), bytes());
 
         return result;
@@ -125,9 +134,33 @@ public:
     template<typename U>
     std::vector<U> read_vector(std::size_t count)
     {
+        // Relax requirements (no static_assert) to allow reading as a vector of bytes.
+        if ((count * sizeof(U)) % sizeof(T) != 0)
+        {
+            throw xlnt::invalid_parameter("Cannot copy " + std::to_string(count) + " elements with an element size of " +
+                std::to_string(sizeof(U)) + " bytes (total of " + std::to_string(count * sizeof(U)) + " bytes) from vector with an element size of " +
+                std::to_string(sizeof(T)) + " bytes");
+        }
+
+        const std::size_t num_elements_to_read = count * sizeof(U) / sizeof(T);
+        if (offset_ + num_elements_to_read > this->count())
+        {
+            throw xlnt::invalid_parameter("Reading past end while trying to read " + std::to_string(count) +
+                " elements of size " + std::to_string(sizeof(U)) + " (total of " + std::to_string(count * sizeof(U)) +
+                " bytes): attempted to read from offset at element " + std::to_string(offset_) +
+                " (byte " + std::to_string(offset_ * sizeof(T)) + ") reading " + std::to_string(num_elements_to_read) +
+                " elements (" + std::to_string(num_elements_to_read * sizeof(T)) + " bytes), although the reader only has " +
+                std::to_string(this->count()) + " elements (" + std::to_string(bytes()) + " bytes)");
+        }
+
+        if (count == 0 || this->count() == 0)
+        {
+            return {}; // otherwise std::vector::data() could be nullptr which causes undefined behavior with std::memcpy
+        }
+
         auto result = std::vector<U>(count, U());
         std::memcpy(result.data(), data() + offset_, count * sizeof(U));
-        offset_ += count * sizeof(T) / sizeof(U);
+        offset_ += num_elements_to_read;
 
         return result;
     }
@@ -158,23 +191,6 @@ public:
     {
     }
 
-    binary_writer(const binary_writer &other)
-    {
-        *this = other;
-    }
-
-    ~binary_writer()
-    {
-    }
-
-    binary_writer &operator=(const binary_writer &other)
-    {
-        data_ = other.data_;
-        offset_ = other.offset_;
-
-        return *this;
-    }
-
     std::vector<T> &data()
     {
         return *data_;
@@ -183,10 +199,24 @@ public:
     // Make the bytes of the data pointed to by this writer equivalent to those in the given vector
     // sizeof(U) should be a multiple of sizeof(T)
     template<typename U>
-    void assign(const std::vector<U> &ints)
+    void assign(const std::vector<U> &data)
     {
-        resize(ints.size() * sizeof(U));
-        std::memcpy(data_->data(), ints.data(), bytes());
+        // Relax requirements (no static_assert) to allow writing a vector of bytes.
+        if ((data.size() * sizeof(U)) % sizeof(T) != 0)
+        {
+            throw xlnt::invalid_parameter("Error trying to assign from vector: invalid size requirements: "
+                "trying to assign " + std::to_string(data.size()) + " elements with a size of " + std::to_string(sizeof(U)) +
+                " bytes (" + std::to_string(data.size() * sizeof(U)) + " bytes in total) but writer has elements with a size of " +
+                std::to_string(sizeof(T)) + " bytes.");
+        }
+
+        resize(data.size() * sizeof(U) / sizeof(T));
+
+        // otherwise std::vector::data() could be nullptr which causes undefined behavior with std::memcpy
+        if (data.size() != 0)
+        {
+            std::memcpy(data_->data(), data.data(), bytes());
+        }
     }
 
     // Make the bytes of the data pointed to by this writer equivalent to those in the given string
@@ -195,12 +225,11 @@ public:
     template<typename U>
     void assign(const std::basic_string<U> &string, bool append_NUL)
     {
-        resize(string.size() * sizeof(U) + (append_NUL ? sizeof(U) : 0));
+        static_assert(sizeof(U) % sizeof(T) == 0, "sizeof(U) MUST be a multiple of sizeof(T)");
+
+        const std::size_t string_length = string.length() + (append_NUL ? 1 : 0);
+        resize(string_length * sizeof(U) / sizeof(T));
         std::memcpy(data_->data(), string.data(), bytes());
-        if (append_NUL)
-        {
-            data_->back() = U{}; // ensure NUL terminator is always added
-        }
     }
 
     void offset(std::size_t new_offset)
@@ -222,6 +251,15 @@ public:
     template<typename U>
     void write(U value)
     {
+        static_assert(sizeof(U) % sizeof(T) == 0, "sizeof(U) MUST be a multiple of sizeof(T)");
+
+        if (offset_ > count())
+        {
+            throw xlnt::invalid_attribute("Error trying to write single value: invalid writer offset at element " + std::to_string(offset_) +
+                " (byte " + std::to_string(offset_ * sizeof(T)) + "), but writer only has " +
+                std::to_string(count()) + " elements (" + std::to_string(bytes()) + " bytes)");
+        }
+
         const auto num_bytes = sizeof(U);
         const auto remaining_bytes = bytes() - offset() * sizeof(T);
 
@@ -262,19 +300,78 @@ public:
     template<typename U>
     void append(const std::vector<U> &data)
     {
-        binary_reader<U> reader(data);
-        append(reader, data.size() * sizeof(U));
+        // Relax requirements (no static_assert) to allow writing a vector of bytes.
+        if ((data.size() * sizeof(U)) % sizeof(T) != 0)
+        {
+            throw xlnt::invalid_parameter("Error trying to append from vector: invalid size requirements: "
+                "trying to append " + std::to_string(data.size()) + " elements with a size of " + std::to_string(sizeof(U)) +
+                " bytes (" + std::to_string(data.size() * sizeof(U)) + " bytes in total) but writer has elements with a size of " +
+                std::to_string(sizeof(T)) + " bytes.");
+        }
+
+        if (offset_ > count())
+        {
+            throw xlnt::invalid_attribute("Error trying to append from vector: invalid writer offset at element " + std::to_string(offset_) +
+                " (byte " + std::to_string(offset_ * sizeof(T)) + "), but writer only has " +
+                std::to_string(count()) + " elements (" + std::to_string(bytes()) + " bytes)");
+        }
+
+        if (data.size() == 0)
+        {
+            return; // otherwise std::vector::data() could be nullptr which causes undefined behavior with std::memcpy
+        }
+
+        const auto num_bytes = sizeof(U) * data.size();
+        const auto remaining_bytes = bytes() - offset() * sizeof(T);
+
+        if (remaining_bytes < num_bytes)
+        {
+            extend((num_bytes - remaining_bytes) / sizeof(T));
+        }
+
+        std::memcpy(data_->data() + offset_, data.data(), num_bytes);
+        offset_ += num_bytes / sizeof(T);
     }
 
     /// <summary>
     /// Reads reader_element_count elements from the reader.
-    /// Assumes that so many element can be read.
+    /// Assumes that so many elements can be read.
     /// If the reader does not contain at least reader_element_count elements,
     /// an invalid_parameter exception will be thrown.
     /// </summary>
     template<typename U>
     void append(binary_reader<U> &reader, std::size_t reader_element_count)
     {
+        // Relax requirements (no static_assert) to allow writing a vector of bytes.
+        if ((reader_element_count * sizeof(U)) % sizeof(T) != 0)
+        {
+            throw xlnt::invalid_parameter("Error trying to append from vector: invalid size requirements: "
+                "trying to append " + std::to_string(reader_element_count) + " elements with a size of " + std::to_string(sizeof(U)) +
+                " bytes (" + std::to_string(reader_element_count * sizeof(U)) + " bytes in total) but writer has elements with a size of " +
+                std::to_string(sizeof(T)) + " bytes.");
+        }
+
+        if (offset_ > count())
+        {
+            throw xlnt::invalid_attribute("Error trying to append from reader: invalid writer offset at element " + std::to_string(offset_) +
+                " (byte " + std::to_string(offset_ * sizeof(T)) + "), but writer only has " +
+                std::to_string(count()) + " elements (" + std::to_string(bytes()) + " bytes)");
+        }
+
+        if (reader.offset() + reader_element_count > reader.count())
+        {
+            throw xlnt::invalid_parameter("Reading past end while trying to append from reader: "
+                "attempted to read from offset at element " + std::to_string(reader.offset()) +
+                " (byte " + std::to_string(reader.offset() * sizeof(U)) + ") reading " + std::to_string(reader_element_count) +
+                " elements (" + std::to_string(reader_element_count * sizeof(U)) + " bytes), although the reader only has " +
+                std::to_string(reader.count()) + " elements (" + std::to_string(reader.bytes()) + " bytes)");
+        }
+
+        if (reader.count() == 0)
+        {
+            return; // otherwise std::vector::data() could be nullptr which causes undefined behavior with std::memcpy
+        }
+
         const auto num_bytes = sizeof(U) * reader_element_count;
         const auto remaining_bytes = bytes() - offset() * sizeof(T);
 
@@ -283,13 +380,8 @@ public:
             extend((num_bytes - remaining_bytes) / sizeof(T));
         }
 
-        if ((reader.offset() + reader_element_count) * sizeof(U) > reader.bytes())
-        {
-            throw xlnt::invalid_parameter("reading past end (from offset " + std::to_string(reader.offset()) + " reading " + std::to_string(reader_element_count * sizeof(U)) + " bytes, although the reader only has " + std::to_string(reader.bytes()) + " bytes)");
-        }
-
-        std::memcpy(data_->data() + offset_, reader.data() + reader.offset(), reader_element_count * sizeof(U));
-        offset_ += reader_element_count * sizeof(U) / sizeof(T);
+        std::memcpy(data_->data() + offset_, reader.data() + reader.offset(), num_bytes);
+        offset_ += num_bytes / sizeof(T);
     }
 
 private:
@@ -312,7 +404,22 @@ template<typename T>
 T read(std::istream &in)
 {
     T result;
-    in.read(reinterpret_cast<char *>(&result), sizeof(T));
+
+    // Exception handling could provide useful information about why errors have occurred.
+    auto previous_exception_mask = in.exceptions();
+    in.exceptions(std::istream::failbit | std::istream::badbit);
+
+    try
+    {
+        in.read(reinterpret_cast<char *>(&result), sizeof(T));
+    }
+    catch (const std::exception &ex)
+    {
+        throw xlnt::invalid_parameter("Failed reading 1 value of size " + std::to_string(sizeof(T)) +
+            " from binary stream. Reason: " + ex.what());
+    }
+
+    in.exceptions(previous_exception_mask);
 
     return result;
 }
@@ -321,8 +428,27 @@ template<typename T>
 std::vector<T> read_vector(std::istream &in, std::size_t count)
 {
     std::vector<T> result(count, T());
-    in.read(reinterpret_cast<char *>(&result[0]),
-        static_cast<std::streamsize>(sizeof(T) * count));
+
+    if (count == 0)
+    {
+        return result; // avoid dereferencing element at index [0] if there are 0 elements
+    }
+
+    // Exception handling could provide useful information about why errors have occurred.
+    auto previous_exception_mask = in.exceptions();
+    in.exceptions(std::istream::failbit | std::istream::badbit);
+
+    try
+    {
+        in.read(reinterpret_cast<char *>(&result[0]), static_cast<std::streamsize>(sizeof(T) * count));
+    }
+    catch (const std::exception &ex)
+    {
+        throw xlnt::invalid_parameter("Failed reading " + std::to_string(count) + " values of size " + std::to_string(sizeof(T)) +
+            " (total of " + std::to_string(count * sizeof(T)) + " bytes) from binary stream. Reason: " + ex.what());
+    }
+
+    in.exceptions(previous_exception_mask);
 
     return result;
 }
@@ -333,13 +459,32 @@ template<typename T>
 std::basic_string<T> read_string(std::istream &in, std::size_t count, bool contains_NUL)
 {
     std::basic_string<T> result(count, T());
-    in.read(reinterpret_cast<char *>(&result[0]),
-        static_cast<std::streamsize>(sizeof(T) * count));
+
+    if (count == 0)
+    {
+        return result; // avoid dereferencing element at index [0] if there are 0 elements
+    }
+
+    // Exception handling could provide useful information about why errors have occurred.
+    auto previous_exception_mask = in.exceptions();
+    in.exceptions(std::istream::failbit | std::istream::badbit);
+
+    try
+    {
+        in.read(reinterpret_cast<char *>(&result[0]), static_cast<std::streamsize>(sizeof(T) * count));
+    }
+    catch (const std::exception &ex)
+    {
+        throw xlnt::invalid_parameter("Failed reading " + std::to_string(count) + " characters of size " + std::to_string(sizeof(T)) +
+            " (total of " + std::to_string(count * sizeof(T)) + " bytes) from binary stream. Reason: " + ex.what());
+    }
 
     if (contains_NUL)
     {
         result.pop_back();
     }
+
+    in.exceptions(previous_exception_mask);
 
     return result;
 }
