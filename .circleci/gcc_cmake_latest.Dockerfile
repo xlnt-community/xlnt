@@ -1,4 +1,4 @@
-FROM gcc:15.1
+FROM gcc:15.1-bookworm
 
 # 1. Install CMake
 
