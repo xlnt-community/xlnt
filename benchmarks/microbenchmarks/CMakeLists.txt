@@ -3,7 +3,7 @@
 # this file is behind a feature flag (XLNT_MICROBENCH_ENABLED) so the primary build is not affected
 # NOTE: FetchContent_Populate has been deprecated in CMake 3.30. Its replacement,
 # FetchContent_MakeAvailable, is available since CMake 3.14.
-cmake_minimum_required(VERSION 3.14...3.31)
+cmake_minimum_required(VERSION 3.14...4.3)
 project(xlnt_ubench)
 
 # acquire google benchmark dependency
