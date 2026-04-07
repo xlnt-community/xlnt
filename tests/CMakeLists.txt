@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1...3.31)
+cmake_minimum_required(VERSION 3.1...4.3)
 project(xlnt.test)
 
 set(CMAKE_CXX_STANDARD ${XLNT_CXX_LANG})
