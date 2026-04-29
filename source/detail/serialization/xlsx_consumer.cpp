@@ -1070,7 +1070,7 @@ worksheet xlsx_consumer::read_worksheet_end(const std::string &rel_id)
 
                     if (hyperlink_rel != hyperlinks.end())
                     {
-                        auto url = hyperlink_rel->target().path().string();
+                        auto url = hyperlink_rel->target().to_string();
 
                         if (cell.has_value())
                         {
