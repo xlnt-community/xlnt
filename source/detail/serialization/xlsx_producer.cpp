@@ -3520,7 +3520,7 @@ void xlsx_producer::write_relationships(const std::vector<xlnt::relationship> &r
 
         write_attribute("Id", relationship.id());
         write_attribute("Type", relationship.type());
-        write_attribute("Target", relationship.target().path().string());
+        write_attribute("Target", relationship.target().to_string());
 
         if (relationship.target_mode() == xlnt::target_mode::external)
         {

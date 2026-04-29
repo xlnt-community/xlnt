@@ -451,7 +451,7 @@ void cell::hyperlink(const std::string &url, const std::string &display)
     // check for existing relationships
     auto relationships = manifest.relationships(ws.path(), relationship_type::hyperlink);
     auto relation = std::find_if(relationships.cbegin(), relationships.cend(),
-        [&url](const xlnt::relationship &rel) { return rel.target().path().string() == url; });
+    [&url](const xlnt::relationship &rel) { return rel.target().to_string() == url; });
     if (relation != relationships.end())
     {
         d_->hyperlink_.get().relationship = *relation;
