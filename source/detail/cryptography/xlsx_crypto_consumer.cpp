@@ -55,7 +55,7 @@ template <typename T>
 std::string format_hex(T value)
 {
     // Format example: 0x0000660F
-    return fmt::format("{:#010x}", value);
+    return fmt::format("0x{:08X}", value);
 }
 
 template <typename T>

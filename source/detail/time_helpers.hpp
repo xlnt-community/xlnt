@@ -27,7 +27,7 @@
 // MUST be defined before including <ctime>
 // See https://en.cppreference.com/w/c/header/time.html
 #if defined(__STDC_LIB_EXT1__) && !defined(__STDC_WANT_LIB_EXT1__)
-#    define __STDC_WANT_LIB_EXT1__
+#    define __STDC_WANT_LIB_EXT1__ 1
 #endif
 
 #include <ctime>
@@ -40,6 +40,10 @@ namespace detail {
 
 /// Converts given time since epoch (a time_t value) into calendar time, expressed in local time, in the struct tm format.
 /// If the conversion failed, an empty optional will be returned.
+/// This function tries to be "safe" by using thread-safe versions of std::localtime if available on the system. While XLNT is
+/// not thread-safe itself, we still want to avoid calling functions that might use global variables
+/// (the structure behind the std::tm* returned by std::localtime is not guaranteed by the standard to be thread-local). This way,
+/// XLNT can still be used in a multi-threaded application as long as XLNT is called from a single thread, or synchronized by the application.
 inline optional<std::tm> localtime_safe(std::time_t raw_time)
 {
     optional<std::tm> returned_value;
@@ -83,6 +87,10 @@ inline optional<std::tm> localtime_safe(std::time_t raw_time)
 
 /// Converts given time since epoch (a time_t value) into calendar time, expressed in Coordinated Universal Time (UTC) in the struct tm format.
 /// If the conversion failed, an empty optional will be returned.
+/// This function tries to be "safe" by using thread-safe versions of std::gmtime if available on the system. While XLNT is
+/// not thread-safe itself, we still want to avoid calling functions that might use global variables
+/// (the structure behind the std::tm* returned by std::gmtime is not guaranteed by the standard to be thread-local). This way,
+/// XLNT can still be used in a multi-threaded application as long as XLNT is called from a single thread, or synchronized by the application.
 inline optional<std::tm> gmtime_safe(std::time_t raw_time)
 {
     optional<std::tm> returned_value;

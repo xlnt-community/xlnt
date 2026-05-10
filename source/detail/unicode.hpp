@@ -36,17 +36,34 @@
 namespace xlnt {
 namespace detail {
 
+/// Can throw: utf8::not_enough_room, utf8::invalid_utf8, utf8::invalid_code_point
 XLNT_API_INTERNAL std::u16string utf8_to_utf16(const std::string &utf8_string);
+
+/// Can throw: utf8::not_enough_room, utf8::invalid_utf8, utf8::invalid_code_point
 XLNT_API_INTERNAL std::u32string utf8_to_utf32(const std::string &utf8_string);
+
+/// Can throw: utf8::invalid_utf16, utf8::invalid_code_point
 XLNT_API_INTERNAL std::string utf16_to_utf8(const std::u16string &utf16_string);
+
+/// Can throw: utf8::invalid_code_point
 XLNT_API_INTERNAL std::string utf32_to_utf8(const std::u32string &utf32_string);
+
 XLNT_API_INTERNAL std::string latin1_to_utf8(const std::string &latin1);
+
+/// Can throw: xlnt::encoding_error
 XLNT_API_INTERNAL size_t string_length(const std::string &utf8_string);
 
 #if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+/// Can throw: utf8::not_enough_room, utf8::invalid_utf8, utf8::invalid_code_point
 XLNT_API_INTERNAL std::u16string utf8_to_utf16(std::u8string_view utf8_string);
+
+/// Can throw: utf8::not_enough_room, utf8::invalid_utf8, utf8::invalid_code_point
 XLNT_API_INTERNAL std::u32string utf8_to_utf32(std::u8string_view utf8_string);
+
+/// Can throw: utf8::invalid_utf16, utf8::invalid_code_point
 XLNT_API_INTERNAL std::u8string utf16_to_utf8_u8(std::u16string_view utf16_string);
+
+/// Can throw: utf8::invalid_code_point
 XLNT_API_INTERNAL std::u8string utf32_to_utf8_u8(std::u32string_view utf32_string);
 #endif
 
