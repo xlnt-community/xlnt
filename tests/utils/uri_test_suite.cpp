@@ -386,7 +386,7 @@ public:
             {"../", "http://a/b/"},
             {"../g", "http://a/b/g"},
             {"../..", "http://a/"},
-            {"../../g", "http://a/g"}
+            {"../../g", "http://a/g"},
         };
 
         for (const auto &test : cases)
@@ -452,10 +452,14 @@ public:
         xlnt::uri base_empty("");
 
         xlnt_assert_equals(xlnt::uri("/./g").make_absolute(base_empty).to_string(), "/g");
+        xlnt_assert_equals(xlnt::uri("./g").make_absolute(base_empty).to_string(), "g");
         xlnt_assert_equals(xlnt::uri("/.").make_absolute(base_empty).to_string(), "/");
+        xlnt_assert_equals(xlnt::uri("./").make_absolute(base_empty).to_string(), "");
         xlnt_assert_equals(xlnt::uri("/../g").make_absolute(base_empty).to_string(), "/g");
         xlnt_assert_equals(xlnt::uri("/..").make_absolute(base_empty).to_string(), "/");
 
+        xlnt_assert_equals(xlnt::uri(".").make_absolute(base_empty).to_string(), "");
+        xlnt_assert_equals(xlnt::uri("..").make_absolute(base_empty).to_string(), "");
 
         xlnt_assert_equals(xlnt::uri("child").make_absolute(xlnt::uri("http://example.com")).to_string(), "http://example.com/child");
         xlnt_assert_equals(xlnt::uri("child").make_absolute(xlnt::uri("urn:base")).to_string(), "urn:child");
@@ -465,6 +469,12 @@ public:
 
         xlnt::uri ref2 = xlnt::uri("urn:target").make_reference(xlnt::uri("urn:base"));
         xlnt_assert_equals(ref2.to_string(), "target");
+
+        xlnt::uri ref_no_trailing = xlnt::uri("http://example.com/a/b/d.txt").make_reference(xlnt::uri("http://example.com/a/b/c"));
+        xlnt_assert_equals(ref_no_trailing.to_string(), "d.txt");
+
+        xlnt::uri ref_up = xlnt::uri("http://example.com/a/d.txt").make_reference(xlnt::uri("http://example.com/a/b/c/"));
+        xlnt_assert_equals(ref_up.to_string(), "../../d.txt");
     }
 };
 
