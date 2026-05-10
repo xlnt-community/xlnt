@@ -127,16 +127,19 @@ relationship manifest::relationship(const path &part, relationship_type type) co
 
 std::vector<xlnt::relationship> manifest::relationships(const path &part, relationship_type type) const
 {
+    auto rels = relationships_.find(part);
+    if (rels == relationships_.end())
+    {
+        return {};
+    }
+
     std::vector<xlnt::relationship> matches;
 
-    if (has_relationship(part, type))
+    for (const auto &rel : rels->second)
     {
-        for (const auto &rel : relationships_.at(part))
+        if (rel.second.type() == type)
         {
-            if (rel.second.type() == type)
-            {
-                matches.push_back(rel.second);
-            }
+            matches.push_back(rel.second);
         }
     }
 

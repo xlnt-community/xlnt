@@ -2294,10 +2294,15 @@ void xlsx_producer::write_worksheet(const relationship &rel)
     auto worksheet_part = rel.source().path().parent().append(rel.target().path());
     auto worksheet_rels = source_.manifest().relationships(worksheet_part);
 
-    auto title = std::find_if(source_.d_->sheet_title_rel_id_map_.begin(), source_.d_->sheet_title_rel_id_map_.end(),
-        [&](const std::pair<std::string, std::string> &p) {
+    auto it_title = std::find_if(source_.d_->sheet_title_rel_id_map_.begin(), source_.d_->sheet_title_rel_id_map_.end(),
+        [&rel](const std::pair<std::string, std::string> &p) {
             return p.second == rel.id();
-        })->first;
+        });
+    if (it_title == source_.d_->sheet_title_rel_id_map_.end())
+    {
+        throw xlnt::key_not_found(rel.id());
+    }
+    const auto &title = it_title->first;
 
     auto ws = source_.sheet_by_title(title);
 
@@ -3514,7 +3519,11 @@ void xlsx_producer::write_relationships(const std::vector<xlnt::relationship> &r
     {
         auto rel_iter = std::find_if(relationships.begin(), relationships.end(),
             [&i](const relationship &r) { return r.id() == "rId" + std::to_string(i); });
-        auto relationship = *rel_iter;
+        if (rel_iter == relationships.end())
+        {
+            throw xlnt::key_not_found("rId" + std::to_string(i));
+        }
+        const auto &relationship = *rel_iter;
 
         write_start_element(xmlns, "Relationship");
 

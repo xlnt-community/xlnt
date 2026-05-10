@@ -2141,6 +2141,11 @@ void workbook::reorder_relationships()
         auto rel_it = std::find_if(rel_copy.begin(), rel_copy.end(),
             [&](const relationship &rel) { return rel.id() == worksheet_rel_ids[index]; });
 
+        if (rel_it == rel_copy.end())
+        {
+            throw xlnt::key_not_found(worksheet_rel_ids[index]);
+        }
+
         std::string rel_id = new_id();
         d_->sheet_title_rel_id_map_.at(titles[index - 1]) = rel_id; // update title -> relation mapping
         manifest().register_relationship(relationship(rel_id, rel_it->type(),
