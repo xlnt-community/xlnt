@@ -4,6 +4,7 @@ var searchData=
   ['has_5falignment',['has_alignment',['../classxlnt_1_1format.html#aa79e76f4c3aca5e35919ea85c5466968',1,'xlnt::format::has_alignment()'],['../classxlnt_1_1style.html#a4333b23d1c0c5bfed5c8fd2a41eef22d',1,'xlnt::style::has_alignment()'],['../classxlnt_1_1phonetic__pr.html#a81c562af6b0070027fcd0ce117c41efd',1,'xlnt::phonetic_pr::has_alignment()']]],
   ['has_5fapp_5fname',['has_app_name',['../classxlnt_1_1workbook.html#a0aaa5185c3cc01540a31072c34aa358b',1,'xlnt::workbook']]],
   ['has_5fauthentication',['has_authentication',['../classxlnt_1_1uri.html#ad15a53adf32086eb4a93bfcee7be3a65',1,'xlnt::uri']]],
+  ['has_5fauthority',['has_authority',['../classxlnt_1_1uri.html#a4bd28a563770f06e3de8a2d8ed45e34e',1,'xlnt::uri']]],
   ['has_5fauto_5ffilter',['has_auto_filter',['../classxlnt_1_1worksheet.html#afc1035b43426f60a946bb61b3671e98a',1,'xlnt::worksheet']]],
   ['has_5fborder',['has_border',['../classxlnt_1_1conditional__format.html#a3d491979c5d62e8807d34e9eb645b274',1,'xlnt::conditional_format::has_border()'],['../classxlnt_1_1format.html#ad7437b465a7ed6c9bab6100eb58a6004',1,'xlnt::format::has_border()'],['../classxlnt_1_1style.html#aca3dc276fb7a3fcfba455287fd4da7ad',1,'xlnt::style::has_border()']]],
   ['has_5fcalculation_5fproperties',['has_calculation_properties',['../classxlnt_1_1workbook.html#ad9117218cd4446e36c910b7fd158b771',1,'xlnt::workbook']]],
