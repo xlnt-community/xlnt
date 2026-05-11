@@ -25,6 +25,47 @@
 
 #include <xlnt/utils/environment.hpp>
 
+// Checks that the specified C++ attribute is supported.
+// Note: this only works in C++20 and newer - see https://en.cppreference.com/cpp/feature_test#Attributes
+#ifdef __has_cpp_attribute
+    #define XLNT_HAS_CPP_ATTRIBUTE(ATTRIBUTE) __has_cpp_attribute(ATTRIBUTE)
+#else
+    #define XLNT_HAS_CPP_ATTRIBUTE(ATTRIBUTE) 0
+#endif
+
+// Checks whether the specified C attribute is supported.
+// Note: this only works in C23 and newer - see https://en.cppreference.com/c/language/attributes#Attribute_testing
+#ifdef __has_c_attribute
+    #define XLNT_HAS_C_ATTRIBUTE(ATTRIBUTE) __has_c_attribute(ATTRIBUTE)
+#else
+    #define XLNT_HAS_C_ATTRIBUTE(ATTRIBUTE) 0
+#endif
+
+// Checks whether the specified C/C++ attribute is supported.
+// Supported in GCC and Clang (but otherwise not standardized). See https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005fattribute.html
+#ifdef __has_attribute
+    #define XLNT_HAS_ATTRIBUTE(ATTRIBUTE) __has_attribute(ATTRIBUTE)
+#else
+    #define XLNT_HAS_ATTRIBUTE(ATTRIBUTE) 0
+#endif
+
+// [[maybe_unused]] is supported in C++17 and newer, and C23 and newer
+#if XLNT_HAS_CPP_ATTRIBUTE(maybe_unused) || XLNT_HAS_C_ATTRIBUTE(maybe_unused)
+    #define XLNT_UNUSED [[maybe_unused]]
+// [[gnu::unused]] is supported in GCC and Clang since C++11. See:
+// -> https://gcc.gnu.org/onlinedocs/gcc/Common-Attributes.html#index-unused
+// -> https://clang.llvm.org/docs/LanguageExtensions.html#non-standard-c-11-attributes
+//
+// Note: [[...]] syntax is only supported by C++11 and newer, and C23 and newer.
+#elif XLNT_HAS_CPP_ATTRIBUTE(gnu::unused) || XLNT_HAS_C_ATTRIBUTE(gnu::unused)
+    #define XLNT_UNUSED [[gnu::unused]]
+// __attribute__((unused)) is supported in GCC and Clang. Can be useful with older compilers
+// and in C code when compiled with a C version older than C23.
+#elif XLNT_HAS_ATTRIBUTE(unused)
+    #define XLNT_UNUSED __attribute__((unused))
+#endif
+
+
 // Header detection helper. Available beginning with C++17.
 #ifdef __has_include
   #define XLNT_HAS_INCLUDE(HEADER_NAME) __has_include(HEADER_NAME)
