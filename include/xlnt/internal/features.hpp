@@ -63,6 +63,8 @@
 // and in C code when compiled with a C version older than C23.
 #elif XLNT_HAS_ATTRIBUTE(unused)
     #define XLNT_UNUSED __attribute__((unused))
+#else
+    #define XLNT_UNUSED
 #endif
 
 
