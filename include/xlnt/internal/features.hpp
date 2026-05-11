@@ -50,7 +50,8 @@
 #endif
 
 // [[maybe_unused]] is supported in C++17 and newer, and C23 and newer
-#if XLNT_HAS_CPP_ATTRIBUTE(maybe_unused) || XLNT_HAS_C_ATTRIBUTE(maybe_unused)
+// C++17 needs an additional check as __has_cpp_attribute is only available with C++20 or higher (see above).
+#if XLNT_HAS_CPP_ATTRIBUTE(maybe_unused) || XLNT_HAS_C_ATTRIBUTE(maybe_unused) || XLNT_HAS_CPP_VERSION(XLNT_CPP_17)
     #define XLNT_UNUSED [[maybe_unused]]
 // [[gnu::unused]] is supported in GCC and Clang since C++11. See:
 // -> https://gcc.gnu.org/onlinedocs/gcc/Common-Attributes.html#index-unused
