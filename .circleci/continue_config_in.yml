@@ -89,10 +89,9 @@ jobs:
             equal: ["ON", << parameters.coverage >>]
           steps:
             - run: apt-get update -y
-            - run: apt-get install -y --no-install-recommends perl libcapture-tiny-perl libdatetime-perl libtimedate-perl libjson-perl libperlio-gzip-perl libjson-xs-perl
-            - run: git clone https://github.com/linux-test-project/lcov.git --branch master
-            # checkout commit that does not cause the build to fail due to docs changes
-            - run: cd lcov && git checkout 97ff5d43ae4b178139766fb72d038cf30f9e959b && make -j2 install
+            - run: apt-get install -y --no-install-recommends perl libcapture-tiny-perl libdatetime-perl libtimedate-perl libjson-perl libperlio-gzip-perl libjson-xs-perl python3-sphinx python3-sphinx-rtd-theme
+            - run: git clone https://github.com/linux-test-project/lcov.git --depth 1 --branch master
+            - run: cd lcov && make -j2 install
             - run: lcov --directory . --capture --output-file coverage.info --base-directory . --no-external --include "$PWD/include/*" --include "$PWD/source/*" --branch-coverage --rc no_exception_branch=1 -j 2
             - run: curl -sfL https://coveralls.io/coveralls-linux.tar.gz | tar -xz && ./coveralls report coverage.info
             - run:
