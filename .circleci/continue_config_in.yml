@@ -90,7 +90,7 @@ jobs:
           steps:
             - run: apt-get update -y
             - run: apt-get install -y --no-install-recommends perl libcapture-tiny-perl libdatetime-perl libtimedate-perl libjson-perl libperlio-gzip-perl libjson-xs-perl
-            - run: git clone https://github.com/linux-test-project/lcov.git --depth 1 --branch master
+            - run: git clone https://github.com/linux-test-project/lcov.git --branch master
             - run: cd lcov
             # checkout commit that does not cause the build to fail due to docs changes
             - run: git checkout 97ff5d43ae4b178139766fb72d038cf30f9e959b
