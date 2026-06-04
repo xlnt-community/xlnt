@@ -68,7 +68,7 @@ struct worksheet_impl;
 /// <summary>
 /// Handles writing a workbook into an XLSX file.
 /// </summary>
-class xlsx_producer
+class XLNT_API_INTERNAL xlsx_producer
 {
 public:
 	xlsx_producer(const workbook &target);
@@ -82,6 +82,9 @@ public:
 #if XLNT_HAS_FEATURE(U8_STRING_VIEW)
     void write(std::ostream &destination, std::u8string_view password);
 #endif
+
+    // For unit testing purpose only
+    void write_worksheet_TEST(const relationship &rel);
 
 private:
     friend class xlnt::streaming_workbook_writer;

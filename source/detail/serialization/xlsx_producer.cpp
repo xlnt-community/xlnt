@@ -2284,15 +2284,17 @@ void xlsx_producer::write_volatile_dependencies(const relationship & /*rel*/)
     write_end_element(constants::ns("spreadsheetml"), "volTypes");
 }
 
+void xlsx_producer::write_worksheet_TEST(const relationship &rel)
+{
+    write_worksheet(rel);
+}
+
 void xlsx_producer::write_worksheet(const relationship &rel)
 {
     static const auto &xmlns = constants::ns("spreadsheetml");
     static const auto &xmlns_r = constants::ns("r");
     static const auto &xmlns_mc = constants::ns("mc");
     static const auto &xmlns_x14ac = constants::ns("x14ac");
-
-    auto worksheet_part = rel.source().path().parent().append(rel.target().path());
-    auto worksheet_rels = source_.manifest().relationships(worksheet_part);
 
     auto it_title = std::find_if(source_.d_->sheet_title_rel_id_map_.begin(), source_.d_->sheet_title_rel_id_map_.end(),
         [&rel](const std::pair<std::string, std::string> &p) {
@@ -2303,6 +2305,9 @@ void xlsx_producer::write_worksheet(const relationship &rel)
         throw xlnt::key_not_found(rel.id());
     }
     const auto &title = it_title->first;
+
+    auto worksheet_part = rel.source().path().parent().append(rel.target().path());
+    auto worksheet_rels = source_.manifest().relationships(worksheet_part);
 
     auto ws = source_.sheet_by_title(title);
 

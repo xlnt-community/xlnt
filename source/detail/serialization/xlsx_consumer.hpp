@@ -84,6 +84,7 @@ public:
 
     // For unit testing purpose only
     void read_stylesheet (const std::string& xml);
+    std::string read_worksheet_begin_TEST(const std::string &rel_id);
 
 private:
     friend class xlnt::streaming_workbook_reader;
