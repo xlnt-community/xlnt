@@ -39,6 +39,9 @@
   #include <string_view>
 #endif
 
+
+class serialization_test_suite;
+
 namespace xml {
 class serializer;
 } // namespace xml
@@ -71,6 +74,8 @@ struct worksheet_impl;
 class XLNT_API_INTERNAL xlsx_producer
 {
 public:
+    friend class ::serialization_test_suite;
+
 	xlsx_producer(const workbook &target);
 
     ~xlsx_producer();
@@ -82,9 +87,6 @@ public:
 #if XLNT_HAS_FEATURE(U8_STRING_VIEW)
     void write(std::ostream &destination, std::u8string_view password);
 #endif
-
-    // For unit testing purpose only
-    void write_worksheet_TEST(const relationship &rel);
 
 private:
     friend class xlnt::streaming_workbook_writer;

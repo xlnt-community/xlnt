@@ -439,14 +439,14 @@ public:
     {
         xlnt::workbook wb;
         xlnt::detail::xlsx_consumer consumer(wb);
-        xlnt_assert_throws(consumer.read_worksheet_begin_TEST("TEST_INVALID"), xlnt::key_not_found);
+        xlnt_assert_throws(consumer.read_worksheet_begin("TEST_INVALID"), xlnt::key_not_found);
     }
 
     void test_write_invalid_relationship()
     {
         xlnt::workbook wb;
         xlnt::detail::xlsx_producer producer(wb);
-        xlnt_assert_throws(producer.write_worksheet_TEST(xlnt::relationship{}), xlnt::key_not_found);
+        xlnt_assert_throws(producer.write_worksheet(xlnt::relationship{}), xlnt::key_not_found);
     }
 
     void test_read_hyperlink()

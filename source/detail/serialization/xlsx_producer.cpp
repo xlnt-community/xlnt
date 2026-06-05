@@ -2284,11 +2284,6 @@ void xlsx_producer::write_volatile_dependencies(const relationship & /*rel*/)
     write_end_element(constants::ns("spreadsheetml"), "volTypes");
 }
 
-void xlsx_producer::write_worksheet_TEST(const relationship &rel)
-{
-    write_worksheet(rel);
-}
-
 void xlsx_producer::write_worksheet(const relationship &rel)
 {
     static const auto &xmlns = constants::ns("spreadsheetml");

@@ -41,6 +41,9 @@
   #include <string_view>
 #endif
 
+
+class serialization_test_suite;
+
 namespace xlnt {
 
 class cell;
@@ -70,6 +73,8 @@ struct worksheet_impl;
 class XLNT_API_INTERNAL xlsx_consumer
 {
 public:
+    friend class ::serialization_test_suite;
+
 	xlsx_consumer(workbook &destination);
 
 	~xlsx_consumer();
@@ -84,7 +89,6 @@ public:
 
     // For unit testing purpose only
     void read_stylesheet (const std::string& xml);
-    std::string read_worksheet_begin_TEST(const std::string &rel_id);
 
 private:
     friend class xlnt::streaming_workbook_reader;

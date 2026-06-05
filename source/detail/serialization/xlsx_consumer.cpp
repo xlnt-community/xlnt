@@ -1730,11 +1730,6 @@ void xlsx_consumer::read_stylesheet (const std::string& xml)
     parser_ = nullptr;
 }
 
-std::string xlsx_consumer::read_worksheet_begin_TEST(const std::string &rel_id)
-{
-    return read_worksheet_begin(rel_id);
-}
-
 void xlsx_consumer::read_part(const std::vector<relationship> &rel_chain)
 {
     const auto &manifest = target_.manifest();
