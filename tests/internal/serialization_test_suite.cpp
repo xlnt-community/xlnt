@@ -29,6 +29,7 @@
 #include <helpers/test_suite.hpp>
 #include <helpers/internal/xml_helper.hpp>
 #include <detail/serialization/xlsx_consumer.hpp>
+#include <detail/serialization/xlsx_producer.hpp>
 #include <xlnt/internal/features.hpp>
 
 #if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
@@ -55,6 +56,8 @@ public:
         register_test(test_read_unicode_filename);
         register_test(test_write_unicode_filename);
         register_test(test_comments);
+        register_test(test_invalid_worksheet_title);
+        register_test(test_write_invalid_relationship);
         register_test(test_read_hyperlink);
         register_test(test_read_formulae);
         register_test(test_read_headers_and_footers);
@@ -430,6 +433,20 @@ public:
         xlnt_assert_equals(sheet2.cell("A1").value<std::string>(), "Sheet2!A1");
         xlnt_assert_equals(sheet2.cell("A1").comment().plain_text(), "Sheet2 comment");
         xlnt_assert_equals(sheet2.cell("A1").comment().author(), "Microsoft Office User");
+    }
+
+    void test_invalid_worksheet_title()
+    {
+        xlnt::workbook wb;
+        xlnt::detail::xlsx_consumer consumer(wb);
+        xlnt_assert_throws(consumer.read_worksheet_begin("TEST_INVALID"), xlnt::key_not_found);
+    }
+
+    void test_write_invalid_relationship()
+    {
+        xlnt::workbook wb;
+        xlnt::detail::xlsx_producer producer(wb);
+        xlnt_assert_throws(producer.write_worksheet(xlnt::relationship{}), xlnt::key_not_found);
     }
 
     void test_read_hyperlink()

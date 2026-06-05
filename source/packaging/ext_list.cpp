@@ -1,4 +1,5 @@
 #include <xlnt/packaging/ext_list.hpp>
+#include <xlnt/utils/exceptions.hpp>
 #include <algorithm>
 
 #include <detail/external/include_libstudxml.hpp>
@@ -123,8 +124,13 @@ bool ext_list::has_extension(const uri &extension_uri) const
 
 const ext_list::ext &ext_list::extension(const uri &extension_uri) const
 {
-    return *std::find_if(extensions_.begin(), extensions_.end(),
+    auto it = std::find_if(extensions_.begin(), extensions_.end(),
         [&extension_uri](const ext &ext) { return extension_uri == ext.extension_ID_; });
+    if (it == extensions_.end())
+    {
+        throw xlnt::key_not_found(extension_uri.to_string());
+    }
+    return *it;
 }
 
 const std::vector<ext_list::ext> &ext_list::extensions() const
