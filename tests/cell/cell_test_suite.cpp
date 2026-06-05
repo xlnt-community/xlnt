@@ -90,6 +90,12 @@ public:
         register_test(test_copy_formula_string_between_workbooks);
         register_test(test_format_from_different_workbook);
         register_test(test_cell_phonetic_properties);
+        register_test(test_computed_number_format);
+        register_test(test_computed_font);
+        register_test(test_computed_fill);
+        register_test(test_computed_border);
+        register_test(test_computed_alignment);
+        register_test(test_computed_protection);
     }
 
 private:
@@ -750,6 +756,39 @@ private:
             xlnt_assert_equals(cell.to_string(), stream_string);
             xlnt_assert_equals(stream_string, "test");
         }
+
+        {
+            auto cell = ws.cell("A7");
+
+            cell.value(0.43);
+            cell.number_format(xlnt::number_format::percentage());
+
+            std::stringstream ss;
+            ss << cell;
+
+            auto stream_string = ss.str();
+
+            xlnt_assert_equals(cell.to_string(), stream_string);
+            xlnt_assert_equals(stream_string, "43%");
+        }
+
+        {
+            auto cell = ws.cell("A8");
+
+            cell.value(1.2993);
+
+            auto test_style = wb.create_style("test_style");
+            test_style.number_format(xlnt::number_format{"0.0"}, true);
+            cell.style(test_style);
+
+            std::stringstream ss;
+            ss << cell;
+
+            auto stream_string = ss.str();
+
+            xlnt_assert_equals(cell.to_string(), stream_string);
+            xlnt_assert_equals(stream_string, "1.3");
+        }
     }
 
     void test_values()
@@ -1194,6 +1233,118 @@ private:
         xlnt_assert_equals(cell1.phonetics_visible(), true);
         cell1.show_phonetics(false);
         xlnt_assert_equals(cell1.phonetics_visible(), false);
+    }
+
+    void test_computed_number_format()
+    {
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        auto cell = ws.cell("A1");
+
+        xlnt_assert_equals(cell.computed_number_format(), xlnt::number_format{});
+
+        cell.number_format(xlnt::number_format::percentage());
+        xlnt_assert_equals(cell.computed_number_format(), xlnt::number_format::percentage());
+
+        auto style = wb.create_style("test_style");
+        style.number_format(xlnt::number_format::date_ddmmyyyy(), true);
+        cell.style(style);
+        xlnt_assert_equals(cell.computed_number_format(), xlnt::number_format::date_ddmmyyyy());
+    }
+
+    void test_computed_font()
+    {
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        auto cell = ws.cell("A1");
+
+        xlnt_assert_equals(cell.computed_font(), xlnt::font{});
+
+        auto cell_font = xlnt::font().bold(true);
+        cell.font(cell_font);
+        xlnt_assert_equals(cell.computed_font(), cell_font);
+
+        auto style = wb.create_style("test_style");
+        auto style_font = xlnt::font().italic(true);
+        style.font(style_font);
+        cell.style(style);
+        xlnt_assert_equals(cell.computed_font(), style_font);
+    }
+
+    void test_computed_fill()
+    {
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        auto cell = ws.cell("A1");
+
+        xlnt_assert_equals(cell.computed_fill(), xlnt::fill{});
+
+        xlnt::fill cell_fill = xlnt::pattern_fill().type(xlnt::pattern_fill_type::solid).foreground(xlnt::color::red());
+        cell.fill(cell_fill);
+        xlnt_assert_equals(cell.computed_fill(), cell_fill);
+
+        auto style = wb.create_style("test_style");
+        xlnt::fill style_fill = xlnt::pattern_fill().type(xlnt::pattern_fill_type::solid).foreground(xlnt::color::blue());
+        style.fill(style_fill);
+        cell.style(style);
+        xlnt_assert_equals(cell.computed_fill(), style_fill);
+    }
+
+    void test_computed_border()
+    {
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        auto cell = ws.cell("A1");
+
+        xlnt_assert_equals(cell.computed_border(), xlnt::border{});
+
+        auto cell_border = xlnt::border().side(xlnt::border_side::bottom, {});
+        cell.border(cell_border);
+        xlnt_assert_equals(cell.computed_border(), cell_border);
+
+        auto style = wb.create_style("test_style");
+        auto style_border = xlnt::border().side(xlnt::border_side::top, {});
+        style.border(style_border);
+        cell.style(style);
+        xlnt_assert_equals(cell.computed_border(), style_border);
+    }
+
+    void test_computed_alignment()
+    {
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        auto cell = ws.cell("A1");
+
+        xlnt_assert_equals(cell.computed_alignment(), xlnt::alignment{});
+
+        auto cell_alignment = xlnt::alignment().horizontal(xlnt::horizontal_alignment::right);
+        cell.alignment(cell_alignment);
+        xlnt_assert_equals(cell.computed_alignment(), cell_alignment);
+
+        auto style = wb.create_style("test_style");
+        auto style_alignment = xlnt::alignment().vertical(xlnt::vertical_alignment::bottom);
+        style.alignment(style_alignment);
+        cell.style(style);
+        xlnt_assert_equals(cell.computed_alignment(), style_alignment);
+    }
+
+    void test_computed_protection()
+    {
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+        auto cell = ws.cell("A1");
+
+        xlnt_assert_equals(cell.computed_protection(), xlnt::protection{});
+
+        auto cell_protection = xlnt::protection().hidden(true);
+        cell.protection(cell_protection);
+        xlnt_assert_equals(cell.computed_protection(), cell_protection);
+
+        auto style = wb.create_style("test_style");
+        auto style_protection = xlnt::protection().locked(true);
+        style.protection(style_protection);
+        cell.style(style);
+        xlnt_assert_equals(cell.computed_protection(), style_protection);
     }
 };
 

@@ -637,32 +637,80 @@ void cell::data_type(type t)
 
 number_format cell::computed_number_format() const
 {
-    return xlnt::number_format();
+    if (has_format() && format().has_style())
+    {
+        auto s = format().style();
+        if (s.number_format_applied())
+        {
+            return s.number_format();
+        }
+    }
+    return number_format();
 }
 
 font cell::computed_font() const
 {
-    return xlnt::font();
+    if (has_format() && format().has_style())
+    {
+        auto s = format().style();
+        if (s.font_applied())
+        {
+            return s.font();
+        }
+    }
+    return font();
 }
 
 fill cell::computed_fill() const
 {
-    return xlnt::fill();
+    if (has_format() && format().has_style())
+    {
+        auto s = format().style();
+        if (s.fill_applied())
+        {
+            return s.fill();
+        }
+    }
+    return fill();
 }
 
 border cell::computed_border() const
 {
-    return xlnt::border();
+    if (has_format() && format().has_style())
+    {
+        auto s = format().style();
+        if (s.border_applied())
+        {
+            return s.border();
+        }
+    }
+    return border();
 }
 
 alignment cell::computed_alignment() const
 {
-    return xlnt::alignment();
+    if (has_format() && format().has_style())
+    {
+        auto s = format().style();
+        if (s.alignment_applied())
+        {
+            return s.alignment();
+        }
+    }
+    return alignment();
 }
 
 protection cell::computed_protection() const
 {
-    return xlnt::protection();
+    if (has_format() && format().has_style())
+    {
+        auto s = format().style();
+        if (s.protection_applied())
+        {
+            return s.protection();
+        }
+    }
+    return protection();
 }
 
 void cell::clear_value()
