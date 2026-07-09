@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -83,22 +83,22 @@ public:
     bool empty() const;
 
     /// <summary>
-    /// Returns the first cell in this vector.
+    /// Returns a wrapper pointing to the first cell in this vector.
     /// </summary>
     cell front();
 
     /// <summary>
-    /// Returns the first cell in this vector.
+    /// Returns a wrapper pointing to the first cell in this vector.
     /// </summary>
     const cell front() const;
 
     /// <summary>
-    /// Returns the last cell in this vector.
+    /// Returns a wrapper pointing to the last cell in this vector.
     /// </summary>
     cell back();
 
     /// <summary>
-    /// Returns the last cell in this vector.
+    /// Returns a wrapper pointing to the last cell in this vector.
     /// </summary>
     const cell back() const;
 
@@ -168,12 +168,16 @@ public:
     const_reverse_iterator crend() const;
 
     /// <summary>
-    /// Returns the cell column_index distance away from the first cell in this vector.
+    /// Returns a wrapper pointing to the cell column_index distance away from the first cell in this vector.
+    /// If the cell at the given column index doesn't exist (please call length() to check),
+    /// an empty cell will be created, added to the worksheet, and returned.
     /// </summary>
     cell operator[](std::size_t column_index);
 
     /// <summary>
-    /// Returns the cell column_index distance away from the first cell in this vector.
+    /// Returns a wrapper pointing to the cell column_index distance away from the first cell in this vector.
+    /// Assumes that the cell at the given column index exists (please call length() to check).
+    /// If the cell doesn't exist, an invalid_parameter exception will be thrown.
     /// </summary>
     const cell operator[](std::size_t column_index) const;
 

@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ namespace {
 bool has_trailing_whitespace(const std::string &s)
 {
     return !s.empty() && (s.front() == ' ' || s.back() == ' ');
-};
+}
 } // namespace
 
 namespace xlnt {
@@ -126,6 +126,10 @@ bool rich_text::has_phonetic_properties() const
 
 const phonetic_pr &rich_text::phonetic_properties() const
 {
+    if (!phonetic_properties_.is_set())
+    {
+        throw xlnt::invalid_attribute("rich text has no phonetic properties");
+    }
     return phonetic_properties_.get();
 }
 

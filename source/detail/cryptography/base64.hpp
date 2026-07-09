@@ -1,5 +1,5 @@
 // Copyright (c) 2017-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,12 +26,14 @@
 #include <string>
 #include <vector>
 
+#include <detail/xlnt_config_impl.hpp>
+
 namespace xlnt {
 namespace detail {
 
-std::string encode_base64(const std::vector<std::uint8_t> &input);
+XLNT_API_INTERNAL std::string encode_base64(const std::vector<std::uint8_t> &input);
 
-std::vector<std::uint8_t> decode_base64(const std::string &input);
+XLNT_API_INTERNAL std::vector<std::uint8_t> decode_base64(const std::string &input);
 
 } // namespace detail
 } // namespace xlnt

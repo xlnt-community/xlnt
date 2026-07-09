@@ -1,5 +1,5 @@
 // Copyright (c) 2016-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -119,6 +119,8 @@ public:
 
     /// <summary>
     /// Returns the phonetic properties of this text.
+    /// Assumes that this text has phonetic properties (please call has_phonetic_properties() to check).
+    /// If this text does not have phonetic properties, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     const phonetic_pr &phonetic_properties() const;
 

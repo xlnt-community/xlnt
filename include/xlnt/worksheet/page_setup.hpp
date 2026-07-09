@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,15 @@
 
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/utils/optional.hpp>
+#include <xlnt/utils/value_with_default.h>
 
 namespace xlnt {
+
+namespace detail {
+
+class xlsx_producer;
+
+} // namespace detail
 
 /// <summary>
 /// The orientation of the worksheet when it is printed.
@@ -112,6 +119,8 @@ public:
 
     /// <summary>
     /// Returns the paper size which should be used to print the worksheet using this page setup.
+    /// Assumes that this page setup has a paper size (please call has_paper_size() to check).
+    /// If this workbook has no paper size, the default paper_size::letter will be returned.
     /// </summary>
     xlnt::paper_size paper_size() const;
 
@@ -156,14 +165,16 @@ public:
     void fit_to_width(bool fit_to_width);
 
     /// <summary>
-    /// Sets the factor by which the page should be scaled during printing.
+    /// Sets the scale percentage by which the page should be scaled during printing. A value of 150 means 150% scaling.
+    /// Possible values are between 10 and 400. Values outside this range will be clipped to the range limits.
     /// </summary>
-    void scale(double scale);
+    void scale(unsigned int scale);
 
     /// <summary>
-    /// Returns the factor by which the page should be scaled during printing.
+    /// Returns the scale percentage by which the page should be scaled during printing. A value of 150 means 150% scaling.
+    /// If no scale has been set (has_scale() returns false), the default scale of 100 will be returned.
     /// </summary>
-    double scale() const;
+    unsigned int scale() const;
 
     /// <summary>
     /// Check if current paper setting has scale setting
@@ -203,6 +214,8 @@ public:
     bool operator!=(const page_setup &rhs) const;
 
 private:
+    friend class xlnt::detail::xlsx_producer;
+
     /// <summary>
     /// Relationship Id
     /// </summary>
@@ -241,7 +254,7 @@ private:
     /// <summary>
     /// The amount to scale the worksheet
     /// </summary>
-    xlnt::optional<double> scale_;
+    detail::value_with_default<unsigned int, 100> scale_;
 };
 
 } // namespace xlnt

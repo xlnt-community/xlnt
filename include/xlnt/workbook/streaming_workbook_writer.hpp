@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -66,13 +66,13 @@ public:
     /// <summary>
     /// Writes a cell to the currently active worksheet at the position given by
     /// ref and with the given value. ref should be to the right of or below
-    /// the previously written cell.
+    /// the previously written cell. Returns a wrapper pointing to the cell.
     /// </summary>
     cell add_cell(const cell_reference &ref);
 
     /// <summary>
     /// Ends writing of data to the current sheet and begins writing a new sheet
-    /// with the given title.
+    /// with the given title. Returns a wrapper pointing to this new sheet.
     /// </summary>
     worksheet add_worksheet(const std::string &title);
 

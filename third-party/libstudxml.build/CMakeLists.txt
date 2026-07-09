@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1...3.31)
+cmake_minimum_required(VERSION 3.1...4.3)
 project(libstudxml)
 
 # Require C++11 compiler
@@ -21,10 +21,10 @@ set(LIBSTUDXML
   ${LIBSTUDXML_ROOT_DIR}/libstudxml/content.hxx
   ${LIBSTUDXML_ROOT_DIR}/libstudxml/exception.hxx
   ${LIBSTUDXML_ROOT_DIR}/libstudxml/forward.hxx
-  ${LIBSTUDXML_ROOT_DIR}/libstudxml/parser
-  ${LIBSTUDXML_ROOT_DIR}/libstudxml/qname
-  ${LIBSTUDXML_ROOT_DIR}/libstudxml/serializer
-  ${LIBSTUDXML_ROOT_DIR}/libstudxml/value-traits)
+  ${LIBSTUDXML_ROOT_DIR}/libstudxml/parser.hxx
+  ${LIBSTUDXML_ROOT_DIR}/libstudxml/qname.hxx
+  ${LIBSTUDXML_ROOT_DIR}/libstudxml/serializer.hxx
+  ${LIBSTUDXML_ROOT_DIR}/libstudxml/value-traits.hxx)
 
 set(GENX
   ${LIBSTUDXML_ROOT_DIR}/libstudxml/details/genx/char-props.c

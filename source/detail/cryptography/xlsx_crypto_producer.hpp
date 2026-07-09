@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,8 @@
   #include <string_view>
 #endif
 
+// NOTE: encryption and decryption is not part of the OOXML specification (ECMA-376).
+// This implementation is based on the "[MS-OFFCRYPTO]: Office Document Cryptography Structure" specification.
 namespace xlnt {
 namespace detail {
 

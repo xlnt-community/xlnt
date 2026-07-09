@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@
 #include <string>
 
 #include <xlnt/xlnt_config.hpp>
+#include <xlnt/internal/format_impl_ptr.hpp>
 
 namespace xlnt {
 
@@ -58,7 +59,8 @@ class XLNT_API format
 {
 public:
     /// <summary>
-    /// Returns the alignment of this format.
+    /// Returns a copy of the alignment of this format. If no alignment has been set (has_alignment() returns false),
+    /// a default-constructed alignment will be returned.
     /// </summary>
     class alignment alignment() const;
 
@@ -66,8 +68,14 @@ public:
     /// Sets the alignment of this format to new_alignment. Applied, which defaults
     /// to true, determines whether the alignment should be enabled for cells using
     /// this format.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
-    format alignment(const xlnt::alignment &new_alignment, xlnt::optional<bool> applied = {});
+    format& alignment(const xlnt::alignment &new_alignment, xlnt::optional<bool> applied = {});
+
+    /// <summary>
+    /// Returns true if an alignment has been set for this format.
+    /// </summary>
+    bool has_alignment() const;
 
     /// <summary>
     /// Returns true if the alignment of this format should be applied to cells
@@ -76,7 +84,8 @@ public:
     bool alignment_applied() const;
 
     /// <summary>
-    /// Returns the border of this format.
+    /// Returns a copy of the border of this format. If no border has been set (has_border() returns false),
+    /// a default-constructed border will be returned.
     /// </summary>
     class border border() const;
 
@@ -84,8 +93,14 @@ public:
     /// Sets the border of this format to new_border. Applied, which defaults
     /// to true, determines whether the border should be enabled for cells using
     /// this format.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
-    format border(const xlnt::border &new_border, xlnt::optional<bool> applied = {});
+    format& border(const xlnt::border &new_border, xlnt::optional<bool> applied = {});
+
+    /// <summary>
+    /// Returns true if a border has been set for this format.
+    /// </summary>
+    bool has_border() const;
 
     /// <summary>
     /// Returns true if the border set for this format should be applied to cells using the format.
@@ -93,7 +108,8 @@ public:
     bool border_applied() const;
 
     /// <summary>
-    /// Returns the fill of this format.
+    /// Returns a copy of the fill of this format. If no fill has been set (has_fill() returns false),
+    /// a default-constructed fill will be returned.
     /// </summary>
     class fill fill() const;
 
@@ -101,8 +117,14 @@ public:
     /// Sets the fill of this format to new_fill. Applied, which defaults
     /// to true, determines whether the border should be enabled for cells using
     /// this format.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
-    format fill(const xlnt::fill &new_fill, xlnt::optional<bool> applied = {});
+    format& fill(const xlnt::fill &new_fill, xlnt::optional<bool> applied = {});
+
+    /// <summary>
+    /// Returns true if a fill has been set for this format.
+    /// </summary>
+    bool has_fill() const;
 
     /// <summary>
     /// Returns true if the fill set for this format should be applied to cells using the format.
@@ -110,7 +132,8 @@ public:
     bool fill_applied() const;
 
     /// <summary>
-    /// Returns the font of this format.
+    /// Returns a copy of the font of this format. If no font has been set (has_font() returns false),
+    /// a default-constructed font will be returned.
     /// </summary>
     class font font() const;
 
@@ -118,8 +141,14 @@ public:
     /// Sets the font of this format to new_font. Applied, which defaults
     /// to true, determines whether the font should be enabled for cells using
     /// this format.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
-    format font(const xlnt::font &new_font, xlnt::optional<bool> applied = {});
+    format& font(const xlnt::font &new_font, xlnt::optional<bool> applied = {});
+
+    /// <summary>
+    /// Returns true if a font has been set for this format.
+    /// </summary>
+    bool has_font() const;
 
     /// <summary>
     /// Returns true if the font set for this format should be applied to cells using the format.
@@ -127,7 +156,8 @@ public:
     bool font_applied() const;
 
     /// <summary>
-    /// Returns the number format of this format.
+    /// Returns a copy of the number format of this format. If no number format has been set (has_number_format() returns false),
+    /// a default-constructed number format will be returned.
     /// </summary>
     class number_format number_format() const;
 
@@ -135,8 +165,14 @@ public:
     /// Sets the number format of this format to new_number_format. Applied, which defaults
     /// to true, determines whether the number format should be enabled for cells using
     /// this format.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
-    format number_format(const xlnt::number_format &new_number_format, xlnt::optional<bool> applied = {});
+    format& number_format(const xlnt::number_format &new_number_format, xlnt::optional<bool> applied = {});
+
+    /// <summary>
+    /// Returns true if a number format has been set for this format.
+    /// </summary>
+    bool has_number_format() const;
 
     /// <summary>
     /// Returns true if the number_format set for this format should be applied to cells using the format.
@@ -144,9 +180,15 @@ public:
     bool number_format_applied() const;
 
     /// <summary>
-    /// Returns the protection of this format.
+    /// Returns a copy of the protection of this format. If no protection has been set (has_protection() returns false),
+    /// a default-constructed protection will be returned.
     /// </summary>
     class protection protection() const;
+
+    /// <summary>
+    /// Returns true if protection has been set for this format.
+    /// </summary>
+    bool has_protection() const;
 
     /// <summary>
     /// Returns true if the protection set for this format should be applied to cells using the format.
@@ -157,8 +199,9 @@ public:
     /// Sets the protection of this format to new_protection. Applied, which defaults
     /// to true, determines whether the protection should be enabled for cells using
     /// this format.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
-    format protection(const xlnt::protection &new_protection, xlnt::optional<bool> applied = {});
+    format& protection(const xlnt::protection &new_protection, xlnt::optional<bool> applied = {});
 
     /// <summary>
     /// Returns true if the pivot table interface is enabled for this format.
@@ -195,23 +238,27 @@ public:
 
     /// <summary>
     /// Sets the style of this format to a style with the given name.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
-    format style(const std::string &name);
+    format& style(const std::string &name);
 
     /// <summary>
     /// Sets the style of this format to new_style.
+    /// Returns a wrapper pointing to this format.
     /// </summary>
-    format style(const class style &new_style);
+    format& style(const class style &new_style);
 
     /// <summary>
-    /// Returns the style of this format. If it has no style, an invalid_parameter
-    /// exception will be thrown.
+    /// Returns a wrapper pointing to the style of this format.
+    /// Assumes that the style exists (please call has_style() to check).
+    /// If this format has no style, an invalid_attribute exception will be thrown.
     /// </summary>
     class style style();
 
     /// <summary>
-    /// Returns the style of this format. If it has no style, an invalid_parameters
-    /// exception will be thrown.
+    /// Returns a wrapper pointing to the style of this format.
+    /// Assumes that the style exists (please call has_style() to check).
+    /// If this format has no style, an invalid_attribute exception will be thrown.
     /// </summary>
     const class style style() const;
 
@@ -220,16 +267,17 @@ private:
     friend class detail::xlsx_producer;
     friend class detail::xlsx_consumer;
     friend class cell;
+    friend class workbook;
 
     /// <summary>
     /// Constructs a format from an impl pointer.
     /// </summary>
-    format(detail::format_impl *d);
+    format(detail::format_impl_ptr d);
 
     /// <summary>
     /// The internal implementation of this format
     /// </summary>
-    detail::format_impl *d_ = nullptr;
+    detail::format_impl_ptr d_;
 };
 
 } // namespace xlnt

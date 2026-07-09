@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,8 +40,11 @@ public:
         auto ws = wb.active_sheet();
         auto format = ws.conditional_format(xlnt::range_reference("A1:A10"), xlnt::condition::text_contains("test"));
         xlnt_assert(!format.has_border());
+        xlnt_assert_throws_nothing(format.border());
         xlnt_assert(!format.has_fill());
+        xlnt_assert_throws_nothing(format.fill());
         xlnt_assert(!format.has_font());
+        xlnt_assert_throws_nothing(format.font());
         // set border
         auto border = xlnt::border().diagonal(xlnt::diagonal_direction::both);
         format.border(border);

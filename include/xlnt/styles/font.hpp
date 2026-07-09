@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,13 @@
 
 #pragma once
 
-#include <string>
+#include <cstring>
+#include <functional>
 
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/styles/color.hpp>
 #include <xlnt/utils/optional.hpp>
+#include <xlnt/utils/hash_combine.hpp>
 
 namespace xlnt {
 
@@ -185,6 +187,8 @@ public:
 
     /// <summary>
     /// Returns the color that this font is using.
+    /// Assumes that this font has a color (please call has_color() to check).
+    /// If this font does not have a color, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     xlnt::color color() const;
 
@@ -200,6 +204,8 @@ public:
 
     /// <summary>
     /// Returns the family index for the font.
+    /// Assumes that this font has a family (please call has_family() to check).
+    /// If this font does not have a family, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     std::size_t family() const;
 
@@ -217,6 +223,8 @@ public:
 
     /// <summary>
     /// Returns the charset of the font.
+    /// Assumes that this font has a charset (please call has_charset() to check).
+    /// If this font does not have a charset, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     std::size_t charset() const;
 
@@ -232,6 +240,8 @@ public:
 
     /// <summary>
     /// Returns the scheme of this font.
+    /// Assumes that this font has a scheme (please call has_scheme() to check).
+    /// If this font does not have a scheme, an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     const std::string &scheme() const;
 
@@ -323,3 +333,64 @@ private:
 };
 
 } // namespace xlnt
+
+namespace std {
+
+template<>
+struct hash<xlnt::font>
+{
+    size_t operator()(const xlnt::font& f) const
+    {
+        size_t seed = 0;
+
+        // Hash name
+        if (f.has_name())
+        {
+            xlnt::detail::hash_combine(seed, f.name());
+        }
+
+        // Hash size
+        if (f.has_size())
+        {
+            xlnt::detail::hash_combine(seed, f.size());
+        }
+
+        // Hash all boolean properties
+        xlnt::detail::hash_combine(seed, f.bold());
+        xlnt::detail::hash_combine(seed, f.italic());
+        xlnt::detail::hash_combine(seed, f.superscript());
+        xlnt::detail::hash_combine(seed, f.subscript());
+        xlnt::detail::hash_combine(seed, f.strikethrough());
+        xlnt::detail::hash_combine(seed, static_cast<int>(f.underline()));
+        xlnt::detail::hash_combine(seed, f.outline());
+        xlnt::detail::hash_combine(seed, f.shadow());
+
+        // Hash scheme
+        if (f.has_scheme())
+        {
+            xlnt::detail::hash_combine(seed, f.scheme());
+        }
+
+        // Hash color (importantly, this re-uses the std::hash<xlnt::color> we just defined)
+        if (f.has_color())
+        {
+            xlnt::detail::hash_combine(seed, f.color());
+        }
+
+        // Hash family
+        if (f.has_family())
+        {
+            xlnt::detail::hash_combine(seed, f.family());
+        }
+
+        // Hash charset
+        if (f.has_charset())
+        {
+            xlnt::detail::hash_combine(seed, f.charset());
+        }
+
+        return seed;
+    }
+};
+
+} // namespace std

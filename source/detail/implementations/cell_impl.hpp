@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@
 #include <xlnt/cell/index_types.hpp>
 #include <xlnt/cell/rich_text.hpp>
 #include <xlnt/packaging/relationship.hpp>
+#include <xlnt/utils/numeric.hpp>
 #include <xlnt/utils/optional.hpp>
 #include <detail/implementations/format_impl.hpp>
 #include <detail/implementations/hyperlink_impl.hpp>
@@ -46,8 +47,11 @@ struct cell_impl
 
     worksheet_impl *parent_ = nullptr;
 
-    column_t column_ = 1;
-    row_t row_ = 1;
+    // According to the OOXML specification:
+    // "In SpreadsheetML, cell references range from column A1–A1048576 (column A:A) to column XFD1–XFD1048576 (column XFD:XFD).
+    // An implementation can extend this range."
+    column_t column_ = 1; // default range: ["A", "XFD"] -> [1, 16384], but XLNT allows [1, 4294967295]
+    row_t row_ = 1; // default range: [1, 1048576], but XLNT allows [1, 4294967295]
 
     bool is_merged_ = false;
     bool phonetics_visible_ = false;
@@ -57,7 +61,7 @@ struct cell_impl
 
     optional<std::string> formula_;
     optional<hyperlink_impl> hyperlink_;
-    optional<format_impl *> format_;
+    format_impl_ptr format_;
     optional<comment *> comment_;
 
     bool is_garbage_collectible() const

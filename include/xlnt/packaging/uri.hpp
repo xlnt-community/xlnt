@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -79,6 +79,11 @@ public:
     /// E.g. the authority of http://user:pass@example.com:80/document is "user:pass@example.com:80"
     /// </summary>
     std::string authority() const;
+
+    /// <summary>
+    /// Returns true if this URI explicitly contains an authority component.
+    /// </summary>
+    bool has_authority() const;
 
     /// <summary>
     /// Returns true if an authentication section is specified for this URI.
@@ -180,6 +185,17 @@ private:
     /// True if this URI is absolute.
     /// </summary>
     bool absolute_ = false;
+
+    /// <summary>
+    /// True if this URI explicitly contains an authority component ("//").
+    /// RFC 3986 distinguishes authority presence from whether host/auth/port exist.
+    /// </summary>
+    bool has_authority_ = false;
+
+    /// <summary>
+    /// True if the host is an IPv6 address and needs bracket wrapping in authority().
+    /// </summary>
+    bool ipv6_ = false;
 
     /// <summary>
     /// True if this URI has an authentication section.

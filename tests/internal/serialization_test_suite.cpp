@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,9 @@
 #include <helpers/path_helper.hpp>
 #include <helpers/temporary_file.hpp>
 #include <helpers/test_suite.hpp>
-#include <helpers/xml_helper.hpp>
+#include <helpers/internal/xml_helper.hpp>
 #include <detail/serialization/xlsx_consumer.hpp>
-#include <detail/utils/string_helpers.hpp>
+#include <detail/serialization/xlsx_producer.hpp>
 #include <xlnt/internal/features.hpp>
 
 #if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
@@ -42,6 +42,7 @@ public:
     serialization_test_suite()
     {
         register_test(test_produce_empty);
+        register_test(test_read_non_existing);
         register_test(test_produce_simple_excel);
         register_test(test_save_after_sheet_deletion);
         register_test(test_write_comments_hyperlinks_formulae);
@@ -55,6 +56,8 @@ public:
         register_test(test_read_unicode_filename);
         register_test(test_write_unicode_filename);
         register_test(test_comments);
+        register_test(test_invalid_worksheet_title);
+        register_test(test_write_invalid_relationship);
         register_test(test_read_hyperlink);
         register_test(test_read_formulae);
         register_test(test_read_headers_and_footers);
@@ -89,6 +92,7 @@ public:
         register_test(test_Issue6_google_missing_workbookView);
         register_test(test_non_contiguous_selection);
         register_test(test_Issue41_empty_fill)
+        register_test(test_value_with_default)
     }
 
     bool workbook_matches_file(xlnt::workbook &wb, const xlnt::path &file)
@@ -108,6 +112,17 @@ public:
         xlnt::workbook wb;
         const auto path = path_helper::test_file("3_default.xlsx");
         xlnt_assert(workbook_matches_file(wb, path));
+    }
+
+    void test_read_non_existing()
+    {
+        xlnt::workbook wb;
+        #define DOES_NOT_EXIST "DOES NOT EXIST.xlsx"
+        xlnt_assert_throws(wb.load(DOES_NOT_EXIST), xlnt::invalid_file);
+        xlnt_assert_throws(wb.load(XLNT_DETAIL_U8STRING_LITERAL(DOES_NOT_EXIST)), xlnt::invalid_file);
+#ifdef _MSC_VER
+        xlnt_assert_throws(wb.load(XLNT_DETAIL_LSTRING_LITERAL(DOES_NOT_EXIST)), xlnt::invalid_file);
+#endif
     }
 
     void test_produce_simple_excel()
@@ -326,7 +341,7 @@ public:
     {
         xlnt::workbook wb;
         const auto path = path_helper::test_file("5_encrypted_agile.xlsx");
-        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(wb.load(path, "secret"));
     }
 
@@ -334,14 +349,14 @@ public:
     {
         xlnt::workbook wb;
         const auto path = path_helper::test_file("6_encrypted_libre.xlsx");
-        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(wb.load(path, u8"\u043F\u0430\u0440\u043E\u043B\u044C")); // u8"пароль"
     }
 
     void test_decrypt_libre_office_constructor()
     {
         const auto path = path_helper::test_file("6_encrypted_libre.xlsx");
-        xlnt_assert_throws(xlnt::workbook(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(xlnt::workbook(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(xlnt::workbook(path, u8"\u043F\u0430\u0440\u043E\u043B\u044C")); // u8"пароль"
     }
 
@@ -349,7 +364,7 @@ public:
     {
         xlnt::workbook wb;
         const auto path = path_helper::test_file("7_encrypted_standard.xlsx");
-        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(wb.load(path, "password"));
     }
 
@@ -357,7 +372,7 @@ public:
     {
         xlnt::workbook wb;
         const auto path = path_helper::test_file("8_encrypted_numbers.xlsx");
-        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::exception);
+        xlnt_assert_throws(wb.load(path, "incorrect"), xlnt::invalid_password);
         xlnt_assert_throws_nothing(wb.load(path, "secret"));
     }
 
@@ -367,18 +382,18 @@ public:
         xlnt::workbook wb;
         // L"/9_unicode_Λ_😇.xlsx" doesn't use wchar_t(0x039B) for the capital lambda...
         // L"/9_unicode_\u039B_\U0001F607.xlsx" gives the correct output
-        const auto path = LSTRING_LITERAL(XLNT_TEST_DATA_DIR) L"/9_unicode_\u039B_\U0001F607.xlsx"; // L"/9_unicode_Λ_😇.xlsx"
+        const auto path = XLNT_DETAIL_LSTRING_LITERAL(XLNT_TEST_DATA_DIR) L"/9_unicode_\u039B_\U0001F607.xlsx"; // L"/9_unicode_Λ_😇.xlsx"
         wb.load(path);
-        xlnt_assert_equals(wb.active_sheet().cell("A1").value<std::string>(), U8_TO_CHAR_PTR(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
+        xlnt_assert_equals(wb.active_sheet().cell("A1").value<std::string>(), xlnt::to_char_ptr(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
 #endif
 
 #ifndef __MINGW32__
         xlnt::workbook wb2;
         // u8"/9_unicode_Λ_😇.xlsx" doesn't use 0xC3AA for the capital lambda...
         // u8"/9_unicode_\u039B_\U0001F607.xlsx" gives the correct output
-        const auto path2 = U8STRING_LITERAL(XLNT_TEST_DATA_DIR) u8"/9_unicode_\u039B_\U0001F607.xlsx"; // u8"/9_unicode_Λ_😇.xlsx"
+        const auto path2 = XLNT_DETAIL_U8STRING_LITERAL(XLNT_TEST_DATA_DIR) u8"/9_unicode_\u039B_\U0001F607.xlsx"; // u8"/9_unicode_Λ_😇.xlsx"
         wb2.load(path2);
-        xlnt_assert_equals(wb2.active_sheet().cell("A1").value<std::string>(), U8_TO_CHAR_PTR(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
+        xlnt_assert_equals(wb2.active_sheet().cell("A1").value<std::string>(), xlnt::to_char_ptr(u8"un\u00EFc\u00F4d\u0117!")); // u8"unïcôdė!"
 #endif
     }
 
@@ -390,14 +405,14 @@ public:
 
 #ifdef _MSC_VER
         xlnt::workbook wb;
-        const auto path = LSTRING_LITERAL(TEMP_PATH);
+        const auto path = XLNT_DETAIL_LSTRING_LITERAL(TEMP_PATH);
         xlnt_assert_throws_nothing(wb.save(path));
-        xlnt_assert(xlnt::path(U8STRING_LITERAL(TEMP_PATH)).exists());
+        xlnt_assert(xlnt::path(XLNT_DETAIL_U8STRING_LITERAL(TEMP_PATH)).exists());
 #endif
 
 #ifndef __MINGW32__
         xlnt::workbook wb2;
-        const auto path2 = U8STRING_LITERAL(TEMP_PATH);
+        const auto path2 = XLNT_DETAIL_U8STRING_LITERAL(TEMP_PATH);
         xlnt_assert_throws_nothing(wb2.save(path2));
         xlnt_assert(xlnt::path(path2).exists());
 #endif
@@ -418,6 +433,20 @@ public:
         xlnt_assert_equals(sheet2.cell("A1").value<std::string>(), "Sheet2!A1");
         xlnt_assert_equals(sheet2.cell("A1").comment().plain_text(), "Sheet2 comment");
         xlnt_assert_equals(sheet2.cell("A1").comment().author(), "Microsoft Office User");
+    }
+
+    void test_invalid_worksheet_title()
+    {
+        xlnt::workbook wb;
+        xlnt::detail::xlsx_consumer consumer(wb);
+        xlnt_assert_throws(consumer.read_worksheet_begin("TEST_INVALID"), xlnt::key_not_found);
+    }
+
+    void test_write_invalid_relationship()
+    {
+        xlnt::workbook wb;
+        xlnt::detail::xlsx_producer producer(wb);
+        xlnt_assert_throws(producer.write_worksheet(xlnt::relationship{}), xlnt::key_not_found);
     }
 
     void test_read_hyperlink()
@@ -727,6 +756,8 @@ public:
 
         reader.open(xlnt::path(path));
 
+        xlnt_assert_throws(reader.begin_worksheet("NON-EXISTING WORKSHEET"), xlnt::key_not_found);
+
         for (auto sheet_name : reader.sheet_titles())
         {
             reader.begin_worksheet(sheet_name);
@@ -928,6 +959,29 @@ R"TEST(<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         xlnt::workbook wb;
         xlnt::detail::xlsx_consumer consumer(wb);
         xlnt_assert_throws_nothing(consumer.read_stylesheet(xml));
+    }
+
+    void test_value_with_default()
+    {
+        unsigned int scale = 123;
+
+        {
+            xlnt::workbook wb;
+            auto page_setup = wb.active_sheet().page_setup();
+            xlnt_assert(!page_setup.has_scale());
+
+            page_setup.scale(scale);
+            wb.active_sheet().page_setup(page_setup);
+
+            xlnt_assert_throws_nothing(wb.save("temp.xlsx"));
+        }
+
+        {
+            xlnt::workbook wb2;
+            wb2.load("temp.xlsx");
+
+            xlnt_assert_equals(wb2.active_sheet().page_setup().scale(), scale);
+        }
     }
 };
 

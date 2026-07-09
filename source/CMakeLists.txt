@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1...3.31)
+cmake_minimum_required(VERSION 3.1...4.3)
 project(xlnt VERSION 1.6.1)
 
 set(CMAKE_CXX_STANDARD ${XLNT_CXX_LANG})
@@ -31,16 +31,25 @@ endif()
 if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4") # level 4 warnings
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP") # multi-processor compilation
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4324") # structure was padded due to alignment specifier
+  if(MSVC_VERSION GREATER 1910)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /permissive-") # standards conformance mode
+  endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall") # all warnings
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra") # extra warnings
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wpedantic") # pedantic warnings
   if (XLNT_ALL_WARNINGS_AS_ERRORS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") # avoid code being pushed with warnings
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic-errors") # avoid code being pushed with pedantic warnings
+    If (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.1)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wmismatched-tags") # avoid struct/class (forward) declaration mismatch, as MSVC doesn't like it
+    endif()
   endif()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas") # ignore MSVC and Clang pragmas
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-maybe-uninitialized") # GCC diagnostic with lots of false positives
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything") # all warnings
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything") # all warnings, including pedantic
   # blacklist warnings that are not relevant
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++98-compat") # ignore warnings about C++98 compatibility
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++98-compat-pedantic") # ignore pedantic warnings about C++98 compatibility
@@ -174,8 +183,7 @@ if(NOT STATIC)
   set_target_properties(xlnt
     PROPERTIES
     VERSION ${PROJECT_VERSION}
-    SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}
-    INSTALL_NAME_DIR "${XLNT_LIB_DEST_DIR}")
+    SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
 else()
   # Compile static library
   add_library(xlnt STATIC ${XLNT_HEADERS} ${XLNT_SOURCES} $<TARGET_OBJECTS:libstudxml>)

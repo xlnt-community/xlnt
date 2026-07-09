@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -92,6 +92,18 @@ xlsx_producer::xlsx_producer(const workbook &target)
 
 xlsx_producer::~xlsx_producer()
 {
+    if (current_cell_)
+    {
+        delete current_cell_;
+        current_cell_ = nullptr;
+    }
+
+    if (current_worksheet_)
+    {
+        delete current_worksheet_;
+        current_worksheet_ = nullptr;
+    }
+
     end_part();
     archive_.reset();
 }
@@ -518,14 +530,27 @@ void xlsx_producer::write_workbook(const relationship &rel)
         write_attribute(xml::qname(xmlns_mc, "Ignorable"), "x15");
     }
 
-    if (source_.has_file_version())
+    if (source_.has_file_version() &&
+        (source_.has_app_name() || source_.has_last_edited() || source_.has_lowest_edited() || source_.has_rup_build()))
     {
         write_start_element(xmlns, "fileVersion");
 
-        write_attribute("appName", source_.app_name());
-        write_attribute("lastEdited", source_.last_edited());
-        write_attribute("lowestEdited", source_.lowest_edited());
-        write_attribute("rupBuild", source_.rup_build());
+        if (source_.has_app_name())
+        {
+            write_attribute("appName", source_.app_name());
+        }
+        if (source_.has_last_edited())
+        {
+            write_attribute("lastEdited", source_.last_edited_str());
+        }
+        if (source_.has_lowest_edited())
+        {
+            write_attribute("lowestEdited", source_.lowest_edited_str());
+        }
+        if (source_.has_rup_build())
+        {
+            write_attribute("rupBuild", source_.rup_build_str());
+        }
 
         write_end_element(xmlns, "fileVersion");
     }
@@ -1534,8 +1559,10 @@ void xlsx_producer::write_styles(const relationship & /*rel*/)
     write_start_element(xmlns, "cellXfs");
     write_attribute("count", stylesheet.format_impls.size());
 
-    for (auto &current_format_impl : stylesheet.format_impls)
+    for (auto &current_format_item : stylesheet.format_impls)
     {
+        auto &current_format_impl = *current_format_item;
+
         write_start_element(xmlns, "xf");
 
         if (current_format_impl.number_format_id.is_set())
@@ -2264,13 +2291,18 @@ void xlsx_producer::write_worksheet(const relationship &rel)
     static const auto &xmlns_mc = constants::ns("mc");
     static const auto &xmlns_x14ac = constants::ns("x14ac");
 
+    auto it_title = std::find_if(source_.d_->sheet_title_rel_id_map_.begin(), source_.d_->sheet_title_rel_id_map_.end(),
+        [&rel](const std::pair<std::string, std::string> &p) {
+            return p.second == rel.id();
+        });
+    if (it_title == source_.d_->sheet_title_rel_id_map_.end())
+    {
+        throw xlnt::key_not_found(rel.id());
+    }
+    const auto &title = it_title->first;
+
     auto worksheet_part = rel.source().path().parent().append(rel.target().path());
     auto worksheet_rels = source_.manifest().relationships(worksheet_part);
-
-    auto title = std::find_if(source_.d_->sheet_title_rel_id_map_.begin(), source_.d_->sheet_title_rel_id_map_.end(),
-        [&](const std::pair<std::string, std::string> &p) {
-            return p.second == rel.id();
-        })->first;
 
     auto ws = source_.sheet_by_title(title);
 
@@ -2346,11 +2378,34 @@ void xlsx_producer::write_worksheet(const relationship &rel)
         {
             write_attribute("enableFormatConditionsCalculation", props.enable_format_condition_calculation.get());
         }
-        // outlinePr is optional in the spec but is being written every time?
-        write_start_element(xmlns, "outlinePr");
-        write_attribute("summaryBelow", "1");
-        write_attribute("summaryRight", "1");
-        write_end_element(xmlns, "outlinePr");
+
+        if (props.apply_styles.is_set() || props.summary_below.is_set() ||
+            props.summary_right.is_set() || props.show_outline_symbols.is_set())
+        {
+            write_start_element(xmlns, "outlinePr");
+
+            if (props.apply_styles.is_set())
+            {
+                write_attribute("applyStyles", write_bool(props.apply_styles.get()));
+            }
+
+            if (props.summary_below.is_set())
+            {
+                write_attribute("summaryBelow", write_bool(props.summary_below.get()));
+            }
+
+            if (props.summary_right.is_set())
+            {
+                write_attribute("summaryRight", write_bool(props.summary_right.get()));
+            }
+
+            if (props.show_outline_symbols.is_set())
+            {
+                write_attribute("showOutlineSymbols", write_bool(props.show_outline_symbols.get()));
+            }
+
+            write_end_element(xmlns, "outlinePr");
+        }
 
         if (ws.has_page_setup())
         {
@@ -2642,6 +2697,16 @@ void xlsx_producer::write_worksheet(const relationship &rel)
             if (props.dy_descent.is_set())
             {
                 write_attribute<double>(xml::qname(xmlns_x14ac, "dyDescent"), props.dy_descent.get());
+            }
+
+            if (props.outline_level.is_set())
+            {
+                write_attribute("outlineLevel", props.outline_level.get());
+            }
+
+            if (props.collapsed.is_set())
+            {
+                write_attribute("collapsed", write_bool(props.collapsed.get()));
             }
         }
 
@@ -2943,10 +3008,7 @@ void xlsx_producer::write_worksheet(const relationship &rel)
             write_attribute("paperSize", static_cast<std::size_t>(ps.paper_size()));
         }
 
-        if (ps.has_scale())
-        {
-            write_attribute("scale", ps.scale());
-        }
+        write_attribute_if_set("scale", ps.scale_);
 
         if (ps.has_rel_id())
         {
@@ -3457,13 +3519,17 @@ void xlsx_producer::write_relationships(const std::vector<xlnt::relationship> &r
     {
         auto rel_iter = std::find_if(relationships.begin(), relationships.end(),
             [&i](const relationship &r) { return r.id() == "rId" + std::to_string(i); });
-        auto relationship = *rel_iter;
+        if (rel_iter == relationships.end())
+        {
+            throw xlnt::key_not_found("rId" + std::to_string(i));
+        }
+        const auto &relationship = *rel_iter;
 
         write_start_element(xmlns, "Relationship");
 
         write_attribute("Id", relationship.id());
         write_attribute("Type", relationship.type());
-        write_attribute("Target", relationship.target().path().string());
+        write_attribute("Target", relationship.target().to_string());
 
         if (relationship.target_mode() == xlnt::target_mode::external)
         {
@@ -3497,10 +3563,7 @@ void xlsx_producer::write_color(const xlnt::color &color)
         write_attribute("rgb", color.rgb().hex_string());
         break;
     }
-    if (color.has_tint())
-    {
-        write_attribute("tint", xlnt::detail::serialise(color.tint()));
-    }
+    write_attribute_if_set("tint", color.tint_);
 }
 
 void xlsx_producer::write_start_element(const std::string &name)

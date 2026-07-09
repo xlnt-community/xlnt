@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -90,14 +90,14 @@ public:
 
     /// <summary>
     /// Dereferences the iterator to return the worksheet it is pointing to.
-    /// If the iterator points to one-past-the-end of the workbook, an invalid_parameter
+    /// If the iterator points to a non-existing worksheet, an invalid_parameter
     /// exception will be thrown.
     /// </summary>
     reference operator*();
 
     /// <summary>
     /// Dereferences the iterator to return the worksheet it is pointing to.
-    /// If the iterator points to one-past-the-end of the workbook, an invalid_parameter
+    /// If the iterator points to a non-existing worksheet, an invalid_parameter
     /// exception will be thrown.
     /// </summary>
     const reference operator*() const;

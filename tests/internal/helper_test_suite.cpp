@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 #include <stdexcept>
 
 #include <helpers/test_suite.hpp>
-#include <helpers/xml_helper.hpp>
+#include <helpers/internal/xml_helper.hpp>
 #include <helpers/assertions.hpp>
 
 #include <xlnt/utils/exceptions.hpp>

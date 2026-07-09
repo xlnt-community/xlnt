@@ -10,7 +10,6 @@
 //#include <helpers/temporary_directory.hpp>
 //#include <helpers/temporary_file.hpp>
 #include <helpers/timing.hpp>
-#include <helpers/xml_helper.hpp>
 
 struct test_status
 {

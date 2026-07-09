@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -257,8 +257,7 @@ void cell::value(const rich_text &text)
 {
     check_string(text.plain_text());
 
-    d_->type_ = type::shared_string;
-    d_->value_numeric_ = static_cast<double>(workbook().add_shared_string(text));
+    value_no_check(text);
 }
 
 void cell::value(const char *c)
@@ -268,12 +267,65 @@ void cell::value(const char *c)
 
 void cell::value(const cell c)
 {
+    if (c.worksheet().workbook() != worksheet().workbook())
+    {
+        copy_from_other_workbook(c);
+        return;
+    }
+
+    // Same workbook: shallow copy (existing behavior)
     d_->type_ = c.d_->type_;
     d_->value_numeric_ = c.d_->value_numeric_;
     d_->value_text_ = c.d_->value_text_;
     d_->hyperlink_ = c.d_->hyperlink_;
     d_->formula_ = c.d_->formula_;
     d_->format_ = c.d_->format_;
+}
+
+void cell::value_no_check(const rich_text &text)
+{
+    d_->type_ = type::shared_string;
+    d_->value_numeric_ = static_cast<double>(workbook().add_shared_string(text));
+}
+
+void cell::copy_from_other_workbook(const cell &source)
+{
+    d_->type_ = source.d_->type_;
+
+    // Handle shared_string: remap to destination workbook
+    if (source.data_type() == type::shared_string)
+    {
+        value_no_check(source.value<rich_text>());
+    }
+    else
+    {
+        d_->value_numeric_ = source.d_->value_numeric_;
+    }
+
+    d_->value_text_ = source.d_->value_text_;
+    d_->formula_ = source.d_->formula_;
+
+    // Copy external hyperlinks; internal hyperlinks (cell/range references)
+    // are not yet implemented as they would need worksheet title remapping.
+    // TODO: implement internal hyperlink remapping.
+    if (source.has_hyperlink())
+    {
+        auto copy_hyperlink = source.hyperlink();
+
+        if (copy_hyperlink.external())
+        {
+            hyperlink(copy_hyperlink.url(), copy_hyperlink.display());
+        }
+    }
+
+    if (source.has_format())
+    {
+        format(source.format());
+    }
+    else
+    {
+        d_->format_.clear();
+    }
 }
 
 void cell::value(const date &d)
@@ -377,6 +429,10 @@ cell &cell::operator=(const cell &rhs) = default;
 
 hyperlink cell::hyperlink() const
 {
+    if (!d_->hyperlink_.is_set())
+    {
+        throw invalid_attribute("cell \"" + reference().to_string() + "\" has no hyperlink");
+    }
     return xlnt::hyperlink(&d_->hyperlink_.get());
 }
 
@@ -384,7 +440,7 @@ void cell::hyperlink(const std::string &url, const std::string &display)
 {
     if (url.empty())
     {
-        throw invalid_parameter();
+        throw invalid_parameter("the hyperlink URL for cell \"" + reference().to_string() + "\" is empty");
     }
 
     auto ws = worksheet();
@@ -395,7 +451,7 @@ void cell::hyperlink(const std::string &url, const std::string &display)
     // check for existing relationships
     auto relationships = manifest.relationships(ws.path(), relationship_type::hyperlink);
     auto relation = std::find_if(relationships.cbegin(), relationships.cend(),
-        [&url](xlnt::relationship rel) { return rel.target().path().string() == url; });
+    [&url](const xlnt::relationship &rel) { return rel.target().to_string() == url; });
     if (relation != relationships.end())
     {
         d_->hyperlink_.get().relationship = *relation;
@@ -489,6 +545,10 @@ bool cell::has_formula() const
 
 std::string cell::formula() const
 {
+    if (!d_->formula_.is_set())
+    {
+        throw invalid_attribute("cell \"" + reference().to_string() + "\" has no formula");
+    }
     return d_->formula_.get();
 }
 
@@ -505,7 +565,7 @@ std::string cell::error() const
 {
     if (d_->type_ != type::error)
     {
-        throw xlnt::exception("called error() when cell type is not error");
+        throw xlnt::invalid_attribute("called error() when cell type is not error, but " + std::to_string(static_cast<int>(d_->type_)));
     }
     return value<std::string>();
 }
@@ -514,7 +574,7 @@ void cell::error(const std::string &error)
 {
     if (error.length() == 0 || error[0] != '#')
     {
-        throw invalid_data_type();
+        throw invalid_data_type(error);
     }
 
     d_->value_text_.plain_text(error, false);
@@ -767,13 +827,23 @@ bool cell::has_format() const
 
 void cell::format(const class format new_format)
 {
-    if (has_format())
+    // Check if format belongs to a different workbook (dangling pointer risk)
+    if (!workbook().owns_format(new_format))
     {
-        format().d_->references -= format().d_->references > 0 ? 1 : 0;
+        copy_format_from_other_workbook(new_format);
+        return;
     }
 
-    ++new_format.d_->references;
+    // Same workbook: direct assignment (original behavior)
     d_->format_ = new_format.d_;
+}
+
+void cell::copy_format_from_other_workbook(const class format &source_format)
+{
+    auto cloned_format = workbook().clone_format_from(source_format);
+
+    // Use the cloned format
+    d_->format_ = cloned_format.d_;
 }
 
 calendar cell::base_date() const
@@ -861,10 +931,7 @@ void cell::value(const std::string &value_string, bool infer_type)
 void cell::clear_format()
 {
     if (d_->format_.is_set())
-    {
-        format().d_->references -= format().d_->references > 0 ? 1 : 0;
         d_->format_.clear();
-    }
 }
 
 void cell::clear_style()
@@ -879,10 +946,12 @@ void cell::style(const class style &new_style)
 {
     auto new_format = has_format() ? format() : workbook().create_format();
 
+    new_format.alignment(new_style.alignment());
     new_format.border(new_style.border());
     new_format.fill(new_style.fill());
     new_format.font(new_style.font());
     new_format.number_format(new_style.number_format());
+    new_format.protection(new_style.protection());
 
     format(new_format.style(new_style));
 }
@@ -896,7 +965,7 @@ style cell::style()
 {
     if (!has_format() || !format().has_style())
     {
-        throw invalid_attribute();
+        throw invalid_attribute("cell " + reference().to_string() + " does not have a style");
     }
 
     auto f = format();
@@ -908,7 +977,7 @@ const style cell::style() const
 {
     if (!has_format() || !format().has_style())
     {
-        throw invalid_attribute();
+        throw invalid_attribute("cell " + reference().to_string() + " does not have a style");
     }
 
     return format().style();
@@ -923,50 +992,80 @@ format cell::modifiable_format()
 {
     if (!d_->format_.is_set())
     {
-        throw invalid_attribute();
+        throw invalid_attribute("cell " + reference().to_string() + " does not have a format");
     }
 
-    return xlnt::format(d_->format_.get());
+    return xlnt::format(d_->format_);
 }
 
 const format cell::format() const
 {
     if (!d_->format_.is_set())
     {
-        throw invalid_attribute();
+        throw invalid_attribute("cell " + reference().to_string() + " does not have a format");
     }
 
-    return xlnt::format(d_->format_.get());
+    return xlnt::format(d_->format_);
 }
 
 alignment cell::alignment() const
 {
-    return format().alignment();
+    if (has_format())
+    {
+        return format().alignment();
+    }
+
+    return {};
 }
 
 border cell::border() const
 {
-    return format().border();
+    if (has_format())
+    {
+        return format().border();
+    }
+
+    return {};
 }
 
 fill cell::fill() const
 {
-    return format().fill();
+    if (has_format())
+    {
+        return format().fill();
+    }
+
+    return {};
 }
 
 font cell::font() const
 {
-    return format().font();
+    if (has_format())
+    {
+        return format().font();
+    }
+
+    return {};
 }
 
 number_format cell::number_format() const
 {
-    return format().number_format();
+    if (has_format())
+    {
+        return format().number_format();
+    }
+
+    return {};
 }
 
 protection cell::protection() const
 {
-    return format().protection();
+    if (has_format())
+    {
+        return format().protection();
+    }
+
+    return {};
 }
 
 bool cell::has_hyperlink() const
@@ -994,7 +1093,7 @@ class comment cell::comment() const
 {
     if (!has_comment())
     {
-        throw xlnt::exception("cell has no comment");
+        throw xlnt::invalid_attribute("cell " + reference().to_string() + " has no comment");
     }
 
     return *d_->comment_.get();

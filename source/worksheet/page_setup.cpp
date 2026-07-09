@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,11 @@
 //
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
+
 #include <xlnt/utils/numeric.hpp>
 #include <xlnt/worksheet/page_setup.hpp>
+
+#include <algorithm>
 
 namespace xlnt {
 
@@ -58,6 +61,10 @@ void page_setup::sheet_state(xlnt::sheet_state sheet_state)
 
 paper_size page_setup::paper_size() const
 {
+    if (!paper_size_.is_set())
+    {
+        return paper_size::letter;
+    }
     return paper_size_.get();
 }
 
@@ -101,14 +108,16 @@ void page_setup::fit_to_width(bool fit_to_width)
     fit_to_width_ = fit_to_width;
 }
 
-void page_setup::scale(double scale)
+void page_setup::scale(unsigned int scale)
 {
+    scale = std::min(scale, 400u);
+    scale = std::max(scale, 10u);
     scale_ = scale;
 }
 
-double page_setup::scale() const
+unsigned int page_setup::scale() const
 {
-    return scale_.get();
+    return scale_;
 }
 
 bool page_setup::has_scale() const

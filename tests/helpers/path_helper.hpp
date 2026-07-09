@@ -5,8 +5,9 @@
 
 #include <xlnt/utils/exceptions.hpp>
 #include <xlnt/utils/path.hpp>
-#include <detail/utils/string_helpers.hpp>
+#include <xlnt/utils/string_helpers.hpp>
 #include <xlnt/internal/features.hpp>
+
 
 #if XLNT_HAS_INCLUDE(<string_view>) && XLNT_HAS_FEATURE(U8_STRING_VIEW)
   #include <string_view>
@@ -24,12 +25,13 @@
 #define XLNT_SAMPLE_DATA_DIR ""
 #endif
 
+
 class path_helper
 {
 public:
     static xlnt::path test_data_directory()
     {
-        static const std::string data_dir = ENSURE_UTF8_LITERAL(XLNT_TEST_DATA_DIR);
+        static const std::string data_dir = XLNT_U8(XLNT_TEST_DATA_DIR);
         return xlnt::path(data_dir);
     }
 
@@ -47,7 +49,7 @@ public:
 
     static xlnt::path benchmark_data_directory()
     {
-        static const std::string data_dir = ENSURE_UTF8_LITERAL(XLNT_BENCHMARK_DATA_DIR);
+        static const std::string data_dir = XLNT_U8(XLNT_BENCHMARK_DATA_DIR);
         return xlnt::path(data_dir);
     }
 
@@ -65,7 +67,7 @@ public:
 
     static xlnt::path sample_data_directory()
     {
-        static const std::string data_dir = ENSURE_UTF8_LITERAL(XLNT_SAMPLE_DATA_DIR);
+        static const std::string data_dir = XLNT_U8(XLNT_SAMPLE_DATA_DIR);
         return xlnt::path(data_dir);
     }
 
@@ -85,7 +87,7 @@ public:
     {
         if(!overwrite && destination.exists())
         {
-            throw xlnt::exception("destination file already exists and overwrite==false");
+            throw xlnt::exception("destination file already exists and overwrite==false for file at path \"" + destination.string() + "\"");
         }
 
         std::ifstream src(source.string(), std::ios::binary);

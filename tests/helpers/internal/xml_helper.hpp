@@ -348,7 +348,7 @@ public:
                         << static_cast<int>(rel.type())
                         << ':' << static_cast<int>(rel.target_mode())
                         << ':' << rel.source().path().string()
-                        << ':' << rel.target().path().string() << '\n';
+                        << ':' << rel.target().to_string() << '\n';
                 }
             }
             std::cout << "\nRight:\n";
@@ -362,7 +362,7 @@ public:
                         << ':' << static_cast<int>(rel.type())
                         << ':' << static_cast<int>(rel.target_mode())
                         << ':' << rel.source().path().string()
-                        << ':' << rel.target().path().string() << '\n';
+                        << ':' << rel.target().to_string() << '\n';
                 }
             }
             return false;

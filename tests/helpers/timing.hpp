@@ -1,5 +1,5 @@
 // Copyright (c) 2017-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@
 //
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
+#pragma once
 
 #include <chrono>
 
@@ -31,7 +32,7 @@ inline std::size_t current_time()
 {
     auto now = std::chrono::system_clock::now();
     auto time_since_epoch = now.time_since_epoch();
-    auto duration = std::chrono::duration<double, std::milli>(time_since_epoch);
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(time_since_epoch);
 
     return static_cast<std::size_t>(duration.count());
 }

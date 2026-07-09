@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@
 #include <string>
 
 #include <xlnt/xlnt_config.hpp>
+#include <xlnt/utils/numeric.hpp>
 #include <xlnt/utils/optional.hpp>
 
 namespace xlnt {
@@ -74,17 +75,29 @@ public:
     /// and not used when saving, it is calculated in the xlsx_producer.
     /// </summary>
     optional<std::string> spans;
+
+    /// <summary>
+    /// Whether or not the row should be collapsed
+    /// </summary>
+    optional<bool> collapsed;
+
+    /// <summary>
+    /// The outline level of the row
+    /// </summary>
+    optional<std::uint8_t> outline_level;
 };
 
 inline bool operator==(const row_properties &lhs, const row_properties &rhs)
 {
-    return lhs.height == rhs.height
-        && lhs.dy_descent == rhs.dy_descent
+    return detail::float_equals(lhs.height, rhs.height)
+        && detail::float_equals(lhs.dy_descent, rhs.dy_descent)
         && lhs.custom_height == rhs.custom_height
         && lhs.hidden == rhs.hidden
         && lhs.custom_format == rhs.custom_format
         && lhs.style == rhs.style
-        && lhs.spans == rhs.spans;
+        && lhs.spans == rhs.spans
+        && lhs.collapsed == rhs.collapsed
+        && lhs.outline_level == rhs.outline_level;
 }
 
 inline bool operator!=(const row_properties &lhs, const row_properties &rhs)

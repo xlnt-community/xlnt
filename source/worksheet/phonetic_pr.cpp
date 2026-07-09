@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -94,6 +94,10 @@ bool phonetic_pr::has_type() const
 
 phonetic_pr::phonetic_type phonetic_pr::type() const
 {
+    if (!type_.is_set())
+    {
+        return phonetic_type::full_width_katakana;
+    }
     return type_.get();
 }
 
@@ -109,6 +113,10 @@ bool phonetic_pr::has_alignment() const
 
 phonetic_pr::align phonetic_pr::alignment() const
 {
+    if (!alignment_.is_set())
+    {
+        return align::left;
+    }
     return alignment_.get();
 }
 

@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 
 #include <xlnt/cell/hyperlink.hpp>
 #include <xlnt/utils/exceptions.hpp>
+#include <detail/constants.hpp>
 #include <detail/implementations/hyperlink_impl.hpp>
 
 namespace xlnt {
@@ -38,7 +39,7 @@ relationship hyperlink::relationship() const
 {
     if (!external())
     {
-        throw xlnt::exception("only external hyperlinks have associated relationships");
+        throw xlnt::invalid_attribute("only external hyperlinks have associated relationships");
     }
 
     return d_->relationship;
@@ -48,7 +49,7 @@ std::string hyperlink::url() const
 {
     if (!external())
     {
-        throw xlnt::exception("only external hyperlinks have associated urls");
+        throw xlnt::invalid_attribute("only external hyperlinks have associated urls");
     }
 
     return d_->relationship.target().to_string();
@@ -58,7 +59,7 @@ std::string hyperlink::target_range() const
 {
     if (external())
     {
-        throw xlnt::exception("only internal hyperlinks have a target range");
+        throw xlnt::invalid_attribute("only internal hyperlinks have a target range");
     }
 
     return d_->relationship.target().to_string();
@@ -79,8 +80,17 @@ void hyperlink::display(const std::string &value)
     d_->display.set(value);
 }
 
+void hyperlink::clear_display()
+{
+    d_->display.clear();
+}
+
 const std::string &hyperlink::display() const
 {
+    if (!d_->display.is_set())
+    {
+        return constants::empty_str();
+    }
     return d_->display.get();
 }
 
@@ -94,8 +104,17 @@ void hyperlink::tooltip(const std::string &value)
     d_->tooltip.set(value);
 }
 
+void hyperlink::clear_tooltip()
+{
+    d_->tooltip.clear();
+}
+
 const std::string &hyperlink::tooltip() const
 {
+    if (!d_->tooltip.is_set())
+    {
+        return constants::empty_str();
+    }
     return d_->tooltip.get();
 }
 
@@ -109,8 +128,17 @@ void hyperlink::location(const std::string &value)
     d_->location.set(value);
 }
 
+void hyperlink::clear_location()
+{
+    d_->location.clear();
+}
+
 const std::string &hyperlink::location() const
 {
+    if (!d_->location.is_set())
+    {
+        return constants::empty_str();
+    }
     return d_->location.get();
 }
 

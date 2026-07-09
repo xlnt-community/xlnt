@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -287,14 +287,14 @@ void color::tint(double tint)
 
 double color::tint() const
 {
-    return tint_.is_set() ? tint_.get() : 0.0;
+    return tint_;
 }
 
 void color::assert_type(color_type t) const
 {
     if (t != type_)
     {
-        throw invalid_attribute();
+        throw invalid_attribute("expected color type " + std::to_string(static_cast<int>(type_)) + " but got type " + std::to_string(static_cast<int>(t)));
     }
 }
 
@@ -304,7 +304,7 @@ bool color::operator==(const xlnt::color &other) const
     {
         return false;
     }
-    if (tint_.is_set() != other.tint_.is_set() || (tint_.is_set() && std::fabs(tint_.get() - other.tint_.get()) != 0.0))
+    if (std::fabs(tint_.get() - other.tint_.get()) != 0.0)
     {
         return false;
     }

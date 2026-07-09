@@ -1,0 +1,7 @@
+# UBSan suppression file for xlnt
+# Usage: UBSAN_OPTIONS="suppressions=../ubsan.supp" ./tests/xlnt.test
+
+# Suppress null pointer arithmetic in expat (third-party library)
+# Bug: hashTableIterInit does `iter->end = iter->p + table->size` where iter->p can be NULL
+# This is technically UB but harmless in practice (NULL + 0 = NULL on all platforms)
+pointer-overflow:hashTableIterInit

@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@
 #include <xlnt/cell/cell.hpp>
 #include <xlnt/styles/fill.hpp>
 #include <xlnt/utils/date.hpp>
+#include <xlnt/workbook/workbook.hpp>
 #include <xlnt/worksheet/worksheet.hpp>
 
 class fill_test_suite : public test_suite
@@ -44,16 +45,16 @@ public:
         xlnt::fill fill;
 
         xlnt_assert_equals(fill.type(), xlnt::fill_type::pattern);
+        xlnt_assert_throws(fill.gradient_fill(), xlnt::invalid_attribute);
         fill = xlnt::fill(xlnt::gradient_fill());
         xlnt_assert_equals(fill.type(), xlnt::fill_type::gradient);
+        xlnt_assert_throws(fill.pattern_fill(), xlnt::invalid_attribute);
         xlnt_assert_equals(fill.gradient_fill().type(), xlnt::gradient_fill_type::linear);
 
         xlnt_assert_equals(fill.gradient_fill().left(), 0);
         xlnt_assert_equals(fill.gradient_fill().right(), 0);
         xlnt_assert_equals(fill.gradient_fill().top(), 0);
         xlnt_assert_equals(fill.gradient_fill().bottom(), 0);
-
-        xlnt_assert_throws(fill.pattern_fill(), xlnt::invalid_attribute);
 
         xlnt_assert_equals(fill.gradient_fill().degree(), 0);
 		fill = fill.gradient_fill().degree(1);

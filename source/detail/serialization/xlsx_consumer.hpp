@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -41,6 +41,9 @@
   #include <string_view>
 #endif
 
+
+class serialization_test_suite;
+
 namespace xlnt {
 
 class cell;
@@ -70,6 +73,8 @@ struct worksheet_impl;
 class XLNT_API_INTERNAL xlsx_consumer
 {
 public:
+    friend class ::serialization_test_suite;
+
 	xlsx_consumer(workbook &destination);
 
 	~xlsx_consumer();
@@ -96,7 +101,7 @@ private:
     bool has_cell();
 
     /// <summary>
-    /// Reads the next cell in the current worksheet and optionally returns it if
+    /// Reads the next cell in the current worksheet and returns a wrapper pointing to it if
     /// the last cell in the sheet has not yet been read. An exception will be thrown
     /// if this is not open as a streaming consumer.
     /// </summary>
@@ -232,6 +237,7 @@ private:
 
     /// <summary>
     /// xl/sheets/*.xml
+    /// Returns a wrapper pointing to the worksheet that has been read.
     /// </summary>
     worksheet read_worksheet_end(const std::string &rel_id);
 

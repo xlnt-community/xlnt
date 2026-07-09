@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,12 +26,21 @@
 #pragma once
 
 #include <array>
-#include <string>
+#include <cstring>
+#include <functional>
 
 #include <xlnt/xlnt_config.hpp>
 #include <xlnt/utils/optional.hpp>
+#include <xlnt/utils/hash_combine.hpp>
+#include <xlnt/utils/value_with_default.h>
 
 namespace xlnt {
+
+namespace detail {
+
+class xlsx_producer;
+
+} // namespace detail
 
 /// <summary>
 /// An indexed color encapsulates a simple index to a color in the indexedColors of the stylesheet.
@@ -251,38 +260,44 @@ public:
     void auto_(bool value);
 
     /// <summary>
-    /// Returns the internal indexed color representing this color. If this is not an RGB color,
-    /// an invalid_attribute exception will be thrown.
+    /// Returns the internal indexed color representing this color.
+    /// Assumes that this is an RGB color (to check, please call type() == xlnt::color_type::rgb).
+    /// If this is not an RGB color, an invalid_attribute exception will be thrown.
     /// </summary>
     const rgb_color &rgb() const;
 
     /// <summary>
-    /// Returns the internal indexed color representing this color. If this is not an RGB color,
-    /// an invalid_attribute exception will be thrown.
+    /// Returns the internal indexed color representing this color.
+    /// Assumes that this is an RGB color (to check, please call type() == xlnt::color_type::rgb).
+    /// If this is not an RGB color, an invalid_attribute exception will be thrown.
     /// </summary>
     rgb_color &rgb();
 
     /// <summary>
-    /// Returns the internal indexed color representing this color. If this is not an indexed color,
-    /// an invalid_attribute exception will be thrown.
+    /// Returns the internal indexed color representing this color.
+    /// Assumes that this is an indexed color (to check, please call type() == xlnt::color_type::indexed).
+    /// If this is not an indexed color, an invalid_attribute exception will be thrown.
     /// </summary>
     const indexed_color &indexed() const;
 
     /// <summary>
-    /// Returns the internal indexed color representing this color. If this is not an indexed color,
-    /// an invalid_attribute exception will be thrown.
+    /// Returns the internal indexed color representing this color.
+    /// Assumes that this is an indexed color (to check, please call type() == xlnt::color_type::indexed).
+    /// If this is not an indexed color, an invalid_attribute exception will be thrown.
     /// </summary>
     indexed_color &indexed();
 
     /// <summary>
-    /// Returns the internal indexed color representing this color. If this is not a theme color,
-    /// an invalid_attribute exception will be thrown.
+    /// Returns the internal indexed color representing this color.
+    /// Assumes that this is a theme color (to check, please call type() == xlnt::color_type::theme).
+    /// If this is not a theme color, an invalid_attribute exception will be thrown.
     /// </summary>
     const theme_color &theme() const;
 
     /// <summary>
-    /// Returns the internal indexed color representing this color. If this is not a theme color,
-    /// an invalid_attribute exception will be thrown.
+    /// Returns the internal indexed color representing this color.
+    /// Assumes that this is a theme color (to check, please call type() == xlnt::color_type::theme).
+    /// If this is not a theme color, an invalid_attribute exception will be thrown.
     /// </summary>
     theme_color &theme();
 
@@ -312,6 +327,8 @@ public:
     bool operator!=(const color &other) const;
 
 private:
+    friend class detail::xlsx_producer;
+
     /// <summary>
     /// Throws an invalid_attribute exception if the given type is different from this color's type
     /// </summary>
@@ -340,7 +357,7 @@ private:
     /// <summary>
     /// The tint of this color
     /// </summary>
-    optional<double> tint_;
+    detail::double_with_default<0> tint_;
 
     /// <summary>
     /// Whether or not this is an auto color
@@ -349,3 +366,48 @@ private:
 };
 
 } // namespace xlnt
+
+namespace std {
+
+template<>
+struct hash<xlnt::color>
+{
+    size_t operator()(const xlnt::color& c) const
+    {
+        size_t seed = 0;
+        // Start by hashing the type to prevent collisions between different color types
+        // that might share an underlying value (e.g., theme(1) vs indexed(1)).
+        xlnt::detail::hash_combine(seed, static_cast<int>(c.type()));
+
+        // Hash auto color flag
+        xlnt::detail::hash_combine(seed, c.auto_());
+
+        // Hash tint if present
+        if (c.has_tint())
+        {
+            xlnt::detail::hash_combine(seed, c.tint());
+        }
+
+        switch (c.type())
+        {
+            case xlnt::color_type::indexed:
+                xlnt::detail::hash_combine(seed, c.indexed().index());
+                break;
+            case xlnt::color_type::theme:
+                xlnt::detail::hash_combine(seed, c.theme().index());
+                break;
+            case xlnt::color_type::rgb:
+            {
+                const auto& rgb = c.rgb();
+                xlnt::detail::hash_combine(seed, rgb.red());
+                xlnt::detail::hash_combine(seed, rgb.green());
+                xlnt::detail::hash_combine(seed, rgb.blue());
+                xlnt::detail::hash_combine(seed, rgb.alpha());
+                break;
+            }
+        }
+        return seed;
+    }
+};
+
+} // namespace std

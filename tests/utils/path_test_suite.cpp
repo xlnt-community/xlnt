@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,8 @@
 // @author: see AUTHORS file
 
 #include <xlnt/utils/path.hpp>
-#include <detail/utils/string_helpers.hpp>
+#include <xlnt/utils/string_helpers.hpp>
+#include <xlnt/internal/features.hpp>
 #include <helpers/path_helper.hpp>
 #include <helpers/temporary_file.hpp>
 #include <helpers/test_suite.hpp>
@@ -79,7 +80,7 @@ public:
     {
         xlnt::path path(u8"🤔🥳😇");
         path = path.append(u8"🍕🍟🍔");
-        xlnt_assert_equals(path.string(), U8_TO_CHAR_PTR(u8"🤔🥳😇/🍕🍟🍔"));
+        xlnt_assert_equals(path.string(), xlnt::to_char_ptr(u8"🤔🥳😇/🍕🍟🍔"));
     }
 #endif
 

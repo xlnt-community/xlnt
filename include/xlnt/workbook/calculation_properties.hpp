@@ -1,5 +1,5 @@
 // Copyright (c) 2016-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ public:
     /// <summary>
     /// If this is true, concurrent calculation will be enabled for the workbook.
     /// </summary>
-    bool concurrent_calc = false;
+    bool concurrent_calc = true;
 };
 
 inline bool operator==(const calculation_properties &lhs, const calculation_properties &rhs)

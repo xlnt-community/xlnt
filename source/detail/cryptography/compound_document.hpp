@@ -1,7 +1,7 @@
 /*  POLE - Portable C++ library to access OLE Storage
  Copyright (C) 2002-2007 Ariya Hidayat (ariya@kde.org).
  Copyright (C) 2016-2022 Thomas Fussell
- Copyright (c) 2024-2025 xlnt-community
+ Copyright (c) 2024-2026 xlnt-community
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
@@ -35,6 +35,8 @@
 #include <detail/binary.hpp>
 #include <detail/unicode.hpp>
 
+// NOTE: compound files are not part of the OOXML specification (ECMA-376).
+// This implementation is based on the "[MS-CFB]: Compound File Binary File Format" specification.
 namespace xlnt {
 namespace detail {
 

@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2022 Thomas Fussell
 // Copyright (c) 2010-2015 openpyxl
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -225,7 +225,7 @@ public:
     /// <summary>
     /// Adds a gradient stop at position with the given color.
     /// </summary>
-    gradient_fill &add_stop(double position, color stop_color);
+    gradient_fill &add_stop(double position, const color& stop_color);
 
     /// <summary>
     /// Deletes all stops from the gradient.
@@ -330,12 +330,14 @@ public:
 
     /// <summary>
     /// Returns the gradient fill represented by this fill.
+    /// Assumes that this fill is a gradient fill (to check, please call type() == xlnt::fill_type::gradient).
     /// Throws an invalid_attribute exception if this is not a gradient fill.
     /// </summary>
     class gradient_fill gradient_fill() const;
 
     /// <summary>
     /// Returns the pattern fill represented by this fill.
+    /// Assumes that this fill is a pattern fill (to check, please call type() == xlnt::fill_type::pattern).
     /// Throws an invalid_attribute exception if this is not a pattern fill.
     /// </summary>
     class pattern_fill pattern_fill() const;

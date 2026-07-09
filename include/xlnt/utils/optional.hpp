@@ -1,5 +1,5 @@
 // Copyright (c) 2016-2022 Thomas Fussell
-// Copyright (c) 2024-2025 xlnt-community
+// Copyright (c) 2024-2026 xlnt-community
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,8 @@
 #pragma once
 
 #include "xlnt/utils/exceptions.hpp"
-#include "xlnt/utils/numeric.hpp"
 #include <type_traits>
+#include <cstring>
 
 namespace xlnt {
 
@@ -51,30 +51,14 @@ class optional
     using set_move_noexcept_t = typename std::conditional<std::is_nothrow_move_constructible<T>{} && std::is_nothrow_move_assignable<T>{}, std::true_type, std::false_type>::type;
     using clear_noexcept_t = typename std::conditional<std::is_nothrow_destructible<T>{}, std::true_type, std::false_type>::type;
 #endif
-    /// <summary>
-    /// Default equality operation, just uses operator==
-    /// </summary>
-    template <typename U = T, typename std::enable_if<!std::is_floating_point<U>::value>::type * = nullptr>
-    constexpr bool compare_equal(const U &lhs, const U &rhs) const
-    {
-        return lhs == rhs;
-    }
-
-    /// <summary>
-    /// equality operation for floating point numbers. Provides "fuzzy" equality
-    /// </summary>
-    template <typename U = T, typename std::enable_if<std::is_floating_point<U>::value>::type * = nullptr>
-    constexpr bool compare_equal(const U &lhs, const U &rhs) const
-    {
-        return detail::float_equals(lhs, rhs);
-    }
 
 public:
     /// <summary>
     /// Default contructor. is_set() will be false initially.
     /// </summary>
     optional() noexcept
-        : has_value_(false)
+        : has_value_(false),
+        storage_{}
     {
     }
 
@@ -109,6 +93,10 @@ public:
         {
             new (&storage_) T(other.value_ref());
         }
+        else
+        {
+            std::memset(storage_, 0, sizeof(T));
+        }
     }
 
     /// <summary>
@@ -122,6 +110,10 @@ public:
         {
             new (&storage_) T(std::move(other.value_ref()));
             other.clear();
+        }
+        else
+        {
+            std::memset(storage_, 0, sizeof(T));
         }
     }
 
@@ -182,10 +174,6 @@ public:
     /// </summary>
     void set(const T &value) noexcept(XLNT_NOEXCEPT_VALUE_COMPAT(set_copy_noexcept_t{}))
     {
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
         if (has_value_)
         {
             value_ref() = value;
@@ -195,9 +183,6 @@ public:
             new (&storage_) T(value);
             has_value_ = true;
         }
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
     }
 
     /// <summary>
@@ -209,10 +194,6 @@ public:
         // 1. have to deal with implicit conversions internally with perfect forwarding
         // 2. have to deal with the noexcept specfiers for all the different variations
         // overload is just far and away the simpler solution
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
         if (has_value_)
         {
             value_ref() = std::move(value);
@@ -222,9 +203,6 @@ public:
             new (&storage_) T(std::move(value));
             has_value_ = true;
         }
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
     }
 
     /// <summary>
@@ -258,28 +236,30 @@ public:
     }
 
     /// <summary>
-    /// Gets the value. If no value has been initialized in this object,
+    /// Gets the value. Assumes that the value exists (please call is_set() to check).
+    /// If no value has been initialized in this object,
     /// an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     T &get()
     {
         if (!has_value_)
         {
-            throw invalid_attribute();
+            throw invalid_attribute("access to empty optional");
         }
 
         return value_ref();
     }
 
     /// <summary>
-    /// Gets the value. If no value has been initialized in this object,
+    /// Gets the value. Assumes that the value exists (please call is_set() to check).
+    /// If no value has been initialized in this object,
     /// an xlnt::invalid_attribute exception will be thrown.
     /// </summary>
     const T &get() const
     {
         if (!has_value_)
         {
-            throw invalid_attribute();
+            throw invalid_attribute("access to empty optional");
         }
 
         return value_ref();
@@ -300,8 +280,7 @@ public:
         {
             return true;
         }
-        // equality is overloaded to provide fuzzy equality when T is a fp number
-        return compare_equal(value_ref(), other.value_ref());
+        return value_ref() == other.value_ref();
     }
 
     /// <summary>
