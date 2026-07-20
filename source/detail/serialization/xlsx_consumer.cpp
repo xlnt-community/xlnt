@@ -534,7 +534,7 @@ void read_defined_names(worksheet ws, std::vector<defined_name> defined_names)
         }
         else if (name.name == "_xlnm._FilterDatabase")
         {
-            auto i = name.value.find("!");
+            auto i = name.value.find('!');
             auto ref = name.value.substr(i + 1);
             if (is_valid_reference(ref))
             {
@@ -543,7 +543,7 @@ void read_defined_names(worksheet ws, std::vector<defined_name> defined_names)
         }
         else if (name.name == "_xlnm.Print_Area")
         {
-            auto i = name.value.find("!");
+            auto i = name.value.find('!');
             auto ref = name.value.substr(i + 1);
             if (is_valid_reference(ref))
             {
@@ -563,11 +563,16 @@ std::string xlsx_consumer::read_worksheet_begin(const std::string &rel_id)
     array_formulae_.clear();
     shared_formulae_.clear();
 
-    auto title = std::find_if(target_.d_->sheet_title_rel_id_map_.begin(),
+    auto it_title = std::find_if(target_.d_->sheet_title_rel_id_map_.begin(),
         target_.d_->sheet_title_rel_id_map_.end(),
-        [&](const std::pair<std::string, std::string> &p) {
+        [&rel_id](const std::pair<std::string, std::string> &p) {
             return p.second == rel_id;
-        })->first;
+        });
+    if (it_title == target_.d_->sheet_title_rel_id_map_.end())
+    {
+        throw xlnt::key_not_found(rel_id);
+    }
+    const auto &title = it_title->first;
 
     auto ws = worksheet(current_worksheet_);
 
@@ -836,7 +841,7 @@ std::string xlsx_consumer::read_worksheet_begin(const std::string &rel_id)
 #endif
 
                 // avoid uninitialised warnings in GCC by using a lambda to make the conditional initialisation
-                optional<double> width = [this](xml::parser &p) -> xlnt::optional<double> {
+                optional<double> width = [](xml::parser &p) -> xlnt::optional<double> {
                     if (p.attribute_present("width"))
                     {
                         return (xlnt::detail::deserialise(p.attribute("width")) * 7 - 5) / 7;
@@ -2313,11 +2318,16 @@ void xlsx_consumer::read_office_document(const std::string &content_type) // CT_
 
     for (auto worksheet_rel : manifest().relationships(workbook_path, relationship_type::worksheet))
     {
-        auto title = std::find_if(target_.d_->sheet_title_rel_id_map_.begin(),
+        auto it_title = std::find_if(target_.d_->sheet_title_rel_id_map_.begin(),
             target_.d_->sheet_title_rel_id_map_.end(),
-            [&](const std::pair<std::string, std::string> &p) {
+            [&worksheet_rel](const std::pair<std::string, std::string> &p) {
                 return p.second == worksheet_rel.id();
-            })->first;
+            });
+        if (it_title == target_.d_->sheet_title_rel_id_map_.end())
+        {
+            throw xlnt::key_not_found(worksheet_rel.id());
+        }
+        const auto &title = it_title->first;
 
         auto id = sheet_title_id_map_[title];
         auto index = sheet_title_index_map_[title];

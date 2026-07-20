@@ -76,6 +76,7 @@ std::array<xlnt::optional<xlnt::rich_text>, 3> decode_header_footer(const std::s
 
     std::vector<hf_token> tokens;
     std::size_t position = 0;
+    const std::string numbers("0123456789");
 
     while (position < hf_string.size())
     {
@@ -123,7 +124,7 @@ std::array<xlnt::optional<xlnt::rich_text>, 3> decode_header_footer(const std::s
             {
                 token.code = hf_code::total_page_number;
             }
-            else if (std::string("0123456789").find(hf_string[position + 1]) != std::string::npos)
+            else if (numbers.find(hf_string[position + 1]) != std::string::npos)
             {
                 token.code = hf_code::font_size;
                 next_position = hf_string.find_first_not_of("0123456789", position + 1);
@@ -220,7 +221,12 @@ std::array<xlnt::optional<xlnt::rich_text>, 3> decode_header_footer(const std::s
 
     const auto parse_section = [&tokens, &result](hf_code code) {
         std::vector<hf_code> end_codes{hf_code::left_section, hf_code::center_section, hf_code::right_section};
-        end_codes.erase(std::find(end_codes.begin(), end_codes.end(), code));
+        auto it = std::find(end_codes.begin(), end_codes.end(), code);
+        if (it == end_codes.end())
+        {
+            return;
+        }
+        end_codes.erase(it);
 
         std::size_t start_index = 0;
 

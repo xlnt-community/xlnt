@@ -39,6 +39,9 @@
   #include <string_view>
 #endif
 
+
+class serialization_test_suite;
+
 namespace xml {
 class serializer;
 } // namespace xml
@@ -68,9 +71,11 @@ struct worksheet_impl;
 /// <summary>
 /// Handles writing a workbook into an XLSX file.
 /// </summary>
-class xlsx_producer
+class XLNT_API_INTERNAL xlsx_producer
 {
 public:
+    friend class ::serialization_test_suite;
+
 	xlsx_producer(const workbook &target);
 
     ~xlsx_producer();
