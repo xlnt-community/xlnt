@@ -24,6 +24,8 @@
 #include <detail/binary.hpp>
 #include <helpers/test_suite.hpp>
 
+#include <sstream>
+
 class binary_test_suite : public test_suite
 {
   public:
@@ -850,7 +852,7 @@ class binary_test_suite : public test_suite
     void test_read_valid_string_with_NUL_from_stream()
     {
         std::stringstream ss;
-        std::string_view str_with_NUL {"hi XLNT\0", 8};
+        std::string str_with_NUL {"hi XLNT\0", 8};
         ss << str_with_NUL;
         std::string str;
         xlnt_assert_throws_nothing(str = xlnt::detail::read_string<char>(ss, 8, true));
