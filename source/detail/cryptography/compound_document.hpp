@@ -70,10 +70,10 @@ bool has_invalid_start_sector(const compound_document_entry &entry);
 bool is_invalid_entry(directory_id entry);
 
 /// Throws if the sector ID is neither a valid one (<= MAXREGSECT) nor ENDOFCHAIN.
-void expect_valid_sector_or_chain_end(sector_id sector);
+XLNT_API_INTERNAL void expect_valid_sector_or_chain_end(sector_id sector);
 
 /// Throws if the directory ID of the entry is neither a valid one (<= MAXREGSID) nor NOSTREAM.
-void expect_valid_entry_or_no_stream(directory_id entry);
+XLNT_API_INTERNAL void expect_valid_entry_or_no_stream(directory_id entry);
 
 
 struct compound_document_header
@@ -110,6 +110,7 @@ struct compound_document_entry
 {
     /// Can throw xlnt::invalid_parameter if the string length after being converted
     /// to UTF-16 is > 31 characters, or if it contains any of the characters '/', '\', ':', '!'.
+    /// During the conversion from UTF-8 to UTF-16 it can throw: utf8::not_enough_room, utf8::invalid_utf8, utf8::invalid_code_point
     void name(const std::string &new_name)
     {
         std::size_t curr_pos = 0;
@@ -135,7 +136,7 @@ struct compound_document_entry
         directory_entry_name_length = (directory_entry_name_length + 1) * 2;
     }
 
-    /// Can throw: utf8::invalid_utf16, utf8::invalid_code_point
+    /// During the conversion from UTF-16 to UTF-8 it can throw: utf8::invalid_utf16, utf8::invalid_code_point
     std::string name() const
     {
         if (directory_entry_name_length < 2)
