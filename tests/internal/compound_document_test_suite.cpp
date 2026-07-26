@@ -53,6 +53,7 @@ class compound_document_test_suite : public test_suite
         xlnt_assert_throws(entry.name(":"), xlnt::invalid_parameter);
         xlnt_assert_throws(entry.name("!"), xlnt::invalid_parameter);
         xlnt_assert_throws(entry.name("Test with more than 31 characters"), xlnt::invalid_parameter);
+        xlnt_assert(entry.name().empty());
     }
 
     void test_expect_valid_sector_or_chain_end()
