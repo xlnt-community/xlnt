@@ -65,14 +65,7 @@ std::string strerror_safe(int err_no)
     // This may be either a pointer to a string that the function stores in buf,
     // or a pointer to some (immutable) static string (in which case buf is unused).
     const char *ret_buf = strerror_r(err_no, buffer, BUFF_SIZE);
-    if (buffer[0] != '\0')
-    {
-        err_msg = buffer;
-    }
-    else
-    {
-        err_msg = ret_buf;
-    }
+    err_msg = ret_buf;
 #else
     err_msg = std::strerror(err_no);
 #endif

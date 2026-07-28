@@ -89,13 +89,14 @@ class binary_test_suite : public test_suite
 
     void test_reader_read_pointer_valid_char_to_char()
     {
-        std::vector<char> container(1);
+        std::vector<char> container(1, 'h');
         xlnt::detail::binary_reader<char> reader(container);
 
         xlnt_assert_equals(reader.offset(), 0);
         const char* ptr = nullptr;
         xlnt_assert_throws_nothing(ptr = reader.read_pointer<char>());
         xlnt_assert_equals(container.data(), ptr);
+        xlnt_assert_equals(*ptr, 'h');
         xlnt_assert_equals(reader.offset(), sizeof(char));
     }
 

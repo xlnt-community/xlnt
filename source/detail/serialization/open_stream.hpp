@@ -36,19 +36,49 @@
 namespace xlnt {
 namespace detail {
 
+/// Opens a file stream at the specified path. On Windows, the path is
+/// expected to be encoded as UTF-8 and will be converted internally
+/// to UTF-16 before opening, so that files with special Unicode characters
+/// outside of the global language locale can be opened without issues.
+/// Resets errno to 0 before opening the file,
+/// so errno can be checked afterwards for the internal error.
 void open_stream(std::ifstream &stream, const std::string &path);
 
+/// Opens a file stream at the specified path. On Windows, the path is
+/// expected to be encoded as UTF-8 and will be converted internally
+/// to UTF-16 before opening, so that files with special Unicode characters
+/// outside of the global language locale can be opened without issues.
+/// Resets errno to 0 before opening the file,
+/// so errno can be checked afterwards for the internal error.
 void open_stream(std::ofstream &stream, const std::string &path);
 
 #if XLNT_HAS_FEATURE(U8_STRING_VIEW)
+/// Opens a file stream at the specified path. On Windows, the path is
+/// expected to be encoded as UTF-8 and will be converted internally
+/// to UTF-16 before opening, so that files with special Unicode characters
+/// outside of the global language locale can be opened without issues.
+/// Resets errno to 0 before opening the file,
+/// so errno can be checked afterwards for the internal error.
 void open_stream(std::ifstream &stream, std::u8string_view path);
 
+/// Opens a file stream at the specified path. On Windows, the path is
+/// expected to be encoded as UTF-8 and will be converted internally
+/// to UTF-16 before opening, so that files with special Unicode characters
+/// outside of the global language locale can be opened without issues.
+/// Resets errno to 0 before opening the file,
+/// so errno can be checked afterwards for the internal error.
 void open_stream(std::ofstream &stream, std::u8string_view path);
 #endif
 
 #ifdef _MSC_VER
+/// Opens a file stream at the specified path.
+/// Resets errno to 0 before opening the file,
+/// so errno can be checked afterwards for the internal error.
 void open_stream(std::ifstream &stream, const std::wstring &path);
 
+/// Opens a file stream at the specified path.
+/// Resets errno to 0 before opening the file,
+/// so errno can be checked afterwards for the internal error.
 void open_stream(std::ofstream &stream, const std::wstring &path);
 #endif
 

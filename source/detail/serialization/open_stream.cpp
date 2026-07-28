@@ -37,6 +37,7 @@ void open_stream(std::ifstream &stream, const std::string &path)
 #ifdef _MSC_VER
     open_stream(stream, xlnt::path(path).wstring());
 #else
+    errno = 0;
     stream.open(path, std::ios::binary);
 #endif
 }
@@ -46,6 +47,7 @@ void open_stream(std::ofstream &stream, const std::string &path)
 #ifdef _MSC_VER
     open_stream(stream, xlnt::path(path).wstring());
 #else
+    errno = 0;
     stream.open(path, std::ios::binary);
 #endif
 }
@@ -53,11 +55,13 @@ void open_stream(std::ofstream &stream, const std::string &path)
 #ifdef _MSC_VER
 void open_stream(std::ifstream &stream, const std::wstring &path)
 {
+    errno = 0;
     stream.open(path, std::ios::binary);
 }
 
 void open_stream(std::ofstream &stream, const std::wstring &path)
 {
+    errno = 0;
     stream.open(path, std::ios::binary);
 }
 #endif
@@ -68,6 +72,7 @@ void open_stream(std::ifstream &stream, std::u8string_view path)
 #ifdef _MSC_VER
     open_stream(stream, xlnt::path(path).wstring());
 #elif XLNT_HAS_FEATURE(FILESYSTEM)
+    errno = 0;
     stream.open(std::filesystem::path(path), std::ios::binary);
 #else
     // TODO: this cannot work if the user's locale is not UTF-8. In such cases we cannot ensure
@@ -76,6 +81,7 @@ void open_stream(std::ifstream &stream, std::u8string_view path)
     // with the user's locale encoding.
     // NOTE: this code will only run if C++17 is only partially implemented,
     // but C++17 string_view and C++20 char8_t are implemented, while C++17 filesystem is not.
+    errno = 0;
     stream.open(to_char_ptr(path.data()), std::ios::binary);
 #endif
 }
@@ -85,6 +91,7 @@ void open_stream(std::ofstream &stream, std::u8string_view path)
 #ifdef _MSC_VER
     open_stream(stream, xlnt::path(path).wstring());
 #elif XLNT_HAS_FEATURE(FILESYSTEM)
+    errno = 0;
     stream.open(std::filesystem::path(path), std::ios::binary);
 #else
     // TODO: this cannot work if the user's locale is not UTF-8. In such cases we cannot ensure
@@ -93,6 +100,7 @@ void open_stream(std::ofstream &stream, std::u8string_view path)
     // with the user's locale encoding.
     // NOTE: this code will only run if C++17 is only partially implemented,
     // but C++17 string_view and C++20 char8_t are implemented, while C++17 filesystem is not.
+    errno = 0;
     stream.open(to_char_ptr(path.data()), std::ios::binary);
 #endif
 }

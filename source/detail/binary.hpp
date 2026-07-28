@@ -30,6 +30,7 @@
 #include <vector>
 
 #include <xlnt/utils/exceptions.hpp>
+#include <detail/utils/stream_helpers.hpp>
 
 namespace xlnt {
 namespace detail {
@@ -406,8 +407,7 @@ T read(std::istream &in)
     T result;
 
     // Exception handling could provide useful information about why errors have occurred.
-    auto previous_exception_mask = in.exceptions();
-    in.exceptions(std::istream::failbit | std::istream::badbit);
+    stream_scoped_exception_mask mask(in, std::istream::failbit | std::istream::badbit);
 
     try
     {
@@ -418,8 +418,6 @@ T read(std::istream &in)
         throw xlnt::invalid_parameter("Failed reading 1 value of size " + std::to_string(sizeof(T)) +
             " from binary stream. Reason: " + ex.what());
     }
-
-    in.exceptions(previous_exception_mask);
 
     return result;
 }
@@ -435,8 +433,7 @@ std::vector<T> read_vector(std::istream &in, std::size_t count)
     }
 
     // Exception handling could provide useful information about why errors have occurred.
-    auto previous_exception_mask = in.exceptions();
-    in.exceptions(std::istream::failbit | std::istream::badbit);
+    stream_scoped_exception_mask mask(in, std::istream::failbit | std::istream::badbit);
 
     try
     {
@@ -447,8 +444,6 @@ std::vector<T> read_vector(std::istream &in, std::size_t count)
         throw xlnt::invalid_parameter("Failed reading " + std::to_string(count) + " values of size " + std::to_string(sizeof(T)) +
             " (total of " + std::to_string(count * sizeof(T)) + " bytes) from binary stream. Reason: " + ex.what());
     }
-
-    in.exceptions(previous_exception_mask);
 
     return result;
 }
@@ -466,8 +461,7 @@ std::basic_string<T> read_string(std::istream &in, std::size_t count, bool conta
     }
 
     // Exception handling could provide useful information about why errors have occurred.
-    auto previous_exception_mask = in.exceptions();
-    in.exceptions(std::istream::failbit | std::istream::badbit);
+    stream_scoped_exception_mask mask(in, std::istream::failbit | std::istream::badbit);
 
     try
     {
@@ -483,8 +477,6 @@ std::basic_string<T> read_string(std::istream &in, std::size_t count, bool conta
     {
         result.pop_back();
     }
-
-    in.exceptions(previous_exception_mask);
 
     return result;
 }

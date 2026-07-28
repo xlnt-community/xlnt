@@ -35,6 +35,7 @@
 #include <detail/binary.hpp>
 #include <detail/cryptography/compound_document.hpp>
 #include <detail/unicode.hpp>
+#include <detail/utils/stream_helpers.hpp>
 
 #define FMT_HEADER_ONLY
 #include <fmt/format.h>
@@ -656,8 +657,7 @@ void compound_document::read_sector(sector_id id, binary_writer<T> &writer)
 {
     auto seek_pos = static_cast<std::streampos>(sector_data_start() + sector_size() * id);
     // Exception handling could provide useful information about why errors have occurred.
-    auto previous_exception_mask = in_->exceptions();
-    in_->exceptions(std::istream::failbit | std::istream::badbit);
+    stream_scoped_exception_mask mask(*in_, std::istream::failbit | std::istream::badbit);
 
     try
     {
@@ -681,7 +681,6 @@ void compound_document::read_sector(sector_id id, binary_writer<T> &writer)
     }
 
     writer.append(sector);
-    in_->exceptions(previous_exception_mask);
 }
 
 template <typename T>
@@ -1410,8 +1409,7 @@ compound_document_entry::entry_color &compound_document::tree_color(directory_id
 void compound_document::read_header()
 {
     // Exception handling could provide useful information about why errors have occurred.
-    auto previous_exception_mask = in_->exceptions();
-    in_->exceptions(std::istream::failbit | std::istream::badbit);
+    stream_scoped_exception_mask mask(*in_, std::istream::failbit | std::istream::badbit);
 
     try
     {
@@ -1541,8 +1539,6 @@ void compound_document::read_header()
             throw xlnt::invalid_file(exception_str);
         }
     }
-
-    in_->exceptions(previous_exception_mask);
 }
 
 void compound_document::read_DIFAT()
@@ -1885,8 +1881,7 @@ void compound_document::read_entry(directory_id id)
     auto seek_pos = static_cast<std::streamoff>(sector_data_start() + offset);
 
     // Exception handling could provide useful information about why errors have occurred.
-    auto previous_exception_mask = in_->exceptions();
-    in_->exceptions(std::istream::failbit | std::istream::badbit);
+    stream_scoped_exception_mask mask(*in_, std::istream::failbit | std::istream::badbit);
 
     try
     {
@@ -1920,8 +1915,6 @@ void compound_document::read_entry(directory_id id)
         throw xlnt::invalid_file("Failed reading compound document entry " + std::to_string(id) +
             ": failed reading entry fields. Reason: " + ex.what());
     }
-
-    in_->exceptions(previous_exception_mask);
 
     // Stream Size (8 bytes): ... (see below for the rest)
     // - For a version 3 compound file 512-byte sector size, the value of this field MUST be less than

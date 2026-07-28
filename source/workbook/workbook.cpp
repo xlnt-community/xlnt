@@ -62,6 +62,7 @@
 #include <detail/serialization/xlsx_consumer.hpp>
 #include <detail/serialization/xlsx_producer.hpp>
 #include <detail/utils/error_helpers.hpp>
+#include <detail/utils/stream_helpers.hpp>
 
 namespace {
 
@@ -1019,14 +1020,11 @@ void workbook::load(const path &filename)
 {
     std::ifstream file_stream;
 
-    // Exception handling could provide useful information about why errors have occurred.
-    file_stream.exceptions(std::istream::failbit | std::istream::badbit);
-
     try
     {
-        std::string file = filename.string();
-        errno = 0;
-        open_stream(file_stream, file);
+        // Exception handling could provide useful information about why errors have occurred.
+        xlnt::detail::stream_scoped_exception_mask mask(file_stream, std::istream::failbit | std::istream::badbit);
+        open_stream(file_stream, filename.string());
     }
     catch (const std::exception &ex)
     {
@@ -1048,14 +1046,11 @@ void workbook::load_internal(const xlnt::path &filename, const T &password)
 {
     std::ifstream file_stream;
 
-    // Exception handling could provide useful information about why errors have occurred.
-    file_stream.exceptions(std::istream::failbit | std::istream::badbit);
-
     try
     {
-        std::string file = filename.string();
-        errno = 0;
-        open_stream(file_stream, file);
+        // Exception handling could provide useful information about why errors have occurred.
+        file_stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        open_stream(file_stream, filename.string());
     }
     catch (const std::exception &ex)
     {

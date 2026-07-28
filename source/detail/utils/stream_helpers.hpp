@@ -23,18 +23,40 @@
 
 #pragma once
 
-#include <string>
+#include <ios>
 
 namespace xlnt {
 namespace detail {
 
-/// Returns a string that describes the error code passed in the argument err_no.
-/// This function tries to be "safe" by using thread-safe versions of std::strerror if available on the system. While XLNT is
-/// not thread-safe itself, we still want to avoid calling functions that might use global variables
-/// (the char* returned by std::strerror is not guaranteed by the standard to be thread-local). This way, XLNT can still be used
-/// in a multi-threaded application as long as each file opened by XLNT is processed by a single thread (including related instances
-/// of XLNT structs/classes), or synchronized by the application that calls XLNT.
-std::string strerror_safe(int err_no);
+/// Wrapper for setting and restoring the exception mask of a stream using RAII.
+/// Constructing such an object saves the current exception mask and
+/// sets the desired exception mask on the object. As soon as the object goes
+/// out of scope, the previous exception mask will be restored.
+template <typename CharT, typename Traits>
+class stream_scoped_exception_mask
+{
+public:
+    explicit stream_scoped_exception_mask(std::basic_ios<CharT,Traits> &stream, std::ios_base::iostate mask)
+        : stream_(stream)
+        , previous_mask_(stream.exceptions())
+    {
+        stream_.exceptions(mask);
+    }
+
+    ~stream_scoped_exception_mask()
+    {
+        stream_.exceptions(previous_mask_);
+    }
+
+    stream_scoped_exception_mask(const stream_scoped_exception_mask &) = delete;
+    stream_scoped_exception_mask &operator=(const stream_scoped_exception_mask &) = delete;
+    stream_scoped_exception_mask(stream_scoped_exception_mask &&) = delete;
+    stream_scoped_exception_mask &operator=(stream_scoped_exception_mask &&) = delete;
+
+private:
+    std::basic_ios<CharT,Traits> &stream_;
+    std::ios_base::iostate previous_mask_;
+};
 
 } // namespace detail
 } // namespace xlnt
