@@ -94,6 +94,12 @@ struct Cell
     Cell_Reference ref{0, 0}; // 'r'
     std::string value; // <v> OR <is>
     std::string formula_string; // <f>
+    // Shared formulae: 'si' identifies the group, and the master cell is the
+    // one that carried the 'ref' attribute. A member of the group means the
+    // master's formula re-anchored by its offset from that master, so both
+    // are needed by any consumer that wants the correct formula.
+    int shared_index = -1; // 'si'
+    bool is_shared_master = false; // had a 'ref' attribute
 };
 
 // for printing to file.

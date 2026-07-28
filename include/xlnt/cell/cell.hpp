@@ -509,6 +509,21 @@ public:
     /// </summary>
     bool has_formula() const;
 
+    /// <summary>
+    /// Returns true if this cell's formula belongs to a shared formula group.
+    /// The formula() of such a cell is the group master's text and has NOT
+    /// been re-anchored to this cell's position; a caller wanting the correct
+    /// formula must offset its relative references by this cell's distance
+    /// from shared_formula_master().
+    /// </summary>
+    bool has_shared_formula() const;
+
+    /// <summary>
+    /// The cell that carried this shared formula group's text. Assumes
+    /// has_shared_formula() is true.
+    /// </summary>
+    cell_reference shared_formula_master() const;
+
     // printing
 
     /// <summary>

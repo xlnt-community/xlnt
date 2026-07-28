@@ -217,6 +217,10 @@ xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser, std::uno
                 {
                     auto shared_index = parser->attribute<int>("si");
                     c.formula_string = shared_formulae[shared_index];
+                    // The text above is the master's, un-anchored. Record the
+                    // group so a consumer can re-anchor it; without this the
+                    // formula reported for this cell is simply wrong.
+                    c.shared_index = shared_index;
                 }
             }
             ++level;
@@ -249,6 +253,8 @@ xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser, std::uno
                         {
                             auto shared_index = parser->attribute<int>("si");
                             shared_formulae[shared_index] = c.formula_string;
+                            c.shared_index = shared_index;
+                            c.is_shared_master = true;
                         }
                         else if (formula_type == "array")
                         {
@@ -952,6 +958,12 @@ void xlsx_consumer::read_worksheet_sheetdata()
         if (!cell.formula_string.empty())
         {
             ws_cell_impl->formula_ = cell.formula_string[0] == '=' ? cell.formula_string.substr(1) : std::move(cell.formula_string);
+            ws_cell_impl->shared_formula_index_ = cell.shared_index;
+            if (cell.is_shared_master && cell.shared_index != -1)
+            {
+                current_worksheet_->shared_formula_masters_[cell.shared_index] =
+                    cell_reference(cell.ref.column, cell.ref.row);
+            }
         }
         if (!cell.value.empty())
         {

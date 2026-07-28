@@ -139,6 +139,8 @@ struct worksheet_impl
     std::unordered_map<row_t, row_properties> row_properties_;
 
     std::unordered_map<cell_reference, cell_impl> cell_map_;
+    // Shared formula group index -> the cell that carried the group's text.
+    std::unordered_map<int, cell_reference> shared_formula_masters_;
 
     optional<page_setup> page_setup_;
     optional<range_reference> auto_filter_;

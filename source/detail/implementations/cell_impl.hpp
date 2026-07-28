@@ -60,6 +60,8 @@ struct cell_impl
     double value_numeric_ = 0.0;
 
     optional<std::string> formula_;
+    // -1 when the formula is not part of a shared group.
+    int shared_formula_index_ = -1;
     optional<hyperlink_impl> hyperlink_;
     format_impl_ptr format_;
     optional<comment *> comment_;

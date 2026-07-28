@@ -543,6 +543,22 @@ bool cell::has_formula() const
     return d_->formula_.is_set();
 }
 
+bool cell::has_shared_formula() const
+{
+    return d_->formula_.is_set() && d_->shared_formula_index_ != -1;
+}
+
+cell_reference cell::shared_formula_master() const
+{
+    const auto &masters = worksheet().d_->shared_formula_masters_;
+    const auto found = masters.find(d_->shared_formula_index_);
+    if (found == masters.end())
+    {
+        return reference();
+    }
+    return found->second;
+}
+
 std::string cell::formula() const
 {
     if (!d_->formula_.is_set())
