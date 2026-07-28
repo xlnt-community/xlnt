@@ -548,6 +548,16 @@ bool cell::has_shared_formula() const
     return d_->formula_.is_set() && d_->shared_formula_index_ != -1;
 }
 
+bool cell::has_array_formula() const
+{
+    return !d_->array_formula_ref_.empty();
+}
+
+range_reference cell::array_formula_range() const
+{
+    return range_reference(d_->array_formula_ref_);
+}
+
 cell_reference cell::shared_formula_master() const
 {
     const auto &masters = worksheet().d_->shared_formula_masters_;

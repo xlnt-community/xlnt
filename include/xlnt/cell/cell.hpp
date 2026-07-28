@@ -41,6 +41,7 @@ class alignment;
 class base_format;
 class border;
 class cell_reference;
+class range_reference;
 class comment;
 class fill;
 class font;
@@ -517,6 +518,21 @@ public:
     /// from shared_formula_master().
     /// </summary>
     bool has_shared_formula() const;
+
+    /// <summary>
+    /// Returns true if this cell is covered by an array formula.
+    /// Every cell in an array formula's range reports the same formula(),
+    /// because the formula is one computation whose result spills across the
+    /// range. Use array_formula_range() to recover the block, and treat the
+    /// top-left cell of that range as the one that computes it.
+    /// </summary>
+    bool has_array_formula() const;
+
+    /// <summary>
+    /// The range an array formula spills across. Assumes has_array_formula()
+    /// is true.
+    /// </summary>
+    range_reference array_formula_range() const;
 
     /// <summary>
     /// The cell that carried this shared formula group's text. Assumes

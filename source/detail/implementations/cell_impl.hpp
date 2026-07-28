@@ -62,6 +62,10 @@ struct cell_impl
     optional<std::string> formula_;
     // -1 when the formula is not part of a shared group.
     int shared_formula_index_ = -1;
+    // The 'ref' of the array formula block covering this cell, empty when the
+    // cell is not part of one. Kept as text so this header needs no extra
+    // include; range_reference is reconstructed on access.
+    std::string array_formula_ref_;
     optional<hyperlink_impl> hyperlink_;
     format_impl_ptr format_;
     optional<comment *> comment_;

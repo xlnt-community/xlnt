@@ -1462,6 +1462,11 @@ worksheet xlsx_consumer::read_worksheet_end(const std::string &rel_id)
             for (auto cell : row)
             {
                 cell.formula(array_formula.second);
+                // An array formula is one computation whose result spills over
+                // this range. Every cell in it reports the same formula, which
+                // without the range is indistinguishable from that many
+                // separate cells that happen to share one.
+                cell.d_->array_formula_ref_ = array_formula.first;
             }
         }
     }
