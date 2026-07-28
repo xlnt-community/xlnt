@@ -32,7 +32,7 @@ namespace detail {
 /// Constructing such an object saves the current exception mask and
 /// sets the desired exception mask on the object. As soon as the object goes
 /// out of scope, the previous exception mask will be restored.
-template <typename CharT, typename Traits>
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 class stream_scoped_exception_mask
 {
 public:

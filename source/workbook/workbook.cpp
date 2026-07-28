@@ -1023,7 +1023,7 @@ void workbook::load(const path &filename)
     try
     {
         // Exception handling could provide useful information about why errors have occurred.
-        xlnt::detail::stream_scoped_exception_mask mask(file_stream, std::istream::failbit | std::istream::badbit);
+        xlnt::detail::stream_scoped_exception_mask<char> mask(file_stream, std::istream::failbit | std::istream::badbit);
         open_stream(file_stream, filename.string());
     }
     catch (const std::exception &ex)

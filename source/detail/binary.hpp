@@ -407,7 +407,7 @@ T read(std::istream &in)
     T result;
 
     // Exception handling could provide useful information about why errors have occurred.
-    stream_scoped_exception_mask mask(in, std::istream::failbit | std::istream::badbit);
+    stream_scoped_exception_mask<char> mask(in, std::istream::failbit | std::istream::badbit);
 
     try
     {
@@ -433,7 +433,7 @@ std::vector<T> read_vector(std::istream &in, std::size_t count)
     }
 
     // Exception handling could provide useful information about why errors have occurred.
-    stream_scoped_exception_mask mask(in, std::istream::failbit | std::istream::badbit);
+    stream_scoped_exception_mask<char> mask(in, std::istream::failbit | std::istream::badbit);
 
     try
     {
@@ -461,7 +461,7 @@ std::basic_string<T> read_string(std::istream &in, std::size_t count, bool conta
     }
 
     // Exception handling could provide useful information about why errors have occurred.
-    stream_scoped_exception_mask mask(in, std::istream::failbit | std::istream::badbit);
+    stream_scoped_exception_mask<char> mask(in, std::istream::failbit | std::istream::badbit);
 
     try
     {

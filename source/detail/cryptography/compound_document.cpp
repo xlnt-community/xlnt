@@ -657,7 +657,7 @@ void compound_document::read_sector(sector_id id, binary_writer<T> &writer)
 {
     auto seek_pos = static_cast<std::streampos>(sector_data_start() + sector_size() * id);
     // Exception handling could provide useful information about why errors have occurred.
-    stream_scoped_exception_mask mask(*in_, std::istream::failbit | std::istream::badbit);
+    stream_scoped_exception_mask<char> mask(*in_, std::istream::failbit | std::istream::badbit);
 
     try
     {
@@ -1409,7 +1409,7 @@ compound_document_entry::entry_color &compound_document::tree_color(directory_id
 void compound_document::read_header()
 {
     // Exception handling could provide useful information about why errors have occurred.
-    stream_scoped_exception_mask mask(*in_, std::istream::failbit | std::istream::badbit);
+    stream_scoped_exception_mask<char> mask(*in_, std::istream::failbit | std::istream::badbit);
 
     try
     {
@@ -1881,7 +1881,7 @@ void compound_document::read_entry(directory_id id)
     auto seek_pos = static_cast<std::streamoff>(sector_data_start() + offset);
 
     // Exception handling could provide useful information about why errors have occurred.
-    stream_scoped_exception_mask mask(*in_, std::istream::failbit | std::istream::badbit);
+    stream_scoped_exception_mask<char> mask(*in_, std::istream::failbit | std::istream::badbit);
 
     try
     {
