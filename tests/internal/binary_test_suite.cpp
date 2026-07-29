@@ -241,7 +241,7 @@ class binary_test_suite : public test_suite
         std::vector<char> container(sizeof(int) - 1);
         xlnt::detail::binary_reader<char> reader(container);
 
-        xlnt_assert_throws(reader.read_vector<int>(sizeof(int) - 1), xlnt::invalid_parameter);
+        xlnt_assert_throws(reader.read_vector<int>(1), xlnt::invalid_parameter);
     }
 
     void test_reader_read_vector_past_end()
@@ -398,106 +398,56 @@ class binary_test_suite : public test_suite
         xlnt_assert_equals(writer.count(), 0);
     }
 
-    void test_writer_assign_string_valid_narrow_string_to_char()
+    template<typename CharT>
+    void test_writer_assign_string_valid_string_to_char(const std::basic_string<CharT> &string)
     {
-        std::vector<char> container;
-        xlnt::detail::binary_writer<char> writer(container);
+        std::vector<CharT> container;
+        xlnt::detail::binary_writer<CharT> writer(container);
 
         xlnt_assert_equals(writer.count(), 0);
-        xlnt_assert_throws_nothing(writer.assign<char>(std::string{"hi"}, true));
-        xlnt_assert_equals(container.size(), 3);
-        xlnt_assert_equals(writer.count(), 3);
-        xlnt_assert_equals(container.at(0), 'h');
-        xlnt_assert_equals(container.at(1), 'i');
-        xlnt_assert_equals(container.at(2), '\0');
+        xlnt_assert_throws_nothing(writer.template assign<CharT>(string, true));
+        xlnt_assert_equals(container.size(), string.length() + 1);
+        xlnt_assert_equals(writer.count(), string.length() + 1);
+        for (std::size_t n = 0; n < string.length(); ++n)
+        {
+            xlnt_assert_equals(container.at(n), string.at(n));
+        }
+        xlnt_assert_equals(container.at(string.length()), '\0');
 
-        xlnt_assert_throws_nothing(writer.assign<char>(std::string{"hi"}, false));
-        xlnt_assert_equals(container.size(), 2);
-        xlnt_assert_equals(writer.count(), 2);
-        xlnt_assert_equals(container.at(0), 'h');
-        xlnt_assert_equals(container.at(1), 'i');
+        xlnt_assert_throws_nothing(writer.template assign<CharT>(string, false));
+        xlnt_assert_equals(container.size(), string.length());
+        xlnt_assert_equals(writer.count(), string.length());
+        for (std::size_t n = 0; n < string.length(); ++n)
+        {
+            xlnt_assert_equals(container.at(n), string.at(n));
+        }
+    }
+
+    void test_writer_assign_string_valid_narrow_string_to_char()
+    {
+        test_writer_assign_string_valid_string_to_char<char>("hi");
     }
 
     void test_writer_assign_string_valid_wide_string_to_wchar()
     {
-        std::vector<wchar_t> container;
-        xlnt::detail::binary_writer<wchar_t> writer(container);
-
-        xlnt_assert_equals(writer.count(), 0);
-        xlnt_assert_throws_nothing(writer.assign<wchar_t>(std::wstring{L"hi"}, true));
-        xlnt_assert_equals(container.size(), 3);
-        xlnt_assert_equals(writer.count(), 3);
-        xlnt_assert_equals(container.at(0), L'h');
-        xlnt_assert_equals(container.at(1), L'i');
-        xlnt_assert_equals(container.at(2), L'\0');
-
-        xlnt_assert_throws_nothing(writer.assign<wchar_t>(std::wstring{L"hi"}, false));
-        xlnt_assert_equals(container.size(), 2);
-        xlnt_assert_equals(writer.count(), 2);
-        xlnt_assert_equals(container.at(0), L'h');
-        xlnt_assert_equals(container.at(1), L'i');
+        test_writer_assign_string_valid_string_to_char<wchar_t>(L"hi");
     }
 
 #if XLNT_HAS_FEATURE(U8_STRING)
     void test_writer_assign_string_valid_u8string_to_char8()
     {
-        std::vector<char8_t> container;
-        xlnt::detail::binary_writer<char8_t> writer(container);
-
-        xlnt_assert_equals(writer.count(), 0);
-        xlnt_assert_throws_nothing(writer.assign<char8_t>(std::u8string{u8"hi"}, true));
-        xlnt_assert_equals(container.size(), 3);
-        xlnt_assert_equals(writer.count(), 3);
-        xlnt_assert_equals(container.at(0), u8'h');
-        xlnt_assert_equals(container.at(1), u8'i');
-        xlnt_assert_equals(container.at(2), u8'\0');
-
-        xlnt_assert_throws_nothing(writer.assign<char8_t>(std::u8string{u8"hi"}, false));
-        xlnt_assert_equals(container.size(), 2);
-        xlnt_assert_equals(writer.count(), 2);
-        xlnt_assert_equals(container.at(0), u8'h');
-        xlnt_assert_equals(container.at(1), u8'i');
+        test_writer_assign_string_valid_string_to_char<char8_t>(u8"hi");
     }
 #endif
 
     void test_writer_assign_string_valid_u16string_to_char16()
     {
-        std::vector<char16_t> container;
-        xlnt::detail::binary_writer<char16_t> writer(container);
-
-        xlnt_assert_equals(writer.count(), 0);
-        xlnt_assert_throws_nothing(writer.assign<char16_t>(std::u16string{u"hi"}, true));
-        xlnt_assert_equals(container.size(), 3);
-        xlnt_assert_equals(writer.count(), 3);
-        xlnt_assert_equals(container.at(0), u'h');
-        xlnt_assert_equals(container.at(1), u'i');
-        xlnt_assert_equals(container.at(2), u'\0');
-
-        xlnt_assert_throws_nothing(writer.assign<char16_t>(std::u16string{u"hi"}, false));
-        xlnt_assert_equals(container.size(), 2);
-        xlnt_assert_equals(writer.count(), 2);
-        xlnt_assert_equals(container.at(0), u'h');
-        xlnt_assert_equals(container.at(1), u'i');
+        test_writer_assign_string_valid_string_to_char<char16_t>(u"hi");
     }
 
     void test_writer_assign_string_valid_u32string_to_char32()
     {
-        std::vector<char32_t> container;
-        xlnt::detail::binary_writer<char32_t> writer(container);
-
-        xlnt_assert_equals(writer.count(), 0);
-        xlnt_assert_throws_nothing(writer.assign<char32_t>(std::u32string{U"hi"}, true));
-        xlnt_assert_equals(container.size(), 3);
-        xlnt_assert_equals(writer.count(), 3);
-        xlnt_assert_equals(container.at(0), U'h');
-        xlnt_assert_equals(container.at(1), U'i');
-        xlnt_assert_equals(container.at(2), U'\0');
-
-        xlnt_assert_throws_nothing(writer.assign<char32_t>(std::u32string{U"hi"}, false));
-        xlnt_assert_equals(container.size(), 2);
-        xlnt_assert_equals(writer.count(), 2);
-        xlnt_assert_equals(container.at(0), U'h');
-        xlnt_assert_equals(container.at(1), U'i');
+        test_writer_assign_string_valid_string_to_char<char32_t>(U"hi");
     }
 
     void test_writer_assign_string_valid_u16string_to_char()

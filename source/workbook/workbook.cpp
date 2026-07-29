@@ -1049,7 +1049,7 @@ void workbook::load_internal(const xlnt::path &filename, const T &password)
     try
     {
         // Exception handling could provide useful information about why errors have occurred.
-        file_stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        xlnt::detail::stream_scoped_exception_mask<char> mask(file_stream, std::istream::failbit | std::istream::badbit);
         open_stream(file_stream, filename.string());
     }
     catch (const std::exception &ex)
