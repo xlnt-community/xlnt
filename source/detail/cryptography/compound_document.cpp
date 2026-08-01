@@ -1430,86 +1430,7 @@ void compound_document::read_header()
             " bytes of header at position 0. Reason: " + ex.what());
     }
 
-    // Header Signature (8 bytes): Identification signature for the compound file structure, and MUST be
-    // set to the value 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1.
-    if (header_.header_signature != 0xE11AB1A1E011CFD0)
-    {
-        throw xlnt::invalid_file("invalid header signature, expected 0xE11AB1A1E011CFD0 but got " + format_hex(header_.header_signature));
-    }
-
-    // Header CLSID (16 bytes): Reserved and unused class ID that MUST be set to all zeroes (CLSID_NULL).
-    if (std::any_of(header_.header_clsid.begin(), header_.header_clsid.end(), [](std::uint8_t i) { return i != 0; }))
-    {
-        std::string exception_str = "invalid header CLSID, expected only zeros but got: ";
-        for (std::uint8_t val : header_.header_clsid)
-        {
-            exception_str += fmt::format("{:02x} ", val);
-        }
-        throw xlnt::invalid_file(exception_str);
-    }
-
-    // Major Version (2 bytes): Version number for breaking changes. This field MUST be set to either
-    // 0x0003 (version 3) or 0x0004 (version 4).
-    if (header_.major_version != 3 && header_.major_version != 4)
-    {
-        throw xlnt::invalid_file("invalid major version, expected 3 or 4 but got " + std::to_string(header_.major_version));
-    }
-
-    // Byte Order (2 bytes): This field MUST be set to 0xFFFE. This field is a byte order mark for all integer
-    // fields, specifying little-endian byte order.
-    if (header_.byte_order != compound_document_header::byte_order_type::little_endian)
-    {
-        throw xlnt::invalid_file("invalid byte order, expected 0xFFFE (little-endian) but got " +
-            fmt::format("0x{:04X}", static_cast<std::uint16_t>(header_.byte_order)));
-    }
-
-    // Sector Shift (2 bytes): This field MUST be set to 0x0009, or 0x000c, depending on the Major
-    // Version field. This field specifies the sector size of the compound file as a power of 2.
-    // - If Major Version is 3, the Sector Shift MUST be 0x0009, specifying a sector size of 512 bytes.
-    // - If Major Version is 4, the Sector Shift MUST be 0x000C, specifying a sector size of 4096 bytes.
-    if (!((header_.major_version == 3 && header_.sector_shift == 0x0009) ||
-        (header_.major_version == 4 && header_.sector_shift == 0x000C)))
-    {
-        throw xlnt::invalid_file("invalid combination of sector shift and major version, got sector_shift = " +
-            fmt::format("0x{:04X}", header_.sector_shift) + "; major_version = " + std::to_string(header_.major_version));
-    }
-
-    // Mini Sector Shift (2 bytes): This field MUST be set to 0x0006. This field specifies the sector size of
-    // the Mini Stream as a power of 2. The sector size of the Mini Stream MUST be 64 bytes.
-    if (header_.mini_sector_shift != 0x0006)
-    {
-        throw xlnt::invalid_file("invalid mini sector shift, expected 0x0006 but got " + fmt::format("0x{:04X}", header_.mini_sector_shift));
-    }
-
-    // Reserved (6 bytes): This field MUST be set to all zeroes.
-    if (std::any_of(header_.reserved.begin(), header_.reserved.end(), [](std::uint8_t i) { return i != 0; }))
-    {
-        std::string exception_str = "invalid reserved field, expected only zeros but got: ";
-        for (std::uint8_t val : header_.reserved)
-        {
-            exception_str += fmt::format("{:02x} ", val);
-        }
-        throw xlnt::invalid_file(exception_str);
-    }
-
-    // Number of Directory Sectors (4 bytes): This integer field contains the count of the number of
-    // directory sectors in the compound file.
-    // - If Major Version is 3, the Number of Directory Sectors MUST be zero. This field is not
-    //   supported for version 3 compound files.
-    if (header_.major_version == 3 && header_.num_directory_sectors != 0)
-    {
-        throw xlnt::invalid_file("invalid number of directory sectors for major version 3: expected 0 directory sectors but got " +
-            std::to_string(header_.num_directory_sectors));
-    }
-
-    // Mini Stream Cutoff Size (4 bytes): This integer field MUST be set to 0x00001000. This field
-    // specifies the maximum size of a user-defined data stream that is allocated from the mini FAT
-    // and mini stream, and that cutoff is 4,096 bytes. Any user-defined data stream that is greater than
-    // or equal to this cutoff size must be allocated as normal sectors from the FAT.
-    if (header_.mini_stream_cutoff_size != 0x00001000)
-    {
-        throw xlnt::invalid_file("invalid mini stream cutoff size, expected 0x00001000 but got " + format_hex(header_.mini_stream_cutoff_size));
-    }
+    check_header(header_);
 
     // DIFAT (436 bytes): This array of 32-bit integer fields contains the first 109 FAT sector locations of
     // the compound file.
@@ -1529,15 +1450,113 @@ void compound_document::read_header()
                 " bytes of remaining data. Reason: " + ex.what());
         }
 
-        if (std::any_of(remaining.begin(), remaining.end(), [](std::uint8_t i) { return i != 0; }))
+        check_header_version_4_remaining_part(header_, remaining);
+    }
+}
+
+void check_header(const compound_document_header &header)
+{
+    // Header Signature (8 bytes): Identification signature for the compound file structure, and MUST be
+    // set to the value 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1.
+    if (header.header_signature != 0xE11AB1A1E011CFD0)
+    {
+        throw xlnt::invalid_file("invalid header signature, expected 0xE11AB1A1E011CFD0 but got " + format_hex(header.header_signature));
+    }
+
+    // Header CLSID (16 bytes): Reserved and unused class ID that MUST be set to all zeroes (CLSID_NULL).
+    if (std::any_of(header.header_clsid.begin(), header.header_clsid.end(), [](std::uint8_t i) { return i != 0; }))
+    {
+        std::string exception_str = "invalid header CLSID, expected only zeros but got: ";
+        for (std::uint8_t val : header.header_clsid)
         {
-            std::string exception_str = "invalid remaining bytes in header (major version 4), expected only zeros but got: ";
-            for (std::uint8_t val : remaining)
-            {
-                exception_str += fmt::format("{:02x} ", val);
-            }
-            throw xlnt::invalid_file(exception_str);
+            exception_str += fmt::format("{:02x} ", val);
         }
+        throw xlnt::invalid_file(exception_str);
+    }
+
+    // Major Version (2 bytes): Version number for breaking changes. This field MUST be set to either
+    // 0x0003 (version 3) or 0x0004 (version 4).
+    if (header.major_version != 3 && header.major_version != 4)
+    {
+        throw xlnt::invalid_file("invalid major version, expected 3 or 4 but got " + std::to_string(header.major_version));
+    }
+
+    // Byte Order (2 bytes): This field MUST be set to 0xFFFE. This field is a byte order mark for all integer
+    // fields, specifying little-endian byte order.
+    if (header.byte_order != compound_document_header::byte_order_type::little_endian)
+    {
+        throw xlnt::invalid_file("invalid byte order, expected 0xFFFE (little-endian) but got " +
+            fmt::format("0x{:04X}", static_cast<std::uint16_t>(header.byte_order)));
+    }
+
+    // Sector Shift (2 bytes): This field MUST be set to 0x0009, or 0x000c, depending on the Major
+    // Version field. This field specifies the sector size of the compound file as a power of 2.
+    // - If Major Version is 3, the Sector Shift MUST be 0x0009, specifying a sector size of 512 bytes.
+    // - If Major Version is 4, the Sector Shift MUST be 0x000C, specifying a sector size of 4096 bytes.
+    if (!((header.major_version == 3 && header.sector_shift == 0x0009) ||
+        (header.major_version == 4 && header.sector_shift == 0x000C)))
+    {
+        throw xlnt::invalid_file("invalid combination of sector shift and major version, got sector_shift = " +
+            fmt::format("0x{:04X}", header.sector_shift) + "; major_version = " + std::to_string(header.major_version));
+    }
+
+    // Mini Sector Shift (2 bytes): This field MUST be set to 0x0006. This field specifies the sector size of
+    // the Mini Stream as a power of 2. The sector size of the Mini Stream MUST be 64 bytes.
+    if (header.mini_sector_shift != 0x0006)
+    {
+        throw xlnt::invalid_file("invalid mini sector shift, expected 0x0006 but got " + fmt::format("0x{:04X}", header.mini_sector_shift));
+    }
+
+    // Reserved (6 bytes): This field MUST be set to all zeroes.
+    if (std::any_of(header.reserved.begin(), header.reserved.end(), [](std::uint8_t i) { return i != 0; }))
+    {
+        std::string exception_str = "invalid reserved field, expected only zeros but got: ";
+        for (std::uint8_t val : header.reserved)
+        {
+            exception_str += fmt::format("{:02x} ", val);
+        }
+        throw xlnt::invalid_file(exception_str);
+    }
+
+    // Number of Directory Sectors (4 bytes): This integer field contains the count of the number of
+    // directory sectors in the compound file.
+    // - If Major Version is 3, the Number of Directory Sectors MUST be zero. This field is not
+    //   supported for version 3 compound files.
+    if (header.major_version == 3 && header.num_directory_sectors != 0)
+    {
+        throw xlnt::invalid_file("invalid number of directory sectors for major version 3: expected 0 directory sectors but got " +
+            std::to_string(header.num_directory_sectors));
+    }
+
+    // Mini Stream Cutoff Size (4 bytes): This integer field MUST be set to 0x00001000. This field
+    // specifies the maximum size of a user-defined data stream that is allocated from the mini FAT
+    // and mini stream, and that cutoff is 4,096 bytes. Any user-defined data stream that is greater than
+    // or equal to this cutoff size must be allocated as normal sectors from the FAT.
+    if (header.mini_stream_cutoff_size != 0x00001000)
+    {
+        throw xlnt::invalid_file("invalid mini stream cutoff size, expected 0x00001000 but got " + format_hex(header.mini_stream_cutoff_size));
+    }
+}
+
+void check_header_version_4_remaining_part(
+    const compound_document_header &header,
+    const std::array<std::uint8_t, 3584> &remaining)
+{
+    // This function should only be called if the major version is 4.
+    if (header.major_version != 4)
+    {
+        throw xlnt::invalid_parameter("invalid header version, expected 4 but got "
+            + std::to_string(header.major_version));
+    }
+
+    if (std::any_of(remaining.begin(), remaining.end(), [](std::uint8_t i) { return i != 0; }))
+    {
+        std::string exception_str = "invalid remaining bytes in header (major version 4), expected only zeros but got: ";
+        for (std::uint8_t val : remaining)
+        {
+            exception_str += fmt::format("{:02x} ", val);
+        }
+        throw xlnt::invalid_file(exception_str);
     }
 }
 
@@ -1620,6 +1639,7 @@ void check_unallocated_entry(
     directory_id id,
     sector_id directory_sector)
 {
+    // This function should only be called for Unallocated entries.
     if (entry.type != compound_document_entry::entry_type::Unallocated)
     {
         throw xlnt::invalid_parameter("invalid entry type " +
@@ -1717,6 +1737,7 @@ void check_non_unallocated_entry(
     directory_id id,
     sector_id directory_sector)
 {
+    // This function should only be called for entries other than Unallocated entries.
     if (entry.type == compound_document_entry::entry_type::Unallocated)
     {
         throw xlnt::invalid_parameter("invalid entry type " +

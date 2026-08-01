@@ -58,16 +58,16 @@ constexpr directory_id NOSTREAM = 0xFFFFFFFF; // Terminator or empty pointer.
 
 /// Returns true if the sector ID equals ENDOFCHAIN, false otherwise.
 /// Expects either a valid sector ID (<= MAXREGSECT), or ENDOFCHAIN - otherwise, an invalid_parameter exception will be thrown.
-bool is_chain_end(sector_id sector);
+XLNT_API_INTERNAL bool is_chain_end(sector_id sector);
 
 /// Returns true if the sector ID equals ENDOFCHAIN for RootStorage and Stream entries, false otherwise.
 /// For RootStorage and Stream entries, expects either a valid sector ID (<= MAXREGSECT), or ENDOFCHAIN - otherwise,
 /// an invalid_parameter exception will be thrown.
-bool has_invalid_start_sector(const compound_document_entry &entry);
+XLNT_API_INTERNAL bool has_invalid_start_sector(const compound_document_entry &entry);
 
 /// Returns true if the directory ID of the entry equals NOSTREAM, false otherwise.
 /// Expects either a valid directory ID (<= MAXREGSID) or NOSTREAM - otherwise, an invalid_parameter exception will be thrown.
-bool is_invalid_entry(directory_id entry);
+XLNT_API_INTERNAL bool is_invalid_entry(directory_id entry);
 
 /// Throws if the sector ID is neither a valid one (<= MAXREGSECT) nor ENDOFCHAIN.
 XLNT_API_INTERNAL void expect_valid_sector_or_chain_end(sector_id sector);
@@ -103,6 +103,16 @@ struct compound_document_header
     std::uint32_t num_DIFAT_sectors = 0;
     std::array<sector_id, 109> DIFAT = {{FREESECT}};
 };
+
+/// Checks whether the compound document header is valid.
+/// If invalid, an xlnt::invalid_file exception will be thrown.
+XLNT_API_INTERNAL void check_header(const compound_document_header &header);
+
+/// Checks the remaining part (3584 bytes) of the version 4 header,
+/// which MUST be filled with all zeroes. Otherwise, an xlnt::invalid_file exception will be thrown.
+XLNT_API_INTERNAL void check_header_version_4_remaining_part(
+    const compound_document_header &header,
+    const std::array<std::uint8_t, 3584> &remaining);
 
 constexpr std::size_t COMPOUND_DOCUMENT_ENTRY_SIZE = 128; // The size if it didn't contain padding.
 
@@ -184,6 +194,22 @@ struct compound_document_entry
     sector_id start_sector = 0; // must be 0 for an Unallocated entry
     std::uint64_t stream_size = 0;
 };
+
+/// Checks whether the entry is valid.
+/// The entry MUST be of type Unallocated.
+/// If the entry is invalid, an xlnt::invalid_file exception will be thrown.
+XLNT_API_INTERNAL void check_unallocated_entry(
+    const compound_document_entry &entry,
+    directory_id id,
+    sector_id directory_sector);
+
+/// Checks whether the entry is valid.
+/// The entry MUST NOT be of type Unallocated.
+/// If the entry is invalid, an xlnt::invalid_file exception will be thrown.
+XLNT_API_INTERNAL void check_non_unallocated_entry(
+    const compound_document_entry &entry,
+    directory_id id,
+    sector_id directory_sector);
 
 class compound_document_istreambuf;
 class compound_document_ostreambuf;
