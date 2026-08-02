@@ -61,6 +61,8 @@
 #include <detail/serialization/vector_streambuf.hpp>
 #include <detail/serialization/xlsx_consumer.hpp>
 #include <detail/serialization/xlsx_producer.hpp>
+#include <detail/utils/error_helpers.hpp>
+#include <detail/utils/stream_helpers.hpp>
 
 namespace {
 
@@ -1017,11 +1019,18 @@ void workbook::load(const std::string &filename)
 void workbook::load(const path &filename)
 {
     std::ifstream file_stream;
-    open_stream(file_stream, filename.string());
 
-    if (!file_stream.good())
+    try
     {
-        throw xlnt::invalid_file(filename.string());
+        // Exception handling could provide useful information about why errors have occurred.
+        xlnt::detail::stream_scoped_exception_mask<char> mask(file_stream, std::istream::failbit | std::istream::badbit);
+        open_stream(file_stream, filename.string());
+    }
+    catch (const std::exception &ex)
+    {
+        auto saved_errno = errno;
+        throw xlnt::invalid_file("Could not open file at path \"" + filename.string() + "\". Reason: \"" + ex.what() +
+            "\" (internal error " + std::to_string(saved_errno) + ": " + detail::strerror_safe(saved_errno) + ")");
     }
 
     load(file_stream);
@@ -1036,11 +1045,18 @@ template <typename T>
 void workbook::load_internal(const xlnt::path &filename, const T &password)
 {
     std::ifstream file_stream;
-    open_stream(file_stream, filename.string());
 
-    if (!file_stream.good())
+    try
     {
-        throw xlnt::invalid_file(filename.string());
+        // Exception handling could provide useful information about why errors have occurred.
+        xlnt::detail::stream_scoped_exception_mask<char> mask(file_stream, std::istream::failbit | std::istream::badbit);
+        open_stream(file_stream, filename.string());
+    }
+    catch (const std::exception &ex)
+    {
+        auto saved_errno = errno;
+        throw xlnt::invalid_file("Could not open file at path \"" + filename.string() + "\". Reason: \"" + ex.what() +
+            "\" (internal error " + std::to_string(saved_errno) + ": " + detail::strerror_safe(saved_errno) + ")");
     }
 
     return load(file_stream, password);
