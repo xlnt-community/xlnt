@@ -80,3 +80,15 @@
 #else
   #define XLNT_DETAIL_FEATURE_U8_STRING_VIEW -1
 #endif
+
+#if defined(__cpp_lib_char8_t)
+  #define XLNT_DETAIL_FEATURE_U8_STRING 1
+#else
+  #define XLNT_DETAIL_FEATURE_U8_STRING -1
+#endif
+
+#if defined(__cpp_char8_t)
+  #define XLNT_DETAIL_FEATURE_U8_CHAR 1
+#else
+  #define XLNT_DETAIL_FEATURE_U8_CHAR -1
+#endif
