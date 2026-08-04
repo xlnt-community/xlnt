@@ -414,4 +414,39 @@ public:
 
         return match;
     }
+
+    static void skip_element(xml::parser& parser)
+    {
+        int depth = 1;
+
+        skip_attributes(parser);
+
+        while (depth > 0)
+        {
+            switch (parser.next())
+            {
+            case xml::parser::start_element: skip_attributes(parser); ++depth; break;
+            case xml::parser::end_element: --depth; break;
+            default: break;
+            }
+        }
+    }
+
+    static void skip_attributes(xml::parser& parser)
+    {
+        parser.attribute_map();
+    }
+
+    static bool find_element(xml::parser& parser, const std::string& element)
+    {
+        while(parser.next() == xml::parser::start_element)
+        {
+            if (parser.name() == element)
+                return true;
+            else
+                xml_helper::skip_element(parser);
+        }
+
+        return false;
+    }
 };
