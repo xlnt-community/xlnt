@@ -91,8 +91,9 @@ public:
 #endif
         register_test(test_Issue6_google_missing_workbookView);
         register_test(test_non_contiguous_selection);
-        register_test(test_Issue41_empty_fill)
-        register_test(test_value_with_default)
+        register_test(test_Issue41_empty_fill);
+        register_test(test_value_with_default);
+        register_test(test_coalesce_column_properties);
     }
 
     bool workbook_matches_file(xlnt::workbook &wb, const xlnt::path &file)
@@ -982,6 +983,38 @@ R"TEST(<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
             xlnt_assert_equals(wb2.active_sheet().page_setup().scale(), scale);
         }
+    }
+
+    void test_coalesce_column_properties()
+    {
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+
+        ws.column_properties(1).width = 10;
+        ws.column_properties(2).width = 10;
+        ws.column_properties(3).width = 15;
+
+        std::vector<std::uint8_t> data;
+        wb.save(data);
+
+        xlnt::detail::vector_istreambuf buffer(data);
+        std::istream stream(&buffer);
+        xlnt::detail::izstream archive(stream);
+
+        std::unique_ptr<std::streambuf> ws_buffer = archive.open(xlnt::path("xl/worksheets/sheet1.xml"));
+        std::istream ws_stream(ws_buffer.get());
+        xml::parser parser(ws_stream, "sheet1.xml");
+
+        xlnt_assert (xml_helper::find_element(parser, "worksheet"));
+        xlnt_assert (xml_helper::find_element(parser, "cols"));
+        xlnt_assert (xml_helper::find_element(parser, "col"));
+        xlnt_assert_equals (parser.attribute<xlnt::column_t::index_t>("min"), 1);
+        xlnt_assert_equals (parser.attribute<xlnt::column_t::index_t>("max"), 2);
+        xml_helper::skip_element(parser);
+
+        xlnt_assert (xml_helper::find_element(parser, "col"));
+        xlnt_assert_equals (parser.attribute<xlnt::column_t::index_t>("min"), 3);
+        xlnt_assert_equals (parser.attribute<xlnt::column_t::index_t>("max"), 3);
     }
 };
 

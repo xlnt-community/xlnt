@@ -2565,9 +2565,18 @@ void xlsx_producer::write_worksheet(const relationship &rel)
 
         const auto &props = ws.column_properties(column);
 
+        // Coalesce a run of consecutive columns that all have identical column_properties
+        // into a single <col min max> range, instead of writing one <col> element per column.
+        auto range_end = column;
+        while (range_end + 1 <= last_column && ws.has_column_properties(range_end + 1)
+            && ws.column_properties(range_end + 1) == props)
+        {
+            ++range_end;
+        }
+
         write_start_element(xmlns, "col");
         write_attribute("min", column.index);
-        write_attribute("max", column.index);
+        write_attribute("max", range_end.index);
 
         if (props.width.is_set())
         {
@@ -2596,6 +2605,8 @@ void xlsx_producer::write_worksheet(const relationship &rel)
         }
 
         write_end_element(xmlns, "col");
+
+        column = range_end;
     }
 
     if (has_column_properties)
