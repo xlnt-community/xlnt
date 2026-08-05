@@ -1283,8 +1283,8 @@ worksheet xlsx_consumer::read_worksheet_end(const std::string &rel_id)
         }
         else if (current_worksheet_element == qn("spreadsheetml", "rowBreaks")) // CT_PageBreak 0-1
         {
-            auto count = parser().attribute_present("count") ? parser().attribute<std::size_t>("count") : 0;
-            auto manual_break_count = parser().attribute_present("manualBreakCount")
+            XLNT_UNUSED auto count = parser().attribute_present("count") ? parser().attribute<std::size_t>("count") : 0;
+            XLNT_UNUSED auto manual_break_count = parser().attribute_present("manualBreakCount")
                 ? parser().attribute<std::size_t>("manualBreakCount")
                 : 0;
 
@@ -1309,8 +1309,8 @@ worksheet xlsx_consumer::read_worksheet_end(const std::string &rel_id)
         }
         else if (current_worksheet_element == qn("spreadsheetml", "colBreaks")) // CT_PageBreak 0-1
         {
-            auto count = parser().attribute_present("count") ? parser().attribute<std::size_t>("count") : 0;
-            auto manual_break_count = parser().attribute_present("manualBreakCount")
+            XLNT_UNUSED auto count = parser().attribute_present("count") ? parser().attribute<std::size_t>("count") : 0;
+            XLNT_UNUSED auto manual_break_count = parser().attribute_present("manualBreakCount")
                 ? parser().attribute<std::size_t>("manualBreakCount")
                 : 0;
 
@@ -2990,7 +2990,7 @@ void xlsx_consumer::read_stylesheet()
         }
         else if (current_style_element == qn("spreadsheetml", "dxfs"))
         {
-            std::size_t processed = 0;
+            XLNT_UNUSED std::size_t processed = 0;
 
             while (in_element(current_style_element))
             {
@@ -3016,7 +3016,7 @@ void xlsx_consumer::read_stylesheet()
             skip_attribute("defaultTableStyle");
             skip_attribute("defaultPivotStyle");
 
-            std::size_t processed = 0;
+            XLNT_UNUSED std::size_t processed = 0;
 
             while (in_element(qn("spreadsheetml", "tableStyles")))
             {

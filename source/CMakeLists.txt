@@ -45,6 +45,12 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     If (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.1)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wmismatched-tags") # avoid struct/class (forward) declaration mismatch, as MSVC doesn't like it
     endif()
+    # False positives show up beginning with GCC 15.1 and occur until at least GCC 16.1 (newer versions have not yet been tested)
+    # See https://github.com/xlnt-community/xlnt/pull/152
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 15.0 AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16.2)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-array-bounds")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-stringop-overflow")
+    endif()
   endif()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas") # ignore MSVC and Clang pragmas
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-maybe-uninitialized") # GCC diagnostic with lots of false positives
