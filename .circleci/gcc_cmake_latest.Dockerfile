@@ -1,4 +1,4 @@
-FROM gcc:14.3-bookworm
+FROM gcc:14.3-trixie
 
 # 1. Install CMake
 
