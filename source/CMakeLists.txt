@@ -49,7 +49,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     # See https://github.com/xlnt-community/xlnt/pull/152
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 15.0 AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16.2)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-array-bounds")
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wstringop-overflow=2")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wstringop-overflow=1")
     endif()
   endif()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas") # ignore MSVC and Clang pragmas
