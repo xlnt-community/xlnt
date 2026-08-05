@@ -14,7 +14,7 @@ post_coverage_comment ()
   curl -L -X POST \
     -H "Authorization: Bearer ${PR_TOKEN}" \
     "https://api.github.com/repos/xlnt-community/xlnt/issues/${PR_NUMBER}/comments" \
-    -d "{\"body\":\"Coverage report for commit `${COMMIT_SHA}` is available at: [full](https://xlnt-community.github.io/xlnt-coverage/${COMMIT_SHA}/differential/index.html) | [review summary](https://xlnt-community.github.io/xlnt-coverage/${COMMIT_SHA}/review/index.html)\"}"
+    -d "{\"body\":\"Coverage report for commit **${COMMIT_SHA}** is available at: [full](https://xlnt-community.github.io/xlnt-coverage/${COMMIT_SHA}/differential/index.html) | [review summary](https://xlnt-community.github.io/xlnt-coverage/${COMMIT_SHA}/review/index.html)\"}"
 }
 
 main ()
