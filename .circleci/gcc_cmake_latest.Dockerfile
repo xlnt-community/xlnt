@@ -1,4 +1,4 @@
-FROM gcc:16.1-trixie
+FROM gcc:16.1
 
 # 1. Install CMake
 
