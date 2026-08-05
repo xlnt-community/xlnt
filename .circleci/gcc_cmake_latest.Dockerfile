@@ -1,4 +1,4 @@
-FROM gcc:14.3-trixie
+FROM gcc:14.4-trixie
 
 # 1. Install CMake
 
