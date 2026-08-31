@@ -600,7 +600,7 @@ void workbook::register_workbook_part(relationship_type type)
     {
         manifest().register_override_type(default_path(type), content_type(type));
         manifest().register_relationship(uri(wb_path.string()), type,
-            uri(default_path(type).relative_to(wb_path.resolve(path("/"))).string()),
+            uri(default_path(type).relative_to(wb_path.parent().resolve(path("/"))).string()),
             target_mode::internal);
     }
 }
