@@ -86,6 +86,11 @@ if (XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR)
 endif()
 target_compile_definitions(xlnt.test PRIVATE XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR="${XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR}")
 
+if (XLNT_USE_LOCALE_POINT_THOUSAND_SEPARATOR)
+  target_compile_definitions(xlnt.test PRIVATE XLNT_USE_LOCALE_POINT_THOUSAND_SEPARATOR=1)
+endif()
+target_compile_definitions(xlnt.test PRIVATE XLNT_LOCALE_POINT_THOUSAND_SEPARATOR="${XLNT_LOCALE_POINT_THOUSAND_SEPARATOR}")
+
 if(MSVC)
   # bigobj because there are so many headers in one source file
   set_target_properties(xlnt.test PROPERTIES COMPILE_FLAGS "/wd\"4068\" /bigobj")

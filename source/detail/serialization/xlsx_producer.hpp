@@ -236,7 +236,7 @@ private:
             write_attribute(name, value.get());
     }
 
-    template <typename T>
+    template <typename T, typename = typename std::enable_if<!std::is_convertible<T, double>::value>::type>
     void write_characters(T characters, bool preserve_whitespace = false)
     {
         if (preserve_whitespace)
@@ -245,6 +245,28 @@ private:
         }
 
         current_part_serializer_->characters(characters);
+    }
+
+    template <typename T, typename std::enable_if<std::is_floating_point<T>::value, T>::type* = nullptr>
+    void write_characters(T characters, bool preserve_whitespace = false)
+    {
+        if (preserve_whitespace)
+        {
+            write_attribute(xml::qname(constants::ns("xml"), "space"), "preserve");
+        }
+
+        current_part_serializer_->characters(xlnt::detail::serialise(characters));
+    }
+
+    template <typename T, typename std::enable_if<std::is_integral<T>::value, T>::type* = nullptr>
+    void write_characters(T characters, bool preserve_whitespace = false)
+    {
+        if (preserve_whitespace)
+        {
+            write_attribute(xml::qname(constants::ns("xml"), "space"), "preserve");
+        }
+
+        current_part_serializer_->characters(std::to_string(characters));
     }
 
 	/// <summary>

@@ -79,6 +79,9 @@ public:
         register_test(test_streaming_read);
         register_test(test_streaming_write);
         register_test(test_load_save_german_locale);
+#ifdef XLNT_USE_LOCALE_POINT_THOUSAND_SEPARATOR
+        register_test(test_shared_string_point_thousand_separator);
+#endif
         register_test(test_Issue445_inline_str_load);
         register_test(test_Issue445_inline_str_streaming_read);
         register_test(test_Issue492_stream_empty_row);
@@ -794,6 +797,58 @@ public:
         /* std::locale current(std::locale::global(std::locale("de-DE")));
         test_round_trip_rw_custom_heights_widths();
         std::locale::global(current);*/
+    }
+
+    void test_shared_string_point_thousand_separator()
+    {
+        // Regression test for a bug where write_characters serialised the shared string index of
+        // a <c t="s"><v> element (an integer) through libstudxml's default_value_traits<T>::serialize,
+        // which formats through a std::ostringstream imbued with the *global* C++ locale. Under a
+        // locale that groups digits with '.' as the thousands separator, e.g. shared string index
+        // 1199 was written as "1.199" instead of "1199", corrupting the workbook.
+        // The corruption only appears once a shared string index reaches four digits, so the sheet
+        // below is populated with 1200 distinct string cells to make sure the bug would trigger.
+        test_helpers::SetLocale set_locale(XLNT_LOCALE_POINT_THOUSAND_SEPARATOR, nullptr, ".");
+
+        xlnt::workbook wb;
+        auto ws = wb.active_sheet();
+
+        const xlnt::row_t num_strings = 1200;
+
+        for (xlnt::row_t row = 1; row <= num_strings; ++row)
+        {
+            ws.cell(1, row).value("value_" + std::to_string(row));
+        }
+
+        std::vector<std::uint8_t> data;
+        wb.save(data);
+
+        // Check the raw serialised content directly: round-tripping alone would not catch a shared
+        // string index written as "1.199", since xlnt's own parser is happy to read it back as 1199.
+        xlnt::detail::vector_istreambuf buffer(data);
+        std::istream stream(&buffer);
+        xlnt::detail::izstream archive(stream);
+
+        std::unique_ptr<std::streambuf> ws_buffer = archive.open(xlnt::path("xl/worksheets/sheet1.xml"));
+        std::istream ws_stream(ws_buffer.get());
+        xml::parser parser(ws_stream, "sheet1.xml");
+
+        xlnt_assert(xml_helper::find_element(parser, "worksheet"));
+        xlnt_assert(xml_helper::find_element(parser, "sheetData"));
+
+        for (xlnt::row_t row = 1; row <= num_strings; ++row)
+        {
+            xlnt_assert(xml_helper::find_element(parser, "row"));
+            parser.attribute_map(); // mark the "r" and "spans" attributes as handled
+            xlnt_assert(xml_helper::find_element(parser, "c"));
+            xlnt_assert_equals(parser.attribute("t"), "s");
+            parser.attribute_map(); // mark the remaining "r" attribute as handled
+            xlnt_assert(xml_helper::find_element(parser, "v"));
+            xlnt_assert_equals(parser.element(), std::to_string(row - 1));
+
+            xlnt_assert_equals(parser.next(), xml::parser::end_element); // </c>
+            xlnt_assert_equals(parser.next(), xml::parser::end_element); // </row>
+        }
     }
 
     void test_Issue445_inline_str_load()
