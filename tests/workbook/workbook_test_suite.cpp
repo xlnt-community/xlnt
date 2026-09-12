@@ -83,6 +83,7 @@ public:
         register_test(test_copy_assignment_operator);
         register_test(test_copy_iterator);
         register_test(test_manifest);
+        register_test(test_workbook_part_relationship_target);
         register_test(test_memory);
         register_test(test_clear);
         register_test(test_comparison);
@@ -729,6 +730,22 @@ public:
         xlnt_assert(m.has_relationship(xlnt::path("/"), rel_thumbnail.id()));
         xlnt_assert_throws(m.relationship(xlnt::path("/"), "test123"), xlnt::key_not_found);
         xlnt_assert_throws(m.unregister_relationship(xlnt::uri("/"), "?"), xlnt::invalid_parameter);
+    }
+
+    void test_workbook_part_relationship_target()
+    {
+        xlnt::workbook workbook;
+        workbook.add_shared_string(xlnt::rich_text("shared"));
+
+        const auto workbook_relationship = workbook.manifest().relationship(
+            xlnt::path("/"), xlnt::relationship_type::office_document);
+        const auto workbook_path = workbook.manifest().canonicalize({workbook_relationship});
+        const auto shared_strings_relationship = workbook.manifest().relationship(
+            workbook_path, xlnt::relationship_type::shared_string_table);
+
+        xlnt_assert_equals(shared_strings_relationship.target().path().string(), "sharedStrings.xml");
+        xlnt_assert_equals(shared_strings_relationship.target().path().resolve(workbook_path.parent()).string(),
+            "xl/sharedStrings.xml");
     }
 
     void test_memory()
