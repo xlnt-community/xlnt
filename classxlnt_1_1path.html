@@ -97,7 +97,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aa18f0ce6afd269bf51a8d7718e980394"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff this path is the root directory.  <a href="#aa18f0ce6afd269bf51a8d7718e980394">More...</a><br /></td></tr>
 <tr class="separator:aa18f0ce6afd269bf51a8d7718e980394"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc856880715f815935888653e7bb9e30"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1path.html">path</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1path.html#adc856880715f815935888653e7bb9e30">parent</a> () const</td></tr>
-<tr class="memdesc:adc856880715f815935888653e7bb9e30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a new path that points to the directory containing the current path Return the path unchanged if this path is the absolute or relative root.  <a href="#adc856880715f815935888653e7bb9e30">More...</a><br /></td></tr>
+<tr class="memdesc:adc856880715f815935888653e7bb9e30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a new path that points to the directory containing the current path, preserving its absolute root when present. Return the path unchanged if this path is the absolute or relative root.  <a href="#adc856880715f815935888653e7bb9e30">More...</a><br /></td></tr>
 <tr class="separator:adc856880715f815935888653e7bb9e30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a717b25da7d89aaf0d293914f55eab512"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1path.html#a717b25da7d89aaf0d293914f55eab512">filename</a> () const</td></tr>
 <tr class="memdesc:a717b25da7d89aaf0d293914f55eab512"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the last component of this path.  <a href="#a717b25da7d89aaf0d293914f55eab512">More...</a><br /></td></tr>
@@ -118,7 +118,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a382affc3ed31744ad56ab33c15e5f56d"><td class="mdescLeft">&#160;</td><td class="mdescRight">If this path is relative, append each component of this path to base_path and return the resulting absolute path. Otherwise, the the current path will be returned and base_path will be ignored.  <a href="#a382affc3ed31744ad56ab33c15e5f56d">More...</a><br /></td></tr>
 <tr class="separator:a382affc3ed31744ad56ab33c15e5f56d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd1155098ed192c199039cd3aa3f1c69"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classxlnt_1_1path.html">path</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1path.html#abd1155098ed192c199039cd3aa3f1c69">relative_to</a> (const <a class="el" href="classxlnt_1_1path.html">path</a> &amp;base_path) const</td></tr>
-<tr class="memdesc:abd1155098ed192c199039cd3aa3f1c69"><td class="mdescLeft">&#160;</td><td class="mdescRight">The inverse of <a class="el" href="classxlnt_1_1path.html#a382affc3ed31744ad56ab33c15e5f56d" title="If this path is relative, append each component of this path to base_path and return the resulting ab...">path::resolve</a>. Creates a relative path from an absolute path by removing the common root between base_path and this path. If the current path is already relative, return it unchanged.  <a href="#abd1155098ed192c199039cd3aa3f1c69">More...</a><br /></td></tr>
+<tr class="memdesc:abd1155098ed192c199039cd3aa3f1c69"><td class="mdescLeft">&#160;</td><td class="mdescRight">The inverse of <a class="el" href="classxlnt_1_1path.html#a382affc3ed31744ad56ab33c15e5f56d" title="If this path is relative, append each component of this path to base_path and return the resulting ab...">path::resolve</a>. Creates a path relative to the directory represented by base_path, including parent components where necessary. If the current path is already relative, or the paths have incompatible roots, return the current path unchanged.  <a href="#abd1155098ed192c199039cd3aa3f1c69">More...</a><br /></td></tr>
 <tr class="separator:abd1155098ed192c199039cd3aa3f1c69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a549a7de20255288c0132d1fe3f58b145"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlnt_1_1path.html#a549a7de20255288c0132d1fe3f58b145">exists</a> () const</td></tr>
 <tr class="memdesc:a549a7de20255288c0132d1fe3f58b145"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the file or directory pointed to by this path exists on the filesystem.  <a href="#a549a7de20255288c0132d1fe3f58b145">More...</a><br /></td></tr>
@@ -479,7 +479,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Return a new path that points to the directory containing the current path Return the path unchanged if this path is the absolute or relative root. </p>
+<p>Return a new path that points to the directory containing the current path, preserving its absolute root when present. Return the path unchanged if this path is the absolute or relative root. </p>
 
 </div>
 </div>
@@ -518,7 +518,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>The inverse of <a class="el" href="classxlnt_1_1path.html#a382affc3ed31744ad56ab33c15e5f56d" title="If this path is relative, append each component of this path to base_path and return the resulting ab...">path::resolve</a>. Creates a relative path from an absolute path by removing the common root between base_path and this path. If the current path is already relative, return it unchanged. </p>
+<p>The inverse of <a class="el" href="classxlnt_1_1path.html#a382affc3ed31744ad56ab33c15e5f56d" title="If this path is relative, append each component of this path to base_path and return the resulting ab...">path::resolve</a>. Creates a path relative to the directory represented by base_path, including parent components where necessary. If the current path is already relative, or the paths have incompatible roots, return the current path unchanged. </p>
 
 </div>
 </div>
