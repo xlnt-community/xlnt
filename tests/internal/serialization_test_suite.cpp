@@ -58,6 +58,7 @@ public:
         register_test(test_comments);
         register_test(test_invalid_worksheet_title);
         register_test(test_write_invalid_relationship);
+        register_test(test_read_rooted_image_relationship);
         register_test(test_read_hyperlink);
         register_test(test_read_formulae);
         register_test(test_read_headers_and_footers);
@@ -451,6 +452,47 @@ public:
         xlnt::workbook wb;
         xlnt::detail::xlsx_producer producer(wb);
         xlnt_assert_throws(producer.write_worksheet(xlnt::relationship{}), xlnt::key_not_found);
+    }
+
+    void test_read_rooted_image_relationship()
+    {
+        std::stringstream source(std::ios::in | std::ios::out | std::ios::binary);
+        {
+            xlnt::detail::ozstream archive(source);
+            auto relationship_buffer = archive.open(xlnt::path("xl/drawings/_rels/drawing1.xml.rels"));
+            std::ostream relationship_stream(relationship_buffer.get());
+            relationship_stream
+                << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+                << "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
+                << "<Relationship Id=\"rId1\" "
+                << "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" "
+                << "Target=\"/xl/media/image1.bmp\"/>"
+                << "</Relationships>";
+        }
+
+        source.seekg(0);
+        xlnt::workbook workbook;
+        xlnt::detail::xlsx_consumer consumer(workbook);
+        consumer.archive_.reset(new xlnt::detail::izstream(source));
+
+        const auto drawing_path = xlnt::path("xl/drawings/drawing1.xml");
+        const auto relationships = consumer.read_relationships(drawing_path);
+        xlnt_assert_equals(relationships.size(), 1);
+        xlnt_assert_equals(relationships.front().target().path().string(), "../media/image1.bmp");
+        xlnt_assert_equals(
+            relationships.front().target().path().resolve(drawing_path.parent()).string(), "xl/media/image1.bmp");
+
+        std::stringstream destination(std::ios::in | std::ios::out | std::ios::binary);
+        xlnt::detail::xlsx_producer producer(workbook);
+        producer.archive_.reset(new xlnt::detail::ozstream(destination));
+        producer.write_relationships(relationships, drawing_path);
+        producer.end_part();
+        producer.archive_.reset();
+
+        destination.seekg(0);
+        xlnt::detail::izstream saved_archive(destination);
+        const auto saved_relationships = saved_archive.read(xlnt::path("xl/drawings/_rels/drawing1.xml.rels"));
+        xlnt_assert(saved_relationships.find("Target=\"../media/image1.bmp\"") != std::string::npos);
     }
 
     void test_read_hyperlink()

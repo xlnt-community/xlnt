@@ -39,6 +39,8 @@ public:
         register_test(test_msvc_empty_path_wide);
 #endif
         register_test(test_append);
+        register_test(test_parent);
+        register_test(test_relative_to);
 #if XLNT_HAS_FEATURE(U8_STRING_VIEW)
         register_test(test_append_u8);
 #endif
@@ -73,6 +75,58 @@ public:
         xlnt::path path("hello");
         path = path.append("world");
         xlnt_assert_equals(path.string(), "hello/world");
+    }
+
+    void test_parent()
+    {
+        xlnt_assert_equals(xlnt::path().parent().string(), "");
+        xlnt_assert_equals(xlnt::path("xl").parent().string(), "");
+        xlnt_assert_equals(xlnt::path("xl/drawings").parent().string(), "xl");
+        xlnt_assert_equals(xlnt::path("/").parent().string(), "/");
+        xlnt_assert_equals(xlnt::path("/xl").parent().string(), "/");
+        xlnt_assert_equals(xlnt::path("/xl/drawings").parent().string(), "/xl");
+#ifdef WIN32
+        xlnt_assert_equals(xlnt::path("C:\\").parent().string(), "C:\\");
+        xlnt_assert_equals(xlnt::path("C:\\xl").parent().string(), "C:\\");
+        xlnt_assert_equals(xlnt::path("C:\\xl\\drawings").parent().string(), "C:\\xl");
+        xlnt_assert_equals(xlnt::path("C:/xl").parent().string(), "C:/");
+#endif
+    }
+
+    void test_relative_to()
+    {
+        const auto image = xlnt::path("/xl/media/image1.bmp");
+
+        const auto drawings = xlnt::path("/xl/drawings");
+        const auto relative_image = image.relative_to(drawings);
+        const auto root = xlnt::path("/");
+        const auto relative_from_root = image.relative_to(root);
+        const auto xl = xlnt::path("/xl");
+        const auto relative_to_ancestor = xl.relative_to(drawings);
+        const auto relative_to_self = xl.relative_to(xl);
+
+        xlnt_assert_equals(relative_image.string(), "../media/image1.bmp");
+        xlnt_assert_equals(relative_image.resolve(drawings).string(), image.string());
+        xlnt_assert_equals(relative_from_root.string(), "xl/media/image1.bmp");
+        xlnt_assert_equals(relative_from_root.resolve(root).string(), image.string());
+        xlnt_assert_equals(relative_to_ancestor.string(), "..");
+        xlnt_assert_equals(relative_to_ancestor.resolve(drawings).string(), xl.string());
+        xlnt_assert_equals(xlnt::path("../..").resolve(drawings).string(), "/");
+        xlnt_assert_equals(relative_to_self.string(), "");
+        xlnt_assert_equals(relative_to_self.resolve(xl).string(), xl.string());
+
+        // A relative path cannot be computed across different roots.
+        xlnt_assert_equals(image.relative_to(xlnt::path("relative/base")).string(), image.string());
+#ifdef WIN32
+        const auto windows_base = xlnt::path("C:\\xl\\drawings");
+        const auto windows_target = xlnt::path("C:\\xl\\media\\image1.bmp");
+        const auto windows_relative = windows_target.relative_to(windows_base);
+        const auto other_drive = xlnt::path("D:\\media\\image1.bmp");
+
+        xlnt_assert_equals(windows_relative.string(), "../media/image1.bmp");
+        xlnt_assert_equals(windows_relative.resolve(windows_base).string(), windows_target.string());
+        xlnt_assert_equals(other_drive.relative_to(xlnt::path("C:\\drawings")).string(), other_drive.string());
+#endif
     }
 
 #if XLNT_HAS_FEATURE(U8_STRING_VIEW)

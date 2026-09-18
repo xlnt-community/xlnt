@@ -208,22 +208,24 @@ bool path::is_root() const
 
 path path::parent() const
 {
-    if (is_root()) return *this;
+    if (internal_.empty() || is_root()) return *this;
 
     auto split_path = split();
 
     split_path.pop_back();
 
-    if (split_path.empty())
+    auto result = path();
+    auto index = std::size_t(0);
+
+    if (is_absolute())
     {
-        return path("");
+        result = internal_.front() == '/' ? path("/") : path(internal_.substr(0, 3));
+        index = 1;
     }
 
-    path result;
-
-    for (const auto &component : split_path)
+    for (; index < split_path.size(); index++)
     {
-        result = result.append(component);
+        result = result.append(split_path[index]);
     }
 
     return result;
@@ -394,6 +396,13 @@ path path::relative_to(const path &base_path) const
 
     auto base_split = base_path.split();
     auto this_split = split();
+
+    if (base_path.is_relative() || base_split.empty() || this_split.empty()
+        || base_split.front() != this_split.front())
+    {
+        return *this;
+    }
+
     auto index = std::size_t(0);
 
     while (index < base_split.size() && index < this_split.size() && base_split[index] == this_split[index])
@@ -402,6 +411,11 @@ path path::relative_to(const path &base_path) const
     }
 
     auto result = path();
+
+    for (auto i = index; i < base_split.size(); i++)
+    {
+        result = result.append("..");
+    }
 
     for (auto i = index; i < this_split.size(); i++)
     {

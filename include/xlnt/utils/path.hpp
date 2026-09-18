@@ -93,7 +93,8 @@ public:
     bool is_root() const;
 
     /// <summary>
-    /// Return a new path that points to the directory containing the current path
+    /// Return a new path that points to the directory containing the current path,
+    /// preserving its absolute root when present.
     /// Return the path unchanged if this path is the absolute or relative root.
     /// </summary>
     path parent() const;
@@ -143,9 +144,10 @@ public:
     path resolve(const path &base_path) const;
 
     /// <summary>
-    /// The inverse of path::resolve. Creates a relative path from an absolute
-    /// path by removing the common root between base_path and this path.
-    /// If the current path is already relative, return it unchanged.
+    /// The inverse of path::resolve. Creates a path relative to the directory
+    /// represented by base_path, including parent components where necessary.
+    /// If the current path is already relative, or the paths have incompatible
+    /// roots, return the current path unchanged.
     /// </summary>
     path relative_to(const path &base_path) const;
 

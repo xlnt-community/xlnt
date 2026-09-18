@@ -1705,7 +1705,8 @@ std::vector<relationship> xlsx_consumer::read_relationships(const path &part)
 
         if (target.path().is_absolute() && target_mode == xlnt::target_mode::internal)
         {
-            target = uri(target.path().relative_to(path(part.string()).resolve(path("/"))).string());
+            const auto source_directory = part.parent().resolve(path("/"));
+            target = uri(target.path().relative_to(source_directory).string());
         }
 
         relationships.emplace_back(parser.attribute("Id"),
