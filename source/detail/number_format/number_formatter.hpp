@@ -649,6 +649,7 @@ struct format_code
     bool is_datetime = false;
     bool is_timedelta = false;
     bool twelve_hour = false;
+    int total_num_fraction = 0;
     std::vector<template_part> parts;
 };
 
@@ -683,7 +684,7 @@ public:
     std::string format_text(const std::string &text);
 
 private:
-    std::string fill_placeholders(const format_placeholders &p, double number);
+    std::string fill_placeholders(const format_placeholders &p, double number, int total_num_fraction);
     std::string fill_fraction_placeholders(const format_placeholders &numerator,
         const format_placeholders &denominator, double number, bool improper);
     std::string fill_scientific_placeholders(const format_placeholders &integer_part,

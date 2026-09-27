@@ -117,6 +117,7 @@ public:
         register_test(test_builtin_format_date_dmyminus);
         register_test(test_builtin_format_date_dmminus);
         register_test(test_builtin_format_date_myminus);
+        register_test(test_rounding);
     }
 
     void test_basic()
@@ -1035,6 +1036,17 @@ public:
     void test_builtin_format_date_myminus()
     {
         format_and_test(xlnt::number_format::date_myminus(), {{"5-16", "###########", "1-00", "text"}});
+    }
+
+    void test_rounding()
+    {
+        xlnt_assert_equals(xlnt::number_format("0").format(1.99, xlnt::calendar::windows_1900), "2");
+        xlnt_assert_equals(xlnt::number_format("0.0").format(1.99, xlnt::calendar::windows_1900), "2.0");
+        xlnt_assert_equals(xlnt::number_format("0.00").format(1.99, xlnt::calendar::windows_1900), "1.99");
+        xlnt_assert_equals(xlnt::number_format("0.00").format(1.98, xlnt::calendar::windows_1900), "1.98");
+        xlnt_assert_equals(xlnt::number_format("0.00").format(1.995, xlnt::calendar::windows_1900), "2.00");
+        xlnt_assert_equals(xlnt::number_format("0.00").format(1.994, xlnt::calendar::windows_1900), "1.99");
+        xlnt_assert_equals(xlnt::number_format("0.00").format(1.899, xlnt::calendar::windows_1900), "1.90");
     }
 };
 static number_format_test_suite x;

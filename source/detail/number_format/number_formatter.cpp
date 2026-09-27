@@ -665,6 +665,8 @@ void number_format_parser::parse()
         case number_format_token::token_type::number: {
             part.type = template_part::template_type::general;
             part.placeholders = parse_placeholders(token.string);
+            if (part.placeholders.type == format_placeholders::placeholders_type::fractional_part)
+                section.total_num_fraction += part.placeholders.num_zeros + part.placeholders.num_optionals + part.placeholders.num_spaces;
             section.parts.push_back(part);
             part = template_part();
 
@@ -1570,7 +1572,7 @@ std::string number_formatter::format_text(const std::string &text)
     return format_text(format_[3], text);
 }
 
-std::string number_formatter::fill_placeholders(const format_placeholders &p, double number)
+std::string number_formatter::fill_placeholders(const format_placeholders &p, double number, int total_num_fraction)
 {
     std::string result;
 
@@ -1590,7 +1592,8 @@ std::string number_formatter::fill_placeholders(const format_placeholders &p, do
         number /= std::pow(1000.0, p.thousands_scale);
     }
 
-    auto integer_part = static_cast<long long>(number);
+    double scale = std::pow(10.0, total_num_fraction);
+    auto integer_part = static_cast<long long>(std::round(number * scale) / scale);
 
     if (p.type == format_placeholders::placeholders_type::integer_only
         || p.type == format_placeholders::placeholders_type::integer_part
@@ -1631,6 +1634,8 @@ std::string number_formatter::fill_placeholders(const format_placeholders &p, do
     else if (p.type == format_placeholders::placeholders_type::fractional_part)
     {
         auto fractional_part = number - integer_part;
+        if (fractional_part < 0)
+            fractional_part = 0;
 
         // Format with zeros.
         result = fmt::format("{:.{}f}", fractional_part, p.num_zeros + p.num_optionals + p.num_spaces);
@@ -1825,7 +1830,7 @@ std::string number_formatter::format_number(const format_code &format, double nu
                 auto denominator = static_cast<long long>(std::pow(10.0, digits));
                 auto fractional_seconds = dt.get_microsecond() / 1.0E6 * denominator;
                 fractional_seconds = std::round(fractional_seconds) / denominator;
-                result.append(fill_placeholders(part.placeholders, fractional_seconds));
+                result.append(fill_placeholders(part.placeholders, fractional_seconds, format.total_num_fraction));
                 break;
             }
 
@@ -1858,7 +1863,7 @@ std::string number_formatter::format_number(const format_code &format, double nu
             }
             else
             {
-                result.append(fill_placeholders(part.placeholders, number));
+                result.append(fill_placeholders(part.placeholders, number, format.total_num_fraction));
             }
 
             break;
