@@ -35,10 +35,7 @@ namespace {
 
 const std::unordered_map<std::size_t, xlnt::number_format> &builtin_formats()
 {
-    static std::unordered_map<std::size_t, xlnt::number_format> formats;
-
-    if (formats.size() == 0)
-    {
+    static std::unordered_map<std::size_t, xlnt::number_format> formats = [](){
         const std::unordered_map<std::size_t, std::string> format_strings{
             {0, "General"},
             {1, "0"},
@@ -80,12 +77,15 @@ const std::unordered_map<std::size_t, xlnt::number_format> &builtin_formats()
             // Note: custom formats have IDs 164 and higher.
         };
 
+        std::unordered_map<std::size_t, xlnt::number_format> formats;
         for (const auto &format_string_pair : format_strings)
         {
             formats[format_string_pair.first] =
                 xlnt::number_format(format_string_pair.second, format_string_pair.first);
         }
-    }
+
+        return formats;
+    }();
 
     return formats;
 }
