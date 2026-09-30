@@ -98,6 +98,7 @@ public:
         register_test(test_Issue494);
         register_test(test_Issue90);
         register_test(test_Issue109);
+        register_test(test_Issue165);
         register_test(test_style);
         register_test(test_builtin_style);
         register_test(test_thumbnail);
@@ -1074,6 +1075,13 @@ public:
 
         auto ws = wb.active_sheet();
         xlnt_assert_throws_nothing(ws.title());
+    }
+
+    void test_Issue165()
+    {
+        xlnt::workbook wb;
+        xlnt_assert_throws_nothing(wb.load(path_helper::test_file("Issue165_missing_drawing.xlsx")));
+        xlnt_assert_equals(wb.active_sheet().cell("A1").value<int>(), 42);
     }
 
     void test_style()
