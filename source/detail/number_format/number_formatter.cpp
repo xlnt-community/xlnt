@@ -1572,7 +1572,7 @@ std::string number_formatter::format_text(const std::string &text)
     return format_text(format_[3], text);
 }
 
-std::string number_formatter::fill_placeholders(const format_placeholders &p, double number, int total_num_fraction)
+std::string number_formatter::fill_placeholders(const format_placeholders &p, double number, std::size_t total_num_fraction)
 {
     std::string result;
 
