@@ -309,7 +309,7 @@ jobs:
 
   build-macos:
     macos:
-      xcode: 26.1.0
+      xcode: 27.2.0
     resource_class: "m4pro.medium"
     parameters:
       benchmarks:
