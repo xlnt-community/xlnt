@@ -1408,13 +1408,16 @@ worksheet xlsx_consumer::read_worksheet_end(const std::string &rel_id)
         auto drawings_part = manifest.canonicalize({workbook_rel, sheet_rel,
             manifest.relationship(sheet_path, xlnt::relationship_type::drawings)});
 
-        auto receive = xml::parser::receive_default;
-        auto drawings_part_streambuf = archive_->open(drawings_part);
-        std::istream drawings_part_stream(drawings_part_streambuf.get());
-        xml::parser parser(drawings_part_stream, drawings_part.string(), receive);
-        parser_ = &parser;
+        if (archive_->has_file(drawings_part))
+        {
+            auto receive = xml::parser::receive_default;
+            auto drawings_part_streambuf = archive_->open(drawings_part);
+            std::istream drawings_part_stream(drawings_part_streambuf.get());
+            xml::parser parser(drawings_part_stream, drawings_part.string(), receive);
+            parser_ = &parser;
 
-        read_drawings(ws, drawings_part);
+            read_drawings(ws, drawings_part);
+        }
     }
 
     if (manifest.has_relationship(sheet_path, xlnt::relationship_type::printer_settings))
