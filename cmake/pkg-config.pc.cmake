@@ -8,4 +8,5 @@ libdir=${PKG_CONFIG_LIBDIR}
 exec_prefix=${PKG_CONFIG_EXEC_PREFIX}
 Requires.private: ${PKG_CONFIG_REQUIRES_PRIVATE}
 Libs: ${PKG_CONFIG_LIBS}
+Requires.private: ${PKG_CONFIG_REQUIRES_PRIVATE}
 Cflags: ${PKG_CONFIG_CFLAGS}
