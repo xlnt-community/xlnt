@@ -42,6 +42,7 @@ endif()
 
 # Optional components
 option(LIBRARY "Set to ON to build the main XLNT library" ON)
+option(XLNT_USE_OPENSSL "Use OpenSSL for workbook encryption" OFF)
 option(TESTS "Set to ON to build test executable (in ./tests)" OFF)
 option(SAMPLES "Set to ON to build executable code samples (in ./samples)" OFF)
 option(BENCHMARKS "Set to ON to build performance benchmarks (in ./benchmarks)" OFF)

@@ -110,7 +110,19 @@ file(GLOB MINIZ_SOURCES ${THIRD_PARTY_DIR}/miniz/*.c)
 file(GLOB DETAIL_ROOT_HEADERS ${XLNT_SOURCE_DIR}/detail/*.hpp)
 file(GLOB DETAIL_ROOT_SOURCES ${XLNT_SOURCE_DIR}/detail/*.cpp)
 file(GLOB DETAIL_CRYPTOGRAPHY_HEADERS ${XLNT_SOURCE_DIR}/detail/cryptography/*.hpp)
-file(GLOB DETAIL_CRYPTOGRAPHY_SOURCES ${XLNT_SOURCE_DIR}/detail/cryptography/*.c*)
+set(XLNT_CRYPTOGRAPHY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/detail/cryptography")
+file(GLOB DETAIL_CRYPTOGRAPHY_SOURCES "${XLNT_CRYPTOGRAPHY_DIR}/*.c*")
+if(XLNT_USE_OPENSSL)
+  find_package(OpenSSL 1.1 REQUIRED)
+  list(REMOVE_ITEM DETAIL_CRYPTOGRAPHY_SOURCES
+    "${XLNT_CRYPTOGRAPHY_DIR}/aes.cpp"
+    "${XLNT_CRYPTOGRAPHY_DIR}/sha.cpp"
+    "${XLNT_CRYPTOGRAPHY_DIR}/sha1.c"
+    "${XLNT_CRYPTOGRAPHY_DIR}/sha512.c")
+  list(APPEND DETAIL_CRYPTOGRAPHY_SOURCES
+    "${XLNT_CRYPTOGRAPHY_DIR}/openssl/aes.cpp"
+    "${XLNT_CRYPTOGRAPHY_DIR}/openssl/sha.cpp")
+endif()
 file(GLOB DETAIL_EXTERNAL_HEADERS ${XLNT_SOURCE_DIR}/detail/external/*.hpp)
 file(GLOB DETAIL_HEADER_FOOTER_HEADERS ${XLNT_SOURCE_DIR}/detail/header_footer/*.hpp)
 file(GLOB DETAIL_HEADER_FOOTER_SOURCES ${XLNT_SOURCE_DIR}/detail/header_footer/*.cpp)
@@ -227,6 +239,9 @@ target_include_directories(xlnt
     ${XLNT_SOURCE_DIR}/../third-party/utfcpp/source
     ${XLNT_SOURCE_DIR}/../third-party/fmt/include
     ${XLNT_SOURCE_DIR}/../third-party/fast_float/include)
+if(XLNT_USE_OPENSSL)
+  target_link_libraries(xlnt PRIVATE OpenSSL::Crypto)
+endif()
 
 # Platform- and file-specific settings, MSVC
 if(MSVC)
@@ -348,6 +363,10 @@ if(NOT MSVC)
   set(PKG_CONFIG_EXEC_PREFIX "\${prefix}")
   set(PKG_CONFIG_LIBS "-L\${libdir} -lxlnt")
   set(PKG_CONFIG_CFLAGS "-I\${includedir}")
+
+  if(XLNT_USE_OPENSSL AND STATIC)
+    set(PKG_CONFIG_REQUIRES_PRIVATE libcrypto)
+  endif()
 
   # Replace variables in pkg-config template
   configure_file("${XLNT_ROOT_DIR}/cmake/pkg-config.pc.cmake"

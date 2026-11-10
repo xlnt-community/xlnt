@@ -8,6 +8,11 @@ set_and_check(XLNT_INCLUDE_DIR "@XLNT_INCLUDE_INSTALL_DIR@")
 
 check_required_components(xlnt)
 
+if("@XLNT_USE_OPENSSL@" AND "@STATIC@")
+  include(CMakeFindDependencyMacro)
+  find_dependency(OpenSSL 1.1)
+endif()
+
 if(NOT TARGET xlnt::xlnt)
   include("${XLNT_CMAKE_DIR}/XlntTargets.cmake")
 endif()

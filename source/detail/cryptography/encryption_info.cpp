@@ -132,7 +132,11 @@ std::vector<std::uint8_t> calculate_agile_key(
 
     static const std::size_t block_size = 8;
 
-    auto calculate_block = [&info](
+    auto iv = info.key_encryptor.salt_value;
+    // Link: https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-offcrypto/11672b8c-b9f0-4bb7-9b2d-3f1695286436
+    iv.resize(16, 0x36);
+
+    auto calculate_block = [&info, &iv](
                                const std::vector<std::uint8_t> &raw_key,
                                const std::array<std::uint8_t, block_size> &block,
                                const std::vector<std::uint8_t> &encrypted) {
@@ -144,7 +148,7 @@ std::vector<std::uint8_t> calculate_agile_key(
 
         using xlnt::detail::aes_cbc_decrypt;
 
-        return aes_cbc_decrypt(encrypted, key, info.key_encryptor.salt_value);
+        return aes_cbc_decrypt(encrypted, key, iv);
     };
 
     const std::array<std::uint8_t, block_size> input_block_key = {{0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79}};

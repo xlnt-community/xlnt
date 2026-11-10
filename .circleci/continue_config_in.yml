@@ -55,6 +55,9 @@ jobs:
       warnings-as-errors:
         default: "ON"
         type: string
+      openssl:
+        default: "OFF"
+        type: string
       image:
         default: PLACEHOLDER_IMAGE(gcc7_cmake3.9.5)
         type: string
@@ -64,7 +67,13 @@ jobs:
     steps:
       - checkout
       - run: git submodule update --init --recursive
-      - run: cmake -D XLNT_SANITIZE=<< parameters.sanitize >> -D XLNT_ALL_WARNINGS_AS_ERRORS=<< parameters.warnings-as-errors >> -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D XLNT_MICROBENCH_ENABLED=<< parameters.micro-benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> -D XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR=de_DE -D XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR=ps_AF -D XLNT_USE_LOCALE_POINT_THOUSAND_SEPARATOR=ON -D XLNT_LOCALE_POINT_THOUSAND_SEPARATOR=de_DE .
+      - when:
+          condition:
+            equal: ["ON", << parameters.openssl >>]
+          steps:
+            - run: apt-get update -y
+            - run: apt-get install -y --no-install-recommends libssl-dev
+      - run: cmake -D XLNT_USE_OPENSSL=<< parameters.openssl >> -D XLNT_SANITIZE=<< parameters.sanitize >> -D XLNT_ALL_WARNINGS_AS_ERRORS=<< parameters.warnings-as-errors >> -D XLNT_CXX_LANG=<< parameters.cxx-ver >> -D STATIC=<< parameters.static >> -D BENCHMARKS=<< parameters.benchmarks >> -D XLNT_MICROBENCH_ENABLED=<< parameters.micro-benchmarks >> -D TESTS=<< parameters.tests >> -D XLNT_SKIP_INTERNAL_TESTS=<< parameters.skip-internal-tests >> -D SAMPLES=<< parameters.samples >> -D COVERAGE=<< parameters.coverage >> -D CMAKE_BUILD_TYPE=<< parameters.build-type >> -D XLNT_USE_LOCALE_COMMA_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR=de_DE -D XLNT_USE_LOCALE_ARABIC_DECIMAL_SEPARATOR=ON -D XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR=ps_AF -D XLNT_USE_LOCALE_POINT_THOUSAND_SEPARATOR=ON -D XLNT_LOCALE_POINT_THOUSAND_SEPARATOR=de_DE .
       - run: cmake --build . -- -j2
       - when:
           condition:
@@ -421,6 +430,19 @@ workflows:
               - {static: "ON", skip-internal-tests: "ON", cxx-ver: "26", build-type: Release}
               # Exclude combination covered by tests-gcc-sanitize job
               - {cxx-ver: "26", build-type: Debug, static: "OFF", skip-internal-tests: "OFF"}
+          filters:
+            branches:
+              ignore: gh-pages
+
+      - build-gcc:
+          name: tests-gcc-openssl
+          image: PLACEHOLDER_IMAGE(gcc_cmake_latest)
+          openssl: "ON"
+          matrix:
+            parameters:
+              static:
+                - "ON"
+                - "OFF"
           filters:
             branches:
               ignore: gh-pages
