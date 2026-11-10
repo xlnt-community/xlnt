@@ -22,84 +22,25 @@
 // @license: http://www.opensource.org/licenses/mit-license.php
 // @author: see AUTHORS file
 
-#include <cstring>
-
 #include <detail/cryptography/sha.hpp>
-
-extern "C" {
-
-extern void sha1_hash(const uint8_t *message, size_t len, uint32_t hash[5]);
-extern void sha512_hash(const uint8_t *message, size_t len, uint64_t hash[8]);
-}
+#include <xlnt/utils/exceptions.hpp>
+#include <openssl/evp.h>
 
 namespace {
-
-#ifdef _MSC_VER
-inline std::uint32_t byteswap32(std::uint32_t i)
+void digest(const EVP_MD* algorithm, const std::vector<std::uint8_t>& input,
+    std::vector<std::uint8_t>& output)
 {
-    return _byteswap_ulong(i);
+    std::vector<std::uint8_t> result(EVP_MAX_MD_SIZE);
+    unsigned int length = 0;
+    if (EVP_Digest(input.data(), input.size(), result.data(), &length, algorithm, nullptr) != 1)
+        throw xlnt::exception("OpenSSL digest operation failed");
+    result.resize(length);
+    output.swap(result);
 }
-
-inline std::uint64_t byteswap64(std::uint64_t i)
-{
-    return _byteswap_uint64(i);
 }
-#else
-inline std::uint32_t byteswap32(std::uint32_t i)
-{
-    return __builtin_bswap32(i);
-}
-
-inline std::uint64_t byteswap64(std::uint64_t i)
-{
-    return __builtin_bswap64(i);
-}
-#endif
-
-void byteswap(std::uint32_t *arr, std::size_t len)
-{
-    for (auto i = std::size_t(0); i < len; ++i)
-    {
-        arr[i] = byteswap32(arr[i]);
-    }
-}
-
-void byteswap(std::uint64_t *arr, std::size_t len)
-{
-    for (auto i = std::size_t(0); i < len; ++i)
-    {
-        arr[i] = byteswap64(arr[i]);
-    }
-}
-
-} // namespace
-
-namespace xlnt {
-namespace detail {
-
-void sha1(const std::vector<std::uint8_t> &input, std::vector<std::uint8_t> &output)
-{
-    static const auto sha1_bytes = 20;
-
-    output.resize(sha1_bytes);
-    auto output_pointer_u32 = reinterpret_cast<std::uint32_t *>(output.data());
-
-    sha1_hash(input.data(), input.size(), output_pointer_u32);
-
-    byteswap(output_pointer_u32, sha1_bytes / sizeof(std::uint32_t));
-}
-
-void sha512(const std::vector<std::uint8_t> &input, std::vector<std::uint8_t> &output)
-{
-    static const auto sha512_bytes = 64;
-
-    output.resize(sha512_bytes);
-    auto output_pointer_u64 = reinterpret_cast<std::uint64_t *>(output.data());
-
-    sha512_hash(input.data(), input.size(), output_pointer_u64);
-
-    byteswap(output_pointer_u64, sha512_bytes / sizeof(std::uint64_t));
-}
-
-} // namespace detail
-} // namespace xlnt
+namespace xlnt { namespace detail {
+void sha1(const std::vector<std::uint8_t>& input, std::vector<std::uint8_t>& output)
+{ digest(EVP_sha1(), input, output); }
+void sha512(const std::vector<std::uint8_t>& input, std::vector<std::uint8_t>& output)
+{ digest(EVP_sha512(), input, output); }
+}}
