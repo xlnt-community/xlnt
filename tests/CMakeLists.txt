@@ -58,16 +58,26 @@ if(COVERAGE)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
 endif()
 
-add_executable(xlnt.test ${RUNNER} ${TESTS} ${HELPERS} ${HELPERS_INTERNAL} $<TARGET_OBJECTS:libstudxml>)
+add_executable(xlnt.test ${RUNNER} ${TESTS} ${HELPERS} ${HELPERS_INTERNAL})
 target_link_libraries(xlnt.test PRIVATE xlnt)
+if(XLNT_USE_SYSTEM_LIBS)
+  target_link_libraries(xlnt.test PRIVATE PkgConfig::STUDXML)
+else()
+  target_sources(xlnt.test PRIVATE $<TARGET_OBJECTS:libstudxml>)
+endif()
 target_include_directories(xlnt.test
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 if (NOT XLNT_SKIP_INTERNAL_TESTS)
   target_include_directories(xlnt.test
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../source
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/libstudxml
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/miniz
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/fast_float/include)
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../source)
+  if(XLNT_USE_SYSTEM_LIBS)
+    target_include_directories(xlnt.test PRIVATE ${FAST_FLOAT_INCLUDE_DIR})
+  else()
+    target_include_directories(xlnt.test PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/libstudxml
+      ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/miniz
+      ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/fast_float/include)
+  endif()
 endif()
 
 set(XLNT_TEST_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data)

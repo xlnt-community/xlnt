@@ -33,7 +33,6 @@
 #include <detail/serialization/parsers.hpp>
 #include <detail/serialization/serialisation_helpers.hpp>
 
-#define FMT_HEADER_ONLY
 #include <fmt/format.h>
 
 namespace {

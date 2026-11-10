@@ -19,9 +19,12 @@ set(XLNT_INCLUDE_DIR ${XLNT_ROOT_DIR}/include)
 set(XLNT_SOURCE_DIR ${XLNT_ROOT_DIR}/source)
 set(THIRD_PARTY_DIR ${XLNT_ROOT_DIR}/third-party)
 
-# Include libstudxml library
-add_subdirectory(${THIRD_PARTY_DIR}/libstudxml.build
-  ${CMAKE_CURRENT_BINARY_DIR}/third-party/libstudxml)
+include(${XLNT_ROOT_DIR}/cmake/XLNTDependencies.cmake)
+if(NOT XLNT_USE_SYSTEM_LIBS)
+  add_subdirectory(${THIRD_PARTY_DIR}/libstudxml.build
+    ${CMAKE_CURRENT_BINARY_DIR}/third-party/libstudxml)
+  set(XLNT_LIBSTUDXML_OBJECTS $<TARGET_OBJECTS:libstudxml>)
+endif()
 
 if(COVERAGE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
@@ -104,8 +107,10 @@ file(GLOB WORKBOOK_HEADERS ${XLNT_INCLUDE_DIR}/xlnt/workbook/*.hpp)
 file(GLOB WORKBOOK_SOURCES ${XLNT_SOURCE_DIR}/workbook/*.cpp)
 file(GLOB WORKSHEET_HEADERS ${XLNT_INCLUDE_DIR}/xlnt/worksheet/*.hpp)
 file(GLOB WORKSHEET_SOURCES ${XLNT_SOURCE_DIR}/worksheet/*.cpp)
-file(GLOB MINIZ_HEADERS ${THIRD_PARTY_DIR}/miniz/*.h)
-file(GLOB MINIZ_SOURCES ${THIRD_PARTY_DIR}/miniz/*.c)
+if(NOT XLNT_USE_SYSTEM_LIBS)
+  file(GLOB MINIZ_HEADERS ${THIRD_PARTY_DIR}/miniz/*.h)
+  file(GLOB MINIZ_SOURCES ${THIRD_PARTY_DIR}/miniz/*.c)
+endif()
 
 file(GLOB DETAIL_ROOT_HEADERS ${XLNT_SOURCE_DIR}/detail/*.hpp)
 file(GLOB DETAIL_ROOT_SOURCES ${XLNT_SOURCE_DIR}/detail/*.cpp)
@@ -181,7 +186,7 @@ if(NOT STATIC)
   add_library(xlnt SHARED
     ${XLNT_HEADERS}
     ${XLNT_SOURCES}
-    $<TARGET_OBJECTS:libstudxml>)
+    ${XLNT_LIBSTUDXML_OBJECTS})
 
   target_compile_definitions(xlnt PRIVATE XLNT_SHARED=1)
 
@@ -192,7 +197,7 @@ if(NOT STATIC)
     SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
 else()
   # Compile static library
-  add_library(xlnt STATIC ${XLNT_HEADERS} ${XLNT_SOURCES} $<TARGET_OBJECTS:libstudxml>)
+  add_library(xlnt STATIC ${XLNT_HEADERS} ${XLNT_SOURCES} ${XLNT_LIBSTUDXML_OBJECTS})
   target_compile_definitions(xlnt PUBLIC XLNT_STATIC=1)
 endif()
 
@@ -221,12 +226,20 @@ target_include_directories(xlnt
 	$<BUILD_INTERFACE:${XLNT_INCLUDE_DIR}>
 	$<INSTALL_INTERFACE:${XLNT_INC_DEST_DIR}>
 	PRIVATE
-	${XLNT_SOURCE_DIR}
-	${XLNT_SOURCE_DIR}/../third-party/libstudxml
-    ${XLNT_SOURCE_DIR}/../third-party/miniz
-    ${XLNT_SOURCE_DIR}/../third-party/utfcpp/source
-    ${XLNT_SOURCE_DIR}/../third-party/fmt/include
-    ${XLNT_SOURCE_DIR}/../third-party/fast_float/include)
+	${XLNT_SOURCE_DIR})
+if(XLNT_USE_SYSTEM_LIBS)
+  target_include_directories(xlnt PRIVATE ${UTFCPP_INCLUDE_DIR} ${FAST_FLOAT_INCLUDE_DIR})
+  target_link_libraries(xlnt PRIVATE PkgConfig::STUDXML fmt::fmt ZLIB::ZLIB)
+  target_compile_definitions(xlnt PRIVATE XLNT_USE_SYSTEM_LIBS=1)
+else()
+  target_include_directories(xlnt PRIVATE
+    ${THIRD_PARTY_DIR}/libstudxml
+    ${THIRD_PARTY_DIR}/miniz
+    ${THIRD_PARTY_DIR}/utfcpp/source
+    ${THIRD_PARTY_DIR}/fmt/include
+    ${THIRD_PARTY_DIR}/fast_float/include)
+  target_compile_definitions(xlnt PRIVATE FMT_HEADER_ONLY=1)
+endif()
 
 # Platform- and file-specific settings, MSVC
 if(MSVC)
@@ -341,6 +354,9 @@ if(NOT MSVC)
   set(PKG_CONFIG_INCLUDEDIR ${XLNT_INC_DEST_DIR})
   set(PKG_CONFIG_LIBS "-L\${libdir} -lxlnt")
   set(PKG_CONFIG_CFLAGS "-I\${includedir}")
+  if(XLNT_USE_SYSTEM_LIBS)
+    set(PKG_CONFIG_REQUIRES_PRIVATE "libstudxml fmt zlib")
+  endif()
 
   # Replace variables in pkg-config template
   configure_file("${XLNT_ROOT_DIR}/cmake/pkg-config.pc.cmake"

@@ -102,6 +102,24 @@ In case of a multi-configuration generators (e.g. Visual Studio and Xcode), it m
 cmake --install . --config Release
 ```
 
+### System dependencies on Linux
+
+Bundled libraries are used by default. On Linux, configure with
+`-DXLNT_USE_SYSTEM_LIBS=ON` to use installed libstudxml, fmt, zlib, utfcpp,
+and fast_float instead. This mode requires CMake 3.13 or newer, pkg-config,
+and the development files for those libraries. Missing dependencies stop
+configuration; there is no fallback to bundled copies.
+
+```sh
+cmake -S . -B build -DXLNT_USE_SYSTEM_LIBS=ON -DTESTS=ON
+cmake --build build --parallel
+ctest --test-dir build --output-on-failure
+```
+
+The bundled dependency submodules are not needed in this mode. Enabling
+the option on a non-Linux target is an error. To return to bundled
+libraries, configure with `-DXLNT_USE_SYSTEM_LIBS=OFF`.
+
 ### Example: Ubuntu 24.04 LTS (Noble Numbat) 
 Time required: Approximately 5 minutes (depending on your internet speed)
 
