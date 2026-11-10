@@ -7,4 +7,5 @@ includedir=${PKG_CONFIG_INCLUDEDIR}
 libdir=${PKG_CONFIG_LIBDIR}
 exec_prefix=${PKG_CONFIG_EXEC_PREFIX}
 Libs: ${PKG_CONFIG_LIBS}
+Requires.private: ${PKG_CONFIG_REQUIRES_PRIVATE}
 Cflags: ${PKG_CONFIG_CFLAGS}

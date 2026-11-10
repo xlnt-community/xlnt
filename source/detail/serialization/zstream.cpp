@@ -40,7 +40,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 #include <iostream>
 #include <iterator> // for std::back_inserter
 #include <string>
+#ifdef XLNT_USE_SYSTEM_LIBS
+#include <zlib.h>
+#else
 #include <miniz.h>
+#endif
 
 #include <xlnt/utils/exceptions.hpp>
 #include <detail/serialization/vector_streambuf.hpp>

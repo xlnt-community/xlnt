@@ -8,6 +8,14 @@ set_and_check(XLNT_INCLUDE_DIR "@XLNT_INCLUDE_INSTALL_DIR@")
 
 check_required_components(xlnt)
 
+if("@XLNT_USE_SYSTEM_LIBS@" AND "@STATIC@")
+  include(CMakeFindDependencyMacro)
+  find_dependency(PkgConfig)
+  pkg_check_modules(STUDXML REQUIRED IMPORTED_TARGET GLOBAL libstudxml)
+  find_dependency(fmt)
+  find_dependency(ZLIB)
+endif()
+
 if(NOT TARGET xlnt::xlnt)
   include("${XLNT_CMAKE_DIR}/XlntTargets.cmake")
 endif()

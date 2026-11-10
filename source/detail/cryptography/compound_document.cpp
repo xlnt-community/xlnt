@@ -37,7 +37,6 @@
 #include <detail/unicode.hpp>
 #include <detail/utils/stream_helpers.hpp>
 
-#define FMT_HEADER_ONLY
 #include <fmt/format.h>
 
 // NOTE: compound files are not part of the OOXML specification (ECMA-376).
