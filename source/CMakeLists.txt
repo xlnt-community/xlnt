@@ -23,6 +23,8 @@ set(THIRD_PARTY_DIR ${XLNT_ROOT_DIR}/third-party)
 add_subdirectory(${THIRD_PARTY_DIR}/libstudxml.build
   ${CMAKE_CURRENT_BINARY_DIR}/third-party/libstudxml)
 
+find_package(OpenSSL REQUIRED)
+
 if(COVERAGE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 endif()
@@ -227,6 +229,7 @@ target_include_directories(xlnt
     ${XLNT_SOURCE_DIR}/../third-party/utfcpp/source
     ${XLNT_SOURCE_DIR}/../third-party/fmt/include
     ${XLNT_SOURCE_DIR}/../third-party/fast_float/include)
+target_link_libraries(xlnt PRIVATE OpenSSL::Crypto)
 
 # Platform- and file-specific settings, MSVC
 if(MSVC)
