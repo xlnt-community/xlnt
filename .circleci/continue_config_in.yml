@@ -10,6 +10,16 @@ parameters:
     default: true
 
 jobs:
+  test-pkg-config:
+    docker:
+      - image: PLACEHOLDER_IMAGE(gcc_cmake_latest)
+    resource_class: small
+    steps:
+      - checkout
+      - run: git submodule update --init --recursive
+      - run: apt-get update -y && apt-get install -y --no-install-recommends pkg-config
+      - run: bash .circleci/test_pkg_config.sh
+
   build-gcc:
     docker:
       - image: << parameters.image >>
@@ -356,6 +366,11 @@ workflows:
   build:
     when: << pipeline.parameters.run-build >>
     jobs:
+      - test-pkg-config:
+          filters:
+            branches:
+              ignore: gh-pages
+
       - build-gcc:
           name: tests-gcc7-cmake3.2
           cxx-ver: "11"
