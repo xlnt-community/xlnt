@@ -339,6 +339,13 @@ if(NOT MSVC)
   # Set pkg-config variables
   set(PKG_CONFIG_LIBDIR ${XLNT_LIB_DEST_DIR})
   set(PKG_CONFIG_INCLUDEDIR ${XLNT_INC_DEST_DIR})
+  if(NOT IS_ABSOLUTE "${PKG_CONFIG_LIBDIR}")
+    set(PKG_CONFIG_LIBDIR "\${prefix}/${PKG_CONFIG_LIBDIR}")
+  endif()
+  if(NOT IS_ABSOLUTE "${PKG_CONFIG_INCLUDEDIR}")
+    set(PKG_CONFIG_INCLUDEDIR "\${prefix}/${PKG_CONFIG_INCLUDEDIR}")
+  endif()
+  set(PKG_CONFIG_EXEC_PREFIX "\${prefix}")
   set(PKG_CONFIG_LIBS "-L\${libdir} -lxlnt")
   set(PKG_CONFIG_CFLAGS "-I\${includedir}")
 
