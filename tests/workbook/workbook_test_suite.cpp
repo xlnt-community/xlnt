@@ -91,6 +91,7 @@ public:
         register_test(test_id_gen);
         register_test(test_load_file);
         register_test(test_load_file_encrypted);
+        register_test(test_load_file_encrypted_short_salt);
         register_test(test_load_file_encrypted_invalid_password);
         register_test(test_load_file_non_existent);
         register_test(test_Issue279);
@@ -898,6 +899,13 @@ public:
         // load vector with empty data
         xlnt::workbook wb_load6;
         xlnt_assert_throws(wb_load6.load(std::vector<uint8_t>{}, password), xlnt::invalid_file);
+    }
+
+    void test_load_file_encrypted_short_salt()
+    {
+        const xlnt::workbook reference(path_helper::test_file("5_encrypted_agile.xlsx"), "secret");
+        const xlnt::workbook workbook(path_helper::test_file("5_encrypted_agile_short_salt.xlsx"), "secret");
+        xlnt_assert(reference.compare(workbook, false));
     }
 
     void test_load_file_encrypted_invalid_password()

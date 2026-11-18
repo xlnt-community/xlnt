@@ -65,6 +65,7 @@ cmake ..
 By default, xlnt is built as a shared library. Some important options are:
 
  - STATIC: Set to ON to build xlnt as a static library instead of a shared library.
+ - XLNT_USE_OPENSSL: Set to ON to use OpenSSL for workbook encryption. This requires CMake 3.4 or later and OpenSSL 1.1 or later with development headers. The default (OFF) uses the built-in implementation.
  - TESTS: Set to ON to build test executable (in ./tests).
  - DOCUMENTATION: Set to ON to build API reference documentation (in ./api-reference). Requires doxygen being installed on your system.
  - CMAKE_INSTALL_PREFIX: specify the location where you want to install xlnt.
