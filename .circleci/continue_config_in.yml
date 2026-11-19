@@ -10,6 +10,24 @@ parameters:
     default: true
 
 jobs:
+  test-system-libraries:
+    docker:
+      - image: alt:sisyphus
+    resource_class: medium
+    parameters:
+      static:
+        type: string
+    steps:
+      - run:
+          name: Install system dependencies
+          command: |
+            apt-get update
+            apt-get install -y git openssh-clients ca-certificates tar gzip \
+              gcc-c++ cmake ctest pkg-config libstudxml-devel libfmt-devel \
+              libutfcpp-devel libfast_float-devel zlib-devel libssl-devel
+      - checkout
+      - run: bash .circleci/test_system_libraries.sh << parameters.static >>
+
   test-pkg-config:
     docker:
       - image: PLACEHOLDER_IMAGE(gcc_cmake_latest)
@@ -375,6 +393,14 @@ workflows:
   build:
     when: << pipeline.parameters.run-build >>
     jobs:
+      - test-system-libraries:
+          matrix:
+            parameters:
+              static: ["ON", "OFF"]
+          filters:
+            branches:
+              ignore: gh-pages
+
       - test-pkg-config:
           filters:
             branches:

@@ -4,7 +4,6 @@
 #include <limits>
 #include <cassert>
 
-#define FMT_HEADER_ONLY
 #include <fmt/format.h>
 
 namespace xlnt {

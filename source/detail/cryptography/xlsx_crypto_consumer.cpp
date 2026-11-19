@@ -39,7 +39,6 @@
 #include <detail/serialization/xlsx_consumer.hpp>
 #include <detail/unicode.hpp>
 
-#define FMT_HEADER_ONLY
 #include <fmt/format.h>
 
 
