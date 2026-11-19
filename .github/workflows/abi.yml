@@ -1,0 +1,42 @@
+name: ABI compatibility
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  check-abi:
+    if: github.event_name != 'push' || !github.event.deleted
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install Libabigail
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends abigail-tools
+      - name: Test the ABI checker
+        run: |
+          bash .github/scripts/test_check_abi.sh
+          bash .github/scripts/test_check_abi_revisions.sh
+      - name: Build and compare the xlnt ABI
+        env:
+          BASELINE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          bash .github/scripts/check_abi_revisions.sh "$BASELINE_SHA" "$GITHUB_EVENT_NAME" |
+            tee "$RUNNER_TEMP/abi-report.txt"
+      - uses: actions/upload-artifact@v7
+        if: success() || failure()
+        with:
+          name: abi-report
+          path: ${{ runner.temp }}/abi-report.txt
+          if-no-files-found: ignore
