@@ -197,11 +197,16 @@ if(NOT STATIC)
 
   target_compile_definitions(xlnt PRIVATE XLNT_SHARED=1)
 
-  # Set SO version (for symbolic links like libxlnt.so.1.4 and libxlnt.so.1)
+  # Bump SOVERSION only when the shared library ABI changes incompatibly.
+  set(XLNT_ABI_VERSION 2)
+  set(XLNT_LIBRARY_VERSION ${PROJECT_VERSION})
+  if(CMAKE_EXECUTABLE_FORMAT STREQUAL "ELF")
+    set(XLNT_LIBRARY_VERSION ${XLNT_ABI_VERSION}.${PROJECT_VERSION})
+  endif()
   set_target_properties(xlnt
     PROPERTIES
-    VERSION ${PROJECT_VERSION}
-    SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
+    VERSION ${XLNT_LIBRARY_VERSION}
+    SOVERSION ${XLNT_ABI_VERSION})
 else()
   # Compile static library
   add_library(xlnt STATIC ${XLNT_HEADERS} ${XLNT_SOURCES} $<TARGET_OBJECTS:libstudxml>)
