@@ -132,7 +132,7 @@ public:
     /// The type must be either type::null or type::empty - if not,
     /// an xlnt::invalid_parameter exception will be thrown.
     /// </summary>
-    explicit variant(type type = type::null);
+    variant(type type = type::null);
 
     /// <summary>
     /// Creates a i1-type variant with the given value.
