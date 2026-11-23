@@ -15,21 +15,36 @@ std::string serialise(double d)
     return fmt::format("{}", d);
 }
 
-double deserialise(const std::string &s, size_t *len_converted)
+std::string serialise(float f)
+{
+    return fmt::format("{}", f);
+}
+
+template <typename T>
+T deserialise(const std::string &s, size_t *num_characters_parsed)
 {
     assert(!s.empty());
-    double d = std::numeric_limits<double>::quiet_NaN();
-    detail::parse(s, d, len_converted);
+    T d = std::numeric_limits<T>::quiet_NaN();
+    detail::parse(s, d, num_characters_parsed);
     return d;
 }
 
-double deserialise(const char *s, const char **end)
+template <typename T>
+T deserialise(const char *s, const char **end)
 {
     assert(s != nullptr);
-    double d = std::numeric_limits<double>::quiet_NaN();
+    T d = std::numeric_limits<T>::quiet_NaN();
     detail::parse(s, d, end);
     return d;
 }
 
 } // namespace detail
 } // namespace xlnt
+
+template XLNT_API_INTERNAL double xlnt::detail::deserialise<double>(const std::string &s, size_t *num_characters_parsed);
+
+template XLNT_API_INTERNAL float xlnt::detail::deserialise<float>(const std::string &s, size_t *num_characters_parsed);
+
+template XLNT_API_INTERNAL double xlnt::detail::deserialise<double>(const char *s, const char **end);
+
+template XLNT_API_INTERNAL float xlnt::detail::deserialise<float>(const char *s, const char **end);

@@ -305,7 +305,7 @@ std::array<xlnt::optional<xlnt::rich_text>, 3> decode_header_footer(const std::s
                     current_run.second = xlnt::font();
                 }
 
-                current_run.second.get().size(xlnt::detail::deserialise(current_token.value));
+                current_run.second.get().size(xlnt::detail::deserialise<double>(current_token.value));
 
                 break;
             }

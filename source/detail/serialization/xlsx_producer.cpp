@@ -234,9 +234,244 @@ void xlsx_producer::write_content_types()
     write_end_element(xmlns, "Types");
 }
 
+void xlsx_producer::write_variant_value(const xlnt::variant &value)
+{
+    switch (value.value_type())
+    {
+    case variant::type::empty:
+    case variant::type::null:
+        break;
+    case variant::type::i1:
+        write_characters(value.get<std::int8_t>());
+        break;
+    case variant::type::i2:
+        write_characters(value.get<std::int16_t>());
+        break;
+    case variant::type::i4:
+    case variant::type::integer:
+        write_characters(value.get<std::int32_t>());
+        break;
+    case variant::type::i8:
+        write_characters(value.get<std::int64_t>());
+        break;
+    case variant::type::ui1:
+        write_characters(value.get<std::uint8_t>());
+        break;
+    case variant::type::ui2:
+        write_characters(value.get<std::uint16_t>());
+        break;
+    case variant::type::ui4:
+    case variant::type::uint:
+        write_characters(value.get<std::uint32_t>());
+        break;
+    case variant::type::ui8:
+        write_characters(value.get<std::uint64_t>());
+        break;
+    case variant::type::r4:
+        write_characters(xlnt::detail::serialise(value.get<float>()));
+        break;
+    case variant::type::r8:
+        write_characters(xlnt::detail::serialise(value.get<double>()));
+        break;
+    //case variant::type::decimal:
+    //    break;
+    case variant::type::lpstr:
+    case variant::type::lpwstr:
+    case variant::type::bstr:
+        write_characters(value.get<std::string>());
+        break;
+    case variant::type::date:
+    case variant::type::filetime:
+        write_characters(value.get<datetime>().to_iso_string());
+        break;
+    case variant::type::boolean:
+        write_characters(value.get<bool>() ? "true" : "false");
+        break;
+    //case variant::type::blob:
+    //    break;
+    //case variant::type::oblob:
+    //    break;
+    //case variant::type::cy:
+    //    break;
+    //case variant::type::error:
+    //    break;
+    //case variant::type::stream:
+    //    break;
+    //case variant::type::ostream:
+    //    break;
+    //case variant::type::vstream:
+    //    break;
+    //case variant::type::storage:
+    //    break;
+    //case variant::type::ostorage:
+    //    break;
+    //case variant::type::clsid:
+    //    break;
+    //case variant::type::array:
+    //    break;
+    case variant::type::vector:
+    {
+        write_start_element(constants::ns("vt"), "vector");
+
+        write_attribute("size", value.num_elements());
+
+        switch (value.value_base_type())
+        {
+        case variant::base_type::variant:
+            write_variant_vector(value.get<std::vector<xlnt::variant>>());
+            break;
+        case variant::base_type::i1:
+            write_variant_vector_other_element(value.get<std::vector<std::int8_t>>(), "i1");
+            break;
+        case variant::base_type::i2:
+            write_variant_vector_other_element(value.get<std::vector<std::int16_t>>(), "i2");
+            break;
+        case variant::base_type::i4:
+            write_variant_vector_other_element(value.get<std::vector<std::int32_t>>(), "i4");
+            break;
+        case variant::base_type::i8:
+            write_variant_vector_other_element(value.get<std::vector<std::int64_t>>(), "i8");
+            break;
+        case variant::base_type::ui1:
+            write_variant_vector_other_element(value.get<std::vector<std::uint8_t>>(), "ui1");
+            break;
+        case variant::base_type::ui2:
+            write_variant_vector_other_element(value.get<std::vector<std::uint16_t>>(), "ui2");
+            break;
+        case variant::base_type::ui4:
+            write_variant_vector_other_element(value.get<std::vector<std::uint32_t>>(), "ui4");
+            break;
+        case variant::base_type::ui8:
+            write_variant_vector_other_element(value.get<std::vector<std::uint64_t>>(), "ui8");
+            break;
+        case variant::base_type::r4:
+            write_variant_vector_other_element(value.get<std::vector<float>>(), "r4");
+            break;
+        case variant::base_type::r8:
+            write_variant_vector_other_element(value.get<std::vector<double>>(), "r8");
+            break;
+        case variant::base_type::lpstr:
+            write_variant_vector_other_element(value.get<std::vector<std::string>>(), "lpstr");
+            break;
+        case variant::base_type::lpwstr:
+            write_variant_vector_other_element(value.get<std::vector<std::string>>(), "lpwstr");
+            break;
+        case variant::base_type::bstr:
+            write_variant_vector_other_element(value.get<std::vector<std::string>>(), "bstr");
+            break;
+        case variant::base_type::date:
+            write_attribute("baseType", "date");
+            for (const auto &elem : value.get<std::vector<xlnt::datetime>>())
+            {
+                write_element(constants::ns("vt"), "date", elem.to_iso_string());
+            }
+            break;
+        case variant::base_type::filetime:
+            write_attribute("baseType", "filetime");
+            for (const auto &elem : value.get<std::vector<xlnt::datetime>>())
+            {
+                write_element(constants::ns("vt"), "filetime", elem.to_iso_string());
+            }
+            break;
+        case variant::base_type::boolean:
+            write_variant_vector_other_element(value.get<std::vector<bool>>(), "bool");
+            break;
+        //case variant::base_type::cy:
+        //    break;
+        //case variant::base_type::error:
+        //    break;
+        //case variant::base_type::clsid:
+        //    break;
+        // no "default" so that compiler warnings are (hopefully) displayed when a "case" is forgotten
+        }
+
+        write_end_element(constants::ns("vt"), "vector");
+
+        break;
+    }
+    // no "default" so that compiler warnings are (hopefully) displayed when a "case" is forgotten
+    }
+}
+
+void xlsx_producer::write_variant_vector(const std::vector<xlnt::variant> &vec)
+{
+    write_attribute("baseType", "variant");
+
+    for (const auto &elem : vec)
+    {
+        write_start_element(constants::ns("vt"), "variant");
+
+        switch (elem.value_base_type())
+        {
+        case variant::base_type::variant:
+            write_variant_value(elem);
+            break;
+        case variant::base_type::i1:
+            write_element(constants::ns("vt"), "i1", elem.get<std::int8_t>());
+            break;
+        case variant::base_type::i2:
+            write_element(constants::ns("vt"), "i2", elem.get<std::int16_t>());
+            break;
+        case variant::base_type::i4:
+            write_element(constants::ns("vt"), "i4", elem.get<std::int32_t>());
+            break;
+        case variant::base_type::i8:
+            write_element(constants::ns("vt"), "i8", elem.get<std::int64_t>());
+            break;
+        case variant::base_type::ui1:
+            write_element(constants::ns("vt"), "ui1", elem.get<std::uint8_t>());
+            break;
+        case variant::base_type::ui2:
+            write_element(constants::ns("vt"), "ui2", elem.get<std::uint16_t>());
+            break;
+        case variant::base_type::ui4:
+            write_element(constants::ns("vt"), "ui4", elem.get<std::uint32_t>());
+            break;
+        case variant::base_type::ui8:
+            write_element(constants::ns("vt"), "ui8", elem.get<std::uint64_t>());
+            break;
+        case variant::base_type::r4:
+            write_element(constants::ns("vt"), "r4", xlnt::detail::serialise(elem.get<float>()));
+            break;
+        case variant::base_type::r8:
+            write_element(constants::ns("vt"), "r8", xlnt::detail::serialise(elem.get<double>()));
+            break;
+        case variant::base_type::lpstr:
+            write_element(constants::ns("vt"), "lpstr", elem.get<std::string>());
+            break;
+        case variant::base_type::lpwstr:
+            write_element(constants::ns("vt"), "lpwstr", elem.get<std::string>());
+            break;
+        case variant::base_type::bstr:
+            write_element(constants::ns("vt"), "bstr", elem.get<std::string>());
+            break;
+        case variant::base_type::date:
+            write_element(constants::ns("vt"), "date", elem.get<xlnt::datetime>().to_iso_string());
+            break;
+        case variant::base_type::filetime:
+            write_element(constants::ns("vt"), "filetime", elem.get<xlnt::datetime>().to_iso_string());
+            break;
+        case variant::base_type::boolean:
+            write_element(constants::ns("vt"), "bool", elem.get<bool>());
+            break;
+        //case variant::base_type::cy:
+        //    break;
+        //case variant::base_type::error:
+        //    break;
+        //case variant::base_type::clsid:
+        //    break;
+        // no "default" so that compiler warnings are (hopefully) displayed when a "case" is forgotten
+        }
+
+        write_end_element(constants::ns("vt"), "variant");
+    }
+}
+
 void xlsx_producer::write_property(const std::string &name, const variant &value,
     const std::string &ns, bool custom, std::size_t pid)
 {
+    // For all details, see [MS-OE376]: Office Implementation Information
+    // for ECMA-376 Standards Support
     if (custom)
     {
         write_start_element(ns, "property");
@@ -247,39 +482,59 @@ void xlsx_producer::write_property(const std::string &name, const variant &value
         write_start_element(ns, name);
     }
 
+    // Office only allows bool, filetime, empty, i4, lpstr, lpwstr and r8 as valid child elements for custom
+    // properties where fmtid has a value of {D5CDD505-2E9C-101B-9397-08002B2CF9AE}.
+    if (custom)
+    {
+        switch (value.value_type())
+        {
+        case variant::type::boolean:
+        case variant::type::filetime:
+        case variant::type::empty:
+        case variant::type::i4:
+        case variant::type::lpstr:
+        case variant::type::lpwstr:
+        case variant::type::r8:
+            write_attribute("fmtid", "{D5CDD505-2E9C-101B-9397-08002B2CF9AE}");
+            write_attribute("pid", pid);
+            break;
+        default:
+            break;
+        }
+    }
+
     switch (value.value_type())
     {
-    case variant::type::null: {
-        break;
-    }
-
-    case variant::type::boolean: {
+    case variant::type::empty:
         if (custom)
         {
-            write_attribute("fmtid", "{D5CDD505-2E9C-101B-9397-08002B2CF9AE}");
-            write_attribute("pid", pid);
-            write_start_element(constants::ns("vt"), "bool");
+            write_start_element(constants::ns("vt"), "empty");
+            write_end_element(constants::ns("vt"), "empty");
         }
-
-        write_characters(value.get<bool>() ? "true" : "false");
-
-        if (custom)
-        {
-            write_end_element(constants::ns("vt"), "bool");
-        }
-
         break;
-    }
-
-    case variant::type::i4: {
+    case variant::type::null:
+        break;
+    case variant::type::i1:
+    case variant::type::i2:
+    case variant::type::integer:
+    case variant::type::i8:
+    case variant::type::ui1:
+    case variant::type::ui2:
+    case variant::type::ui4:
+    case variant::type::uint:
+    case variant::type::ui8:
+    case variant::type::r4:
+    //case variant::type::decimal:
+        write_variant_value(value);
+        break;
+    case variant::type::i4:
+    {
         if (custom)
         {
-            write_attribute("fmtid", "{D5CDD505-2E9C-101B-9397-08002B2CF9AE}");
-            write_attribute("pid", pid);
             write_start_element(constants::ns("vt"), "i4");
         }
 
-        write_characters(value.get<std::int32_t>());
+        write_variant_value(value);
 
         if (custom)
         {
@@ -288,13 +543,29 @@ void xlsx_producer::write_property(const std::string &name, const variant &value
 
         break;
     }
-
-    case variant::type::lpstr: {
+    case variant::type::r8:
+    {
         if (custom)
         {
-            write_attribute("fmtid", "{D5CDD505-2E9C-101B-9397-08002B2CF9AE}");
-            write_attribute("pid", pid);
-            write_start_element(constants::ns("vt"), "lpwstr");
+            write_start_element(constants::ns("vt"), "r8");
+        }
+
+        write_variant_value(value);
+
+        if (custom)
+        {
+            write_end_element(constants::ns("vt"), "r8");
+        }
+
+        break;
+    }
+    case variant::type::lpstr:
+    case variant::type::lpwstr:
+    case variant::type::bstr:
+    {
+        if (custom && value.value_type() != variant::type::bstr)
+        {
+            write_start_element(constants::ns("vt"), value.value_type() == variant::type::lpwstr ? "lpwstr" : "lpstr");
         }
 
         if (!custom && ns == constants::ns("dcterms") && (name == "created" || name == "modified"))
@@ -302,68 +573,158 @@ void xlsx_producer::write_property(const std::string &name, const variant &value
             write_attribute(xml::qname(constants::ns("xsi"), "type"), "dcterms:W3CDTF");
         }
 
-        write_characters(value.get<std::string>());
+        write_variant_value(value);
+
+        if (custom && value.value_type() != variant::type::bstr)
+        {
+            write_end_element(constants::ns("vt"), value.value_type() == variant::type::lpwstr ? "lpwstr" : "lpstr");
+        }
+
+        break;
+    }
+
+    case variant::type::date:
+    {
+        write_attribute(xml::qname(constants::ns("xsi"), "type"), "dcterms:W3CDTF");
+        write_variant_value(value);
+        break;
+    }
+    case variant::type::filetime:
+    {
+        if (custom)
+        {
+            write_start_element(constants::ns("vt"), "filetime");
+        }
+
+        write_attribute(xml::qname(constants::ns("xsi"), "type"), "dcterms:W3CDTF");
+        write_variant_value(value);
 
         if (custom)
         {
-            write_end_element(constants::ns("vt"), "lpwstr");
+            write_end_element(constants::ns("vt"), "filetime");
         }
 
         break;
     }
+    case variant::type::boolean:
+    {
+        if (custom)
+        {
+            write_start_element(constants::ns("vt"), "bool");
+        }
 
-    case variant::type::date: {
-        write_attribute(xml::qname(constants::ns("xsi"), "type"), "dcterms:W3CDTF");
-        write_characters(value.get<datetime>().to_iso_string());
+        write_variant_value(value);
+
+        if (custom)
+        {
+            write_end_element(constants::ns("vt"), "bool");
+        }
 
         break;
     }
-
-    case variant::type::vector: {
+    //case variant::type::blob:
+    //    break;
+    //case variant::type::oblob:
+    //    break;
+    //case variant::type::cy:
+    //    break;
+    //case variant::type::error:
+    //    break;
+    //case variant::type::stream:
+    //    break;
+    //case variant::type::ostream:
+    //    break;
+    //case variant::type::vstream:
+    //    break;
+    //case variant::type::storage:
+    //    break;
+    //case variant::type::ostorage:
+    //    break;
+    //case variant::type::clsid:
+    //    break;
+    //case variant::type::array:
+    //    break;
+    case variant::type::vector:
+    {
         write_start_element(constants::ns("vt"), "vector");
 
-        auto vector = value.get<std::vector<variant>>();
-        std::unordered_set<variant::type, scoped_enum_hash<variant::type>> types;
+        write_attribute("size", value.num_elements());
 
-        for (const auto &element : vector)
+        switch (value.value_base_type())
         {
-            types.insert(element.value_type());
-        }
-
-        const auto is_mixed = types.size() > 1;
-        const auto vector_type = !is_mixed ? to_string(*types.begin()) : "variant";
-
-        write_attribute("size", vector.size());
-        write_attribute("baseType", vector_type);
-
-        for (std::size_t i = 0; i < vector.size(); ++i)
-        {
-            const auto &vector_element = vector.at(i);
-
-            if (is_mixed)
+        case variant::base_type::variant:
+            write_variant_vector(value.get<std::vector<xlnt::variant>>());
+            break;
+        case variant::base_type::i1:
+            write_variant_vector_other_element(value.get<std::vector<std::int8_t>>(), "i1");
+            break;
+        case variant::base_type::i2:
+            write_variant_vector_other_element(value.get<std::vector<std::int16_t>>(), "i2");
+            break;
+        case variant::base_type::i4:
+            write_variant_vector_other_element(value.get<std::vector<std::int32_t>>(), "i4");
+            break;
+        case variant::base_type::i8:
+            write_variant_vector_other_element(value.get<std::vector<std::int64_t>>(), "i8");
+            break;
+        case variant::base_type::ui1:
+            write_variant_vector_other_element(value.get<std::vector<std::uint8_t>>(), "ui1");
+            break;
+        case variant::base_type::ui2:
+            write_variant_vector_other_element(value.get<std::vector<std::uint16_t>>(), "ui2");
+            break;
+        case variant::base_type::ui4:
+            write_variant_vector_other_element(value.get<std::vector<std::uint32_t>>(), "ui4");
+            break;
+        case variant::base_type::ui8:
+            write_variant_vector_other_element(value.get<std::vector<std::uint64_t>>(), "ui8");
+            break;
+        case variant::base_type::r4:
+            write_variant_vector_other_element(value.get<std::vector<float>>(), "r4");
+            break;
+        case variant::base_type::r8:
+            write_variant_vector_other_element(value.get<std::vector<double>>(), "r8");
+            break;
+        case variant::base_type::lpstr:
+            write_variant_vector_other_element(value.get<std::vector<std::string>>(), "lpstr");
+            break;
+        case variant::base_type::lpwstr:
+            write_variant_vector_other_element(value.get<std::vector<std::string>>(), "lpwstr");
+            break;
+        case variant::base_type::bstr:
+            write_variant_vector_other_element(value.get<std::vector<std::string>>(), "bstr");
+            break;
+        case variant::base_type::date:
+            write_attribute("baseType", "date");
+            for (const auto &elem : value.get<std::vector<xlnt::datetime>>())
             {
-                write_start_element(constants::ns("vt"), "variant");
+                write_element(constants::ns("vt"), "date", elem.to_iso_string());
             }
-
-            if (vector_element.value_type() == variant::type::lpstr)
+            break;
+        case variant::base_type::filetime:
+            write_attribute("baseType", "filetime");
+            for (const auto &elem : value.get<std::vector<xlnt::datetime>>())
             {
-                write_element(constants::ns("vt"), "lpstr", vector_element.get<std::string>());
+                write_element(constants::ns("vt"), "filetime", elem.to_iso_string());
             }
-            else if (vector_element.value_type() == variant::type::i4)
-            {
-                write_element(constants::ns("vt"), "i4", vector_element.get<std::int32_t>());
-            }
-
-            if (is_mixed)
-            {
-                write_end_element(constants::ns("vt"), "variant");
-            }
+            break;
+        case variant::base_type::boolean:
+            write_variant_vector_other_element(value.get<std::vector<bool>>(), "bool");
+            break;
+        //case variant::base_type::cy:
+        //    break;
+        //case variant::base_type::error:
+        //    break;
+        //case variant::base_type::clsid:
+        //    break;
+        // no "default" so that compiler warnings are (hopefully) displayed when a "case" is forgotten
         }
 
         write_end_element(constants::ns("vt"), "vector");
 
         break;
     }
+    // no "default" so that compiler warnings are (hopefully) displayed when a "case" is forgotten
     }
 
     if (custom)

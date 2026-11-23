@@ -52,7 +52,7 @@ public:
     void test_serialise_number()
     {
         // excel serialises numbers as floating point values with <= 15 digits of precision
-        xlnt_assert(xlnt::detail::serialise(1) == "1");
+        xlnt_assert(xlnt::detail::serialise(static_cast<double>(1)) == "1");
         // trailing zeroes are ignored
         xlnt_assert(xlnt::detail::serialise(1.0) == "1");
         xlnt_assert(xlnt::detail::serialise(1.0f) == "1");
@@ -233,15 +233,15 @@ public:
     void test_locale_comma_decimal_separator()
     {
         test_helpers::SetLocale setLocale(XLNT_LOCALE_COMMA_DECIMAL_SEPARATOR,",");
-        xlnt_assert(xlnt::detail::deserialise("1.99999999") == 1.99999999);
-        xlnt_assert(xlnt::detail::deserialise("1.1") == 1.1);
+        xlnt_assert(xlnt::detail::deserialise<double>("1.99999999") == 1.99999999);
+        xlnt_assert(xlnt::detail::deserialise<double>("1.1") == 1.1);
     }
 
     void test_locale_arabic_decimal_separator()
     {
         test_helpers::SetLocale setLocale(XLNT_LOCALE_ARABIC_DECIMAL_SEPARATOR, "٫");
-        xlnt_assert(xlnt::detail::deserialise("1.99999999") == 1.99999999);
-        xlnt_assert(xlnt::detail::deserialise("1.1") == 1.1);
+        xlnt_assert(xlnt::detail::deserialise<double>("1.99999999") == 1.99999999);
+        xlnt_assert(xlnt::detail::deserialise<double>("1.1") == 1.1);
     }
 
 

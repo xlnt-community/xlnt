@@ -140,9 +140,11 @@ encoding_error::encoding_error(const std::string &message)
 {
 }
 
-bad_variant_access::bad_variant_access(variant::type expected_type, variant::type actual_type)
-    : exception("bad variant access: expected type " + xlnt::variant::get_type_string(expected_type) +
-        " but got type " + xlnt::variant::get_type_string(actual_type))
+bad_variant_access::bad_variant_access(variant::internal_type requested_type, const xlnt::variant &variant)
+    : exception("bad variant access: requested type " + xlnt::variant::get_internal_type_string(requested_type) +
+        ", but have type " + xlnt::variant::get_type_string(variant.value_type()) +
+        (variant.value_type() == variant::type::vector ? " with element type " + xlnt::variant::get_base_type_string(variant.value_base_type()) : "") +
+        " with internal type " + xlnt::variant::get_internal_type_string(variant.value_.get_internal_type()))
 {
 }
 

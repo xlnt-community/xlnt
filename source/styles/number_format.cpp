@@ -35,7 +35,7 @@ namespace {
 
 const std::unordered_map<std::size_t, xlnt::number_format> &builtin_formats()
 {
-    static std::unordered_map<std::size_t, xlnt::number_format> formats = [](){
+    static const std::unordered_map<std::size_t, xlnt::number_format> formats = [](){
         const std::unordered_map<std::size_t, std::string> format_strings{
             {0, "General"},
             {1, "0"},

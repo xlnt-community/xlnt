@@ -397,27 +397,6 @@ std::string to_string(extended_property prop)
     default_case("Application");
 }
 
-std::string to_string(variant::type type)
-{
-    switch (type)
-    {
-    case variant::type::boolean:
-        return "bool";
-    case variant::type::date:
-        return "date";
-    case variant::type::i4:
-        return "i4";
-    case variant::type::lpstr:
-        return "lpstr";
-    case variant::type::null:
-        return "null";
-    case variant::type::vector:
-        return "vector";
-    }
-
-    default_case("null");
-}
-
 std::string to_string(pane_corner corner)
 {
     switch (corner)

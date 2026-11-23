@@ -273,7 +273,7 @@ public:
     /// <summary>
     /// Constructs a bad_variant_access exception given the mismatched types.
     /// </summary>
-    explicit bad_variant_access(variant::type expected_type, variant::type actual_type);
+    explicit bad_variant_access(variant::internal_type requested_type, const xlnt::variant &variant);
 };
 
 } // namespace xlnt
