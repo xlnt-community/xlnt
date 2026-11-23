@@ -70,8 +70,6 @@ std::string to_string(core_property prop);
 
 std::string to_string(extended_property prop);
 
-std::string to_string(variant::type type);
-
 std::string to_string(pane_corner corner);
 
 std::string to_string(target_mode mode);
@@ -354,21 +352,6 @@ extended_property from_string(const std::string &string)
 
     default_case(extended_property::application);
 }
-
-/*
-template<>
-variant::type from_string(const std::string &string)
-{
-    if (string == "bool") return variant::type::boolean;
-    else if (string == "date") return variant::type::date;
-    else if (string == "i4") return variant::type::i4;
-    else if (string == "lpstr") return variant::type::lpstr;
-    else if (string == "null") return variant::type::null;
-    else if (string == "vector") return variant::type::vector;
-
-    default_case(variant::type::null);
-}
-*/
 
 template<>
 xlnt::pane_state from_string(const std::string &string)

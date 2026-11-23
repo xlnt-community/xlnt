@@ -291,7 +291,7 @@ std::pair<xlnt::row_properties, int> parse_row(xml::parser *parser, std::vector<
     {
         if (string_equal(attr.first.name(), "dyDescent"))
         {
-            props.first.dy_descent = xlnt::detail::deserialise(attr.second.value);
+            props.first.dy_descent = xlnt::detail::deserialise<double>(attr.second.value);
         }
         else if (string_equal(attr.first.name(), "spans"))
         {
@@ -299,7 +299,7 @@ std::pair<xlnt::row_properties, int> parse_row(xml::parser *parser, std::vector<
         }
         else if (string_equal(attr.first.name(), "ht"))
         {
-            props.first.height = xlnt::detail::deserialise(attr.second.value);
+            props.first.height = xlnt::detail::deserialise<double>(attr.second.value);
         }
         else if (string_equal(attr.first.name(), "s"))
         {
@@ -799,23 +799,23 @@ std::string xlsx_consumer::read_worksheet_begin(const std::string &rel_id)
             if (parser().attribute_present("baseColWidth"))
             {
                 ws.d_->format_properties_.base_col_width =
-                    xlnt::detail::deserialise(parser().attribute("baseColWidth"));
+                    xlnt::detail::deserialise<double>(parser().attribute("baseColWidth"));
             }
             if (parser().attribute_present("defaultColWidth"))
             {
                 ws.d_->format_properties_.default_column_width =
-                    xlnt::detail::deserialise(parser().attribute("defaultColWidth"));
+                    xlnt::detail::deserialise<double>(parser().attribute("defaultColWidth"));
             }
             if (parser().attribute_present("defaultRowHeight"))
             {
                 ws.d_->format_properties_.default_row_height =
-                    xlnt::detail::deserialise(parser().attribute("defaultRowHeight"));
+                    xlnt::detail::deserialise<double>(parser().attribute("defaultRowHeight"));
             }
 
             if (parser().attribute_present(qn("x14ac", "dyDescent")))
             {
                 ws.d_->format_properties_.dy_descent =
-                    xlnt::detail::deserialise(parser().attribute(qn("x14ac", "dyDescent")));
+                    xlnt::detail::deserialise<double>(parser().attribute(qn("x14ac", "dyDescent")));
             }
 
             skip_attributes();
@@ -844,7 +844,7 @@ std::string xlsx_consumer::read_worksheet_begin(const std::string &rel_id)
                 optional<double> width = [](xml::parser &p) -> xlnt::optional<double> {
                     if (p.attribute_present("width"))
                     {
-                        return (xlnt::detail::deserialise(p.attribute("width")) * 7 - 5) / 7;
+                        return (xlnt::detail::deserialise<double>(p.attribute("width")) * 7 - 5) / 7;
                     }
                     return xlnt::optional<double>();
                 }(parser());
@@ -946,7 +946,7 @@ void xlsx_consumer::read_worksheet_sheetdata()
             case cell::type::empty:
             case cell::type::number:
             case cell::type::date: {
-                ws_cell_impl->value_numeric_ = xlnt::detail::deserialise(cell.value);
+                ws_cell_impl->value_numeric_ = xlnt::detail::deserialise<double>(cell.value);
                 break;
             }
             case cell::type::shared_string: {
@@ -1141,12 +1141,12 @@ worksheet xlsx_consumer::read_worksheet_end(const std::string &rel_id)
         {
             page_margins margins;
 
-            margins.top(xlnt::detail::deserialise(parser().attribute("top")));
-            margins.bottom(xlnt::detail::deserialise(parser().attribute("bottom")));
-            margins.left(xlnt::detail::deserialise(parser().attribute("left")));
-            margins.right(xlnt::detail::deserialise(parser().attribute("right")));
-            margins.header(xlnt::detail::deserialise(parser().attribute("header")));
-            margins.footer(xlnt::detail::deserialise(parser().attribute("footer")));
+            margins.top(xlnt::detail::deserialise<double>(parser().attribute("top")));
+            margins.bottom(xlnt::detail::deserialise<double>(parser().attribute("bottom")));
+            margins.left(xlnt::detail::deserialise<double>(parser().attribute("left")));
+            margins.right(xlnt::detail::deserialise<double>(parser().attribute("right")));
+            margins.header(xlnt::detail::deserialise<double>(parser().attribute("header")));
+            margins.footer(xlnt::detail::deserialise<double>(parser().attribute("footer")));
 
             ws.page_margins(margins);
         }
@@ -1481,7 +1481,7 @@ bool xlsx_consumer::has_cell()
 
         if (parser().attribute_present("ht"))
         {
-            row_properties.height = xlnt::detail::deserialise(parser().attribute("ht"));
+            row_properties.height = xlnt::detail::deserialise<double>(parser().attribute("ht"));
         }
 
         if (parser().attribute_present("customHeight"))
@@ -1496,7 +1496,7 @@ bool xlsx_consumer::has_cell()
 
         if (parser().attribute_present(qn("x14ac", "dyDescent")))
         {
-            row_properties.dy_descent = xlnt::detail::deserialise(parser().attribute(qn("x14ac", "dyDescent")));
+            row_properties.dy_descent = xlnt::detail::deserialise<double>(parser().attribute(qn("x14ac", "dyDescent")));
         }
 
         if (parser().attribute_present("spans"))
@@ -1660,7 +1660,7 @@ bool xlsx_consumer::has_cell()
         }
         else if (type == "s")
         {
-            cell.d_->value_numeric_ = xlnt::detail::deserialise(value_string);
+            cell.d_->value_numeric_ = xlnt::detail::deserialise<double>(value_string);
             cell.data_type(cell::type::shared_string);
         }
         else if (type == "b") // boolean
@@ -1669,7 +1669,7 @@ bool xlsx_consumer::has_cell()
         }
         else if (type == "n") // numeric
         {
-            cell.value(xlnt::detail::deserialise(value_string));
+            cell.value(xlnt::detail::deserialise<double>(value_string));
         }
         else if (!value_string.empty() && value_string[0] == '#')
         {
@@ -1977,7 +1977,7 @@ void xlsx_consumer::read_extended_properties()
     {
         const auto property_element = expect_start_element(xml::content::mixed);
         const auto prop = detail::from_string<extended_property>(property_element.name());
-        target_.extended_property(prop, read_variant());
+        target_.extended_property(prop, read_variant(read_text()));
         expect_end_element(property_element);
     }
 
@@ -1994,7 +1994,7 @@ void xlsx_consumer::read_custom_properties()
         const auto prop = parser().attribute("name");
         const auto format_id = parser().attribute("fmtid");
         const auto property_id = parser().attribute("pid");
-        target_.custom_property(prop, read_variant());
+        target_.custom_property(prop, read_variant(read_text()));
         expect_end_element(property_element);
     }
 
@@ -2576,7 +2576,7 @@ void xlsx_consumer::read_stylesheet()
                         while (in_element(qn("spreadsheetml", "gradientFill")))
                         {
                             expect_start_element(qn("spreadsheetml", "stop"), xml::content::complex);
-                            auto position = xlnt::detail::deserialise(parser().attribute("position"));
+                            auto position = xlnt::detail::deserialise<double>(parser().attribute("position"));
                             expect_start_element(qn("spreadsheetml", "color"), xml::content::complex);
                             auto color = read_color();
                             expect_end_element(qn("spreadsheetml", "color"));
@@ -2633,7 +2633,7 @@ void xlsx_consumer::read_stylesheet()
 
                     if (font_property_element == qn("spreadsheetml", "sz"))
                     {
-                        new_font.size(xlnt::detail::deserialise(parser().attribute("val")));
+                        new_font.size(xlnt::detail::deserialise<double>(parser().attribute("val")));
                     }
                     else if (font_property_element == qn("spreadsheetml", "name"))
                     {
@@ -3295,61 +3295,186 @@ std::string xlsx_consumer::read_text()
     return text;
 }
 
-variant xlsx_consumer::read_variant()
+template <typename T>
+T parse_variant_number(const std::string &text, XLNT_UNUSED variant::type type)
 {
-    auto value = variant(read_text());
+    T number = std::numeric_limits<T>::quiet_NaN();
+    if (detail::parse(text, number) != std::errc())
+    {
+#ifdef THROW_ON_INVALID_XML
+        throw xlnt::invalid_parameter("cannot parse variant of type " + variant::get_type_string(type) + " from \"" + text + "\"");
+#endif
+    }
+
+    return number;
+}
+
+variant xlsx_consumer::read_variant(const std::string &text)
+{
+    auto value = variant(text);
 
     if (in_element(stack_.back()))
     {
         auto element = expect_start_element(xml::content::mixed);
         auto text = read_text();
 
-        if (element == qn("vt", "lpwstr") || element == qn("vt", "lpstr"))
+        if (element == qn("vt", "empty"))
         {
-            value = variant(text);
+            value = variant(variant::type::empty);
         }
-        if (element == qn("vt", "i4"))
+        else if (element == qn("vt", "null"))
         {
-            int number = -1;
-            if (detail::parse(text, number) != std::errc())
-            {
-#ifdef THROW_ON_INVALID_XML
-                throw xlnt::invalid_parameter("cannot parse variant of type i4 from \"" + text + "\"");
-#endif
-            }
-            else
-            {
-                value = variant(number);
-            }
+            value = variant(variant::type::null);
         }
-        if (element == qn("vt", "bool"))
+        else if (element == qn("vt", "i1"))
+        {
+            value = variant(parse_variant_number<std::int8_t>(text, variant::type::i1));
+        }
+        else if (element == qn("vt", "i2"))
+        {
+            value = variant(parse_variant_number<std::int16_t>(text, variant::type::i2));
+        }
+        else if (element == qn("vt", "i4"))
+        {
+            value = variant(parse_variant_number<std::int32_t>(text, variant::type::i4), variant::type::i4);
+        }
+        else if (element == qn("vt", "int"))
+        {
+            value = variant(parse_variant_number<std::int32_t>(text, variant::type::integer), variant::type::integer);
+        }
+        else if (element == qn("vt", "i8"))
+        {
+            value = variant(parse_variant_number<std::int64_t>(text, variant::type::i8));
+        }
+        else if (element == qn("vt", "ui1"))
+        {
+            value = variant(parse_variant_number<std::uint8_t>(text, variant::type::ui1));
+        }
+        else if (element == qn("vt", "ui2"))
+        {
+            value = variant(parse_variant_number<std::uint16_t>(text, variant::type::ui2));
+        }
+        else if (element == qn("vt", "ui4"))
+        {
+            value = variant(parse_variant_number<std::uint32_t>(text, variant::type::ui4), variant::type::ui4);
+        }
+        else if (element == qn("vt", "uint"))
+        {
+            value = variant(parse_variant_number<std::uint32_t>(text, variant::type::uint), variant::type::uint);
+        }
+        else if (element == qn("vt", "ui8"))
+        {
+            value = variant(parse_variant_number<std::uint64_t>(text, variant::type::ui8));
+        }
+        else if (element == qn("vt", "r4"))
+        {
+            value = variant(parse_variant_number<float>(text, variant::type::r4));
+        }
+        else if (element == qn("vt", "r8"))
+        {
+            value = variant(parse_variant_number<double>(text, variant::type::r8));
+        }
+        // else if (element == qn("vt", "decimal"))
+        else if (element == qn("vt", "lpstr"))
+        {
+            value = variant(std::move(text), variant::type::lpstr);
+        }
+        else if (element == qn("vt", "lpwstr"))
+        {
+            value = variant(std::move(text), variant::type::lpwstr);
+        }
+        else if (element == qn("vt", "bstr"))
+        {
+            value = variant(std::move(text), variant::type::bstr);
+        }
+        else if (element == qn("vt", "date"))
+        {
+            value = variant(xlnt::datetime::from_iso_string(text), variant::type::date);
+        }
+        else if (element == qn("vt", "filetime"))
+        {
+            value = variant(xlnt::datetime::from_iso_string(text), variant::type::filetime);
+        }
+        else if (element == qn("vt", "bool"))
         {
             value = variant(is_true(text));
         }
+        // else if (element == qn("vt", "blob"))
+        // else if (element == qn("vt", "oblob"))
+        // else if (element == qn("vt", "cy"))
+        // else if (element == qn("vt", "error"))
+        // else if (element == qn("vt", "stream"))
+        // else if (element == qn("vt", "ostream"))
+        // else if (element == qn("vt", "vstream"))
+        // else if (element == qn("vt", "storage"))
+        // else if (element == qn("vt", "ostorage"))
+        // else if (element == qn("vt", "clsid"))
+        // else if (element == qn("vt", "array"))
         else if (element == qn("vt", "vector"))
         {
-            auto size = parser().attribute<std::size_t>("size");
-            auto base_type = parser().attribute("baseType");
+            variant::base_type base_type = variant::parse_base_type_string(parser().attribute("baseType"));
 
-            std::vector<variant> vector;
-
-            for (auto i = std::size_t(0); i < size; ++i)
+            switch (base_type)
             {
-                if (base_type == "variant")
-                {
-                    expect_start_element(qn("vt", "variant"), xml::content::complex);
-                }
-
-                vector.push_back(read_variant());
-
-                if (base_type == "variant")
-                {
-                    expect_end_element(qn("vt", "variant"));
-                    read_text();
-                }
+            case variant::base_type::variant:
+                value = variant(read_variant_vector<xlnt::variant>());
+                break;
+            case variant::base_type::i1:
+                value = variant(read_variant_vector<std::int8_t>());
+                break;
+            case variant::base_type::i2:
+                value = variant(read_variant_vector<std::int16_t>());
+                break;
+            case variant::base_type::i4:
+                value = variant(read_variant_vector<std::int32_t>());
+                break;
+            case variant::base_type::i8:
+                value = variant(read_variant_vector<std::int64_t>());
+                break;
+            case variant::base_type::ui1:
+                value = variant(read_variant_vector<std::uint8_t>());
+                break;
+            case variant::base_type::ui2:
+                value = variant(read_variant_vector<std::uint16_t>());
+                break;
+            case variant::base_type::ui4:
+                value = variant(read_variant_vector<std::uint32_t>());
+                break;
+            case variant::base_type::ui8:
+                value = variant(read_variant_vector<std::uint64_t>());
+                break;
+            case variant::base_type::r4:
+                value = variant(read_variant_vector<float>());
+                break;
+            case variant::base_type::r8:
+                value = variant(read_variant_vector<double>());
+                break;
+            case variant::base_type::lpstr:
+                value = variant(read_variant_vector<std::string>(), variant::base_type::lpstr);
+                break;
+            case variant::base_type::lpwstr:
+                value = variant(read_variant_vector<std::string>(), variant::base_type::lpwstr);
+                break;
+            case variant::base_type::bstr:
+                value = variant(read_variant_vector<std::string>(), variant::base_type::bstr);
+                break;
+            case variant::base_type::date:
+                value = variant(read_variant_vector<xlnt::datetime>(), variant::base_type::date);
+                break;
+            case variant::base_type::filetime:
+                value = variant(read_variant_vector<xlnt::datetime>(), variant::base_type::filetime);
+                break;
+            case variant::base_type::boolean:
+                value = variant(read_variant_vector<bool>());
+                break;
+            //case variant::base_type::cy:
+            //    break;
+            //case variant::base_type::error:
+            //    break;
+            //case variant::base_type::clsid:
+            //    break;
+            // no "default" so that compiler warnings are (hopefully) displayed when a "case" is forgotten
             }
-
-            value = variant(vector);
         }
 
         expect_end_element(element);
@@ -3357,6 +3482,116 @@ variant xlsx_consumer::read_variant()
     }
 
     return value;
+}
+
+template <>
+variant xlsx_consumer::read_variant_vector_element(const std::string &text)
+{
+    return read_variant(text);
+}
+
+template <>
+std::int8_t xlsx_consumer::read_variant_vector_element(const std::string &text)
+{
+    return parse_variant_number<std::int8_t>(text, variant::type::i1);
+}
+
+template <>
+std::int16_t xlsx_consumer::read_variant_vector_element(const std::string &text)
+{
+    return parse_variant_number<std::int16_t>(text, variant::type::i2);
+}
+
+template <>
+std::int32_t xlsx_consumer::read_variant_vector_element(const std::string &text)
+{
+    return parse_variant_number<std::int32_t>(text, variant::type::i4);
+}
+
+template <>
+std::int64_t xlsx_consumer::read_variant_vector_element(const std::string &text)
+{
+    return parse_variant_number<std::int64_t>(text, variant::type::i8);
+}
+
+template <>
+std::uint8_t xlsx_consumer::read_variant_vector_element(const std::string &text)
+{
+    return parse_variant_number<std::uint8_t>(text, variant::type::ui1);
+}
+
+template <>
+std::uint16_t xlsx_consumer::read_variant_vector_element(const std::string &text)
+{
+    return parse_variant_number<std::uint16_t>(text, variant::type::ui2);
+}
+
+template <>
+std::uint32_t xlsx_consumer::read_variant_vector_element(const std::string &text)
+{
+    return parse_variant_number<std::uint32_t>(text, variant::type::ui4);
+}
+
+template <>
+std::uint64_t xlsx_consumer::read_variant_vector_element(const std::string &text)
+{
+    return parse_variant_number<std::uint64_t>(text, variant::type::ui8);
+}
+
+template <>
+float xlsx_consumer::read_variant_vector_element(const std::string &text)
+{
+    return parse_variant_number<float>(text, variant::type::r4);
+}
+
+template <>
+double xlsx_consumer::read_variant_vector_element(const std::string &text)
+{
+    return parse_variant_number<double>(text, variant::type::r8);
+}
+
+template <>
+std::string xlsx_consumer::read_variant_vector_element(const std::string &text)
+{
+    return text;
+}
+
+template <>
+xlnt::datetime xlsx_consumer::read_variant_vector_element(const std::string &text)
+{
+    return xlnt::datetime::from_iso_string(text);
+}
+
+template <>
+bool xlsx_consumer::read_variant_vector_element(const std::string &text)
+{
+    return is_true(text);
+}
+
+template <typename T>
+std::vector<T> xlsx_consumer::read_variant_vector()
+{
+    auto size = parser().attribute<std::size_t>("size");
+    //variant::base_type base_type = variant::parse_base_type_string(parser().attribute("baseType"));
+
+    std::vector<T> vector;
+    vector.reserve(size);
+
+    for (std::size_t n = 0; n < size; ++n)
+    {
+        if (in_element(stack_.back()))
+        {
+            auto element = expect_start_element(xml::content::mixed);
+            auto text = read_text();
+
+            vector.emplace_back(read_variant_vector_element<T>(text));
+
+            expect_end_element(element);
+            read_text();
+        }
+    }
+
+    return vector;
 }
 
 void xlsx_consumer::skip_attributes(const std::vector<std::string> &names)
@@ -3502,7 +3737,7 @@ rich_text xlsx_consumer::read_rich_text(const xml::qname &parent)
 
                         if (current_run_property_element == xml::qname(xmlns, "sz"))
                         {
-                            run.second.get().size(xlnt::detail::deserialise(parser().attribute("val")));
+                            run.second.get().size(xlnt::detail::deserialise<double>(parser().attribute("val")));
                         }
                         else if (current_run_property_element == xml::qname(xmlns, "rFont"))
                         {
@@ -3646,7 +3881,7 @@ xlnt::color xlsx_consumer::read_color()
 
     if (parser().attribute_present("tint"))
     {
-        result.tint(xlnt::detail::deserialise(parser().attribute("tint")));
+        result.tint(xlnt::detail::deserialise<double>(parser().attribute("tint")));
     }
 
     return result;

@@ -162,6 +162,18 @@ private:
 	/// </summary>
 	std::string write_bool(bool boolean) const;
 
+	void write_variant_value(const xlnt::variant &value);
+	void write_variant_vector(const std::vector<xlnt::variant> &vec);
+	template<typename T>
+	void write_variant_vector_other_element(const std::vector<T> &vec, const std::string &type_name)
+	{
+        write_attribute("baseType", type_name);
+        for (const auto &elem : vec)
+        {
+            write_element(constants::ns("vt"), type_name, elem);
+        }
+	}
+
     void write_relationships(const std::vector<xlnt::relationship> &relationships, const path &part);
     void write_color(const xlnt::color &color);
     void write_border(const xlnt::border &b);
@@ -172,7 +184,7 @@ private:
     void write_rich_text(const std::string &ns, const xlnt::rich_text &text);
 
     template<typename T>
-    void write_element(const std::string &ns, const std::string &name, T value, bool preserve_whitespace = false)
+    void write_element(const std::string &ns, const std::string &name, const T &value, bool preserve_whitespace = false)
     {
         write_start_element(ns, name);
         write_characters(value, preserve_whitespace);
@@ -192,19 +204,19 @@ private:
     // std::string attribute name
     // not integer or float type
     template <typename T, typename = typename std::enable_if<!std::is_convertible<T, double>::value>::type>
-    void write_attribute(const std::string &name, T value)
+    void write_attribute(const std::string &name, const T &value)
     {
         current_part_serializer_->attribute(name, value);
     }
 
     template <typename T, typename std::enable_if<std::is_floating_point<T>::value, T>::type* = nullptr>
-    void write_attribute(const std::string &name, T value)
+    void write_attribute(const std::string &name, const T &value)
     {
         current_part_serializer_->attribute(name, xlnt::detail::serialise(value));
     }
 
     template <typename T, typename std::enable_if<std::is_integral<T>::value, T>::type* = nullptr>
-    void write_attribute(const std::string &name, T value)
+    void write_attribute(const std::string &name, const T &value)
     {
         current_part_serializer_->attribute(name, std::to_string(value));
     }
@@ -212,19 +224,19 @@ private:
     // qname attribute name
     // not integer or float type
     template <typename T, typename = typename std::enable_if<!std::is_convertible<T, double>::value>::type>
-    void write_attribute(const xml::qname &name, T value)
+    void write_attribute(const xml::qname &name, const T &value)
     {
         current_part_serializer_->attribute(name, value);
     }
 
     template <typename T, typename std::enable_if<std::is_floating_point<T>::value, T>::type* = nullptr>
-    void write_attribute(const xml::qname &name, T value)
+    void write_attribute(const xml::qname &name, const T &value)
     {
         current_part_serializer_->attribute(name, xlnt::detail::serialise(value));
     }
 
     template <typename T, typename std::enable_if<std::is_integral<T>::value, T>::type* = nullptr>
-    void write_attribute(const xml::qname &name, T value)
+    void write_attribute(const xml::qname &name, const T &value)
     {
         current_part_serializer_->attribute(name, std::to_string(value));
     }
@@ -237,7 +249,7 @@ private:
     }
 
     template <typename T, typename = typename std::enable_if<!std::is_convertible<T, double>::value>::type>
-    void write_characters(T characters, bool preserve_whitespace = false)
+    void write_characters(const T &characters, bool preserve_whitespace = false)
     {
         if (preserve_whitespace)
         {
@@ -248,7 +260,7 @@ private:
     }
 
     template <typename T, typename std::enable_if<std::is_floating_point<T>::value, T>::type* = nullptr>
-    void write_characters(T characters, bool preserve_whitespace = false)
+    void write_characters(const T &characters, bool preserve_whitespace = false)
     {
         if (preserve_whitespace)
         {
@@ -259,7 +271,7 @@ private:
     }
 
     template <typename T, typename std::enable_if<std::is_integral<T>::value, T>::type* = nullptr>
-    void write_characters(T characters, bool preserve_whitespace = false)
+    void write_characters(const T &characters, bool preserve_whitespace = false)
     {
         if (preserve_whitespace)
         {

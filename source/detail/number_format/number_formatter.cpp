@@ -631,7 +631,7 @@ void number_format_parser::parse()
                 value = token.string.substr(1);
             }
 
-            section.condition.value = xlnt::detail::deserialise(value);
+            section.condition.value = xlnt::detail::deserialise<double>(value);
             break;
         }
 

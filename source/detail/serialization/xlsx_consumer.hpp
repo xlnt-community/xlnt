@@ -316,7 +316,13 @@ private:
     /// </summary>
     std::string read_text();
 
-    variant read_variant();
+    variant read_variant(const std::string &text);
+
+    template <typename T>
+    std::vector<T> read_variant_vector();
+
+    template <typename T>
+    T read_variant_vector_element(const std::string &text);
 
     /// <summary>
     /// Read the part from the archive and parse it as XML. After this is called,

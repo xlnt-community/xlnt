@@ -77,7 +77,7 @@ struct number_converter_production
 {
     double stold(const std::string &s)
     {
-        return xlnt::detail::deserialise(s);
+        return xlnt::detail::deserialise<double>(s);
     }
 };
 
